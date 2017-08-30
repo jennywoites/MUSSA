@@ -99,3 +99,10 @@ ENV/
 
 # mypy
 .mypy_cache/
+
+# Archivos propuesta Latex
+propuesta.aux
+propuesta.log
+propuesta.out
+propuesta.toc
+propuesta.synctex.gz
