@@ -27,7 +27,7 @@
 	\vspace{1.5cm}
 	{\Large\bfseries Propuesta de Trabajo Profesional\par}
 	\vspace{1.5cm}
-	{\huge\bfseries NOMBRE \par}
+	{\huge\bfseries MUSSA \par}
 	\vspace{0.5cm}
 	{\huge\bfseries Generador de Planes de Carrera personalizados utilizando Programación Lineal Entera \par}
 	\vspace{1cm}
@@ -63,8 +63,7 @@
 El siguiente documento presenta la propuesta del Trabajo Profesional de Ingeniería en Informática de la estudiante Jennifer Andrea Woites, padrón 93274. Los docentes que estarán a cargo son: Lic. Rosa Graciela Wachenchauzer como tutora del trabajo profesional, y el Ing. Diego Essaya como cotutor. \newline
 
 El objetivo del proyecto es aplicar los conocimientos adquiridos en la carrera. \newline
-
-El tema elegido para el trabajo profesional es: "PONER AQUI UN TITULO DE LA DESCRIPCION DE LA PRIMER HOJA". \newline
+MUSSA - Generador de Planes de Carrera personalizados utilizando Programación Lineal Entera". \newline
 
 El objetivo general del presente trabajo, será la realización de una web responsive que permita a los alumnos la visualización de sus materias, la administración de las mismas, la utilización de encuestas y la generación de un plan de carrera en base a parámetros personalizados. Cabe destacar, que el corazón de este trabajo reside en la modelización y generación del algoritmo que permita la generación del plan de carrera personalizado; para ello, se generará un modelo de resolución con Programación Lineal Entera.
 
@@ -260,21 +259,26 @@ $Z_{min}$ = Max($C_{i}$);  $\forall$ i $\in$ [Materias]
 
 \subsection{Armado y Visualización del Plan de Carrera}
 
-IN PORGRESS!!!!!!!!!!
+Para permitir el armado del plan, se deberán poder establecer las preferencias del alumno. Estas preferencias serán guardas y precargadas cada vez que el alumno desee volver a diseñar el plan por algún motivo (por ejemplo, no completó las materias que se proponía cursar y requiere ajustar las materias que realmente puede cursar el cuatrimestre siguiente, o que comenzó a trabajar y por ende, tiene menos disponibilidad horaria, etc).
 
-Para permitir el armado del plan, se deberán poder establecer diversos filtros. Para ello los clasificaremos en fuertes [F] (la restricción debe cumplirse) o deseables [D] (si no se cumplen, se pondera negativamente)
-- cantidad de cuatrimestres máximos de duración del plan [F]
-- máxima cantidad de horas de cursada por semana [F]
-- máxima cantidad de horas de trabajo extra además de la cursada, por semana [F]
-- Días / Horarios disponibles para cursar. [F]
-- Preferencias de topics de las materias electivas [D]: Se podrán establecer porcentajes deseados que se intentarán maximizar o se podrá completar un cuestionario que permita establecer los porcentajes automáticamnete.
-- Preferencia de sedes [D]
-- Puntuación del curso mayor a un determinado valor [D]
+Para ello clasificaremos las preferencias en fuertes [F] (la restricción debe cumplirse) o deseables [D] (si no se cumplen, se pondera negativamente):
 
+\begin{itemize}
+	\item Cantidad de cuatrimestres máximos de duración del plan [F]
+	\item Máxima cantidad de horas de cursada por semana [F]
+	\item Máxima cantidad de horas de trabajo extra además de la cursada, por semana [F]
+	\item Días y horarios que el alumno tiene disponibles para cursar [F]
+	\item Preferencias de topics de las materias electivas [D]: Seleccionar los porcentajes deseados para cada Topic.
+	\item Puntuación del curso mayor a un determinado valor [D]	
+\end{itemize}
 
 \section{Tecnologías y Herramientas}
 
-\subsection{Librería: ...}
+\subsection{Librería: PuLP}
+
+PuLP es una librería Open Source escrita en Python.
+
+Es usada para describir problemas de optimización como modelos matemáticos. PuLP puede llamar a numerosos solvers de programación lineal, tales como CBC, GLPK, CPLEX, Gurobi, etc, para resolver el modelo y luego utilizar comandos de Python para manipular y mostrar el resultado de la solución.
 
 \subsection{Herramientas}
 
@@ -284,19 +288,21 @@ Para permitir el armado del plan, se deberán poder establecer diversos filtros.
 \hline
 \textbf{Categoría}				 			& 		\textbf{Herramientas} \\
 \hline
-Lenguajes de Programación 					&		? \\
+Backend										&		Python, Flask \\
+\hline
+Frontend									&		JavaScript, React \\
 \hline
 Base de Datos			 					&		? \\
 \hline
-Entornos de Desarrollo						& 		? \\
+Entornos de Desarrollo						& 		Sublime \\
 \hline
-Control de Versiones						& 		? \\
+Control de Versiones						& 		GitHub \\
 \hline
-Administración y Control del Proyecto		& 		? \\
+Administración y Control del Proyecto		& 		GDocs, Trello \\
 \hline
-Elaboración de Documentos					& 		? \\
+Elaboración de Documentos					& 		LaTex \\
 \hline
-Librerías Principales						& 		? \\
+Librerías Principales						& 		PuLP \\
 \hline
 \end{tabular}
 \end{center}
@@ -329,6 +335,8 @@ Por otro lado, se establecerá un período de tiempo (como un sprint) en el que 
 A medida que se vayan avanzando en los sprints se realizarán los ajustes que se consideren necesarios en base a lo que se establezca con el tutor y el cotutor en las correspondientes reuiniones.
 
 \subsection{Estimaciones}
+
+
 
 \subsection{Cronograma}
 
