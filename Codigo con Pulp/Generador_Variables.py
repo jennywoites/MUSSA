@@ -52,11 +52,13 @@ def definir_variables_dias_y_franja_por_cuatrimestre(arch, plan, horarios):
 
 def definir_variables_horario_de_la_materia_en_dia_y_cuatrimestre(arch, plan, horarios):
     arch.write("#R_{materia}_{nombre curso}_{dia}_{franja}_{cuatrimestre}: El horario para la materia y curso en ese cuatrimestre esta habilitado" + ENTER + ENTER)
-    for materia in horarios:
-        for curso in horarios[materia]:
-            for dia in DIAS:
-                for franja in range(FRANJA_MIN, FRANJA_MAX +1):
-                    for cuatrimestre in range(1, MAX_CUATRIMESTRES_TOTALES + 1):
+    for cuatrimestre in range(1, MAX_CUATRIMESTRES_TOTALES + 1):
+        for materia in horarios:
+            for curso in horarios[materia]:
+                for c_horario in curso.horarios:
+                    dia = c_horario.dia
+                    franjas = c_horario.get_franjas_utilizadas()
+                    for franja in franjas:
                         variable= "R_{}_{}_{}_{}_{}".format(materia, curso.nombre, dia, franja, cuatrimestre)
                         arch.write("{} = LpVariable(name='{}', cat='Binary')".format(variable, variable) + ENTER)
     arch.write(ENTER + ENTER)

@@ -61,20 +61,9 @@ def imprimir_resultados(arch, plan, horarios):
     for materia in horarios:
         for i in range(1, MAX_CUATRIMESTRES_TOTALES + 1):
             for curso in horarios[materia]:
-                arch.write("if value(H_{}_{}_{}):".format(materia, curso.nombre, i) + ENTER)
-                arch.write("    print('Valor de H_{} en cuatrimestre {}: {}'.format(value(H_{}_{}_{})))".format(materia, i, "{}", materia, curso.nombre, i) + ENTER)
-
-    for cuatri in range(1, MAX_CUATRIMESTRES_TOTALES + 1):
-        for materia in horarios:
-            cursos = horarios[materia]
-            for curso in cursos:
-                for c_horario in curso.horarios:
-                    dia = c_horario.dia
-                    franjas = c_horario.get_franjas_utilizadas()
-                    for franja in franjas:
-                        variable = "R_{}_{}_{}_{}_{}".format(materia, curso.nombre, dia, franja, cuatri)
-                        arch.write("if value({}):".format(variable) + ENTER)
-                        arch.write("    print('{}: {}'.format(value({})))".format(variable, '{}', variable) + ENTER)
+                H = "H_{}_{}_{}".format(materia, curso.nombre, i)
+                arch.write("if value({}):".format(H) + ENTER)
+                arch.write("    print('Valor de {} en cuatrimestre {}: {}'.format(value({})))".format(H, i, "{}", H) + ENTER)
 
 
 def generar_codigo(arch, plan, materias, horarios, horarios_no_permitidos):
