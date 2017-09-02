@@ -76,9 +76,6 @@ def imprimir_resultados(arch, plan, horarios):
                         arch.write("if value({}):".format(variable) + ENTER)
                         arch.write("    print('{}: {}'.format(value({})))".format(variable, '{}', variable) + ENTER)
 
-    #arch.write("import ipdb" + ENTER + ENTER)
-    #arch.write("ipdb.set_trace()"+ ENTER)
-
 
 def generar_codigo(arch, plan, materias, horarios, horarios_no_permitidos):
     importar_pulp(arch)

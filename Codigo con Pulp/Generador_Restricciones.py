@@ -133,7 +133,7 @@ def generar_restriccion_si_se_elige_un_curso_se_cursa_su_horario_completo(arch, 
         for materia in horarios:
             cursos = horarios[materia]
             for curso in cursos:
-                igualdades = []#["H_{}_{}_{}".format(materia, curso.nombre, cuatri)]
+                igualdades = ["H_{}_{}_{}".format(materia, curso.nombre, cuatri)]
                 for c_horario in curso.horarios:
                     dia = c_horario.dia
                     franjas = c_horario.get_franjas_utilizadas()
@@ -150,23 +150,6 @@ def generar_restriccion_si_se_elige_un_curso_se_cursa_su_horario_completo(arch, 
                 arch.write("prob += ({} >= {})".format(variable_origen, variable_sig) + ENTER)
         arch.write(ENTER)
     arch.write(ENTER)
-
-    #PRueba...
-    for cuatri in range(1, MAX_CUATRIMESTRES_TOTALES + 1):
-        for materia in horarios:
-            cursos = horarios[materia]
-            for curso in cursos:
-                ecuacion = "prob += (H_{}_{}_{} <= ".format(materia, curso.nombre, cuatri)
-                for c_horario in curso.horarios:
-                    dia = c_horario.dia
-                    franjas = c_horario.get_franjas_utilizadas()
-                    for franja in franjas:
-                        ecuacion += "R_{}_{}_{}_{}_{} + ".format(materia, curso.nombre, dia, franja, cuatri)
-                ecuacion = ecuacion[:-3]
-                
-                ecuacion += ")"
-                arch.write(ecuacion + ENTER)
-
 
 
 def generar_restriccion_horarios_no_dictados_para_el_curso(arch, horarios):
@@ -203,17 +186,15 @@ def generar_restriccion_solo_puede_cursarse_en_un_lugar_al_mismo_tiempo(arch, ho
     arch.write(ENTER)              
 
 
-def generar_restriccion_si_la_materia_no_se_cursa_en_ese_cuatrimestre_no_se_cursa_ninguno_de_sus_horarios(arch, horarios):
-    arch.write("# Si la materia no se cursa ese cuatrimestre, entonces no puede cursarse en ninguno de los horarios de ese cuatrimestre" + ENTER + ENTER)
+def generar_restriccion_si_la_materia_no_se_cursa_en_ese_cuatrimestre_no_se_cursa_ninguno_de_sus_cursos(arch, horarios):
+    arch.write("# Si la materia no se cursa ese cuatrimestre, entonces no puede cursarse en ninguno de los cursos de ese cuatrimestre" + ENTER + ENTER)
     for cuatrimestre in range(1, MAX_CUATRIMESTRES_TOTALES + 1):
-        for dia in DIAS:
-            for franja in range(FRANJA_MIN, FRANJA_MAX +1):
-                for materia in horarios:
-                    for curso in horarios[materia]:
-                        Y = "Y{}{}".format(materia, cuatrimestre)
-                        R = "R_{}_{}_{}_{}_{}".format(materia, curso.nombre, dia, franja, cuatrimestre)
-                        ecuacion = "prob += ({} >= {})".format(Y, R)
-                        arch.write(ecuacion + ENTER)
+        for materia in horarios:
+            for curso in horarios[materia]:
+                Y = "Y{}{}".format(materia, cuatrimestre)
+                R = "H_{}_{}_{}".format(materia, curso.nombre, cuatrimestre)
+                ecuacion = "prob += ({} >= {})".format(Y, R)
+                arch.write(ecuacion + ENTER)
     arch.write(ENTER)
 
 
@@ -233,7 +214,7 @@ def generar_restriccion_horarios_cursos(arch, plan, materias, horarios, horarios
     generar_restriccion_horarios_no_dictados_para_el_curso(arch, horarios)
     generar_restriccion_si_se_elige_un_curso_se_cursa_su_horario_completo(arch, horarios)
     generar_restriccion_solo_puede_cursarse_en_un_lugar_al_mismo_tiempo(arch, horarios)
-    generar_restriccion_si_la_materia_no_se_cursa_en_ese_cuatrimestre_no_se_cursa_ninguno_de_sus_horarios(arch, horarios)
+    generar_restriccion_si_la_materia_no_se_cursa_en_ese_cuatrimestre_no_se_cursa_ninguno_de_sus_cursos(arch, horarios)
     generar_restriccion_la_materia_no_puede_cursarse_en_mas_de_un_curso(arch, horarios)
 
 def generar_restricciones(arch, plan, materias, horarios, horarios_no_permitidos):

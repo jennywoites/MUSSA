@@ -1,18 +1,18 @@
-Duracion: 93.69558906555176
+Duracion: 17.371796131134033
 Total de cuatrimestres: 4
-Materia E se hace en el cuatrimestre 2
+Materia H se hace en el cuatrimestre 4
+Materia J se hace en el cuatrimestre 3
 Materia C se hace en el cuatrimestre 1
-Materia B se hace en el cuatrimestre 1
+Materia F se hace en el cuatrimestre 3
+Materia E se hace en el cuatrimestre 2
+Materia D se hace en el cuatrimestre 1
 Materia I se hace en el cuatrimestre 4
 Materia G se hace en el cuatrimestre 4
-Materia D se hace en el cuatrimestre 2
+Materia B se hace en el cuatrimestre 1
 Materia A se hace en el cuatrimestre 2
-Materia H se hace en el cuatrimestre 3
-Materia F se hace en el cuatrimestre 3
-Materia J se hace en el cuatrimestre 4
-[['C', 'B'], ['E', 'D', 'A'], ['H', 'F'], ['I', 'G', 'J']]
+[['C', 'D', 'B'], ['E', 'A'], ['J', 'F'], ['H', 'I', 'G']]
 Cuatrimestre: 0 - Creditos acumulados: 0
-Cuatrimestre: 1 - Creditos acumulados: 2
+Cuatrimestre: 1 - Creditos acumulados: 3
 Cuatrimestre: 2 - Creditos acumulados: 5
 Cuatrimestre: 3 - Creditos acumulados: 7
 Cuatrimestre: 4 - Creditos acumulados: 10
@@ -21,16 +21,16 @@ Cuatrimestre: 6 - Creditos acumulados: 10
 Cuatrimestre: 7 - Creditos acumulados: 10
 Cuatrimestre: 8 - Creditos acumulados: 10
 Cuatrimestre: 9 - Creditos acumulados: 10
-Valor de H_E en cuatrimestre 2: 1
+Valor de H_H en cuatrimestre 4: 1
+Valor de H_J en cuatrimestre 3: 1
 Valor de H_C en cuatrimestre 1: 1
-Valor de H_B en cuatrimestre 1: 1
+Valor de H_F en cuatrimestre 3: 1
+Valor de H_E en cuatrimestre 2: 1
+Valor de H_D en cuatrimestre 1: 1
 Valor de H_I en cuatrimestre 4: 1
 Valor de H_G en cuatrimestre 4: 1
-Valor de H_D en cuatrimestre 2: 1
+Valor de H_B en cuatrimestre 1: 1
 Valor de H_A en cuatrimestre 2: 1
-Valor de H_H en cuatrimestre 3: 1
-Valor de H_F en cuatrimestre 3: 1
-Valor de H_J en cuatrimestre 4: 1
 R_C_Curso1C_LUNES_11_1: 1
 R_C_Curso1C_LUNES_12_1: 1
 R_C_Curso1C_LUNES_13_1: 1
@@ -45,6 +45,14 @@ R_C_Curso1C_MIERCOLES_7_1: 1
 R_C_Curso1C_MIERCOLES_8_1: 1
 R_C_Curso1C_MIERCOLES_9_1: 1
 R_C_Curso1C_MIERCOLES_10_1: 1
+R_D_Curso4D_MARTES_5_1: 1
+R_D_Curso4D_MARTES_6_1: 1
+R_D_Curso4D_MARTES_7_1: 1
+R_D_Curso4D_MARTES_8_1: 1
+R_D_Curso4D_JUEVES_8_1: 1
+R_D_Curso4D_JUEVES_9_1: 1
+R_D_Curso4D_JUEVES_10_1: 1
+R_D_Curso4D_JUEVES_11_1: 1
 R_B_Curso1B_LUNES_1_1: 1
 R_B_Curso1B_LUNES_2_1: 1
 R_B_Curso1B_LUNES_3_1: 1
@@ -69,48 +77,16 @@ R_E_Curso1E_VIERNES_5_2: 1
 R_E_Curso1E_VIERNES_6_2: 1
 R_E_Curso1E_VIERNES_7_2: 1
 R_E_Curso1E_VIERNES_8_2: 1
-R_D_Curso2D_LUNES_11_2: 1
-R_D_Curso2D_LUNES_12_2: 1
-R_D_Curso2D_LUNES_13_2: 1
-R_D_Curso2D_LUNES_14_2: 1
-R_D_Curso2D_LUNES_15_2: 1
-R_D_Curso2D_LUNES_16_2: 1
-R_D_Curso2D_MIERCOLES_3_2: 1
-R_D_Curso2D_MIERCOLES_4_2: 1
-R_A_Curso2A_JUEVES_3_2: 1
-R_A_Curso2A_JUEVES_4_2: 1
-R_A_Curso2A_JUEVES_5_2: 1
-R_A_Curso2A_JUEVES_6_2: 1
-R_A_Curso2A_JUEVES_7_2: 1
-R_A_Curso2A_JUEVES_8_2: 1
-R_A_Curso2A_JUEVES_9_2: 1
-R_A_Curso2A_JUEVES_10_2: 1
-R_A_Curso2A_JUEVES_11_2: 1
-R_A_Curso2A_JUEVES_12_2: 1
-R_A_Curso2A_JUEVES_13_2: 1
-R_A_Curso2A_JUEVES_14_2: 1
-R_A_Curso2A_JUEVES_15_2: 1
-R_A_Curso2A_JUEVES_16_2: 1
-R_A_Curso2A_SABADO_5_2: 1
-R_A_Curso2A_SABADO_6_2: 1
-R_A_Curso2A_SABADO_7_2: 1
-R_A_Curso2A_SABADO_8_2: 1
-R_A_Curso2A_SABADO_9_2: 1
-R_A_Curso2A_SABADO_10_2: 1
-R_A_Curso2A_SABADO_11_2: 1
-R_A_Curso2A_SABADO_12_2: 1
-R_H_Curso1H_SABADO_17_3: 1
-R_H_Curso1H_SABADO_18_3: 1
-R_H_Curso1H_SABADO_19_3: 1
-R_H_Curso1H_SABADO_20_3: 1
-R_H_Curso1H_SABADO_21_3: 1
-R_H_Curso1H_SABADO_22_3: 1
-R_H_Curso1H_SABADO_23_3: 1
-R_H_Curso1H_SABADO_24_3: 1
-R_H_Curso1H_SABADO_25_3: 1
-R_H_Curso1H_SABADO_26_3: 1
-R_H_Curso1H_SABADO_27_3: 1
-R_H_Curso1H_SABADO_28_3: 1
+R_A_Curso3A_MARTES_21_2: 1
+R_A_Curso3A_MARTES_22_2: 1
+R_A_Curso3A_MARTES_23_2: 1
+R_A_Curso3A_MARTES_24_2: 1
+R_A_Curso3A_MARTES_25_2: 1
+R_A_Curso3A_MARTES_26_2: 1
+R_A_Curso3A_MARTES_27_2: 1
+R_A_Curso3A_MARTES_28_2: 1
+R_J_Curso1J_SABADO_31_3: 1
+R_J_Curso1J_SABADO_32_3: 1
 R_F_Curso1F_VIERNES_3_3: 1
 R_F_Curso1F_VIERNES_4_3: 1
 R_F_Curso1F_VIERNES_5_3: 1
@@ -121,6 +97,18 @@ R_F_Curso1F_VIERNES_9_3: 1
 R_F_Curso1F_VIERNES_10_3: 1
 R_F_Curso1F_VIERNES_11_3: 1
 R_F_Curso1F_VIERNES_12_3: 1
+R_H_Curso1H_SABADO_17_4: 1
+R_H_Curso1H_SABADO_18_4: 1
+R_H_Curso1H_SABADO_19_4: 1
+R_H_Curso1H_SABADO_20_4: 1
+R_H_Curso1H_SABADO_21_4: 1
+R_H_Curso1H_SABADO_22_4: 1
+R_H_Curso1H_SABADO_23_4: 1
+R_H_Curso1H_SABADO_24_4: 1
+R_H_Curso1H_SABADO_25_4: 1
+R_H_Curso1H_SABADO_26_4: 1
+R_H_Curso1H_SABADO_27_4: 1
+R_H_Curso1H_SABADO_28_4: 1
 R_I_Curso1I_SABADO_29_4: 1
 R_G_Curso1G_VIERNES_3_4: 1
 R_G_Curso1G_VIERNES_4_4: 1
@@ -132,5 +120,3 @@ R_G_Curso1G_VIERNES_9_4: 1
 R_G_Curso1G_VIERNES_10_4: 1
 R_G_Curso1G_VIERNES_11_4: 1
 R_G_Curso1G_VIERNES_12_4: 1
-R_J_Curso1J_SABADO_31_4: 1
-R_J_Curso1J_SABADO_32_4: 1
