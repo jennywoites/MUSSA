@@ -10,6 +10,7 @@ Materia C se hace en el cuatrimestre 1
 Materia D se hace en el cuatrimestre 1
 Materia I se hace en el cuatrimestre 4
 Materia A se hace en el cuatrimestre 2
+
 [['B', 'C', 'D'], ['F', 'E', 'A'], ['J', 'H', 'G'], ['I']]
 Cuatrimestre: 0 - Creditos acumulados: 0
 Cuatrimestre: 1 - Creditos acumulados: 3
