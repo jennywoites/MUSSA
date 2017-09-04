@@ -1,14 +1,13 @@
 from Constantes import *
 
+from ParametrosDAO import Parametros
+
 from Materia import Materia
 from Horario import Horario
 from Curso import Curso
 
 from Generador_Restricciones import generar_restricciones
 from Generador_Variables import definir_variables
-
-from MateriasDAO import get_materias, get_plan_carrera
-from HorariosDAO import get_horarios, get_horarios_no_permitidos
 
 #############################################################################################
 def importar_pulp(arch):
@@ -40,19 +39,14 @@ def resolver_problema(arch):
     arch.write("print('Duracion: {}'.format(tiempo_final - tiempo_inicial))" + ENTER)
 
 
-def imprimir_resultados(arch, plan, horarios):
+def imprimir_resultados(arch, parametros):
+    plan = parametros.plan
+    horarios = parametros.horarios
+
     arch.write("# Impresion de resultados por pantalla" + ENTER + ENTER)
     arch.write("print('Total de cuatrimestres: {}'.format(value(y)))" + ENTER + ENTER)
     
-    arch.write("plan_final = []" + ENTER)
-    arch.write("for i in range(value(y)):" + ENTER)
-    arch.write("    plan_final.append([])" + ENTER)
-
-    arch.write("msj = 'Materia {} se hace en el cuatrimestre {}'" + ENTER)
-    for materia in plan:
-        arch.write("plan_final[value(C{})-1].append('{}')".format(materia, materia) + ENTER)
-        arch.write("print(msj.format('{}', value(C{})))".format(materia, materia) + ENTER)
-    arch.write("print(plan_final)" + ENTER)
+    imprimir_materias_plan(arch, plan)
 
     arch.write("msj = 'Cuatrimestre: {} - Creditos acumulados: {}'" + ENTER)
     for i in range(MAX_CUATRIMESTRES_TOTALES):
@@ -66,25 +60,37 @@ def imprimir_resultados(arch, plan, horarios):
                 arch.write("    print('Valor de {} en cuatrimestre {}: {}'.format(value({})))".format(H, i, "{}", H) + ENTER)
 
 
-def generar_codigo(arch, plan, materias, horarios, horarios_no_permitidos):
+def imprimir_materias_plan(arch, plan):
+    arch.write("plan_final = []" + ENTER)
+    arch.write("for i in range(value(y)):" + ENTER)
+    arch.write("    plan_final.append([])" + ENTER)
+
+    arch.write("msj = 'Materia {} se hace en el cuatrimestre {}'" + ENTER)
+    for materia in plan:
+        cuatri = "value(C{})".format(materia)
+        arch.write("if {} > 0:".format(cuatri) + ENTER)
+        arch.write("    plan_final[{}-1].append('{}')".format(cuatri, materia) + ENTER)
+        arch.write("    print(msj.format('{}', {}))".format(materia, cuatri) + ENTER)
+        arch.write("else:" + ENTER)
+        arch.write("    print('La materia {} no se hace')".format(materia) + ENTER)
+    arch.write("print(plan_final)" + ENTER)
+
+
+def generar_codigo(arch, parametros):
     importar_pulp(arch)
     importar_time(arch)
-    definir_variables(arch, plan, horarios)
+    definir_variables(arch, parametros)
     definir_problema_minimizacion(arch)
-    generar_restricciones(arch, plan, materias, horarios, horarios_no_permitidos)
+    generar_restricciones(arch, parametros)
     definir_funcion_objetivo(arch)    
     resolver_problema(arch)
-    imprimir_resultados(arch, plan, horarios)
+    imprimir_resultados(arch, parametros)
 
 
 def main():
-    plan_carrera = get_plan_carrera()
-    materias = get_materias()
-    horarios = get_horarios()
-    horarios_no_permitidos = get_horarios_no_permitidos()
-
+    parametros = Parametros()
     with open("pulp_001.py", "w") as f:
-        generar_codigo(f, plan_carrera, materias, horarios, horarios_no_permitidos)        
+        generar_codigo(f, parametros)        
 
 
 main()
