@@ -1,13 +1,9 @@
 <html>
   <head>
-    {% if title %}
-    <title>{{ title }} - microblog</title>
-    {% else %}
-    <title>microblog</title>
-    {% endif %}
+    <title>MUSSA</title>
   </head>
   <body>
-    <div>Microblog:
+    <!--div>Microblog:
         <a href="{{ url_for('index') }}">Home</a>
         {% if g.user.is_authenticated %}
         | <a href="{{ url_for('logout') }}">Logout</a>
@@ -23,6 +19,7 @@
     </ul>
     {% endif %}
     {% endwith %}
+-->
     {% block content %}{% endblock %}
   </body>
 </html>
