@@ -1,7 +1,3 @@
-#from flask_login import login_user, logout_user, current_user, login_required
-#from app import oid
-#from .forms import LoginForm
-
 import os
 from app import app, db, lm
 from flask import render_template, flash, redirect, request, session, abort, url_for, g
