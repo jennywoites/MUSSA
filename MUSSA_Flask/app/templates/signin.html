@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+    <form action='signin/do_registrarse' method="post">
+        Apellidos:<br>
+        <input type="text" name="apellido"><br>
+  
+        Nombres:<br>
+        <input type="text" name="nombre"><br>
+  
+        DNI:<br>
+        <input type="text" name="DNI"><br>
+  
+        E-mail:<br>
+        <input type="text" name="email"><br>
+  
+        Padron:<br>
+        <input type="text" name="padron"><br>
+  
+        <input type="submit" name='btn_registrarse' value="Registrarse" class="btn btn-primary btn-large btn-block">
+    </form>
+
+{% endblock %}
