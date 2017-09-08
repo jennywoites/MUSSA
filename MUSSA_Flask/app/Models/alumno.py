@@ -2,14 +2,14 @@ from app import db
 
 class Alumno(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    apellido = db.Column(db.String(64), index=True, unique=True)
-    nombre = db.Column(db.String(64), index=True, unique=True)
+    apellido = db.Column(db.String(64), unique=False)
+    nombre = db.Column(db.String(64), unique=False)
     dni = db.Column(db.String(8), index=True, unique=True)
     email = db.Column(db.String(120), index=True, unique=True)
-    padron = db.Column(db.String(8), index=True, unique=True)
-    direccion = db.Column(db.String(200), index=True, unique=True)
-    codigo_postal = db.Column(db.String(8), index=True, unique=True)
-    telefono = db.Column(db.String(20), index=True, unique=True)
+    padron = db.Column(db.String(8), index=True)
+    direccion = db.Column(db.String(200))
+    codigo_postal = db.Column(db.String(8))
+    telefono = db.Column(db.String(20))
 
     user = db.relationship("User", uselist=False, back_populates="alumno")
 
