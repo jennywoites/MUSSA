@@ -5,6 +5,9 @@ class User(db.Model):
     username = db.Column(db.String(64), index=True, unique=True)
     password = db.Column(db.String(64), index=True, unique=True)
 
+    alumno_id = db.Column(db.Integer, db.ForeignKey('alumno.id'))
+    alumno = db.relationship("Alumno", back_populates="user")
+
     def __init__(self, username, password):
         self.username = username
         self.password = password
