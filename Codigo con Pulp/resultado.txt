@@ -1,33 +1,37 @@
-Duracion: 10.303338289260864
+Duracion: 83.67859935760498
 Total de cuatrimestres: 4
-Materia J se hace en el cuatrimestre 3
-Materia F se hace en el cuatrimestre 2
-Materia B se hace en el cuatrimestre 1
 Materia E se hace en el cuatrimestre 2
-Materia H se hace en el cuatrimestre 3
-Materia G se hace en el cuatrimestre 3
-Materia C se hace en el cuatrimestre 1
-Materia D se hace en el cuatrimestre 1
 Materia I se hace en el cuatrimestre 4
+Materia K se hace en el cuatrimestre 3
+Materia B se hace en el cuatrimestre 1
+Materia H se hace en el cuatrimestre 3
+La materia L no se hace
+Materia G se hace en el cuatrimestre 4
+Materia C se hace en el cuatrimestre 1
 Materia A se hace en el cuatrimestre 2
-[['B', 'C', 'D'], ['F', 'E', 'A'], ['J', 'H', 'G'], ['I']]
+La materia J no se hace
+Materia D se hace en el cuatrimestre 1
+La materia N no se hace
+Materia F se hace en el cuatrimestre 2
+La materia M no se hace
+[['B', 'C', 'D'], ['E', 'A', 'F'], ['K', 'H'], ['I', 'G']]
 Cuatrimestre: 0 - Creditos acumulados: 0
-Cuatrimestre: 1 - Creditos acumulados: 3
-Cuatrimestre: 2 - Creditos acumulados: 6
-Cuatrimestre: 3 - Creditos acumulados: 9
-Cuatrimestre: 4 - Creditos acumulados: 10
-Cuatrimestre: 5 - Creditos acumulados: 10
-Cuatrimestre: 6 - Creditos acumulados: 10
-Cuatrimestre: 7 - Creditos acumulados: 10
-Cuatrimestre: 8 - Creditos acumulados: 10
-Cuatrimestre: 9 - Creditos acumulados: 10
-Valor de H_J_Curso1J_3 en cuatrimestre 3: 1
-Valor de H_F_Curso1F_2 en cuatrimestre 2: 1
-Valor de H_B_Curso1B_1 en cuatrimestre 1: 1
+Cuatrimestre: 1 - Creditos acumulados: 7
+Cuatrimestre: 2 - Creditos acumulados: 12
+Cuatrimestre: 3 - Creditos acumulados: 19
+Cuatrimestre: 4 - Creditos acumulados: 21
+Cuatrimestre: 5 - Creditos acumulados: 21
+Cuatrimestre: 6 - Creditos acumulados: 21
+Cuatrimestre: 7 - Creditos acumulados: 21
+Cuatrimestre: 8 - Creditos acumulados: 21
+Cuatrimestre: 9 - Creditos acumulados: 21
 Valor de H_E_Curso2E_2 en cuatrimestre 2: 1
-Valor de H_H_Curso1H_3 en cuatrimestre 3: 1
-Valor de H_G_Curso1G_3 en cuatrimestre 3: 1
-Valor de H_C_Curso1C_1 en cuatrimestre 1: 1
-Valor de H_D_Curso4D_1 en cuatrimestre 1: 1
 Valor de H_I_Curso1I_4 en cuatrimestre 4: 1
+Valor de H_K_Curso1K_3 en cuatrimestre 3: 1
+Valor de H_B_Curso1B_1 en cuatrimestre 1: 1
+Valor de H_H_Curso1H_3 en cuatrimestre 3: 1
+Valor de H_G_Curso1G_4 en cuatrimestre 4: 1
+Valor de H_C_Curso1C_1 en cuatrimestre 1: 1
 Valor de H_A_Curso3A_2 en cuatrimestre 2: 1
+Valor de H_D_Curso4D_1 en cuatrimestre 1: 1
+Valor de H_F_Curso1F_2 en cuatrimestre 2: 1

@@ -4,7 +4,7 @@ def definir_variable_materia_i_en_cuatri_j(plan, arch):
     arch.write("#Yij: La materia i se realiza en el cuatrimestre j" + ENTER + ENTER)
     for materia in plan:
         for cuatrimestre in range(1,MAX_CUATRIMESTRES_TOTALES+1):
-            variable = "Y{}{}".format(materia, cuatrimestre)
+            variable = "Y_{}_{}".format(materia, cuatrimestre)
             arch.write("{} = LpVariable(name='{}', cat='Binary')".format(variable, variable) + ENTER)
     arch.write(ENTER + ENTER)
 
@@ -70,7 +70,10 @@ def definir_variables_horarios_de_materias(arch, plan, horarios):
     definir_variables_horario_de_la_materia_en_dia_y_cuatrimestre(arch, plan, horarios)
 
 
-def definir_variables(arch, plan, horarios):
+def definir_variables(arch, parametros):
+    plan = parametros.plan
+    horarios = parametros.horarios
+
     definir_variable_materia_i_en_cuatri_j(plan, arch)
     definir_variable_numero_cuatrimestre_materia(plan, arch)
     definir_auxiliar_para_maximo_cuatrimestres(arch)
