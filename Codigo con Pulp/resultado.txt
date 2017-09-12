@@ -1,19 +1,19 @@
-Duracion: 4.595652341842651
+Duracion: 96.99418830871582
 Total de cuatrimestres: 0
-La materia K no se hace
-La materia D no se hace
-La materia G no se hace
-La materia N no se hace
-La materia H no se hace
 La materia E no se hace
-La materia F no se hace
-La materia A no se hace
 La materia M no se hace
+La materia H no se hace
+La materia B no se hace
+La materia K no se hace
+La materia N no se hace
+La materia F no se hace
+La materia I no se hace
 La materia L no se hace
 La materia C no se hace
 La materia J no se hace
-La materia B no se hace
-La materia I no se hace
+La materia A no se hace
+La materia G no se hace
+La materia D no se hace
 []
 Total de horas libres: 0
 Cuatrimestre: 0 - Creditos acumulados: 0
