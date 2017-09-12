@@ -1,8 +1,8 @@
 from MateriasDAO import get_materias, get_plan_carrera
 from HorariosDAO import get_horarios, get_horarios_no_permitidos
 
-CREDITOS_MINIMOS_ELECTIVAS = 5
-NUM_EJEMPLO_MATERIAS = 4
+CREDITOS_MINIMOS_ELECTIVAS = 0#5
+NUM_EJEMPLO_MATERIAS = 5
 
 class Parametros:
 

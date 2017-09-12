@@ -63,12 +63,39 @@ def imprimir_resultados(arch, parametros):
     for i in range(MAX_CUATRIMESTRES_TOTALES):
         arch.write("print(msj.format({}, value(CRED{})))".format(i, i) + ENTER)
 
+    imprimir_datos_franjas(arch)
+
     for materia in horarios:
         for i in range(1, MAX_CUATRIMESTRES_TOTALES + 1):
             for curso in horarios[materia]:
                 H = "H_{}_{}_{}".format(materia, curso.nombre, i)
                 arch.write("if value({}):".format(H) + ENTER)
                 arch.write("    print('Valor de {} en cuatrimestre {}: {}'.format(value({})))".format(H, i, "{}", H) + ENTER)
+
+
+def imprimir_datos_franjas(arch):
+    msj = "print('{}: {}'.format(value({})))"
+    for cuatri in range(1, MAX_CUATRIMESTRES_TOTALES+1):
+        for dia in DIAS:
+            ocupado = "OCUPADO_{}_{}".format(dia, cuatri)
+            arch.write(msj.format(ocupado, '{}', ocupado) + ENTER)
+
+            maxima_f = "MAXIMA_FRANJA_{}_{}".format(dia, cuatri)
+            arch.write(msj.format(maxima_f, '{}', maxima_f) + ENTER)
+
+            minima_f = "MINIMA_FRANJA_{}_{}".format(dia, cuatri)
+            arch.write(msj.format(minima_f, '{}', minima_f) + ENTER)
+
+            horas_libres = "HORAS_LIBRES_{}_{}".format(dia, cuatri)
+            arch.write(msj.format(horas_libres, '{}', horas_libres) + ENTER)
+
+    arch.write(msj.format("HORAS_LIBRES_TOTALES", '{}', "HORAS_LIBRES_TOTALES") + ENTER)
+
+    for cuatri in range(1, MAX_CUATRIMESTRES_TOTALES+1):
+        for dia in DIAS:
+            for franja in range(FRANJA_MIN, FRANJA_MAX +1):
+                variable = "{}_{}_{}".format(dia, franja, cuatri)
+                arch.write("print('{}: {}'.format(value({})))".format(variable, '{}', variable) + ENTER)
 
 
 def imprimir_materias_plan(arch, plan):

@@ -160,14 +160,17 @@ def generar_restriccion_solo_puede_cursarse_en_un_lugar_al_mismo_tiempo(arch, ho
     for cuatrimestre in range(1, MAX_CUATRIMESTRES_TOTALES + 1):
         for dia in DIAS:
             for franja in range(FRANJA_MIN, FRANJA_MAX +1):
-                ecuacion = "prob += ({}_{}_{} >= ".format(dia, franja, cuatrimestre)
+                ec_suma = ""
                 for materia in horarios:
                     for curso in horarios[materia]:
                         if es_horario_restriccion_valido(curso, dia, franja):
-                            ecuacion += "R_{}_{}_{}_{}_{} + ".format(materia, curso.nombre, dia, franja, cuatrimestre)
-                ecuacion = ecuacion[:-3]
-                ecuacion += ")"
-                arch.write(ecuacion + ENTER)
+                            ec_suma += "R_{}_{}_{}_{}_{} + ".format(materia, curso.nombre, dia, franja, cuatrimestre)
+                ec_suma = ec_suma[:-3]
+                if not ec_suma:
+                    ec_suma = "0"
+                ecuacion = "prob += ({}_{}_{} {} ".format(dia, franja, cuatrimestre, '{}') + ec_suma + ")"
+                arch.write(ecuacion.format("<=") + ENTER)
+                arch.write(ecuacion.format(">=") + ENTER)
     arch.write(ENTER)              
 
 
@@ -205,6 +208,9 @@ def generar_restriccion_la_materia_no_puede_cursarse_en_mas_de_un_curso(arch, ho
 
 
 def generar_restriccion_creditos_minimos_electivas(arch, materias, creditos):
+    if creditos == 0:
+        return
+
     arch.write("#Se debe realizar un minimo de creditos de materias electivas" + ENTER + ENTER)
     ecuacion = "prob += ("
     for cuatrimestre in range(1, MAX_CUATRIMESTRES_TOTALES + 1):
@@ -242,13 +248,14 @@ def generar_restriccion_calcular_minima_franja_por_dia_y_cuatrimestre(arch):
     arch.write("#Numero de franja horaria menor por dia por cuatrimestre" + ENTER + ENTER)
     for cuatrimestre in range(1, MAX_CUATRIMESTRES_TOTALES + 1):
         for dia in DIAS:
-            ecuacion = "prob += (MINIMA_FRANJA_{}_{} <= ".format(dia, cuatrimestre)
+            var_min_franja = "MINIMA_FRANJA_{}_{}".format(dia, cuatrimestre)
+            ecuacion = "prob += ({} <= ".format(var_min_franja)
             for franja in range(FRANJA_MIN, FRANJA_MAX +1):
                 var_dia = "{}_{}_{}".format(dia, franja, cuatrimestre)
                 sumas = "{} * {} + (1 - {}) * {} )".format(franja, var_dia, var_dia, INFINITO) 
                 arch.write(ecuacion + sumas + ENTER)
     
-            arch.write("prob += (OCUPADO_{}_{} * {})".format(dia, cuatrimestre, INFINITO) + ENTER)
+            arch.write("prob += ({} <= OCUPADO_{}_{} * {})".format(var_min_franja, dia, cuatrimestre, INFINITO) + ENTER)
     
     arch.write(ENTER)
 
@@ -258,9 +265,13 @@ def generar_restriccion_el_dia_esta_ocupado_ese_cuatrimestre(arch):
     for cuatrimestre in range(1, MAX_CUATRIMESTRES_TOTALES + 1):
         for dia in DIAS:
             ecuacion = "prob += (OCUPADO_{}_{} >= ".format(dia, cuatrimestre)
+            ec_sumatoria = "prob += (OCUPADO_{}_{} <= ".format(dia, cuatrimestre)
             for franja in range(FRANJA_MIN, FRANJA_MAX +1):
-                arch.write(ecuacion + "{}_{}_{} )".format(dia, franja, cuatrimestre) + ENTER)
-    arch.write(ENTER)
+                var_dia = "{}_{}_{}".format(dia, franja, cuatrimestre)
+                arch.write(ecuacion + "{} )".format(var_dia) + ENTER)
+                ec_sumatoria += "{} + ".format(var_dia)
+            ec_sumatoria = ec_sumatoria[:-3] + ")"
+            arch.write(ec_sumatoria + ENTER + ENTER)
 
 
 def generar_restriccion_calcular_horas_libres_por_dia_por_cuatrimestre(arch):
