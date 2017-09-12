@@ -27,8 +27,8 @@ def definir_problema_minimizacion(arch):
 
 
 def definir_funcion_objetivo(arch):
-    arch.write("# Definicion de la funcion objetivo a minimizar. Es el max de los valores de los cuatrimestres MAX(CA, CB..)" + ENTER + ENTER)
-    arch.write("prob += y" + ENTER + ENTER)
+    arch.write("# Definicion de la funcion objetivo a minimizar." + ENTER + ENTER)
+    arch.write("prob += TOTAL_CUATRIMESTRES" + ENTER + ENTER)
 
 
 def resolver_problema(arch):
@@ -44,7 +44,7 @@ def imprimir_resultados(arch, parametros):
     horarios = parametros.horarios
 
     arch.write("# Impresion de resultados por pantalla" + ENTER + ENTER)
-    arch.write("print('Total de cuatrimestres: {}'.format(value(y)))" + ENTER + ENTER)
+    arch.write("print('Total de cuatrimestres: {}'.format(value(TOTAL_CUATRIMESTRES)))" + ENTER + ENTER)
     
     imprimir_materias_plan(arch, plan)
 
@@ -62,7 +62,7 @@ def imprimir_resultados(arch, parametros):
 
 def imprimir_materias_plan(arch, plan):
     arch.write("plan_final = []" + ENTER)
-    arch.write("for i in range(value(y)):" + ENTER)
+    arch.write("for i in range(value(TOTAL_CUATRIMESTRES)):" + ENTER)
     arch.write("    plan_final.append([])" + ENTER)
 
     arch.write("msj = 'Materia {} se hace en el cuatrimestre {}'" + ENTER)

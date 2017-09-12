@@ -18,8 +18,8 @@ def definir_variable_numero_cuatrimestre_materia(plan, arch):
 
 
 def definir_auxiliar_para_maximo_cuatrimestres(arch):
-    arch.write("# y: Variable utilizada solo para escribir el maximo entre Ci" + ENTER + ENTER)
-    arch.write("y = LpVariable(name='y', cat='Integer')" + ENTER + ENTER)
+    arch.write("#TOTAL_CUATRIMESTRES: Total de cuatrimestres a cursar. Utilizada para escribir el maximo entre Ci MAX(CA, CB..)" + ENTER + ENTER)
+    arch.write("TOTAL_CUATRIMESTRES = LpVariable(name='TOTAL_CUATRIMESTRES', cat='Integer')" + ENTER + ENTER)
 
 
 def definir_variable_cantidad_creditos_por_cuatrimestre(arch):
@@ -70,6 +70,50 @@ def definir_variables_horarios_de_materias(arch, plan, horarios):
     definir_variables_horario_de_la_materia_en_dia_y_cuatrimestre(arch, plan, horarios)
 
 
+def definir_variables_esta_el_dia_ocupado_en_un_cuatrimestre(arch):
+    arch.write("#OCUPADO_{dia}_{cuatrimestre}: Vale 1 si el {dia} en el {cuatrimestre} tiene al menos un horario ocupado" + ENTER + ENTER)
+    for cuatrimestre in range(1, MAX_CUATRIMESTRES_TOTALES + 1):
+        for dia in DIAS:
+            variable = "OCUPADO_{}_{}".format(dia, cuatrimestre)
+            arch.write("{} = LpVariable(name='{}', cat='Binary')".format(variable, variable) + ENTER)
+    arch.write(ENTER + ENTER)
+
+
+def definir_variables_maximo_y_minimo_numero_franja_ocupada_por_dia_por_cuatrimestre(arch):
+    arch.write("#MAXIMA_FRANJA_{dia}_{cuatrimestre}: Numero de la maxima franja ocupada en el {dia} en el {cuatrimestre}." + ENTER)
+    arch.write("#MINIMA_FRANJA_{dia}_{cuatrimestre}: Numero de la minima franja ocupada en el {dia} en el {cuatrimestre}." + ENTER + ENTER)
+    for cuatrimestre in range(1, MAX_CUATRIMESTRES_TOTALES + 1):
+        for dia in DIAS:
+            variable_max = "MAXIMA_FRANJA_{}_{}".format(dia, cuatrimestre)
+            variable_min = "MINIMA_FRANJA_{}_{}".format(dia, cuatrimestre)
+            definicion = "{} = LpVariable(name='{}', cat='Integer')"
+            arch.write(definicion.format(variable_max, variable_max) + ENTER)
+            arch.write(definicion.format(variable_min, variable_min) + ENTER)
+    arch.write(ENTER + ENTER)
+
+
+def definir_variables_horas_libres_entre_materias_por_dia_por_cuatrimestre(arch):
+    arch.write("#HORAS_LIBRES_{dia}_{cuatrimestre}: Cantidad de horas libres entre materias el {dia} en el {cuatrimestre}." + ENTER + ENTER)
+    for cuatrimestre in range(1, MAX_CUATRIMESTRES_TOTALES + 1):
+        for dia in DIAS:
+            variable = "HORAS_LIBRES_{}_{}".format(dia, cuatrimestre)
+            arch.write("{} = LpVariable(name='{}', cat='Integer')".format(variable, variable) + ENTER)
+    arch.write(ENTER + ENTER)
+
+
+def definir_variable_horas_libres_totales(arch):
+    arch.write("#HORAS_LIBRES_TOTALES: Cantidad de horas libres en todo el plan" + ENTER + ENTER)
+    variable = "HORAS_LIBRES_TOTALES"
+    arch.write("{} = LpVariable(name='{}', cat='Integer')".format(variable, variable) + ENTER)
+    arch.write(ENTER + ENTER)
+
+
+def definir_variables_horas_libres_entre_materias(arch, plan):
+    definir_variables_esta_el_dia_ocupado_en_un_cuatrimestre(arch)
+    definir_variables_maximo_y_minimo_numero_franja_ocupada_por_dia_por_cuatrimestre(arch)
+    definir_variables_horas_libres_entre_materias_por_dia_por_cuatrimestre(arch)
+    definir_variable_horas_libres_totales(arch)
+
 def definir_variables(arch, parametros):
     plan = parametros.plan
     horarios = parametros.horarios
@@ -79,4 +123,5 @@ def definir_variables(arch, parametros):
     definir_auxiliar_para_maximo_cuatrimestres(arch)
     definir_variable_cantidad_creditos_por_cuatrimestre(arch)    
     definir_variables_horarios_de_materias(arch, plan, horarios)
+    #definir_variables_horas_libres_entre_materias(arch, plan)
 

@@ -81,13 +81,13 @@ def generar_restriccion_maxima_cant_materias_por_cuatrimestre(arch, plan):
 
 
 def generar_restriccion_maximo_cuatrimestres_para_func_objetivo(arch, plan):
-    arch.write("# Funcion objetivo es el maximo de los Ci" + ENTER + ENTER)
+    arch.write("#TOTAL_CUATRIMESTRES es el maximo de los Ci" + ENTER + ENTER)
 
-    arch.write("prob += (y >= 0)" + ENTER + ENTER)
+    arch.write("prob += (TOTAL_CUATRIMESTRES >= 0)" + ENTER + ENTER)
     for materia in plan:
         var_materia = "C{}".format(materia)
-        arch.write("prob += ({} <= y)".format(var_materia) + ENTER)
-        arch.write("prob += (-{} <= y)".format(var_materia) + ENTER)
+        arch.write("prob += ({} <= TOTAL_CUATRIMESTRES)".format(var_materia) + ENTER)
+        arch.write("prob += (-{} <= TOTAL_CUATRIMESTRES)".format(var_materia) + ENTER)
         arch.write(ENTER)
     arch.write(ENTER)
 
