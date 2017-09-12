@@ -123,5 +123,5 @@ def definir_variables(arch, parametros):
     definir_auxiliar_para_maximo_cuatrimestres(arch)
     definir_variable_cantidad_creditos_por_cuatrimestre(arch)    
     definir_variables_horarios_de_materias(arch, plan, horarios)
-    #definir_variables_horas_libres_entre_materias(arch, plan)
+    definir_variables_horas_libres_entre_materias(arch, plan)
 

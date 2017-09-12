@@ -227,6 +227,67 @@ def generar_restriccion_horarios_cursos(arch, plan, materias, horarios, horarios
     generar_restriccion_la_materia_no_puede_cursarse_en_mas_de_un_curso(arch, horarios)
 
 
+def generar_restriccion_calcular_maxima_franja_por_dia_y_cuatrimestre(arch):
+    print("No esta hecha la restriccion de maxima franja")
+
+
+def generar_restriccion_calcular_minima_franja_por_dia_y_cuatrimestre(arch):
+    print("No esta hecha la restriccion de minima franja")
+
+
+def generar_restriccion_el_dia_esta_ocupado_ese_cuatrimestre(arch):
+    arch.write("#Si alguna de las franjas horarias del dia esta ocupada, entonces el dia esta ocupado" + ENTER + ENTER)
+    for cuatrimestre in range(1, MAX_CUATRIMESTRES_TOTALES + 1):
+        for dia in DIAS:
+            ecuacion = "prob += (OCUPADO_{}_{} >= ".format(dia, cuatrimestre)
+            for franja in range(FRANJA_MIN, FRANJA_MAX +1):
+                arch.write(ecuacion + "{}_{}_{} )".format(dia, franja, cuatrimestre) + ENTER)
+    arch.write(ENTER)
+
+
+def generar_restriccion_calcular_horas_libres_por_dia_por_cuatrimestre(arch):
+    arch.write("#Calcular la cantidad de franjas libres entre la primer y la ultima franja ocupada en el dia." + ENTER)
+    arch.write("#Si en el dia no se cursan materias, da 0." + ENTER + ENTER)
+
+    for cuatrimestre in range(1, MAX_CUATRIMESTRES_TOTALES + 1):
+        for dia in DIAS:
+            
+            horas_libres = "HORAS_LIBRES_{}_{}".format(dia, cuatrimestre)
+            ocupado = "OCUPADO_{}_{}".format(dia, cuatrimestre)
+            maxima_fr = "MAXIMA_FRANJA_{}_{}".format(dia, cuatrimestre)
+            minima_fr = "MINIMA_FRANJA_{}_{}".format(dia, cuatrimestre)
+
+            suma_franjas = "("
+            for franja in range(FRANJA_MIN, FRANJA_MAX +1):
+                suma_franjas += "{}_{}_{} + ".format(dia, franja, cuatrimestre)
+            suma_franjas = suma_franjas[:-3] + ")"
+
+            ecuacion = "prob += (" + maxima_fr + " + " + ocupado + " - " + minima_fr + " - " + suma_franjas
+            arch.write(ecuacion + " <= " + horas_libres + ")" + ENTER)
+            arch.write(ecuacion + " >= " + horas_libres + ")" + ENTER)
+
+    arch.write(ENTER)
+
+
+def generar_restriccion_total_horas_libres(arch):
+    arch.write("#Total de horas libres entre materias en el plan, es la suma de las horas libres de cada dia por cuatrimestre" + ENTER + ENTER)
+    ecuacion = "prob += ("
+    for cuatrimestre in range(1, MAX_CUATRIMESTRES_TOTALES + 1):
+        for dia in DIAS:
+            ecuacion += "HORAS_LIBRES_{}_{} + ".format(dia, cuatrimestre)
+    ecuacion = ecuacion[:-3]
+    arch.write(ecuacion + " <= HORAS_LIBRES_TOTALES)" + ENTER)
+    arch.write(ecuacion + " >= HORAS_LIBRES_TOTALES)" + ENTER + ENTER)
+
+
+def generar_restriccion_minimizar_horas_libres_entre_materias(arch):
+    generar_restriccion_calcular_maxima_franja_por_dia_y_cuatrimestre(arch)
+    generar_restriccion_calcular_minima_franja_por_dia_y_cuatrimestre(arch)
+    generar_restriccion_el_dia_esta_ocupado_ese_cuatrimestre(arch)
+    generar_restriccion_calcular_horas_libres_por_dia_por_cuatrimestre(arch)
+    generar_restriccion_total_horas_libres(arch)
+
+
 def generar_restricciones(arch, parametros):
     plan = parametros.plan
     materias = parametros.materias
@@ -241,3 +302,4 @@ def generar_restricciones(arch, parametros):
     generar_restriccion_creditos_minimos_para_cursar(arch, plan, materias)
     generar_restriccion_horarios_cursos(arch, plan, materias, horarios, horarios_no_permitidos)
     generar_restriccion_creditos_minimos_electivas(arch, materias, parametros.creditos_minimos_electivas)
+    generar_restriccion_minimizar_horas_libres_entre_materias(arch)

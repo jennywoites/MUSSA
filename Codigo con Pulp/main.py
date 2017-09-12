@@ -28,7 +28,16 @@ def definir_problema_minimizacion(arch):
 
 def definir_funcion_objetivo(arch):
     arch.write("# Definicion de la funcion objetivo a minimizar." + ENTER + ENTER)
-    arch.write("prob += TOTAL_CUATRIMESTRES" + ENTER + ENTER)
+    funciones = [] #[(factor, variable)]
+    funciones.append((1, "TOTAL_CUATRIMESTRES"))
+    funciones.append((1,"HORAS_LIBRES_TOTALES"))
+    
+    ecuacion = "prob += "
+    for (factor, variable) in funciones:
+        ecuacion += str(factor) + "*" + variable + " + "
+
+    ecuacion = ecuacion[:-3]
+    arch.write(ecuacion + ENTER + ENTER)
 
 
 def resolver_problema(arch):
@@ -47,6 +56,8 @@ def imprimir_resultados(arch, parametros):
     arch.write("print('Total de cuatrimestres: {}'.format(value(TOTAL_CUATRIMESTRES)))" + ENTER + ENTER)
     
     imprimir_materias_plan(arch, plan)
+
+    arch.write("print('Total de horas libres: {}'.format(value(HORAS_LIBRES_TOTALES)))" + ENTER)
 
     arch.write("msj = 'Cuatrimestre: {} - Creditos acumulados: {}'" + ENTER)
     for i in range(MAX_CUATRIMESTRES_TOTALES):
