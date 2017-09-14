@@ -211,5 +211,5 @@ class Test_minimiza_franjas_libres_en_seleccion_de_curso_con_unico_resultado_men
 
 
 if __name__ == "__main__":
-    test_a_ejecutar = TestEjemplo1()
+    test_a_ejecutar = Test_minimiza_franjas_libres_en_seleccion_de_curso_con_unico_resultado_menor_posible()
     test_a_ejecutar.ejecutar_test()
