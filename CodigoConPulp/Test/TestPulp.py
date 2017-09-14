@@ -89,7 +89,13 @@ class TestPulp:
         resultados = {}
 
         with open(parametros.nombre_archivo_resultados_pulp, 'r') as arch:
+            primera = True
             for linea in arch:
+
+                if primera:
+                    primera = False
+                    continue
+
                 linea = linea.rstrip(ENTER)
                 variable, valor = linea.split(";")
                 resultados[variable] = int(valor)
