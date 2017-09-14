@@ -6,14 +6,13 @@ from Materia import Materia
 from Horario import Horario
 from Curso import Curso
 
-from Generador_Restricciones import generar_restricciones
-from Generador_Variables import definir_variables
+from GeneradorRestricciones import generar_restricciones
+from GeneradorVariables import definir_variables
+from ResultadosPulpDAO import guardar_variables
 
 #############################################################################################
 def importar_pulp(arch):
     arch.write("from pulp import *" + ENTER)
-    arch.write(ENTER + ENTER)
-
 
 def importar_time(arch):
     arch.write("from time import time" + ENTER)
@@ -43,8 +42,9 @@ def definir_funcion_objetivo(arch):
 def resolver_problema(arch):
     arch.write("# Resolucion del problema" + ENTER + ENTER)
     arch.write("tiempo_inicial = time()" + ENTER)
-    arch.write("status = prob.solve(GLPK(msg=0))" + ENTER + ENTER)
+    arch.write("status = prob.solve(GLPK(msg=0))" + ENTER)
     arch.write("tiempo_final = time()" + ENTER)
+
     arch.write("print('Duracion: {}'.format(tiempo_final - tiempo_inicial))" + ENTER)
 
 
@@ -60,23 +60,23 @@ def imprimir_resultados(arch, parametros):
     arch.write("print('Total de horas libres: {}'.format(value(HORAS_LIBRES_TOTALES)))" + ENTER)
 
     arch.write("msj = 'Cuatrimestre: {} - Creditos acumulados: {}'" + ENTER)
-    for i in range(MAX_CUATRIMESTRES_TOTALES):
+    for i in range(parametros.max_cuatrimestres):
         arch.write("print(msj.format({}, value(CRED{})))".format(i, i) + ENTER)
 
-    imprimir_datos_franjas(arch)
+    imprimir_datos_franjas(arch, parametros)
 
     for materia in horarios:
-        for i in range(1, MAX_CUATRIMESTRES_TOTALES + 1):
+        for i in range(1, parametros.max_cuatrimestres + 1):
             for curso in horarios[materia]:
                 H = "H_{}_{}_{}".format(materia, curso.nombre, i)
                 arch.write("if value({}):".format(H) + ENTER)
                 arch.write("    print('Valor de {} en cuatrimestre {}: {}'.format(value({})))".format(H, i, "{}", H) + ENTER)
 
 
-def imprimir_datos_franjas(arch):
+def imprimir_datos_franjas(arch, parametros):
     msj = "print('{}: {}'.format(value({})))"
-    for cuatri in range(1, MAX_CUATRIMESTRES_TOTALES+1):
-        for dia in DIAS:
+    for cuatri in range(1, parametros.max_cuatrimestres+1):
+        for dia in parametros.dias:
             ocupado = "OCUPADO_{}_{}".format(dia, cuatri)
             arch.write(msj.format(ocupado, '{}', ocupado) + ENTER)
 
@@ -91,9 +91,9 @@ def imprimir_datos_franjas(arch):
 
     arch.write(msj.format("HORAS_LIBRES_TOTALES", '{}', "HORAS_LIBRES_TOTALES") + ENTER)
 
-    for cuatri in range(1, MAX_CUATRIMESTRES_TOTALES+1):
-        for dia in DIAS:
-            for franja in range(FRANJA_MIN, FRANJA_MAX +1):
+    for cuatri in range(1, parametros.max_cuatrimestres+1):
+        for dia in parametros.dias:
+            for franja in range(parametros.franja_minima, parametros.franja_maxima +1):
                 variable = "{}_{}_{}".format(dia, franja, cuatri)
                 arch.write("print('{}: {}'.format(value({})))".format(variable, '{}', variable) + ENTER)
 
@@ -123,12 +123,19 @@ def generar_codigo(arch, parametros):
     definir_funcion_objetivo(arch)    
     resolver_problema(arch)
     imprimir_resultados(arch, parametros)
+    guardar_variables(arch, parametros)
+
+
+def generar_archivo_pulp(parametros):
+    ruta = parametros.nombre_archivo_pulp
+    with open(ruta, "w") as f:
+        generar_codigo(f, parametros)        
 
 
 def main():
     parametros = Parametros()
-    with open("pulp_001.py", "w") as f:
-        generar_codigo(f, parametros)        
+    generar_archivo_pulp(parametros)
 
 
-main()
+if __name__ == "__main__":
+    main()
