@@ -21,7 +21,7 @@ def guardar_total_cuatrimestres(arch):
 
 
 def guardar_variable_cantidad_creditos_por_cuatrimestre(arch, parametros):
-    for cuatrimestre in range(0,parametros.max_cuatrimestres + 1):
+    for cuatrimestre in range(1,parametros.max_cuatrimestres + 1):
         variable = "CRED{}".format(cuatrimestre)
         arch.write(LINEA_GUARDAR.format(variable, '{}', variable) + ENTER)
 

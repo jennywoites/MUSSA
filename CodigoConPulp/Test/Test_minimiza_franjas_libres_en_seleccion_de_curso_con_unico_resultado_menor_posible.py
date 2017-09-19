@@ -116,9 +116,6 @@ class Test_minimiza_franjas_libres_en_seleccion_de_curso_con_unico_resultado_men
     def los_creditos_acumulados_son_correctos(self, parametros, resultados):
         materias = parametros.materias
 
-        #El cuatrimetre inicial siempre acumula 0:
-        assert(resultados["CRED0"] == 0)
-
         #Al finalizar el cuatrimestre 1, se acumularon creditos
         creditos_cuatrimestre_1 = 0
         creditos_cuatrimestre_1 += materias["A"].creditos
