@@ -134,7 +134,8 @@ def generar_restriccion_creditos_minimos_ya_obtenidos_para_cursar(arch, parametr
         if materia.creditos_minimos_aprobados == 0:
             continue
         for i in range(1, parametros.max_cuatrimestres + 1):
-            arch.write("prob += ({}*Y_{}_{} <= CRED{})".format(materia.creditos_minimos_aprobados, cod, i, i-1) + ENTER)
+            creditos = "CRED{}".format(i-1) if i > 1 else "0"
+            arch.write("prob += ({}*Y_{}_{} <= {})".format(materia.creditos_minimos_aprobados, cod, i, creditos) + ENTER)
         arch.write(ENTER)
     arch.write(ENTER)
 
