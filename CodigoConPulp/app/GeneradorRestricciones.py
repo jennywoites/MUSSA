@@ -148,7 +148,7 @@ def generar_restriccion_horarios_no_permitidos_por_el_alumno(arch, parametros):
 def generar_restriccion_si_se_elige_un_curso_se_cursa_su_horario_completo(arch, parametros):
     horarios = parametros.horarios
 
-    arch.write("#Si la materia se cursa en ese cuatrimestre en ese curso en particular, entonces se debn cursar todos los horarios del mismo" + ENTER + ENTER)
+    arch.write("#Si la materia se cursa en ese cuatrimestre en ese curso en particular, entonces se deben cursar todos los horarios del mismo" + ENTER + ENTER)
     for cuatri in range(1, parametros.max_cuatrimestres + 1):
         for materia in horarios:
             cursos = horarios[materia]
