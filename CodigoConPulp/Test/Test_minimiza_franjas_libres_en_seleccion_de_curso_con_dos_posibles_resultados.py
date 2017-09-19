@@ -167,10 +167,10 @@ class Test_minimiza_franjas_libres_en_seleccion_de_curso_con_dos_posibles_result
         assert(resultados["R_A_Curso3A_LUNES_6_1"] == 1)
 
         #Curso 1B
-        assert(resultados["H_B_Curso1B_1"] == 1)
-        assert(resultados["R_B_Curso1B_LUNES_1_1"] == 1)
-        assert(resultados["R_B_Curso1B_LUNES_2_1"] == 1)
-        assert(resultados["R_B_Curso1B_LUNES_3_1"] == 1)
+        assert(resultados["H_B_Curso1B_1"] == 0)
+        assert(resultados["R_B_Curso1B_LUNES_1_1"] == 0)
+        assert(resultados["R_B_Curso1B_LUNES_2_1"] == 0)
+        assert(resultados["R_B_Curso1B_LUNES_3_1"] == 0)
 
         #Curso 2B
         assert(resultados["H_B_Curso2B_1"] == 0)

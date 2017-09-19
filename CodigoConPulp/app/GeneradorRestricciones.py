@@ -149,27 +149,18 @@ def generar_restriccion_si_se_elige_un_curso_se_cursa_su_horario_completo(arch, 
     horarios = parametros.horarios
 
     arch.write("#Si la materia se cursa en ese cuatrimestre en ese curso en particular, entonces se debn cursar todos los horarios del mismo" + ENTER + ENTER)
-    ecuaciones = []
     for cuatri in range(1, parametros.max_cuatrimestres + 1):
         for materia in horarios:
             cursos = horarios[materia]
             for curso in cursos:
-                igualdades = ["H_{}_{}_{}".format(materia, curso.nombre, cuatri)]
+                H = "H_{}_{}_{}".format(materia, curso.nombre, cuatri)
                 for c_horario in curso.horarios:
                     dia = c_horario.dia
                     franjas = c_horario.get_franjas_utilizadas()
                     for franja in franjas:
-                        igualdades.append("R_{}_{}_{}_{}_{}".format(materia, curso.nombre, dia, franja, cuatri))
-                ecuaciones.append(igualdades)
-
-    for igualdades in ecuaciones:
-        for i in range(len(igualdades)):
-            variable_origen = igualdades[i]
-            for j in range(i+1, len(igualdades)):
-                variable_sig = igualdades[j]
-                arch.write("prob += ({} <= {})".format(variable_origen, variable_sig) + ENTER)
-                arch.write("prob += ({} >= {})".format(variable_origen, variable_sig) + ENTER)
-        arch.write(ENTER)
+                        R = "R_{}_{}_{}_{}_{}".format(materia, curso.nombre, dia, franja, cuatri)
+                        arch.write("prob += ({} <= {})".format(H, R) + ENTER)
+                        arch.write("prob += ({} >= {})".format(H, R) + ENTER)
     arch.write(ENTER)
 
 
