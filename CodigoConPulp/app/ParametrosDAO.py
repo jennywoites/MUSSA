@@ -6,7 +6,8 @@ from HorariosDAO import get_horarios, get_horarios_no_permitidos
 CREDITOS_MINIMOS_ELECTIVAS = 5
 NUM_EJEMPLO_MATERIAS = 4
 
-ARCHIVO_PULP = "pulp_001.py"
+ARCHIVO_PULP = "pulp_generado.py"
+ARCHIVO_PULP_OPTIMIZADO = "pulp_optimizado.py"
 ARCHIVO_RESULTADO_PULP = "resultados_pulp_001.csv"
 
 DIAS = [LUNES, MARTES, MIERCOLES, JUEVES, VIERNES, SABADO]
@@ -25,8 +26,11 @@ class Parametros:
     def set_valores_default(self):
         self.set_combinacion_materias(NUM_EJEMPLO_MATERIAS)
         self.creditos_minimos_electivas = CREDITOS_MINIMOS_ELECTIVAS
+
         self.nombre_archivo_pulp = ARCHIVO_PULP
         self.nombre_archivo_resultados_pulp = ARCHIVO_RESULTADO_PULP
+        self.nombre_archivo_pulp_optimizado = ARCHIVO_PULP_OPTIMIZADO
+
         self.set_franjas(FRANJA_MIN, FRANJA_MAX)
         self.dias = DIAS
         self.max_cuatrimestres = MAX_CUATRIMESTRES_TOTALES
