@@ -107,15 +107,18 @@ def generar_restriccion_calculo_creditos_obtenidos_por_cuatrimestre(arch, parame
     plan = parametros.plan
 
     arch.write("# Calculo de creditos al terminar cada cuatrimestre" + ENTER + ENTER)
-    arch.write("prob += (CRED0 <= 0)" + ENTER)
-    arch.write("prob += (CRED0 >= 0)" + ENTER)
     for i in range(1, parametros.max_cuatrimestres + 1):
         ecuacion = "prob += ("
         for cod in plan:
             materia = materias[cod]
             ecuacion += "{}*Y_{}_{} + ".format(materia.creditos, cod, i)
         ecuacion = ecuacion[:-2] #elimino el ultimo + agregado
-        ecuacion += "+ CRED{} - CRED{}".format(i-1, i)        
+
+        if i > 1:
+            ecuacion += "+ CRED{} - CRED{}".format(i-1, i)        
+        else:
+            ecuacion += "- CRED{}".format(i)            
+
         arch.write(ecuacion + " <= 0)" + ENTER)
         arch.write(ecuacion + " >= 0)" + ENTER)
     arch.write(ENTER)          
