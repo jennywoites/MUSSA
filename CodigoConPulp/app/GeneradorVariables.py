@@ -5,7 +5,7 @@ def definir_variable_materia_i_en_cuatri_j(arch, parametros):
 
     arch.write("#Yij: La materia i se realiza en el cuatrimestre j" + ENTER + ENTER)
     for materia in plan:
-        for cuatrimestre in range(1,parametros.max_cuatrimestres+1):
+        for cuatrimestre in range(1,parametros.max_cuatrimestres + 1):
             variable = "Y_{}_{}".format(materia, cuatrimestre)
             arch.write("{} = LpVariable(name='{}', cat='Binary')".format(variable, variable) + ENTER)
     arch.write(ENTER + ENTER)
@@ -28,7 +28,7 @@ def definir_auxiliar_para_maximo_cuatrimestres(arch):
 
 def definir_variable_cantidad_creditos_por_cuatrimestre(arch, parametros):
     arch.write("#CREDi: Cantidad de creditos al final del cuatrimestre i" + ENTER + ENTER)
-    for cuatrimestre in range(0,parametros.max_cuatrimestres):
+    for cuatrimestre in range(0,parametros.max_cuatrimestres + 1):
         variable = "CRED{}".format(cuatrimestre)
         arch.write("{} = LpVariable(name='{}', cat='Integer')".format(variable, variable) + ENTER)
     arch.write(ENTER + ENTER)

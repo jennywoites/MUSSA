@@ -6,7 +6,7 @@ def generar_restriccion_la_materia_debe_cursarse_en_unico_cuatrimestre(arch, par
     arch.write("# La materia i se debe cursar en un unico cuatrimestre. Ademas, si es obligatoria, debe cursarse si o si." + ENTER + ENTER)
     for materia in materias:
         ecuacion = "prob += ("
-        for cuatrimestre in range(1,parametros.max_cuatrimestres+1):
+        for cuatrimestre in range(1,parametros.max_cuatrimestres + 1):
             if cuatrimestre > 1:
                 ecuacion += " + "
             variable = "Y_{}_{}".format(materia, cuatrimestre)
@@ -30,7 +30,7 @@ def generar_restriccion_valor_cuatrimestre_en_que_se_cursa_la_materia(arch, para
     arch.write("# Numero de cuatrimestre en que es cursada la materia" + ENTER + ENTER)
     for materia in plan:
         ecuacion = "prob += ("
-        for cuatrimestre in range(1,parametros.max_cuatrimestres+1):
+        for cuatrimestre in range(1,parametros.max_cuatrimestres + 1):
             if cuatrimestre > 1:
                 ecuacion += " + "
             variable = "Y_{}_{}".format(materia, cuatrimestre)
@@ -71,7 +71,7 @@ def generar_restriccion_maxima_cant_materias_por_cuatrimestre(arch, parametros):
     plan = parametros.plan
 
     arch.write("# La cantidad de materias por cuatrimestre no puede superar un valor maximo" + ENTER + ENTER)
-    for cuatrimestre in range (1, parametros.max_cuatrimestres +1):
+    for cuatrimestre in range (1, parametros.max_cuatrimestres + 1):
         ecuacion = "prob += ("
         es_inicial = True        
         for materia in plan:
@@ -109,7 +109,7 @@ def generar_restriccion_calculo_creditos_obtenidos_por_cuatrimestre(arch, parame
     arch.write("# Calculo de creditos al terminar cada cuatrimestre" + ENTER + ENTER)
     arch.write("prob += (CRED0 <= 0)" + ENTER)
     arch.write("prob += (CRED0 >= 0)" + ENTER)
-    for i in range(1, parametros.max_cuatrimestres):
+    for i in range(1, parametros.max_cuatrimestres + 1):
         ecuacion = "prob += ("
         for cod in plan:
             materia = materias[cod]
@@ -142,7 +142,7 @@ def generar_restriccion_creditos_minimos_para_cursar(arch, parametros):
 
 
 def generar_restriccion_horarios_no_permitidos_por_el_alumno(arch, parametros):
-    input("Hacer horarios no permitidos por el alumno. ENTER")
+    print("Hacer horarios no permitidos por el alumno.")
 
 
 def generar_restriccion_si_se_elige_un_curso_se_cursa_su_horario_completo(arch, parametros):
@@ -228,6 +228,7 @@ def generar_restriccion_la_materia_no_puede_cursarse_en_mas_de_un_curso(arch, pa
                 ecuacion += "H_{}_{}_{} + ".format(materia, curso.nombre, cuatrimestre)
             Y = "Y_{}_{}".format(materia, cuatrimestre)
             arch.write("prob += ({} <= {})".format(Y, ecuacion[:-3]) + ENTER)
+            arch.write("prob += ({} >= {})".format(Y, ecuacion[:-3]) + ENTER)
     arch.write(ENTER)
 
 

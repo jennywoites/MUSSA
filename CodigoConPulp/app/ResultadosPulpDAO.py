@@ -5,7 +5,7 @@ LINEA_GUARDAR = """    arch.write("{};{}".format(value({})) + "\\n")"""
 
 def guardar_variable_materia_i_en_cuatri_j(arch, parametros):
     for materia in parametros.plan:
-        for cuatrimestre in range(1,parametros.max_cuatrimestres+1):
+        for cuatrimestre in range(1,parametros.max_cuatrimestres + 1):
             variable = "Y_{}_{}".format(materia, cuatrimestre)
             arch.write(LINEA_GUARDAR.format(variable, '{}', variable) + ENTER)
 
@@ -21,7 +21,7 @@ def guardar_total_cuatrimestres(arch):
 
 
 def guardar_variable_cantidad_creditos_por_cuatrimestre(arch, parametros):
-    for cuatrimestre in range(0,parametros.max_cuatrimestres):
+    for cuatrimestre in range(0,parametros.max_cuatrimestres + 1):
         variable = "CRED{}".format(cuatrimestre)
         arch.write(LINEA_GUARDAR.format(variable, '{}', variable) + ENTER)
 
@@ -100,6 +100,7 @@ def guardar_variables_horas_libres_entre_materias(arch, parametros):
 
 def guardar_variables(arch, parametros):
     arch.write("with open('{}', 'w') as arch:".format(parametros.nombre_archivo_resultados_pulp) + ENTER)
+    arch.write("""    arch.write("{};{}".format({}) + "\\n")""".format("tiempo", '{}', "DURACION_EJECUCION_PULP") + ENTER)
 
     guardar_variable_materia_i_en_cuatri_j(arch, parametros)
     guardar_variable_numero_cuatrimestre_materia(arch, parametros)
