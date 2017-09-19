@@ -1,4 +1,8 @@
 from Constantes import *
+
+import sys
+sys.path.append("../app/modelos")
+
 from Curso import Curso
 from Horario import Horario
 

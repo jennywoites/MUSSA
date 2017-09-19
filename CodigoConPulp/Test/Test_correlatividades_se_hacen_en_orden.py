@@ -25,9 +25,9 @@ class Test_correlatividades_se_hacen_en_orden(TestPulp):
 
     def get_materias_test(self):
         return {
-        "A": Materia("A", "A", 1, OBLIGATORIA, 0, ["C"]),
+        "A": Materia("A", "A", 1, OBLIGATORIA, 0, []),
         "B": Materia("B", "B", 1, OBLIGATORIA, 0, []),
-        "C": Materia("C", "C", 1, OBLIGATORIA, 0, []),
+        "C": Materia("C", "C", 1, OBLIGATORIA, 0, ["A"]),
     }
 
     def get_horarios_test(self):
@@ -76,11 +76,10 @@ class Test_correlatividades_se_hacen_en_orden(TestPulp):
     def los_cuatrimestres_de_las_correlativas_son_menores(self, parametros, resultados):
         for codigo in parametros.materias:
             materia = parametros.materias[codigo]
-            var_codigo_menor = "C" + materia.codigo
-            me_tienen_como_correltiva = materia.correlativas
-            for cor_materia in me_tienen_como_correltiva:
-                var_cod_corr = "C" + cor_materia
-                assert(resultados[var_codigo_menor] < resultados[var_cod_corr])
+            cod_actual = "C" + materia.codigo
+            for cor_materia in materia.correlativas:
+                cod_corr = "C" + cor_materia
+                assert(resultados[cod_actual] > resultados[cod_corr])
 
 
     def verificar_resultados(self, parametros, resultados):

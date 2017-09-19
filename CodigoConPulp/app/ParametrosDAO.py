@@ -1,4 +1,5 @@
 from Constantes import *
+
 from MateriasDAO import get_materias, get_plan_carrera
 from HorariosDAO import get_horarios, get_horarios_no_permitidos
 
