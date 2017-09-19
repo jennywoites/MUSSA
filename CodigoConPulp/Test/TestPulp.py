@@ -6,10 +6,13 @@ sys.path.append("../app")
 from GeneradorCodigoPulp import generar_archivo_pulp
 from ParametrosDAO import Parametros
 from Constantes import *
+from OptimizadorCodigoPulp import optimizar_codigo_pulp
 
 from Materia import Materia
 from Curso import Curso
 from Horario import Horario
+
+RUTA_EJECUCION_TEST = "resultados_tests/"
 
 class TestPulp:
 
@@ -34,11 +37,15 @@ class TestPulp:
 
 
     def get_nombre_archivo_pulp(self):
-        return "resultados_tests/" + self.get_nombre_test() + "_pulp.py"
+        return RUTA_EJECUCION_TEST + self.get_nombre_test() + "_pulp.py"
 
 
     def get_nombre_archivo_resultados_pulp(self):
-        return "resultados_tests/" + self.get_nombre_test() + "_resultados_pulp.py"
+        return RUTA_EJECUCION_TEST + self.get_nombre_test() + "_resultados_pulp.py"
+
+
+    def get_nombre_archivo_optimizado_pulp(self):
+        return RUTA_EJECUCION_TEST + self.get_nombre_test() + "_optimizado_pulp.py"
 
 
     def get_dias(self):
@@ -69,8 +76,10 @@ class TestPulp:
         parametros.horarios = self.get_horarios_test()
         parametros.horarios_no_permitidos = self.get_horarios_no_permitidos_test()
         parametros.creditos_minimos_electivas = self.get_creditos_minimos_electivas()
+
         parametros.nombre_archivo_pulp = self.get_nombre_archivo_pulp()
         parametros.nombre_archivo_resultados_pulp = self.get_nombre_archivo_resultados_pulp()
+        parametros.nombre_archivo_pulp_optimizado = self.get_nombre_archivo_optimizado_pulp()
 
         minima, maxima = self.get_franjas_minima_y_maxima()
         parametros.set_franjas(minima, maxima)
@@ -82,7 +91,7 @@ class TestPulp:
 
 
     def ejecutar_codigo_pulp(self, parametros):
-        os.system('python3 ' + parametros.nombre_archivo_pulp)
+        os.system('python3 ' + parametros.nombre_archivo_pulp_optimizado)
 
 
     def obtener_resultados_pulp(self, parametros):
@@ -108,8 +117,13 @@ class TestPulp:
 
 
     def ejecutar_test(self):
+        if not os.path.exists(RUTA_EJECUCION_TEST):
+            os.system('mkdir {}'.format(RUTA_EJECUCION_TEST))
+    
         parametros = self.configurar_parametros_test()
         generar_archivo_pulp(parametros)
+        optimizar_codigo_pulp(parametros)
+
         self.ejecutar_codigo_pulp(parametros)
         resultados = self.obtener_resultados_pulp(parametros)
         self.verificar_resultados(parametros, resultados)

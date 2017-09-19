@@ -4,6 +4,7 @@ from Test_minimiza_franjas_libres_en_seleccion_de_curso_con_unico_resultado_meno
 from Test_minimiza_franjas_libres_en_seleccion_de_curso_con_dos_posibles_resultados import Test_minimiza_franjas_libres_en_seleccion_de_curso_con_dos_posibles_resultados
 from Test_correlatividades_se_hacen_en_orden import Test_correlatividades_se_hacen_en_orden
 from Test_correlatividades_se_hacen_en_orden_varios_niveles_correlatividades import Test_correlatividades_se_hacen_en_orden_varios_niveles_correlatividades
+from Test_creditos_minimos_para_cursar import Test_creditos_minimos_para_cursar
 
 
 def tests_a_ejecutar():
@@ -12,15 +13,16 @@ def tests_a_ejecutar():
     tests.append(Test_minimiza_franjas_libres_en_seleccion_de_curso_con_dos_posibles_resultados())
     tests.append(Test_correlatividades_se_hacen_en_orden())
     tests.append(Test_correlatividades_se_hacen_en_orden_varios_niveles_correlatividades())
+    tests.append(Test_creditos_minimos_para_cursar())
     return tests
 
 
 def limpiar_o_crear_directorio():
     ruta = "resultados_tests"
-    if os.path.exists(ruta):
-        os.system('rm -r {}'.format(ruta))
-    
-    os.system('mkdir {}'.format(ruta))
+    if not os.path.exists(ruta):
+        os.system('mkdir {}'.format(ruta))
+    else:
+        os.system('find {} -type f -delete'.format(ruta))
 
 
 def ejecutar_todos():

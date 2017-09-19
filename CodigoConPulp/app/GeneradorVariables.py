@@ -17,20 +17,21 @@ def definir_variable_numero_cuatrimestre_materia(arch, parametros):
     arch.write("#Ci: Numero de cuatrimestre en que se hace la materia i. Ejemplo, si Ci=3 es que la materia i se hace el cuatrimestre numero 3" + ENTER + ENTER)
     for materia in plan:
         variable = "C{}".format(materia)
-        arch.write("{} = LpVariable(name='{}', cat='Integer')".format(variable, variable) + ENTER)
+        arch.write("{} = LpVariable(name='{}', lowBound=0, upBound={}, cat='Integer')".format(variable, variable, INFINITO) + ENTER)
     arch.write(ENTER + ENTER)
 
 
 def definir_auxiliar_para_maximo_cuatrimestres(arch):
     arch.write("#TOTAL_CUATRIMESTRES: Total de cuatrimestres a cursar. Utilizada para escribir el maximo entre Ci MAX(CA, CB..)" + ENTER + ENTER)
-    arch.write("TOTAL_CUATRIMESTRES = LpVariable(name='TOTAL_CUATRIMESTRES', cat='Integer')" + ENTER + ENTER)
+    variable = "TOTAL_CUATRIMESTRES"
+    arch.write("{} = LpVariable(name='{}', lowBound=0, upBound={}, cat='Integer')".format(variable, variable, INFINITO) + ENTER)
 
 
 def definir_variable_cantidad_creditos_por_cuatrimestre(arch, parametros):
     arch.write("#CREDi: Cantidad de creditos al final del cuatrimestre i" + ENTER + ENTER)
     for cuatrimestre in range(1,parametros.max_cuatrimestres + 1):
         variable = "CRED{}".format(cuatrimestre)
-        arch.write("{} = LpVariable(name='{}', cat='Integer')".format(variable, variable) + ENTER)
+        arch.write("{} = LpVariable(name='{}', lowBound=0, upBound={}, cat='Integer')".format(variable, variable, INFINITO) + ENTER)
     arch.write(ENTER + ENTER)
 
 
@@ -94,9 +95,9 @@ def definir_variables_maximo_y_minimo_numero_franja_ocupada_por_dia_por_cuatrime
         for dia in parametros.dias:
             variable_max = "MAXIMA_FRANJA_{}_{}".format(dia, cuatrimestre)
             variable_min = "MINIMA_FRANJA_{}_{}".format(dia, cuatrimestre)
-            definicion = "{} = LpVariable(name='{}', cat='Integer')"
-            arch.write(definicion.format(variable_max, variable_max) + ENTER)
-            arch.write(definicion.format(variable_min, variable_min) + ENTER)
+            definicion = "{} = LpVariable(name='{}', lowBound=0, upBound={}, cat='Integer')"
+            arch.write(definicion.format(variable_max, variable_max, INFINITO) + ENTER)
+            arch.write(definicion.format(variable_min, variable_min, INFINITO) + ENTER)
     arch.write(ENTER + ENTER)
 
 
@@ -105,14 +106,14 @@ def definir_variables_horas_libres_entre_materias_por_dia_por_cuatrimestre(arch,
     for cuatrimestre in range(1, parametros.max_cuatrimestres + 1):
         for dia in parametros.dias:
             variable = "HORAS_LIBRES_{}_{}".format(dia, cuatrimestre)
-            arch.write("{} = LpVariable(name='{}', cat='Integer')".format(variable, variable) + ENTER)
+            arch.write("{} = LpVariable(name='{}', lowBound=0, upBound={}, cat='Integer')".format(variable, variable, INFINITO) + ENTER)
     arch.write(ENTER + ENTER)
 
 
 def definir_variable_horas_libres_totales(arch):
     arch.write("#HORAS_LIBRES_TOTALES: Cantidad de horas libres en todo el plan" + ENTER + ENTER)
     variable = "HORAS_LIBRES_TOTALES"
-    arch.write("{} = LpVariable(name='{}', cat='Integer')".format(variable, variable) + ENTER)
+    arch.write("{} = LpVariable(name='{}', lowBound=0, upBound={}, cat='Integer')".format(variable, variable, INFINITO) + ENTER)
     arch.write(ENTER + ENTER)
 
 

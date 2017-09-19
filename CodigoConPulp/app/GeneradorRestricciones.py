@@ -134,7 +134,8 @@ def generar_restriccion_creditos_minimos_ya_obtenidos_para_cursar(arch, parametr
         if materia.creditos_minimos_aprobados == 0:
             continue
         for i in range(1, parametros.max_cuatrimestres + 1):
-            arch.write("prob += ({}*Y_{}_{} <= CRED{})".format(materia.creditos_minimos_aprobados, cod, i, i-1) + ENTER)
+            creditos = "CRED{}".format(i-1) if i > 1 else "0"
+            arch.write("prob += ({}*Y_{}_{} <= {})".format(materia.creditos_minimos_aprobados, cod, i, creditos) + ENTER)
         arch.write(ENTER)
     arch.write(ENTER)
 
@@ -262,7 +263,7 @@ def generar_restriccion_calcular_maxima_franja_por_dia_y_cuatrimestre(arch, para
         for dia in parametros.dias:
             ecuacion = "prob += (MAXIMA_FRANJA_{}_{} >= ".format(dia, cuatrimestre)
             for franja in range(parametros.franja_minima, parametros.franja_maxima +1):
-                arch.write(ecuacion + "{} * {}_{}_{} )".format(franja, dia, franja, cuatrimestre) + ENTER)
+                arch.write(ecuacion + "{} * {}_{}_{})".format(franja, dia, franja, cuatrimestre) + ENTER)
     arch.write(ENTER)
 
 
@@ -274,7 +275,7 @@ def generar_restriccion_calcular_minima_franja_por_dia_y_cuatrimestre(arch, para
             ecuacion = "prob += ({} <= ".format(var_min_franja)
             for franja in range(parametros.franja_minima, parametros.franja_maxima +1):
                 var_dia = "{}_{}_{}".format(dia, franja, cuatrimestre)
-                sumas = "{} * {} + (1 - {}) * {} )".format(franja, var_dia, var_dia, INFINITO) 
+                sumas = "{} * {} + (1 - {}) * {})".format(franja, var_dia, var_dia, INFINITO) 
                 arch.write(ecuacion + sumas + ENTER)
     
             arch.write("prob += ({} <= OCUPADO_{}_{} * {})".format(var_min_franja, dia, cuatrimestre, INFINITO) + ENTER)
@@ -290,7 +291,7 @@ def generar_restriccion_el_dia_esta_ocupado_ese_cuatrimestre(arch, parametros):
             ec_sumatoria = "prob += (OCUPADO_{}_{} <= ".format(dia, cuatrimestre)
             for franja in range(parametros.franja_minima, parametros.franja_maxima +1):
                 var_dia = "{}_{}_{}".format(dia, franja, cuatrimestre)
-                arch.write(ecuacion + "{} )".format(var_dia) + ENTER)
+                arch.write(ecuacion + "{})".format(var_dia) + ENTER)
                 ec_sumatoria += "{} + ".format(var_dia)
             ec_sumatoria = ec_sumatoria[:-3] + ")"
             arch.write(ec_sumatoria + ENTER + ENTER)
