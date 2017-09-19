@@ -75,8 +75,8 @@ class TestPulp:
         minima, maxima = self.get_franjas_minima_y_maxima()
         parametros.set_franjas(minima, maxima)
         parametros.dias = self.get_dias()
-        parametros.max_cuatrimestres = 2
-        parametros.max_cant_materias_por_cuatrimestre = 2
+        parametros.max_cuatrimestres = self.get_maxima_cantidad_cuatrimestres()
+        parametros.max_cant_materias_por_cuatrimestre = self.get_maxima_cantidad_materias_por_cuatrimestre()
 
         return parametros
 

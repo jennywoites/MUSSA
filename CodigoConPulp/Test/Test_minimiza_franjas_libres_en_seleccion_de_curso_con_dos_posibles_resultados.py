@@ -50,7 +50,7 @@ class Test_minimiza_franjas_libres_en_seleccion_de_curso_con_dos_posibles_result
         return 1, 12
 
     def get_maxima_cantidad_cuatrimestres(self):
-        return 2
+        return 1
 
     def get_maxima_cantidad_materias_por_cuatrimestre(self):
         return 2
@@ -78,13 +78,11 @@ class Test_minimiza_franjas_libres_en_seleccion_de_curso_con_dos_posibles_result
         assert(resultados["CA"] == 1)
 
         assert(resultados["Y_A_1"] == 1)
-        assert(resultados["Y_A_2"] == 0)
 
         #Materia B
         assert(resultados["CB"] == 1)
 
         assert(resultados["Y_B_1"] == 1)
-        assert(resultados["Y_B_2"] == 0)
 
 
     def los_cursos_se_eligieron_correctamente(self, parametros, resultados):
@@ -107,11 +105,6 @@ class Test_minimiza_franjas_libres_en_seleccion_de_curso_con_dos_posibles_result
         assert(resultados["R_A_Curso1A_LUNES_2_1"] == 0)
         assert(resultados["R_A_Curso1A_LUNES_3_1"] == 0)
 
-        assert(resultados["H_A_Curso1A_2"] == 0)
-        assert(resultados["R_A_Curso1A_LUNES_1_2"] == 0)
-        assert(resultados["R_A_Curso1A_LUNES_2_2"] == 0)
-        assert(resultados["R_A_Curso1A_LUNES_3_2"] == 0)
-
         #Curso 2A
         assert(resultados["H_A_Curso2A_1"] == 0)
         assert(resultados["R_A_Curso2A_LUNES_2_1"] == 0)
@@ -120,23 +113,11 @@ class Test_minimiza_franjas_libres_en_seleccion_de_curso_con_dos_posibles_result
         assert(resultados["R_A_Curso2A_LUNES_6_1"] == 0)
         assert(resultados["R_A_Curso2A_LUNES_7_1"] == 0)
 
-        assert(resultados["H_A_Curso2A_2"] == 0)
-        assert(resultados["R_A_Curso2A_LUNES_2_2"] == 0)
-        assert(resultados["R_A_Curso2A_LUNES_3_2"] == 0)
-        assert(resultados["R_A_Curso2A_LUNES_5_2"] == 0)
-        assert(resultados["R_A_Curso2A_LUNES_6_2"] == 0)
-        assert(resultados["R_A_Curso2A_LUNES_7_2"] == 0)
-
         #Curso 3A
         assert(resultados["H_A_Curso3A_1"] == 1)
         assert(resultados["R_A_Curso3A_LUNES_4_1"] == 1)
         assert(resultados["R_A_Curso3A_LUNES_5_1"] == 1)
         assert(resultados["R_A_Curso3A_LUNES_6_1"] == 1)
-
-        assert(resultados["H_A_Curso3A_2"] == 0)
-        assert(resultados["R_A_Curso3A_LUNES_4_2"] == 0)
-        assert(resultados["R_A_Curso3A_LUNES_5_2"] == 0)
-        assert(resultados["R_A_Curso3A_LUNES_6_2"] == 0)
 
         #Curso 1B
         assert(resultados["H_B_Curso1B_1"] == 1)
@@ -144,19 +125,10 @@ class Test_minimiza_franjas_libres_en_seleccion_de_curso_con_dos_posibles_result
         assert(resultados["R_B_Curso1B_LUNES_2_1"] == 1)
         assert(resultados["R_B_Curso1B_LUNES_3_1"] == 1)
 
-        assert(resultados["H_B_Curso1B_2"] == 0)
-        assert(resultados["R_B_Curso1B_LUNES_1_2"] == 0)
-        assert(resultados["R_B_Curso1B_LUNES_2_2"] == 0)
-        assert(resultados["R_B_Curso1B_LUNES_3_2"] == 0)
-
         #Curso 2B
         assert(resultados["H_B_Curso2B_1"] == 0)
         assert(resultados["R_B_Curso2B_LUNES_4_1"] == 0)
         assert(resultados["R_B_Curso2B_LUNES_9_1"] == 0)
-
-        assert(resultados["H_B_Curso2B_2"] == 0)
-        assert(resultados["R_B_Curso2B_LUNES_4_2"] == 0)
-        assert(resultados["R_B_Curso2B_LUNES_9_2"] == 0)
 
         #Curso 3B
         assert(resultados["H_B_Curso3B_1"] == 0)
@@ -164,21 +136,11 @@ class Test_minimiza_franjas_libres_en_seleccion_de_curso_con_dos_posibles_result
         assert(resultados["R_B_Curso3B_LUNES_8_1"] == 0)
         assert(resultados["R_B_Curso3B_LUNES_9_1"] == 0)
         assert(resultados["R_B_Curso3B_LUNES_10_1"] == 0)
-
-        assert(resultados["H_B_Curso3B_2"] == 0)
-        assert(resultados["R_B_Curso3B_LUNES_7_2"] == 0)
-        assert(resultados["R_B_Curso3B_LUNES_8_2"] == 0)
-        assert(resultados["R_B_Curso3B_LUNES_9_2"] == 0)
-        assert(resultados["R_B_Curso3B_LUNES_10_2"] == 0)
         
         #Curso 4B
         assert(resultados["H_B_Curso4B_1"] == 0)
         assert(resultados["R_B_Curso4B_LUNES_9_1"] == 0)
         assert(resultados["R_B_Curso4B_LUNES_10_1"] == 0)
-
-        assert(resultados["H_B_Curso4B_2"] == 0)
-        assert(resultados["R_B_Curso4B_LUNES_9_2"] == 0)
-        assert(resultados["R_B_Curso4B_LUNES_10_2"] == 0)
 
  
     def los_cursos_se_eligieron_correctamente_A3_B3(self, parametros, resultados):
@@ -190,11 +152,6 @@ class Test_minimiza_franjas_libres_en_seleccion_de_curso_con_dos_posibles_result
         assert(resultados["R_A_Curso1A_LUNES_2_1"] == 0)
         assert(resultados["R_A_Curso1A_LUNES_3_1"] == 0)
 
-        assert(resultados["H_A_Curso1A_2"] == 0)
-        assert(resultados["R_A_Curso1A_LUNES_1_2"] == 0)
-        assert(resultados["R_A_Curso1A_LUNES_2_2"] == 0)
-        assert(resultados["R_A_Curso1A_LUNES_3_2"] == 0)
-
         #Curso 2A
         assert(resultados["H_A_Curso2A_1"] == 0)
         assert(resultados["R_A_Curso2A_LUNES_2_1"] == 0)
@@ -203,23 +160,11 @@ class Test_minimiza_franjas_libres_en_seleccion_de_curso_con_dos_posibles_result
         assert(resultados["R_A_Curso2A_LUNES_6_1"] == 0)
         assert(resultados["R_A_Curso2A_LUNES_7_1"] == 0)
 
-        assert(resultados["H_A_Curso2A_2"] == 0)
-        assert(resultados["R_A_Curso2A_LUNES_2_2"] == 0)
-        assert(resultados["R_A_Curso2A_LUNES_3_2"] == 0)
-        assert(resultados["R_A_Curso2A_LUNES_5_2"] == 0)
-        assert(resultados["R_A_Curso2A_LUNES_6_2"] == 0)
-        assert(resultados["R_A_Curso2A_LUNES_7_2"] == 0)
-
         #Curso 3A
         assert(resultados["H_A_Curso3A_1"] == 1)
         assert(resultados["R_A_Curso3A_LUNES_4_1"] == 1)
         assert(resultados["R_A_Curso3A_LUNES_5_1"] == 1)
         assert(resultados["R_A_Curso3A_LUNES_6_1"] == 1)
-
-        assert(resultados["H_A_Curso3A_2"] == 0)
-        assert(resultados["R_A_Curso3A_LUNES_4_2"] == 0)
-        assert(resultados["R_A_Curso3A_LUNES_5_2"] == 0)
-        assert(resultados["R_A_Curso3A_LUNES_6_2"] == 0)
 
         #Curso 1B
         assert(resultados["H_B_Curso1B_1"] == 1)
@@ -227,19 +172,10 @@ class Test_minimiza_franjas_libres_en_seleccion_de_curso_con_dos_posibles_result
         assert(resultados["R_B_Curso1B_LUNES_2_1"] == 1)
         assert(resultados["R_B_Curso1B_LUNES_3_1"] == 1)
 
-        assert(resultados["H_B_Curso1B_2"] == 0)
-        assert(resultados["R_B_Curso1B_LUNES_1_2"] == 0)
-        assert(resultados["R_B_Curso1B_LUNES_2_2"] == 0)
-        assert(resultados["R_B_Curso1B_LUNES_3_2"] == 0)
-
         #Curso 2B
         assert(resultados["H_B_Curso2B_1"] == 0)
         assert(resultados["R_B_Curso2B_LUNES_4_1"] == 0)
         assert(resultados["R_B_Curso2B_LUNES_9_1"] == 0)
-
-        assert(resultados["H_B_Curso2B_2"] == 0)
-        assert(resultados["R_B_Curso2B_LUNES_4_2"] == 0)
-        assert(resultados["R_B_Curso2B_LUNES_9_2"] == 0)
 
         #Curso 3B
         assert(resultados["H_B_Curso3B_1"] == 1)
@@ -248,20 +184,10 @@ class Test_minimiza_franjas_libres_en_seleccion_de_curso_con_dos_posibles_result
         assert(resultados["R_B_Curso3B_LUNES_9_1"] == 1)
         assert(resultados["R_B_Curso3B_LUNES_10_1"] == 1)
 
-        assert(resultados["H_B_Curso3B_2"] == 0)
-        assert(resultados["R_B_Curso3B_LUNES_7_2"] == 0)
-        assert(resultados["R_B_Curso3B_LUNES_8_2"] == 0)
-        assert(resultados["R_B_Curso3B_LUNES_9_2"] == 0)
-        assert(resultados["R_B_Curso3B_LUNES_10_2"] == 0)
-        
         #Curso 4B
         assert(resultados["H_B_Curso4B_1"] == 0)
         assert(resultados["R_B_Curso4B_LUNES_9_1"] == 0)
         assert(resultados["R_B_Curso4B_LUNES_10_1"] == 0)
-
-        assert(resultados["H_B_Curso4B_2"] == 0)
-        assert(resultados["R_B_Curso4B_LUNES_9_2"] == 0)
-        assert(resultados["R_B_Curso4B_LUNES_10_2"] == 0)
 
 
     def los_creditos_acumulados_son_correctos(self, parametros, resultados):
@@ -308,24 +234,6 @@ class Test_minimiza_franjas_libres_en_seleccion_de_curso_con_dos_posibles_result
         assert(resultados["MAXIMA_FRANJA_LUNES_1"] == 6)
         assert(resultados["HORAS_LIBRES_LUNES_1"] == 0)
 
-        assert(resultados["LUNES_1_2"] == 0)
-        assert(resultados["LUNES_2_2"] == 0)
-        assert(resultados["LUNES_3_2"] == 0)
-        assert(resultados["LUNES_4_2"] == 0)
-        assert(resultados["LUNES_5_2"] == 0)
-        assert(resultados["LUNES_6_2"] == 0)
-        assert(resultados["LUNES_7_2"] == 0)
-        assert(resultados["LUNES_8_2"] == 0)
-        assert(resultados["LUNES_9_2"] == 0)
-        assert(resultados["LUNES_10_2"] == 0)
-        assert(resultados["LUNES_11_2"] == 0)
-        assert(resultados["LUNES_12_2"] == 0)
-
-        assert(resultados["OCUPADO_LUNES_2"] == 0)
-        assert(resultados["MINIMA_FRANJA_LUNES_2"] == 0)        
-        assert(resultados["MAXIMA_FRANJA_LUNES_2"] == 0)
-        assert(resultados["HORAS_LIBRES_LUNES_2"] == 0)
-
         #Totales
         assert(resultados["HORAS_LIBRES_TOTALES"] == 0)
 
@@ -349,24 +257,6 @@ class Test_minimiza_franjas_libres_en_seleccion_de_curso_con_dos_posibles_result
         assert(resultados["MINIMA_FRANJA_LUNES_1"] == 4)        
         assert(resultados["MAXIMA_FRANJA_LUNES_1"] == 10)
         assert(resultados["HORAS_LIBRES_LUNES_1"] == 0)
-
-        assert(resultados["LUNES_1_2"] == 0)
-        assert(resultados["LUNES_2_2"] == 0)
-        assert(resultados["LUNES_3_2"] == 0)
-        assert(resultados["LUNES_4_2"] == 0)
-        assert(resultados["LUNES_5_2"] == 0)
-        assert(resultados["LUNES_6_2"] == 0)
-        assert(resultados["LUNES_7_2"] == 0)
-        assert(resultados["LUNES_8_2"] == 0)
-        assert(resultados["LUNES_9_2"] == 0)
-        assert(resultados["LUNES_10_2"] == 0)
-        assert(resultados["LUNES_11_2"] == 0)
-        assert(resultados["LUNES_12_2"] == 0)
-
-        assert(resultados["OCUPADO_LUNES_2"] == 0)
-        assert(resultados["MINIMA_FRANJA_LUNES_2"] == 0)        
-        assert(resultados["MAXIMA_FRANJA_LUNES_2"] == 0)
-        assert(resultados["HORAS_LIBRES_LUNES_2"] == 0)
 
         #Totales
         assert(resultados["HORAS_LIBRES_TOTALES"] == 0)

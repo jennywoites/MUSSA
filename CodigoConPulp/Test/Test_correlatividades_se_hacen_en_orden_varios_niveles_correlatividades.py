@@ -11,30 +11,36 @@ from Materia import Materia
 from Curso import Curso
 from Horario import Horario
 
-class Test_correlatividades_se_hacen_en_orden(TestPulp):
+class Test_correlatividades_se_hacen_en_orden_varios_niveles_correlatividades(TestPulp):
 
     def get_nombre_test(self):
-        return "test_correlatividades_se_hacen_en_orden"
+        return "test_correlatividades_se_hacen_en_orden_varios_niveles_correlatividades"
 
     def get_plan_carrera_test(self):
         return {
         "A": ["C"],
-        "B": [],
+        "B": ["D"],
         "C": [],
+        "D": [],
+        "E": [],
     }
 
     def get_materias_test(self):
         return {
         "A": Materia("A", "A", 1, OBLIGATORIA, 0, ["C"]),
-        "B": Materia("B", "B", 1, OBLIGATORIA, 0, []),
+        "B": Materia("B", "B", 1, OBLIGATORIA, 0, ["D"]),
         "C": Materia("C", "C", 1, OBLIGATORIA, 0, []),
+        "D": Materia("D", "D", 1, OBLIGATORIA, 0, []),
+        "E": Materia("E", "E", 1, OBLIGATORIA, 0, []),
     }
 
     def get_horarios_test(self):
         return {
-        "A": [Curso("A", "Curso1A", [Horario(LUNES, 7, 8)])],
-        "B": [Curso("B", "Curso1B", [Horario(LUNES, 8, 9)])],
-        "C": [Curso("C", "Curso1C", [Horario(LUNES, 9, 10)])]
+        "A": [Curso("A", "Curso1A", [Horario(LUNES, 7, 7.5)])],
+        "B": [Curso("B", "Curso1B", [Horario(LUNES, 7.5, 8)])],
+        "C": [Curso("C", "Curso1C", [Horario(LUNES, 8, 8.5)])],
+        "D": [Curso("D", "Curso1D", [Horario(LUNES, 8.5, 9)])],
+        "E": [Curso("E", "Curso1E", [Horario(LUNES, 9, 9.5)])],
     }
 
     def get_horarios_no_permitidos_test(self):
@@ -47,7 +53,7 @@ class Test_correlatividades_se_hacen_en_orden(TestPulp):
         return 0
 
     def get_franjas_minima_y_maxima(self):
-        return 1, 10
+        return 1, 6
 
     def get_maxima_cantidad_cuatrimestres(self):
         return 3
@@ -89,5 +95,5 @@ class Test_correlatividades_se_hacen_en_orden(TestPulp):
 
 
 if __name__ == "__main__":
-    test_a_ejecutar = Test_correlatividades_se_hacen_en_orden()
+    test_a_ejecutar = Test_correlatividades_se_hacen_en_orden_varios_niveles_correlatividades()
     test_a_ejecutar.ejecutar_test()
