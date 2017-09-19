@@ -20,7 +20,7 @@ class Test_correlatividades_se_hacen_en_orden_varios_niveles_correlatividades(Te
         return {
         "A": ["C"],
         "B": ["D"],
-        "C": [],
+        "C": ["D"],
         "D": [],
         "E": [],
     }
@@ -29,7 +29,7 @@ class Test_correlatividades_se_hacen_en_orden_varios_niveles_correlatividades(Te
         return {
         "A": Materia("A", "A", 1, OBLIGATORIA, 0, ["C"]),
         "B": Materia("B", "B", 1, OBLIGATORIA, 0, ["D"]),
-        "C": Materia("C", "C", 1, OBLIGATORIA, 0, []),
+        "C": Materia("C", "C", 1, OBLIGATORIA, 0, ["D"]),
         "D": Materia("D", "D", 1, OBLIGATORIA, 0, []),
         "E": Materia("E", "E", 1, OBLIGATORIA, 0, []),
     }
