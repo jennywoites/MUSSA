@@ -85,13 +85,24 @@ ADYACENTES_4 = {
         "N": []        
     }
 
+MATERIAS_5 = {
+        "A": Materia("A", "A", 1, OBLIGATORIA, 0, []),
+        "B": Materia("B", "B", 1, OBLIGATORIA, 0, [])
+    }
+
+ADYACENTES_5 = {
+        "A": [],
+        "B": []
+    }
+
 POS_MATERIA = 0
 POS_ADYACENTE = 1
 MATERIAS = {
     1: (MATERIAS_1, ADYACENTES_1),
     2: (MATERIAS_2, ADYACENTES_2),
     3: (MATERIAS_3, ADYACENTES_3),
-    4: (MATERIAS_4, ADYACENTES_4)
+    4: (MATERIAS_4, ADYACENTES_4),
+    5: (MATERIAS_5, ADYACENTES_5)
 }
 
 def get_materias(num):
