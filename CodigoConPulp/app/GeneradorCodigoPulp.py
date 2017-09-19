@@ -2,13 +2,17 @@ from Constantes import *
 
 from ParametrosDAO import Parametros
 
+from GeneradorRestricciones import generar_restricciones
+from GeneradorVariables import definir_variables
+from ResultadosPulpDAO import guardar_variables
+
+import sys
+sys.path.append("../app/modelos")
+
 from Materia import Materia
 from Horario import Horario
 from Curso import Curso
 
-from GeneradorRestricciones import generar_restricciones
-from GeneradorVariables import definir_variables
-from ResultadosPulpDAO import guardar_variables
 
 #############################################################################################
 def importar_pulp(arch):

@@ -1,4 +1,8 @@
 from Constantes import *
+
+import sys
+sys.path.append("../app/modelos")
+
 from Materia import Materia
 
 MATERIAS_1 = {
