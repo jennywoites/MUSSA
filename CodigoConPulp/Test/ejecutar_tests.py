@@ -1,3 +1,5 @@
+import os
+
 from Test_minimiza_franjas_libres_en_seleccion_de_curso_con_unico_resultado_menor_posible import Test_minimiza_franjas_libres_en_seleccion_de_curso_con_unico_resultado_menor_posible
 from Test_minimiza_franjas_libres_en_seleccion_de_curso_con_dos_posibles_resultados import Test_minimiza_franjas_libres_en_seleccion_de_curso_con_dos_posibles_resultados
 from Test_correlatividades_se_hacen_en_orden import Test_correlatividades_se_hacen_en_orden
@@ -13,8 +15,18 @@ def tests_a_ejecutar():
     return tests
 
 
+def limpiar_o_crear_directorio():
+    ruta = "resultados_tests"
+    if os.path.exists(ruta):
+        os.system('rm -r {}'.format(ruta))
+    
+    os.system('mkdir {}'.format(ruta))
+
+
 def ejecutar_todos():
     print("Esta accion puede demorar varios minutos...")
+
+    limpiar_o_crear_directorio()
 
     tests = tests_a_ejecutar()
     for test_a_ejecutar in tests:
