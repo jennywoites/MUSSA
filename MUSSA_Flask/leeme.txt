@@ -10,6 +10,9 @@ source bin/activate
 cd ..
 pip3 install -r requirements.txt
 
+#Instalar Flask-Babel (para idioma)
+pip3 install Flask-Babel
+
 #Inicializar la base de datos
 python3 manage.py init_db
 
