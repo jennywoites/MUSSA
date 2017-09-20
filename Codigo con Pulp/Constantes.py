@@ -17,3 +17,11 @@ HORA_ORIGEN = 7
 FRANJA_MIN = 1 #Corresponde al horario de 07:00 a 07:30
 FRANJA_MAX = 33 #33 #Corresponde al horario de 23:00 a 23:30
 
+#Tipos de materias
+OBLIGATORIA = 0
+ELECTIVA = 1
+
+TIPOS_MATERIAS = {
+	OBLIGATORIA: "Obligatoria",
+	ELECTIVA: "Electiva"
+}
