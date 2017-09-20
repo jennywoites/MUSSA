@@ -1,4 +1,8 @@
 from Constantes import *
+
+import sys
+sys.path.append("../app/modelos")
+
 from Curso import Curso
 from Horario import Horario
 
@@ -44,11 +48,18 @@ HORARIOS_4 = {
         "N": [Curso("N", "Curso1N", [Horario(MIERCOLES, 9, 12)])],
     }
 
+HORARIOS_5 = {
+        "A": [Curso("A", "Curso1A", [Horario(LUNES, 7, 8.5)]), Curso("A", "Curso2A", [Horario(LUNES, 7.5, 8.5), Horario(LUNES, 9, 10.5)]), Curso("A", "Curso3A", [Horario(LUNES, 8.5, 10)])],
+        #"A": [Curso("A", "Curso1A", [Horario(LUNES, 7, 8.5)]), Curso("A", "Curso2A", [Horario(LUNES, 7.5, 8.5), Horario(LUNES, 9, 10.5)])],
+        "B": [Curso("B", "Curso1B", [Horario(LUNES, 7, 8.5)]), Curso("B", "Curso2B", [Horario(LUNES, 8.5, 9), Horario(LUNES, 11, 11.5)]), Curso("B", "Curso3B", [Horario(LUNES, 10, 12)]), Curso("B", "Curso4B", [Horario(LUNES, 11, 12)])],
+    }
+
 HORARIOS = {
     1: HORARIOS_1,
     2: HORARIOS_2,
     3: HORARIOS_3,
-    4: HORARIOS_4
+    4: HORARIOS_4,
+    5: HORARIOS_5
 }
 
 def get_horarios_no_permitidos(num=0):

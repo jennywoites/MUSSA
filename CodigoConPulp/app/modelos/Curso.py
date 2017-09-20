@@ -1,4 +1,3 @@
-
 class Curso:
 
     def __init__(self, cod_materia, nombre_curso, horarios):
