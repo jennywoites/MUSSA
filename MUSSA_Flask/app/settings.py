@@ -26,3 +26,9 @@ USER_ENABLE_RETYPE_PASSWORD = True  # Prompt for `retype password` in:
 USER_ENABLE_USERNAME = False  # Register and Login with username
 USER_AFTER_LOGIN_ENDPOINT = 'main.member_page'
 USER_AFTER_LOGOUT_ENDPOINT = 'main.home_page'
+
+# available languages
+LANGUAGES = {
+    'en': 'English',
+    'es': 'Español'
+}

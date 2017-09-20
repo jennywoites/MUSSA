@@ -18,7 +18,6 @@ main_blueprint = Blueprint('main', __name__, template_folder='templates')
 def home_page():
     return render_template('pages/home_page.html')
 
-
 # The User page is accessible to authenticated users (users that have logged in)
 @main_blueprint.route('/member')
 @login_required  # Limits access to authenticated users
@@ -55,3 +54,25 @@ def user_profile_page():
                            form=form)
 
 
+# La busqueda de materias es accesible a cualquiera
+@main_blueprint.route('/buscar_materias')
+def buscar_materias_page():
+    return render_template('pages/buscar_materias_page.html')
+
+
+# El contacto es accesible a cualquiera
+@main_blueprint.route('/contacto')
+def contacto_page():
+    return render_template('pages/contacto_page.html')
+
+
+# Las preguntas frecuentes son accesibles a cualquiera
+@main_blueprint.route('/preguntas_frecuentes')
+def preguntas_frecuentes_page():
+    return render_template('pages/preguntas_frecuentes_page.html')
+
+
+# Los links utiles son accesibles a cualquiera
+@main_blueprint.route('/links_utiles')
+def links_utiles_page():
+    return render_template('pages/links_utiles_page.html')
