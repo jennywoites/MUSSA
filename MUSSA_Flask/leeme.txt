@@ -1,0 +1,20 @@
+# Crear la carpeta para el entorno virtual
+mkdir venv
+
+#Crear el entorno virtual
+python3 -m venv venv
+
+#Instalar dependencias
+cd venv
+source bin/activate
+cd ..
+pip3 install -r requirements.txt
+
+#Instalar Flask-Babel (para idioma)
+pip3 install Flask-Babel
+
+#Inicializar la base de datos
+python3 manage.py init_db
+
+#Correr el servidor
+python3 manage.py runserver
