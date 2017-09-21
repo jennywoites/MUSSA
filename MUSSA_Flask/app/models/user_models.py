@@ -25,6 +25,7 @@ class User(db.Model, UserMixin):
     active = db.Column('is_active', db.Boolean(), nullable=False, server_default='0')
     first_name = db.Column(db.Unicode(50), nullable=False, server_default=u'')
     last_name = db.Column(db.Unicode(50), nullable=False, server_default=u'')
+    padron = db.Column(db.Unicode(20), nullable=False, server_default=u'')
 
     # Relationships
     roles = db.relationship('Role', secondary='users_roles',
@@ -50,16 +51,19 @@ class UsersRoles(db.Model):
 # Define the User registration form
 # It augments the Flask-User RegisterForm with additional fields
 class MyRegisterForm(RegisterForm):
-    first_name = StringField('First name', validators=[
-        validators.DataRequired('First name is required')])
-    last_name = StringField('Last name', validators=[
-        validators.DataRequired('Last name is required')])
+    first_name = StringField('Nombre', validators=[
+        validators.DataRequired('Debes ingresar tu nombre')])
+    last_name = StringField('Apellido', validators=[
+        validators.DataRequired('Debes ingresar tu apellido')])
+    padron = StringField('Padrón')
 
 
 # Define the User profile form
 class UserProfileForm(FlaskForm):
-    first_name = StringField('First name', validators=[
-        validators.DataRequired('First name is required')])
-    last_name = StringField('Last name', validators=[
-        validators.DataRequired('Last name is required')])
-    submit = SubmitField('Save')
+    first_name = StringField('Nombre', validators=[
+        validators.DataRequired('Debes ingresar tu nombre')])
+    last_name = StringField('Apellido', validators=[
+        validators.DataRequired('Debes ingresar tu apellido')])
+    padron = StringField('Padrón')
+
+    submit = SubmitField('Guardar')

@@ -13,6 +13,7 @@ from flask_migrate import Migrate, MigrateCommand
 from flask_sqlalchemy import SQLAlchemy
 from flask_user import UserManager, SQLAlchemyAdapter
 from flask_wtf.csrf import CSRFProtect
+from flask_babel import Babel
 
 # Instantiate Flask extensions
 db = SQLAlchemy()
@@ -49,6 +50,9 @@ def create_app(extra_config_settings={}):
     # Setup WTForms CSRFProtect
     csrf_protect.init_app(app)
 
+    # Initialize Flask-BabelEx
+    babel = Babel(app)
+    app.config['BABEL_DEFAULT_LOCALE'] = 'es'
     # Register blueprints
     from app.views.misc_views import main_blueprint
     app.register_blueprint(main_blueprint)
