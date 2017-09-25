@@ -53,6 +53,7 @@ class Materia(db.Model):
 
     #Programa sintetico
     #Programa analitico
+
     #cursos 
 
     carrera_id = db.Column(db.Integer, db.ForeignKey('carrera.id'))
