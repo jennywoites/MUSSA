@@ -9,6 +9,7 @@ from flask_user import current_user, login_required, roles_accepted
 
 from app import db
 from app.models.user_models import UserProfileForm
+from app.models.carreras_models import Carrera
 
 # When using a Flask app factory we must use a blueprint to avoid needing 'app' for '@app.route'
 main_blueprint = Blueprint('main', __name__, template_folder='templates')
@@ -76,3 +77,10 @@ def preguntas_frecuentes_page():
 @main_blueprint.route('/links_utiles')
 def links_utiles_page():
     return render_template('pages/links_utiles_page.html')
+
+
+@main_blueprint.route('/test_sql_page')
+def test_sql_page():
+    carreras = Carrera.query.all()
+    return render_template("pages/test_sql_page.html",
+                           carreras=carreras)

@@ -5,7 +5,7 @@ from flask import current_app
 
 from app import db
 from app.models.user_models import User, Role
-from app.models.carreras_models import Carrera, Creditos, Orientacion, Materia
+from app.models.carreras_models import Carrera, Creditos, Orientacion, Materia, TipoMateria, Correlativas
 
 RUTA_PLANES_CSV = "../../../PlanesdeEstudio/CSV/"
 RUTA_PLANES_INFO = "../../../PlanesdeEstudio/InfoCarrera/"
@@ -74,6 +74,7 @@ def crear_carrera(codigo, titulo, plan):
 
     carrera = Carrera(
         codigo = codigo,
+        nombre = titulo,
         duracion_estimada_en_cuatrimestres = datos[DURACION],
         requiere_prueba_suficiencia_de_idioma = datos[REQUIERE_SUFICIENCIA_IDIOMA]
         )
@@ -81,8 +82,7 @@ def crear_carrera(codigo, titulo, plan):
     guardar_cantidad_de_creditos(carrera, datos)
     guardar_orientaciones(carrera, datos)
 
-    #TODO
-    #Cargar las materias para la carrera
+    guardar_materias(carrera, codigo, titulo, plan)
 
     #TODO:
     #Cargar horarios iniciales guardados en el historial
@@ -111,7 +111,10 @@ def guardar_cantidad_de_creditos(carrera, datos):
         creditos_tp_profesional = datos[CREDITOS_TP_PROFESIONAL]
         )
 
-    carrera.creditos = creditos
+    if not carrera.creditos:
+        carrera.creditos = []
+
+    carrera.creditos.append(creditos)
 
 
 def cargar_datos_carrera(nombre_arch):
@@ -141,3 +144,102 @@ def cargar_datos_carrera(nombre_arch):
                 dic_datos[etiqueta] = orientaciones
 
     return dic_datos
+
+
+def guardar_materias(carrera, codigo, titulo, plan):
+    archivo_carrera = get_nombre_carrera_para_archivo(titulo, plan, "csv")
+    materias = cargar_datos_materias(archivo_carrera)
+    carrera.materias = materias
+
+
+def cargar_datos_materias(nombre_arch):
+    materias = []
+
+    dir = os.path.dirname(__file__)
+    ruta = os.path.join(dir, RUTA_PLANES_CSV + nombre_arch)
+
+    dict_correlativas = {}
+    with open(ruta, 'r') as arch:
+        primera = True
+        for linea in arch:
+
+            if primera:
+                primera = False
+                continue
+
+            materias.append(crear_materia(linea, dict_correlativas))
+
+    guardar_correlativas(dict_correlativas)
+
+    return materias
+
+
+def crear_materia(linea, dict_correlativas):
+    linea = linea.rstrip()
+
+    codigo, nombre, creditos, tipo, cred_minimos, correlativas = linea.split(",")
+    creditos = int(creditos)
+    cred_minimos = int(cred_minimos)
+
+    correlativas = correlativas.split("-")
+    if not correlativas or correlativas[0]=='':
+        correlativas = []
+
+    tipo = find_or_create_tipo_materia(tipo)
+
+    materia = Materia(
+        codigo = codigo,
+        nombre = nombre,
+        objetivos = "",
+        tipo_materia_id = tipo.id,
+        creditos_minimos_para_cursarla = cred_minimos,
+        creditos = creditos
+    )
+
+    db.session.add(materia)
+    
+    dict_correlativas[codigo] = correlativas
+
+    return materia
+
+
+def find_or_create_tipo_materia(tipo):
+    tipo = TipoMateria.query.filter(TipoMateria.descripcion == tipo).first()
+
+    if not tipo:
+        tipo = TipoMateria(descripcion=tipo)
+        db.session.add(tipo)
+    return tipo
+
+
+def find_or_create_correlativa(id_materia_actual, id_materia_correlativa):
+    materia_id = db.Column(db.Integer, db.ForeignKey('materia.id'))
+    materia_correlativa_id = db.Column(db.Integer, db.ForeignKey('materia.id'))
+
+    correlatividad = Correlativas.query.filter(
+        Correlativas.materia_id == id_materia_actual
+        and
+        Correlativas.materia_correlativa_id == id_materia_correlativa        
+    ).first()
+
+    if not correlatividad:
+        correlatividad = Correlativas(materia_id=id_materia_actual, materia_correlativa_id=id_materia_correlativa)
+        db.session.add(correlatividad)        
+
+
+def guardar_correlativas(dic_correlativas):
+    for cod in dic_correlativas:
+
+        materia_actual = Materia.query.filter(Materia.codigo == cod).first()
+
+        for correlativa in dic_correlativas[cod]:
+            materia_correlativa = Materia.query.filter(Materia.codigo == correlativa).first()
+        
+            if not materia_actual or not materia_correlativa:
+
+                print(materia_actual)
+                print(correlativa)
+                print(materia_correlativa)
+                input()
+    
+            find_or_create_correlativa(materia_actual.id, materia_correlativa.id)
