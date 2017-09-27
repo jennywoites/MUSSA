@@ -22,3 +22,7 @@ python3 manage.py init_db
 
 #Correr el servidor
 python3 manage.py runserver
+
+#Desde app, para actualizar las traducciones:
+pybabel compile -d translations -D flask_user -f
+
