@@ -1,4 +1,5 @@
 from flask_restful import Resource
+from app.API_Rest.codes import *
 
 from app.models.carreras_models import Carrera
 
@@ -14,4 +15,5 @@ class BuscarCarreras(Resource):
                 'nombre': carrera.nombre
             })
 
-        return {'carreras': carreras_result}
+        return {'carreras': carreras_result}, SUCCESS_OK
+
