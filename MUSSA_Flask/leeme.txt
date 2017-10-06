@@ -17,6 +17,10 @@ pip3 install flask_babel
 #Instalar Flask Migrate
 pip3 install Flask-Migrate
 
+#Instalar Flask Restful (API REST)
+pip3 install flask-restful
+pip3 install request
+
 #Inicializar la base de datos
 python3 manage.py init_db
 
