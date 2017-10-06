@@ -1,0 +1,264 @@
+# Dutch translations for PROJECT.
+# Copyright (C) 2014 ORGANIZATION
+# This file is distributed under the same license as the PROJECT project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2014.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2017-09-28 16:42+0100\n"
+"PO-Revision-Date: 2017-08-27 03:39-0700\n"
+"Last-Translator: \n"
+"Language: nl\n"
+"Language-Team: nl <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1)\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.5.1\n"
+
+#~ msgid ""
+#~ "Password must have at least 6 "
+#~ "characters with one lowercase letter, "
+#~ "one uppercase letter and one number"
+#~ msgstr ""
+#~ "Wachtwoorden moeten tenminste 6 tekens "
+#~ "bevatten met 1 hoofdletter, 1 kleine "
+#~ "letter en 1 nummer"
+
+#~ msgid "Username must be at least 3 characters long"
+#~ msgstr "Gebruikersnaam moet ten minste 3 tekens bevatten"
+
+#~ msgid "Username may only contain letters, numbers, '-', '.' and '_'"
+#~ msgstr "Gebruikersnamen mogen alleen letters, nummers, '-', '.' en '_' bevatten"
+
+#~ msgid "This Username is already in use. Please try another one."
+#~ msgstr "Deze gebruikersnaam is in gebruik. Gaarne een andere naam proberen."
+
+#~ msgid "This Email is already in use. Please try another one."
+#~ msgstr "Deze E-mail is al in gebruik. Gaarne een andere E-mail proberen."
+
+#~ msgid "Email"
+#~ msgstr "E-mail"
+
+#~ msgid "Email is required"
+#~ msgstr "E-mail is verplicht"
+
+#~ msgid "Invalid Email"
+#~ msgstr "Onjuist E-mail"
+
+#~ msgid "Add Email"
+#~ msgstr "E-mail toevoegen"
+
+#~ msgid "Old Password"
+#~ msgstr "Oud Wachtwoord"
+
+#~ msgid "Old Password is required"
+#~ msgstr "Oud Wachtwoord is verplicht"
+
+#~ msgid "New Password"
+#~ msgstr "Nieuw Wachtwoord"
+
+#~ msgid "New Password is required"
+#~ msgstr "Nieuw Wachtwoord is verplicth"
+
+#~ msgid "Retype New Password"
+#~ msgstr "Herhaal Nieuw Wachtwoord"
+
+#~ msgid "New Password and Retype Password did not match"
+#~ msgstr "Nieuw Wachtwoord en Herhaal Wachtwoord komen niet overeen"
+
+#~ msgid "Change password"
+#~ msgstr "Wijzig wachtwoord"
+
+#~ msgid "Old Password is incorrect"
+#~ msgstr "Oud Wachtwoord is onjuist"
+
+#~ msgid "New Username"
+#~ msgstr "Niuew Gebruikersnaam"
+
+#~ msgid "Username is required"
+#~ msgstr "Gebruikersnaam is verplicht"
+
+#~ msgid "Change username"
+#~ msgstr "Wijzig mijn gebruikersnaam"
+
+#~ msgid "Your email address"
+#~ msgstr "Uw E-mail"
+
+#~ msgid "Email address is required"
+#~ msgstr "E-mail is verplicht"
+
+#~ msgid "Invalid Email address"
+#~ msgstr "Ongeldig E-mail"
+
+#~ msgid "Send reset password email"
+#~ msgstr "Verstuur Reset Wachtwoord E-mail"
+
+#~ msgid "%(username_or_email)s does not exist"
+#~ msgstr "%(username_or_email)s bestaat niet"
+
+#~ msgid "Username"
+#~ msgstr "Gebruikersnaam"
+
+#~ msgid "Password"
+#~ msgstr "Wachtwoord"
+
+#~ msgid "Password is required"
+#~ msgstr "Wachtwoord is verplicht"
+
+#~ msgid "Remember me"
+#~ msgstr "Herinner mij"
+
+#~ msgid "Sign in"
+#~ msgstr "Aanmelden"
+
+#~ msgid "Username or Email"
+#~ msgstr "Gebruikersnaam of E-mail"
+
+#~ msgid "Username/Email"
+#~ msgstr "Gebruikersnaam/E-mail"
+
+#~ msgid "Incorrect Password"
+#~ msgstr "Verkeerd wachtwoord"
+
+#~ msgid "Incorrect %(username_or_email)s and/or Password"
+#~ msgstr "Onjuist %(username_or_email)s en/of Wachtwoord"
+
+#~ msgid "Retype Password"
+#~ msgstr "Herhaal Wachtwoord"
+
+#~ msgid "Password and Retype Password did not match"
+#~ msgstr "Wachtwoord en Herhaal Wachtwoord komen niet overeen"
+
+#~ msgid "Token"
+#~ msgstr "Merkteken"
+
+#~ msgid "Register"
+#~ msgstr "Registreren"
+
+#~ msgid "Resend email confirmation email"
+#~ msgstr "Bevestigings e-mail nogmaals versturen"
+
+#~ msgid "Invite!"
+#~ msgstr "Nodig uit"
+
+#~ msgid "Home Page"
+#~ msgstr "Startpagina"
+
+#~ msgid "Profile Page"
+#~ msgstr "Profielpagina"
+
+#~ msgid "Special Page"
+#~ msgstr "Speciale Pagina"
+
+#~ msgid "Your confirmation token has expired."
+#~ msgstr "Uw bevestigingstoken is verlopen."
+
+#~ msgid "Invalid confirmation token."
+#~ msgstr "Onjust bevestigingstoken."
+
+#~ msgid "Your email has been confirmed."
+#~ msgstr "Uw E-mail is bevestigd."
+
+#~ msgid "Your password has been changed successfully."
+#~ msgstr "Uw Wachtwoord is gewijzigd."
+
+#~ msgid "Your username has been changed to '%(username)s'."
+#~ msgstr "Uw gebruikersnaam is gewijzigd tot '%(username)s'."
+
+#~ msgid ""
+#~ "A reset password email has been "
+#~ "sent to '%(email)s'. Open that email "
+#~ "and follow the instructions to reset "
+#~ "your password."
+#~ msgstr ""
+#~ "Een reset wachtwoord E-mail is verstuurd"
+#~ " naar '%(email)s'. Open deze E-mail "
+#~ "en volg de instructies om uw "
+#~ "wachtwoord opnieuw in the stellen."
+
+#~ msgid "You have signed out successfully."
+#~ msgstr "U ben met success afgemeld."
+
+#~ msgid "Invitation has been sent."
+#~ msgstr "Uitnodiging is verstuurd."
+
+#~ msgid "Your reset password token has expired."
+#~ msgstr "Your reset wachtwoord token is verlopern."
+
+#~ msgid "Your reset password token is invalid."
+#~ msgstr "Uw reset wachtwoord token is ongeldig."
+
+#~ msgid "Your password has been reset successfully."
+#~ msgstr "Uw Wachtwoord is met succes gewijzigd."
+
+#~ msgid "You must confirm your email to access '%(url)s'."
+#~ msgstr "Je moet zijn ingelogd om toegang te krijgen to %(url)s."
+
+#~ msgid "You must be signed in to access '%(url)s'."
+#~ msgstr "Je moet zijn ingelogd om toegang te krijgen to %(url)s."
+
+#~ msgid "You do not have permission to access '%(url)s'."
+#~ msgstr "U hebt geen toestemming tot %(url)s."
+
+#~ msgid ""
+#~ "A confirmation email has been sent "
+#~ "to %(email)s with instructions to "
+#~ "complete your registration."
+#~ msgstr ""
+#~ "Een bevestigings E-mail is verstuurd "
+#~ "naar %(email)s met instructies om uw "
+#~ "registratie te voltooien."
+
+#~ msgid "You have registered successfully."
+#~ msgstr "U heeft zich met succes aangemeld."
+
+#~ msgid "Your account has not been enabled."
+#~ msgstr "Uw account is gedeactiveerd."
+
+#~ msgid ""
+#~ "Your email address has not yet "
+#~ "been confirmed. Check your email Inbox"
+#~ " and Spam folders for the "
+#~ "confirmation email or <a href=\"%(url)s"
+#~ "\">Re-send confirmation email</a>."
+#~ msgstr ""
+#~ "Uw E-mail is nog niet bevestigd. "
+#~ "Controleer uw Inbox end Spam mappen "
+#~ "voor de bevestiging E-mail en volg "
+#~ "de instructies im je account te "
+#~ "activeren. <a href=“%(url)s”>Confirmatie E-mail "
+#~ "herzenden</a>."
+
+#~ msgid "You have signed in successfully."
+#~ msgstr "U heeft zich met success aangemeld."
+
+#~ msgid "Forgot Password"
+#~ msgstr "Wachtwoord vergeten"
+
+#~ msgid "Invite User"
+#~ msgstr "Nodig gebruiker uit"
+
+#~ msgid "New here? Register."
+#~ msgstr "Nieuw hier? Inschrijven."
+
+#~ msgid "Forgot your Password?"
+#~ msgstr "Wachtwoord vergeten?"
+
+#~ msgid "Manage Emails"
+#~ msgstr "E-mail beheer"
+
+#~ msgid "Already registered? Sign in."
+#~ msgstr "Al ingeschreven? Aanmelden."
+
+#~ msgid "Resend Confirmation Email"
+#~ msgstr "Bevestigings e-mail nogmaals versturen"
+
+#~ msgid "Reset Password"
+#~ msgstr "Reset Wachtwoord"
+
+#~ msgid "User profile"
+#~ msgstr "Gebruikersprofiel"
+

@@ -17,8 +17,17 @@ pip3 install flask_babel
 #Instalar Flask Migrate
 pip3 install Flask-Migrate
 
+#Instalar Flask Restful (API REST)
+pip3 install flask-restful
+pip3 install request
+
 #Inicializar la base de datos
 python3 manage.py init_db
 
 #Correr el servidor
 python3 manage.py runserver
+
+#Desde app, para actualizar las traducciones:
+pybabel update -d translations -D flask_user -i translations/flask_user.pot
+pybabel compile -d translations -D flask_user -f
+

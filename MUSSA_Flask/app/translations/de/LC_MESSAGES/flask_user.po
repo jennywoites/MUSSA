@@ -1,0 +1,272 @@
+# German translations for PROJECT.
+# Copyright (C) 2015 ORGANIZATION
+# This file is distributed under the same license as the PROJECT project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2015.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2017-09-28 16:42+0100\n"
+"PO-Revision-Date: 2017-08-27 03:37-0700\n"
+"Last-Translator: Simon Allendörfer <kontakt@simon.allendoerfer.info>\n"
+"Language: de\n"
+"Language-Team: de <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1)\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.5.1\n"
+
+#~ msgid ""
+#~ "Password must have at least 6 "
+#~ "characters with one lowercase letter, "
+#~ "one uppercase letter and one number"
+#~ msgstr ""
+#~ "Das Passwort muss mindestens 6 Zeichen"
+#~ " enthalten, ein Kleinbuchstabe, ein "
+#~ "Großbuchstabe und eine Zahl"
+
+#~ msgid "Username must be at least 3 characters long"
+#~ msgstr "Nutzername muss mindestens 3 Zeichen lang sein"
+
+#~ msgid "Username may only contain letters, numbers, '-', '.' and '_'"
+#~ msgstr "Nutzername darf nur Buchstaben, Zahlen, '-', '.' und '_' enthalten"
+
+#~ msgid "This Username is already in use. Please try another one."
+#~ msgstr ""
+#~ "Dieser Nutzername ist bereits vergeben. "
+#~ "Bitte versuchen Sie einen anderen."
+
+#~ msgid "This Email is already in use. Please try another one."
+#~ msgstr ""
+#~ "Diese E-Mail-Adresse wird bereits "
+#~ "genutzt. Bitte versuchen Sie eine "
+#~ "andere."
+
+#~ msgid "Email"
+#~ msgstr "E-Mail-Adresse"
+
+#~ msgid "Email is required"
+#~ msgstr "E-Mail-Adresse wird benötigt"
+
+#~ msgid "Invalid Email"
+#~ msgstr "Ungültige E-Mail-Adresse"
+
+#~ msgid "Add Email"
+#~ msgstr "E-Mail-Adresse hinzufügen"
+
+#~ msgid "Old Password"
+#~ msgstr "Altes Passwort"
+
+#~ msgid "Old Password is required"
+#~ msgstr "Altes Passwort wird benötigt"
+
+#~ msgid "New Password"
+#~ msgstr "Neues Passwort"
+
+#~ msgid "New Password is required"
+#~ msgstr "Neues Passwort wird benötigt"
+
+#~ msgid "Retype New Password"
+#~ msgstr "Neues Passwort erneut eingeben"
+
+#~ msgid "New Password and Retype Password did not match"
+#~ msgstr "Neues Passwort und Wiederholung stimmen nicht überein"
+
+#~ msgid "Change password"
+#~ msgstr "Passwort ändern"
+
+#~ msgid "Old Password is incorrect"
+#~ msgstr "Altes Passwort ist falsch"
+
+#~ msgid "New Username"
+#~ msgstr "Neuer Nutzername"
+
+#~ msgid "Username is required"
+#~ msgstr "Nutzername wird benötigt"
+
+#~ msgid "Change username"
+#~ msgstr "Nutzername ändern"
+
+#~ msgid "Your email address"
+#~ msgstr "Ihre E-Mail-Adresse"
+
+#~ msgid "Email address is required"
+#~ msgstr "E-Mail-Adresse wird benötigt"
+
+#~ msgid "Invalid Email address"
+#~ msgstr "Ungültige E-Mail-Adresse"
+
+#~ msgid "Send reset password email"
+#~ msgstr "E-Mail zur Passwortzurücksetzung senden"
+
+#~ msgid "%(username_or_email)s does not exist"
+#~ msgstr "%(username_or_email)s existiert nicht"
+
+#~ msgid "Username"
+#~ msgstr "Nutzername"
+
+#~ msgid "Password"
+#~ msgstr "Passwort"
+
+#~ msgid "Password is required"
+#~ msgstr "Passwort wird benötigt"
+
+#~ msgid "Remember me"
+#~ msgstr "Angemeldet bleiben"
+
+#~ msgid "Sign in"
+#~ msgstr "Anmelden"
+
+#~ msgid "Username or Email"
+#~ msgstr "Nutzername oder E-Mail-Adresse"
+
+#~ msgid "Username/Email"
+#~ msgstr "Nutzername/E-Mail-Adresse"
+
+#~ msgid "Incorrect Password"
+#~ msgstr "Passwort falsch"
+
+#~ msgid "Incorrect %(username_or_email)s and/or Password"
+#~ msgstr "%(username_or_email)s und/oder Passwort falsch"
+
+#~ msgid "Retype Password"
+#~ msgstr "Passwort-Wiederholung"
+
+#~ msgid "Password and Retype Password did not match"
+#~ msgstr "Passwort und Passwort-Wiederholung stimmten nicht überein"
+
+#~ msgid "Token"
+#~ msgstr "Token"
+
+#~ msgid "Register"
+#~ msgstr "Registrieren"
+
+#~ msgid "Resend email confirmation email"
+#~ msgstr "Bestätigungs-E-Mail erneut senden"
+
+#~ msgid "Invite!"
+#~ msgstr "Einladen!"
+
+#~ msgid "Home Page"
+#~ msgstr "Homepage"
+
+#~ msgid "Profile Page"
+#~ msgstr "Profilseite"
+
+#~ msgid "Special Page"
+#~ msgstr "Spezialseite"
+
+#~ msgid "Your confirmation token has expired."
+#~ msgstr "Ihr Bestätigungscode ist abgelaufen."
+
+#~ msgid "Invalid confirmation token."
+#~ msgstr "Ungültiger Bestätigungscode."
+
+#~ msgid "Your email has been confirmed."
+#~ msgstr "Ihre E-Mail-Adresse wurde bestätigt."
+
+#~ msgid "Your password has been changed successfully."
+#~ msgstr "Ihr Passwort wurde erfolgreich geändert."
+
+#~ msgid "Your username has been changed to '%(username)s'."
+#~ msgstr "Ihr Nutzername wurde zu '%(username)s' geändert."
+
+#~ msgid ""
+#~ "A reset password email has been "
+#~ "sent to '%(email)s'. Open that email "
+#~ "and follow the instructions to reset "
+#~ "your password."
+#~ msgstr ""
+#~ "Eine E-Mail zum Zurücksetzen des "
+#~ "Passworts ist an '%(email)s' gesendet "
+#~ "worden. Folgen Sie den Anweisungen in"
+#~ " der E-Mail um Ihr Passwort "
+#~ "zurückzusetzen."
+
+#~ msgid "You have signed out successfully."
+#~ msgstr "Sie haben sich erfolgreich abgemeldet."
+
+#~ msgid "Invitation has been sent."
+#~ msgstr "Einladung wurde versendet."
+
+#~ msgid "Your reset password token has expired."
+#~ msgstr "Ihr Passwortzurücksetzungscode ist abgelaufen."
+
+#~ msgid "Your reset password token is invalid."
+#~ msgstr "Ihr Passwortzurücksetzungscode ist ungültig."
+
+#~ msgid "Your password has been reset successfully."
+#~ msgstr "Ihr Passwort wurde erfolgreich zurückgesetzt."
+
+#~ msgid "You must confirm your email to access '%(url)s'."
+#~ msgstr ""
+#~ "Sie müssen Ihre E-Mail-Adresse "
+#~ "bestätigen um '%(url)s' aufrufen zu "
+#~ "können."
+
+#~ msgid "You must be signed in to access '%(url)s'."
+#~ msgstr "Sie müssen angemeldet sein um '%(url)s' aufrufen zu können."
+
+#~ msgid "You do not have permission to access '%(url)s'."
+#~ msgstr "Sie haben nicht die nötigen Berechtigungen um '%(url)s' aufzurufen."
+
+#~ msgid ""
+#~ "A confirmation email has been sent "
+#~ "to %(email)s with instructions to "
+#~ "complete your registration."
+#~ msgstr ""
+#~ "Eine Bestätigungs-E-Mail mit Anweisungen zum"
+#~ " Abschließen der Registrierung wurde an "
+#~ "%(email)s gesendet."
+
+#~ msgid "You have registered successfully."
+#~ msgstr "Sie haben sich erfolgreich registriert."
+
+#~ msgid "Your account has not been enabled."
+#~ msgstr "Ihr Konto wurde nicht freigeschaltet."
+
+#~ msgid ""
+#~ "Your email address has not yet "
+#~ "been confirmed. Check your email Inbox"
+#~ " and Spam folders for the "
+#~ "confirmation email or <a href=\"%(url)s"
+#~ "\">Re-send confirmation email</a>."
+#~ msgstr ""
+#~ "Ihre E-Mail-Adresse wurde noch nicht "
+#~ "bestätigt. Bitte sehen Sie in Ihrem "
+#~ "Posteingang und Spam-Ordner nach der "
+#~ "Bestätigungs-E-Mail oder <a href=\"%(url)s\">senden"
+#~ " Sie die Bestätigung erneut</a>."
+
+#~ msgid "You have signed in successfully."
+#~ msgstr "Sie haben sich erfolgreich angemeldet."
+
+#~ msgid "Forgot Password"
+#~ msgstr "Passwort vergessen"
+
+#~ msgid "Invite User"
+#~ msgstr "Nutzer einladen"
+
+#~ msgid "New here? Register."
+#~ msgstr "Neu hier? Jetzt Registrieren."
+
+#~ msgid "Forgot your Password?"
+#~ msgstr "Passwort vergessen?"
+
+#~ msgid "Manage Emails"
+#~ msgstr "E-Mail-Adressen verwalten"
+
+#~ msgid "Already registered? Sign in."
+#~ msgstr "Bereits registriert? Hier anmelden."
+
+#~ msgid "Resend Confirmation Email"
+#~ msgstr "Bestätigungs-E-Mail erneut senden"
+
+#~ msgid "Reset Password"
+#~ msgstr "Passwort zurücksetzen"
+
+#~ msgid "User profile"
+#~ msgstr "Nutzerprofil"
+

@@ -1,0 +1,288 @@
+# Swedish translations for PROJECT.
+# Copyright (C) 2014 ORGANIZATION
+# This file is distributed under the same license as the PROJECT project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2014.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2017-09-28 16:42+0100\n"
+"PO-Revision-Date: 2015-08-03 13:27-0800\n"
+"Last-Translator: Andriy Tymchenko <silpol@gmail.com>\n"
+"Language: sv\n"
+"Language-Team: sv <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1)\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.5.1\n"
+
+#~ msgid "Incorrect Username and Password"
+#~ msgstr "Felaktigt användarnamn och lösenord"
+
+#~ msgid "Incorrect Email and Password"
+#~ msgstr "Felaktig e-postadress och lösenord"
+
+#~ msgid ""
+#~ msgstr "Ditt lösenord har återställts. Logga nu in med ditt nya lösenord"
+
+#~ msgid "Change Password"
+#~ msgstr "Ändra lösenord"
+
+#~ msgid "Change Username"
+#~ msgstr "Ändra användarnamnet"
+
+#~ msgid "Email does not exist"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Password must have at least 6 "
+#~ "characters with one lowercase letter, "
+#~ "one uppercase letter and one number"
+#~ msgstr ""
+#~ "Lösenordet måste vara minst 6 tecken "
+#~ "långt och bör innehålla en liten "
+#~ "bokstav, en stor bokstav och en "
+#~ "siffra"
+
+#~ msgid "Username must be at least 3 characters long"
+#~ msgstr "Användarnamnet måste vara minst 3 tecken långt"
+
+#~ msgid "Username may only contain letters, numbers, '-', '.' and '_'"
+#~ msgstr ""
+#~ "Användarnamnet får endast innehålla bokstäver,"
+#~ " siffror, '-', '.' och '_'."
+
+#~ msgid "This Username is already in use. Please try another one."
+#~ msgstr "Detta användarnamnet är redan i användning. Vänligen prova ett annat."
+
+#~ msgid "This Email is already in use. Please try another one."
+#~ msgstr "Denna e-postadress är redan registrerad. Vänligen prova en annan."
+
+#~ msgid "Email"
+#~ msgstr "E-postadress"
+
+#~ msgid "Email is required"
+#~ msgstr "E-postadress obligatorisk"
+
+#~ msgid "Invalid Email"
+#~ msgstr "Ogiltig e-postadress"
+
+#~ msgid "Add Email"
+#~ msgstr "Lägg till en e-postadress"
+
+#~ msgid "Old Password"
+#~ msgstr "Det gamla lösenordet"
+
+#~ msgid "Old Password is required"
+#~ msgstr "Det gamla lösenord är obligatoriskt"
+
+#~ msgid "New Password"
+#~ msgstr "Nya lösenordet"
+
+#~ msgid "New Password is required"
+#~ msgstr "Det nya lösenordet är obligatoriskt"
+
+#~ msgid "Retype New Password"
+#~ msgstr "Upprepa det nya lösenordet"
+
+#~ msgid "New Password and Retype Password did not match"
+#~ msgstr "Det nya lösenordet och det upprepade lösenordet överensstämmer inte"
+
+#~ msgid "Change password"
+#~ msgstr "Ändra lösenord"
+
+#~ msgid "Old Password is incorrect"
+#~ msgstr "Det gamla lösenordet är felaktigt"
+
+#~ msgid "New Username"
+#~ msgstr "Nytt användarnamn"
+
+#~ msgid "Username is required"
+#~ msgstr "Användarnamn är obligatoriskt"
+
+#~ msgid "Change username"
+#~ msgstr "Ändra användarnamn"
+
+#~ msgid "Your email address"
+#~ msgstr ""
+
+#~ msgid "Email address is required"
+#~ msgstr "E-postadress obligatorisk"
+
+#~ msgid "Invalid Email address"
+#~ msgstr "Ogiltig e-postadress"
+
+#~ msgid "Send reset password email"
+#~ msgstr "Skicka återställning av lösenord e-postmeddelande"
+
+#~ msgid "%(username_or_email)s does not exist"
+#~ msgstr ""
+
+#~ msgid "Username"
+#~ msgstr "Användarnamn"
+
+#~ msgid "Password"
+#~ msgstr "Lösenord"
+
+#~ msgid "Password is required"
+#~ msgstr "Lösenordet är obligatoriskt"
+
+#~ msgid "Remember me"
+#~ msgstr "Kom ihåg mig"
+
+#~ msgid "Sign in"
+#~ msgstr "Logga in"
+
+#~ msgid "Username or Email"
+#~ msgstr "Användarnamn eller e-post"
+
+#~ msgid "Username/Email"
+#~ msgstr "Användarnamn eller e-post"
+
+#~ msgid "Incorrect Password"
+#~ msgstr "Glömt lösenordet"
+
+#~ msgid "Incorrect %(username_or_email)s and/or Password"
+#~ msgstr "Felaktigt %(username_or_email)s och/eller lösenord"
+
+#~ msgid "Retype Password"
+#~ msgstr "Upprepa lösenordet"
+
+#~ msgid "Password and Retype Password did not match"
+#~ msgstr "Lösenordet och det upprepade lösenordet överensstämmer inte"
+
+#~ msgid "Token"
+#~ msgstr ""
+
+#~ msgid "Register"
+#~ msgstr "Registrera dig"
+
+#~ msgid "Resend email confirmation email"
+#~ msgstr "Återsänd e-postmeddelandet \"bekräftelse av e-postadress\""
+
+#~ msgid "Invite!"
+#~ msgstr ""
+
+#~ msgid "Home Page"
+#~ msgstr "Hemsida"
+
+#~ msgid "Profile Page"
+#~ msgstr "Profilsida"
+
+#~ msgid "Special Page"
+#~ msgstr "Speciell sida"
+
+#~ msgid "Your confirmation token has expired."
+#~ msgstr "Ditt igenkänningstecken har upphört att gälla."
+
+#~ msgid "Invalid confirmation token."
+#~ msgstr "Ogiltigt igenkänningstecken."
+
+#~ msgid "Your email has been confirmed."
+#~ msgstr "Din e-postadress har bekräftats."
+
+#~ msgid "Your password has been changed successfully."
+#~ msgstr "Ditt lösenord har ändrats."
+
+#~ msgid "Your username has been changed to '%(username)s'."
+#~ msgstr "Ditt användarnamn har ändrats till '%(username)s'."
+
+#~ msgid ""
+#~ "A reset password email has been "
+#~ "sent to '%(email)s'. Open that email "
+#~ "and follow the instructions to reset "
+#~ "your password."
+#~ msgstr ""
+#~ "Ett \"återställning av lösenord\" "
+#~ "e-postmeddelande har skickats till "
+#~ "'%(email)s'. Öppna e-postmeddelandet och följ"
+#~ " instruktionerna för att återställa ditt"
+#~ " lösenord."
+
+#~ msgid "You have signed out successfully."
+#~ msgstr "Din utloggning lyckades. "
+
+#~ msgid "Invitation has been sent."
+#~ msgstr ""
+
+#~ msgid "Your reset password token has expired."
+#~ msgstr ""
+#~ "Ditt igenkänningstecken för återställning "
+#~ "lösenordet har blivit gammalt."
+
+#~ msgid "Your reset password token is invalid."
+#~ msgstr "Ditt igenkänningstecken för återställning av lösenordet är ogiltigt."
+
+#~ msgid "Your password has been reset successfully."
+#~ msgstr "Ditt lösenord har ändrats."
+
+#~ msgid "You must confirm your email to access '%(url)s'."
+#~ msgstr "Du måste bekräfta din e-postadress för att få tillträde till '%(url)s'."
+
+#~ msgid "You must be signed in to access '%(url)s'."
+#~ msgstr "Du måste vara inloggad för att få tillträde '%(url)s'."
+
+#~ msgid "You do not have permission to access '%(url)s'."
+#~ msgstr "Du har inte tillgång till '%(url)s'."
+
+#~ msgid ""
+#~ "A confirmation email has been sent "
+#~ "to %(email)s with instructions to "
+#~ "complete your registration."
+#~ msgstr ""
+#~ "En bekräftelse-e-post har skickats till "
+#~ "%(email)s med instruktioner för hur du"
+#~ " slutför din registrering."
+
+#~ msgid "You have registered successfully."
+#~ msgstr "Din registrering har lyckats."
+
+#~ msgid "Your account has not been enabled."
+#~ msgstr "Ditt användarkonto har inte aktiverats."
+
+#~ msgid ""
+#~ "Your email address has not yet "
+#~ "been confirmed. Check your email Inbox"
+#~ " and Spam folders for the "
+#~ "confirmation email or <a href=\"%(url)s"
+#~ "\">Re-send confirmation email</a>."
+#~ msgstr ""
+#~ "Din e-postadress har ännu inte "
+#~ "bekräftats. Kontrollera inkorgen och "
+#~ "skräpposten i din e-post för "
+#~ "e-postmeddelandet \"bekräftelse av e-post\" "
+#~ "eller <a href=\"%(url)s\">återsänd e-postmeddelandet"
+#~ " \"bekräftelse av e-post\"</a>."
+
+#~ msgid "You have signed in successfully."
+#~ msgstr "Din inloggning har lyckats."
+
+#~ msgid "Forgot Password"
+#~ msgstr "Glömt lösenordet"
+
+#~ msgid "Invite User"
+#~ msgstr ""
+
+#~ msgid "New here? Register."
+#~ msgstr "Ny här? Registrera dig."
+
+#~ msgid "Forgot your Password?"
+#~ msgstr "Glömt ditt lösenord?"
+
+#~ msgid "Manage Emails"
+#~ msgstr "Hantera e-postadresser"
+
+#~ msgid "Already registered? Sign in."
+#~ msgstr "Redan registrerad? Logga in."
+
+#~ msgid "Resend Confirmation Email"
+#~ msgstr "Återsänd bekräftelse-e-postmeddelandet"
+
+#~ msgid "Reset Password"
+#~ msgstr "Återställ lösenord"
+
+#~ msgid "User profile"
+#~ msgstr "Användarprofil"
+

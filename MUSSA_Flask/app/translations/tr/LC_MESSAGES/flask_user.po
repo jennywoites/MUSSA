@@ -1,0 +1,264 @@
+# Turkish translations for PROJECT.
+# Copyright (C) 2015 ORGANIZATION
+# This file is distributed under the same license as the PROJECT project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2015.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2017-09-28 16:42+0100\n"
+"PO-Revision-Date: 2016-08-15 09:56+0300\n"
+"Last-Translator: aripddev <dev@aripd.com>\n"
+"Language: tr\n"
+"Language-Team: tr <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n > 1)\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.5.1\n"
+
+#~ msgid ""
+#~ "Password must have at least 6 "
+#~ "characters with one lowercase letter, "
+#~ "one uppercase letter and one number"
+#~ msgstr ""
+#~ "Parola en az 6 karakter uzunluğunda "
+#~ "olmalı, en az bir küçük harf, bir"
+#~ " büyük harf ve bir rakam içermeli"
+
+#~ msgid "Username must be at least 3 characters long"
+#~ msgstr "Kullanıcı adı en az 3 karakter uzunluğunda olmalı"
+
+#~ msgid "Username may only contain letters, numbers, '-', '.' and '_'"
+#~ msgstr "Kullanıcı adı sadece harf, rakam, '-', '.' ve '_' içerebilir"
+
+#~ msgid "This Username is already in use. Please try another one."
+#~ msgstr ""
+#~ "Kullanımda olan bir kullanıcı adı "
+#~ "girdiniz. Lütfen başka bir tane "
+#~ "deneyiniz."
+
+#~ msgid "This Email is already in use. Please try another one."
+#~ msgstr "Kullanımda olan bir eposta girdiniz. Lütfen başka bir tane deneyiniz."
+
+#~ msgid "Email"
+#~ msgstr "Eposta"
+
+#~ msgid "Email is required"
+#~ msgstr "Eposta zorunlu"
+
+#~ msgid "Invalid Email"
+#~ msgstr "Geçersiz eposta"
+
+#~ msgid "Add Email"
+#~ msgstr "Eposta Ekle"
+
+#~ msgid "Old Password"
+#~ msgstr "Eski parola"
+
+#~ msgid "Old Password is required"
+#~ msgstr "Eski parola zorunlu"
+
+#~ msgid "New Password"
+#~ msgstr "Yeni parola"
+
+#~ msgid "New Password is required"
+#~ msgstr "Yeni parola zorunlu"
+
+#~ msgid "Retype New Password"
+#~ msgstr "Yeni parolayı tekrarlayın"
+
+#~ msgid "New Password and Retype Password did not match"
+#~ msgstr "Yeni parolalar uyuşmuyor"
+
+#~ msgid "Change password"
+#~ msgstr "Parolayı değiştir"
+
+#~ msgid "Old Password is incorrect"
+#~ msgstr "Eski parola yanlış"
+
+#~ msgid "New Username"
+#~ msgstr "Yeni kullanıcı adı"
+
+#~ msgid "Username is required"
+#~ msgstr "Kullanıcı adı zorunlu"
+
+#~ msgid "Change username"
+#~ msgstr "Kullanıcı adını değiştir"
+
+#~ msgid "Your email address"
+#~ msgstr "Eposta adresiniz"
+
+#~ msgid "Email address is required"
+#~ msgstr "Eposta adresi zorunlu"
+
+#~ msgid "Invalid Email address"
+#~ msgstr "Eposta adresi geçersiz"
+
+#~ msgid "Send reset password email"
+#~ msgstr "Parola sıfırlama epostasını gönder"
+
+#~ msgid "%(username_or_email)s does not exist"
+#~ msgstr "%(username_or_email) bulunamadı"
+
+#~ msgid "Username"
+#~ msgstr "Kullanıcı adı"
+
+#~ msgid "Password"
+#~ msgstr "Parola"
+
+#~ msgid "Password is required"
+#~ msgstr "Parola zorunlu"
+
+#~ msgid "Remember me"
+#~ msgstr "Beni hatırla"
+
+#~ msgid "Sign in"
+#~ msgstr "Giriş yap"
+
+#~ msgid "Username or Email"
+#~ msgstr "Kullanıcı adı veya Eposta"
+
+#~ msgid "Username/Email"
+#~ msgstr "Kullanıcı adı/Eposta"
+
+#~ msgid "Incorrect Password"
+#~ msgstr "Parolanızı mı unuttunuz?"
+
+#~ msgid "Incorrect %(username_or_email)s and/or Password"
+#~ msgstr "Geçersiz %(username_or_email)s ve/veya parola"
+
+#~ msgid "Retype Password"
+#~ msgstr "Parolayı yeniden girin"
+
+#~ msgid "Password and Retype Password did not match"
+#~ msgstr "Parolalar uyuşmuyor"
+
+#~ msgid "Token"
+#~ msgstr "Anahtar"
+
+#~ msgid "Register"
+#~ msgstr "Kayıt ol"
+
+#~ msgid "Resend email confirmation email"
+#~ msgstr "Eposta doğrulamayı yeniden gönder"
+
+#~ msgid "Invite!"
+#~ msgstr "Davet et!"
+
+#~ msgid "Home Page"
+#~ msgstr "Ana sayfa"
+
+#~ msgid "Profile Page"
+#~ msgstr "Profil sayfası"
+
+#~ msgid "Special Page"
+#~ msgstr "Özel sayfa"
+
+#~ msgid "Your confirmation token has expired."
+#~ msgstr "Doğrulama anahtarınızın süresi dolmuş."
+
+#~ msgid "Invalid confirmation token."
+#~ msgstr "Doğrulama anahtarınız geçersiz."
+
+#~ msgid "Your email has been confirmed."
+#~ msgstr "Epostanız doğrulandı."
+
+#~ msgid "Your password has been changed successfully."
+#~ msgstr "Parolanız başarı ile değiştirildi."
+
+#~ msgid "Your username has been changed to '%(username)s'."
+#~ msgstr "Kullanıcı adınız '%(username)s' olarak değiştirildi."
+
+#~ msgid ""
+#~ "A reset password email has been "
+#~ "sent to '%(email)s'. Open that email "
+#~ "and follow the instructions to reset "
+#~ "your password."
+#~ msgstr ""
+#~ "Parolanızın sıfırlanması için %(email)s "
+#~ "adresine talimatları içeren bir eposta "
+#~ "gönderildi "
+
+#~ msgid "You have signed out successfully."
+#~ msgstr "Başarı ile çıkış yaptınız."
+
+#~ msgid "Invitation has been sent."
+#~ msgstr "Davetiniz gönderildi."
+
+#~ msgid "Your reset password token has expired."
+#~ msgstr "Parola sıfırlama anahtarınızın süresi geçmiş."
+
+#~ msgid "Your reset password token is invalid."
+#~ msgstr "Parola sıfırlama anahtarınız geçersiz."
+
+#~ msgid "Your password has been reset successfully."
+#~ msgstr "Parolanız başarı ile sıfırlandı."
+
+#~ msgid "You must confirm your email to access '%(url)s'."
+#~ msgstr "'%(url)s' adresine erişmek için epostanızı doğrulamalısınız."
+
+#~ msgid "You must be signed in to access '%(url)s'."
+#~ msgstr "'%(url)s' adresine erişmek için giriş yapmalısınız."
+
+#~ msgid "You do not have permission to access '%(url)s'."
+#~ msgstr "'%(url)s' adresine erişim izniniz yok."
+
+#~ msgid ""
+#~ "A confirmation email has been sent "
+#~ "to %(email)s with instructions to "
+#~ "complete your registration."
+#~ msgstr ""
+#~ "Kaydınızın tamamlanması için %(email)s "
+#~ "adresine talimatları içeren bir eposta "
+#~ "gönderildi "
+
+#~ msgid "You have registered successfully."
+#~ msgstr "Kaydınız başarı ile gerçekleştirildi."
+
+#~ msgid "Your account has not been enabled."
+#~ msgstr "Hesabınız etkinleştirilmedi"
+
+#~ msgid ""
+#~ "Your email address has not yet "
+#~ "been confirmed. Check your email Inbox"
+#~ " and Spam folders for the "
+#~ "confirmation email or <a href=\"%(url)s"
+#~ "\">Re-send confirmation email</a>."
+#~ msgstr ""
+#~ "Eposta adresiniz henüz doğrulanmadı. Gelen "
+#~ "ve İstenmeyen kutunuza bakın veya <a "
+#~ "href=\"%(url)s\">Doğrulama epostasını tekrar "
+#~ "gönderin</a>."
+
+#~ msgid "You have signed in successfully."
+#~ msgstr "Başarı ile giriş yaptınız."
+
+#~ msgid "Forgot Password"
+#~ msgstr "Parolanızı mı unuttunuz?"
+
+#~ msgid "Invite User"
+#~ msgstr "Kullanıcı davet et"
+
+#~ msgid "New here? Register."
+#~ msgstr "Yeni misiniz? Kayıt olun."
+
+#~ msgid "Forgot your Password?"
+#~ msgstr "Parolanızı mı unuttunuz?"
+
+#~ msgid "Manage Emails"
+#~ msgstr "Epostaları yönet"
+
+#~ msgid "Already registered? Sign in."
+#~ msgstr "Zaten kayıtlı mısınız? Giriş yapın."
+
+#~ msgid "Resend Confirmation Email"
+#~ msgstr "Doğrulama epostasını yeniden gönder"
+
+#~ msgid "Reset Password"
+#~ msgstr "Parolayı sıfırla"
+
+#~ msgid "User profile"
+#~ msgstr "Kullanıcı profili"
+

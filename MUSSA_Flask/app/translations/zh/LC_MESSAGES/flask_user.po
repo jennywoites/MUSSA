@@ -1,0 +1,266 @@
+# Chinese translations for .
+# Copyright (C) 2014 ORGANIZATION
+# This file is distributed under the same license as the  project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2014.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version:  Flask-User\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2017-09-28 16:42+0100\n"
+"PO-Revision-Date: 2014-11-02 22:26+1000\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: zh\n"
+"Language-Team: \n"
+"Plural-Forms: nplurals=1; plural=0\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.5.1\n"
+
+#~ msgid "Incorrect Username and Password"
+#~ msgstr "用户名或密码不正确"
+
+#~ msgid "Incorrect Email and Password"
+#~ msgstr "邮箱或密码不正确"
+
+#~ msgid ""
+#~ msgstr "您的密码已成功重置。请使用新密码登录。"
+
+#~ msgid "Change Password"
+#~ msgstr "更改密码"
+
+#~ msgid "Change Username"
+#~ msgstr "更改用户名"
+
+#~ msgid "Email does not exist"
+#~ msgstr "邮箱不存在"
+
+#~ msgid ""
+#~ "Password must have at least 6 "
+#~ "characters with one lowercase letter, "
+#~ "one uppercase letter and one number"
+#~ msgstr "密码须包含至少6个字符，其中至少1个小写字母，1个大写字母和1个数字"
+
+#~ msgid "Username must be at least 3 characters long"
+#~ msgstr "用户名须多于3个字符"
+
+#~ msgid "Username may only contain letters, numbers, '-', '.' and '_'"
+#~ msgstr "用户名只能包含字母，数字，或‘-’，‘.’，‘_’字符。"
+
+#~ msgid "This Username is already in use. Please try another one."
+#~ msgstr "此用户名已被使用，请尝试其它。"
+
+#~ msgid "This Email is already in use. Please try another one."
+#~ msgstr "此邮箱已被使用，请尝试其它。"
+
+#~ msgid "Email"
+#~ msgstr "邮箱"
+
+#~ msgid "Email is required"
+#~ msgstr "邮箱是必需项"
+
+#~ msgid "Invalid Email"
+#~ msgstr "无效邮箱"
+
+#~ msgid "Add Email"
+#~ msgstr "添加邮箱"
+
+#~ msgid "Old Password"
+#~ msgstr "当前密码"
+
+#~ msgid "Old Password is required"
+#~ msgstr "当前密码是必需项"
+
+#~ msgid "New Password"
+#~ msgstr "新密码"
+
+#~ msgid "New Password is required"
+#~ msgstr "新密码是必需项"
+
+#~ msgid "Retype New Password"
+#~ msgstr "确认新密码"
+
+#~ msgid "New Password and Retype Password did not match"
+#~ msgstr "两次输入的新密码不一致"
+
+#~ msgid "Change password"
+#~ msgstr "更改密码"
+
+#~ msgid "Old Password is incorrect"
+#~ msgstr "当前密码不正确"
+
+#~ msgid "New Username"
+#~ msgstr "新用户名"
+
+#~ msgid "Username is required"
+#~ msgstr "用户名是必需项"
+
+#~ msgid "Change username"
+#~ msgstr "更改用户名"
+
+#~ msgid "Your email address"
+#~ msgstr "您的邮箱地址"
+
+#~ msgid "Email address is required"
+#~ msgstr "邮箱是必需项"
+
+#~ msgid "Invalid Email address"
+#~ msgstr "无效邮箱"
+
+#~ msgid "Send reset password email"
+#~ msgstr "发送重置密码邮件"
+
+#~ msgid "%(username_or_email)s does not exist"
+#~ msgstr "用户名或邮箱不存在"
+
+#~ msgid "Username"
+#~ msgstr "用户名"
+
+#~ msgid "Password"
+#~ msgstr "密码"
+
+#~ msgid "Password is required"
+#~ msgstr "密码是必需项"
+
+#~ msgid "Remember me"
+#~ msgstr "记住我"
+
+#~ msgid "Sign in"
+#~ msgstr "登入"
+
+#~ msgid "Username or Email"
+#~ msgstr "用户名或邮箱"
+
+#~ msgid "Username/Email"
+#~ msgstr "用户名或邮箱"
+
+#~ msgid "Incorrect Password"
+#~ msgstr "忘记密码"
+
+#~ msgid "Incorrect %(username_or_email)s and/or Password"
+#~ msgstr "用户名、邮箱或密码不正确"
+
+#~ msgid "Retype Password"
+#~ msgstr "再次输入密码"
+
+#~ msgid "Password and Retype Password did not match"
+#~ msgstr "两次输入的密码不一致"
+
+#~ msgid "Token"
+#~ msgstr ""
+
+#~ msgid "Register"
+#~ msgstr "注册"
+
+#~ msgid "Resend email confirmation email"
+#~ msgstr "再次发送确认邮件"
+
+#~ msgid "Invite!"
+#~ msgstr "邀请"
+
+#~ msgid "Home Page"
+#~ msgstr "主页"
+
+#~ msgid "Profile Page"
+#~ msgstr "信息页"
+
+#~ msgid "Special Page"
+#~ msgstr "特别页"
+
+#~ msgid "Your confirmation token has expired."
+#~ msgstr "您的确认码已经过期。"
+
+#~ msgid "Invalid confirmation token."
+#~ msgstr "无效的确认码。"
+
+#~ msgid "Your email has been confirmed."
+#~ msgstr "邮箱已被确认。"
+
+#~ msgid "Your password has been changed successfully."
+#~ msgstr "密码更改成功。"
+
+#~ msgid "Your username has been changed to '%(username)s'."
+#~ msgstr "您的用户名已更改为“%(username)s”。"
+
+#~ msgid ""
+#~ "A reset password email has been "
+#~ "sent to '%(email)s'. Open that email "
+#~ "and follow the instructions to reset "
+#~ "your password."
+#~ msgstr "一封重置密码邮件已经发送至“%(email)s”。打开那封邮件，按照其指引重置您的密码。"
+
+#~ msgid "You have signed out successfully."
+#~ msgstr "登出成功。"
+
+#~ msgid "Invitation has been sent."
+#~ msgstr "邀请邮件已发送。"
+
+#~ msgid "Your reset password token has expired."
+#~ msgstr "您的重置密码请求码已过期。"
+
+#~ msgid "Your reset password token is invalid."
+#~ msgstr "您的重置密码请求码无效。"
+
+#~ msgid "Your password has been reset successfully."
+#~ msgstr "密码更改成功。"
+
+#~ msgid "You must confirm your email to access '%(url)s'."
+#~ msgstr "您须确认您的邮箱才能访问“%(url)s”。"
+
+#~ msgid "You must be signed in to access '%(url)s'."
+#~ msgstr "您须登录才能访问“%(url)s”。"
+
+#~ msgid "You do not have permission to access '%(url)s'."
+#~ msgstr "您无权限访问“%(url)s”。"
+
+#~ msgid ""
+#~ "A confirmation email has been sent "
+#~ "to %(email)s with instructions to "
+#~ "complete your registration."
+#~ msgstr "一封确认邮件已发送到%(email)s，请阅读内含信息以完成注册。"
+
+#~ msgid "You have registered successfully."
+#~ msgstr "注册成功。"
+
+#~ msgid "Your account has not been enabled."
+#~ msgstr "您的帐户已被禁用。"
+
+#~ msgid ""
+#~ "Your email address has not yet "
+#~ "been confirmed. Check your email Inbox"
+#~ " and Spam folders for the "
+#~ "confirmation email or <a href=\"%(url)s"
+#~ "\">Re-send confirmation email</a>."
+#~ msgstr "您的邮箱地址尚未确认。查看您的邮箱收件箱或垃圾箱以找到确认邮件，或者<a href=\"%(url)s\">再次发送确认邮件</a>。"
+
+#~ msgid "You have signed in successfully."
+#~ msgstr "登录成功。"
+
+#~ msgid "Forgot Password"
+#~ msgstr "忘记密码"
+
+#~ msgid "Invite User"
+#~ msgstr "邀请用户"
+
+#~ msgid "New here? Register."
+#~ msgstr "新用户吗？请注册。"
+
+#~ msgid "Forgot your Password?"
+#~ msgstr "忘记密码吗？"
+
+#~ msgid "Manage Emails"
+#~ msgstr "管理邮箱"
+
+#~ msgid "Already registered? Sign in."
+#~ msgstr "已注册吗？登录。"
+
+#~ msgid "Resend Confirmation Email"
+#~ msgstr "重发确认邮件"
+
+#~ msgid "Reset Password"
+#~ msgstr "重置密码"
+
+#~ msgid "User profile"
+#~ msgstr "账号"
+

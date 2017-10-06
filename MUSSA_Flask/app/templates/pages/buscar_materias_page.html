@@ -5,7 +5,7 @@
     
         <h2>{%trans%}Buscar Materias{%endtrans%}</h2>
 
-        <form>
+        <form action="{{ url_for('main.buscar_materias_page') }}" method="GET">
             <div class="form-group">
                 <label for="codigo_materia">Codigo de materia:</label>
                 <input type="text" class="form-control" id="codigo_materia">
@@ -17,12 +17,67 @@
             </div>
 
             <div class="form-group">
-                <label for="nombre_materia">Carreras:</label>
+                <label for="carreras">Carreras:</label>
+
+            {% for carrera in carreras %}
+                <div class="checkbox" id="carrera-{{carrera.codigo}}">
+                    <label>
+                        <input type="checkbox" value="{{carrera.codigo}}">{{ carrera.codigo }} - {{ carrera.nombre }}
+                    </label>
+               </div>
+            {% endfor %}
+
             </div>
 
-          <button type="search" class="btn btn-default">Buscar</button>
-        
+            <!--div>Agregar la seleccion de palabras clave</div-->
+
+            <button type="submit" class="btn btn-default">Buscar</button>
+
         </form>
+
+        <br>
+
+        {% if show_results %}
+            {% if materias|length == 0 %}
+                <p>No se encontraron resultados.</p>
+                <br>
+
+            {% else %}
+
+                {% if materias|length == 1 %}
+                    <p>Se encontró 1 resultado</p>
+                {% else %}
+                    <p>Se encontraron {{materias|length}} resultados</p>
+                {% endif %}
+
+                <br>
+
+                <div class="table-responsive">          
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Código</th>
+                                <th>Materia</th>
+                                <th>Carrera</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for materia in materias %}
+                                <tr>
+                                    <td>{{materia.codigo}}</td>
+                                    <td>{{materia.nombre}}</td>
+                                    <td>{{materia.carrera.nombre}}</td>
+                                    <td><a>Ver más</a></td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>                    
+
+            {% endif %}
+
+        {% endif %}
 
     </div>
 

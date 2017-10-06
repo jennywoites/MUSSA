@@ -15,12 +15,15 @@ from flask_user import UserManager, SQLAlchemyAdapter
 from flask_wtf.csrf import CSRFProtect
 from flask_babel import Babel
 
+from flask_restful import Resource, Api
+
 # Instantiate Flask extensions
 db = SQLAlchemy()
 csrf_protect = CSRFProtect()
 mail = Mail()
 migrate = Migrate()
 
+from app.API_Rest.server import *
 
 def create_app(extra_config_settings={}):
     """Create a Flask applicaction.
@@ -53,6 +56,7 @@ def create_app(extra_config_settings={}):
     # Initialize Flask-BabelEx
     babel = Babel(app)
     app.config['BABEL_DEFAULT_LOCALE'] = 'es'
+
     # Register blueprints
     from app.views.misc_views import main_blueprint
     app.register_blueprint(main_blueprint)
@@ -77,6 +81,10 @@ def create_app(extra_config_settings={}):
                                register_form=MyRegisterForm,  # using a custom register form with UserProfile fields
                                user_profile_view_function=user_profile_page,
     )
+
+    #API REST
+    api = Api(app)
+    add_resources_api_rest(api)
 
     return app
 
@@ -118,5 +126,5 @@ def init_email_error_handler(app):
     # Log errors using: app.logger.error('Some error message')
 
 
-
-
+def add_resources_api_rest(api):
+    api.add_resource(BuscarCarreras, '/api/BuscarCarreras')
