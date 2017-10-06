@@ -8,6 +8,10 @@ from app.views.paginas_publicas_view import *
 from app.views.admin_view import *
 from app.views.users_view import *
 
+from app.API_Rest.server import *
+
+from app.models.carreras_models import Carrera
+
 @main_blueprint.route('/test_sql_page')
 def test_sql_page():
     carreras = Carrera.query.all()

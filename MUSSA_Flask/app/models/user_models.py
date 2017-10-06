@@ -7,6 +7,7 @@ from flask_user.forms import RegisterForm
 from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField, validators
 from app import db
+from flask_babel import gettext
 
 
 # Define the User data model. Make sure to add the flask_user.UserMixin !!
@@ -51,19 +52,19 @@ class UsersRoles(db.Model):
 # Define the User registration form
 # It augments the Flask-User RegisterForm with additional fields
 class MyRegisterForm(RegisterForm):
-    first_name = StringField('Nombre', validators=[
-        validators.DataRequired('Debes ingresar tu nombre')])
-    last_name = StringField('Apellido', validators=[
-        validators.DataRequired('Debes ingresar tu apellido')])
-    padron = StringField('Padrón')
+    first_name = StringField(gettext('Name'), validators=[
+        validators.DataRequired(gettext('You must write your name'))])
+    last_name = StringField(gettext('Lastname'), validators=[
+        validators.DataRequired(gettext('You must write your lastname'))])
+    padron = StringField(gettext('Student ID Number'))
 
 
 # Define the User profile form
 class UserProfileForm(FlaskForm):
-    first_name = StringField('Nombre', validators=[
-        validators.DataRequired('Debes ingresar tu nombre')])
-    last_name = StringField('Apellido', validators=[
-        validators.DataRequired('Debes ingresar tu apellido')])
-    padron = StringField('Padrón')
+    first_name = StringField(gettext('Name'), validators=[
+        validators.DataRequired(gettext('You must write your name'))])
+    last_name = StringField(gettext('Lastname'), validators=[
+        validators.DataRequired(gettext('You must write your lastname'))])
+    padron = StringField(gettext('Student ID Number'))
 
-    submit = SubmitField('Guardar')
+    submit = SubmitField(gettext('Save'))

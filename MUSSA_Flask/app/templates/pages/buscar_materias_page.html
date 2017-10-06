@@ -18,9 +18,31 @@
 
             <div class="form-group">
                 <label for="nombre_materia">Carreras:</label>
+
+            {% for carrera in carreras %}
+                <div class="checkbox">
+                    <label>
+                        <input type="checkbox" value="">{{ carrera.codigo }} - {{ carrera.nombre }}
+                    </label>
+               </div>
+            {% endfor %}
+
             </div>
 
+            <div class="form-group">
+                <label for="nombre_materia">Puntuaciones:</label>
+                    {% for i in range(100,600,100) %}        
+                        <div class="star-ratings-css" title=".100"></div>
+                    {% endfor %}
+                <div></div>
+
+            </div>
+
+            <!--div>Agregar la seleccion de palabras clave</div-->
+
           <button type="search" class="btn btn-default">Buscar</button>
+
+          <!-- Agregar la tabla de resultados con un mensaje de no hay resultados para mostrar-->
         
         </form>
 
