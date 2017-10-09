@@ -10,7 +10,7 @@ SERVICE_BUSCAR_MATERIAS = '/api/BuscarMaterias'
 
 SUCCESS = 200
 
-function do_request(page, onSucces, onError){
+function do_request(page, onSucces, onError){    
     xmlhttp = new XMLHttpRequest();
 
     xmlhttp.onreadystatechange = function() {
@@ -78,12 +78,21 @@ function do_request(page, onSucces, onError){
         if (nombre != "")
             parametros += (parametros != "") ? ("&" + "nombre=" + nombre) : ("nombre=" + nombre)
 
-        //Falta la parte de las carreras
+        carreras = ""
+        checkbox = $("input:checkbox[name^='carrera-']")
+        checkbox.each(function(index, e){
+            if ( checkbox[index].checked ) {
+                carreras += (carreras != "") ? ("," + checkbox[index].value) : checkbox[index].value
+            }
+        })
+
+        if (carreras != "")
+            parametros += (parametros != "") ? ("&" + "carreras=" + carreras) : ("carreras=" + carreras)
 
         return parametros;
     }
 
-    function search_materias(){
+    function search_materias() {
         page = SERVICE_BUSCAR_MATERIAS;
         parametros = obtener_parametros_de_busqueda();
 
