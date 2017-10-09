@@ -105,6 +105,17 @@ function do_request(page, onSucces, onError){
         })
     }
 
+    function change_checkbox_carreras(checkbox) {
+        if (checkbox.name == "check_todas_las_carreras") {
+            checkbox_carrera = $("input:checkbox[name^='carrera-']")
+            checkbox_carrera.each(function(index, e){
+                checkbox_carrera[index].checked = checkbox.checked;
+            })
+        } else {
+            $("input:checkbox[name^='check_todas_las_carreras']")[0].checked = false;
+        }
+    }
+
     </script>
 
         <h2>{%trans%}Buscar Materias{%endtrans%}</h2>
@@ -123,13 +134,19 @@ function do_request(page, onSucces, onError){
             <div class="form-group">
                 <label for="carreras">Carreras:</label>
 
-            {% for carrera in carreras %}
-                <div class="checkbox" id="carrera-{{carrera.codigo}}">
+                <div class="checkbox" id="check_todas_las_carreras">
                     <label>
-                        <input type="checkbox" name="carrera-{{carrera['codigo']}}" value="{{carrera['codigo']}}">{{ carrera['codigo'] }} - {{ carrera['nombre'] }}
+                        <input type="checkbox" onchange="change_checkbox_carreras(this)" name="check_todas_las_carreras">Todas las carreras
                     </label>
-               </div>
-            {% endfor %}
+                </div>
+
+                {% for carrera in carreras %}
+                    <div class="checkbox" id="carrera-{{carrera.codigo}}">
+                        <label>
+                            <input type="checkbox" name="carrera-{{carrera['codigo']}}" onchange="change_checkbox_carreras(this)" value="{{carrera['codigo']}}">{{ carrera['codigo'] }} - {{ carrera['nombre'] }}
+                        </label>
+                    </div>
+                {% endfor %}
 
             </div>
 
