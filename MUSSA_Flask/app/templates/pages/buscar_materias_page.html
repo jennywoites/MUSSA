@@ -56,7 +56,7 @@ function do_request(page, onSucces, onError){
             html += "<td>" + materia["codigo"] + "</td>";
             html += "<td>" + materia["nombre"] + "</td>";
             html += "<td>" + materia["carrera"] + "</td>";
-            html += "<td>" + "<a href='/materias/" + materia["id"] + "'>Ver más...</a>" + "</td>";
+            html += "<td>" + "<a href='/materias/" + materia["id"] + "'><span class='glyphicon glyphicon-search'></span></a>" + "</td>";
             html += "</tr>";
         }
 
