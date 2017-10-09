@@ -456,9 +456,9 @@ Los tiempos estimados para pruebas y administración y control del proyecto se h
 \hline
 11					&	Visualización del plan de Carrera								&	40\\
 \hline
-11.1				&	Modelo Gráfico													&	30\\
+11.1				&	Visualización Gráfica del Grafo del Plan de carrera			&	30\\
 \hline
-11.2				&	Modo Texto														&	10\\
+11.2				&	Visualización del Plan de Carrera en formato de Tabla			&	10\\
 \hline
 12					&	Documentación													&	24\\
 \hline
@@ -551,7 +551,7 @@ Luego de la primer estimación, se decidió reducir el alcance para la primer im
 \hline
 11					&	Visualización del plan de Carrera								&	40\\
 \hline
-11.2				&	Modo Texto														&	10\\
+11.2				&	Visualización del Plan de Carrera en formato de Tabla			&	10\\
 \hline
 12					&	Documentación													&	24\\
 \hline
@@ -570,12 +570,66 @@ Luego de la primer estimación, se decidió reducir el alcance para la primer im
 \label{ta:estimaciones_alcance_reducido}
 \end{longtable}
 
+\newpage
 
 \subsection{Cronograma}
 
 A continuación se hace un cronograma de entregables tentativo al finalizar cada una de las iteraciones. Las mismas pueden ser modificadas en caso de verse necesario, por el tutor, el cotutor o el desarrollador. La fecha de cada una será determinada en conjunto con el tutor y el cotutor.
 
----------- FALTA COMPLETAR -------------
+\begin{table}[htbp]
+\begin{center}
+\begin{tabular}{|c|l|}
+\hline
+\textbf{Iteración}	 & 		\textbf{Entregables}\\
+
+\hline
+1 	& $\bullet$ Página web con estructura básica.\\
+  	& $\bullet$ Sección de búsqueda de materias con filtros.\\
+  	& $\bullet$ Visualización de datos de las materias\\
+  	& (sin cursos ni encuestas asociadas).\\
+\hline
+2 	& $\bullet$ Visualización de datos de las materias con\\
+	& horarios por curso.\\
+  	& $\bullet$ Módulo de sincronización de horarios obtenidos\\
+  	& desde PDF para la base de datos.\\
+\hline
+3 	& $\bullet$ Módulo de generación del plan de carreras simple\\
+	& sin restricciones\\
+	& por parte del usuario con generación sin la interfaz web.\\
+\hline
+4 	& $\bullet$ Login del usuario.\\
+  	& $\bullet$ Registración de usuarios.\\
+\hline
+5 	& $\bullet$ Página para datos del perfil del usuario.\\
+  	& $\bullet$ Administración de materias en curso, con final\\
+  	& pendiente y aprobadas.\\
+\hline
+6 	& $\bullet$ Algoritmo de generación de plan de carrera con\\
+	& filtro por cuatrimestre de inicio, máxima\\
+  	& cantidad de cuatrimestres utilizando las materias aprobadas\\
+  	& y las materias en curso (las materias con final pendiente\\
+  	& se las considera aprobadas).\\
+\hline
+7 	& $\bullet$ Algoritmo de generación de plan de carrera\\
+	& contemplando fecha de examen prevista\\
+	& para las materias con final pendiente.\\
+\hline
+8 	& $\bullet$ Módulo de Encuestas por curso.\\
+\hline
+9 	& $\bullet$ Historial de Encuestas por curso por alumno.\\
+	& $\bullet$ Visualización de resultados de encuestas.\\
+\hline
+10 	& $\bullet$ Algoritmo de generación de plan de carrera\\
+	& contemplando puntaje mínimo de cursos\\
+	& según lo indicado por el usuario.\\
+\hline
+11 	& $\bullet$ Visualización del plan de carrera en formato tabla.\\
+	& $\bullet$ Integración del algoritmo de generación del plan\\
+	& a la página web.\\
+\hline
+\end{tabular}
+\end{center}
+\end{table}
 
 \newpage
 \section{Referencias y Material consultado}
