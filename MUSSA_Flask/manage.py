@@ -6,7 +6,7 @@ Use "python manage.py runserver --help" for additional runserver options.
 """
 
 from flask_migrate import MigrateCommand
-from flask_script import Manager
+from flask_script import Manager, commands
 
 from app import create_app
 from app.commands import InitDbCommand
@@ -15,6 +15,9 @@ from app.commands import InitDbCommand
 manager = Manager(create_app)
 manager.add_command('db', MigrateCommand)
 manager.add_command('init_db', InitDbCommand)
+manager.add_command('runserver', commands.Server(host=None, port=None, threaded=True))
+
+
 
 if __name__ == "__main__":
     # python manage.py                      # shows available commands

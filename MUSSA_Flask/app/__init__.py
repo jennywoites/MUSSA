@@ -25,6 +25,9 @@ migrate = Migrate()
 
 from app.API_Rest.server import *
 
+import logging
+logging.basicConfig(filename='MUSSA.log',level=logging.DEBUG)
+
 def create_app(extra_config_settings={}):
     """Create a Flask applicaction.
     """
@@ -123,8 +126,11 @@ def init_email_error_handler(app):
     mail_handler.setLevel(logging.ERROR)
     app.logger.addHandler(mail_handler)
 
+    app.logger.basicConfig(filename='example.log',level=logging.DEBUG)
+
     # Log errors using: app.logger.error('Some error message')
 
 
 def add_resources_api_rest(api):
     api.add_resource(BuscarCarreras, '/api/BuscarCarreras')
+    api.add_resource(BuscarMaterias, '/api/BuscarMaterias')    
