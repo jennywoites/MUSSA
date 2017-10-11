@@ -31,7 +31,7 @@
 	\vspace{1.5cm}
 	{\huge\bfseries MUSSA \par}
 	\vspace{0.5cm}
-	{\huge\bfseries Generador de Planes de Carrera personalizados utilizando Programación Lineal Entera \par}
+	{\huge\bfseries Generador de Planes de Carrera personalizados\par}
 	\vspace{1cm}
 	{\Large\itshape Jennifer Andrea Woites\par}
 	\vfill
@@ -41,7 +41,7 @@
 	Co-Tutor: Ing. Diego Essaya}
 	\vfill
 % Bottom of the page
-	{\large Septiembre, 2017 \par}
+	{\large Octubre, 2017 \par}
 \end{titlepage}
 
   \newpage
@@ -66,9 +66,9 @@ El siguiente documento presenta la propuesta del Trabajo Profesional de Ingenier
 
 El objetivo del proyecto es aplicar los conocimientos adquiridos en la carrera. \newline
 
-El tema elegido para el trabajo profesional es <<MUSSA - Generador de Planes de Carrera personalizados utilizando Programación Lineal Entera.>> \newline
+El tema elegido para el trabajo profesional es <<MUSSA - Generador de Planes de Carrera personalizados.>> \newline
 
-El objetivo general del presente trabajo, será la realización de una web responsive que permita a los alumnos la visualización de sus materias, la administración de las mismas, la utilización de encuestas y la generación de un plan de carrera en base a parámetros personalizados. Cabe destacar, que el corazón de este trabajo reside en la modelización y generación del algoritmo que permita la generación del plan de carrera personalizado; para ello, se generará un modelo de resolución con Programación Lineal Entera.
+El objetivo general del presente trabajo, será la realización de una web responsive que permita a los alumnos la visualización de sus materias, la administración de las mismas, la utilización de encuestas y la generación de un plan de carrera en base a parámetros personalizados. Cabe destacar, que el corazón de este trabajo reside en la modelización y generación del algoritmo que permita la generación del plan de carrera personalizado; para ello se analizarán diferentes opciones para el algoritmo a diseñar, entre ellas los algoritmos Greedy y la programación lineal entera.
 
 \subsection{Motivación}
 
@@ -76,7 +76,7 @@ Durante los años en que el alumno lleva adelante la carrera, muchas veces se ve
 
 A esto, se suman materias que solo se dictan en el primer o segundo cuatrimestre, las correlatividades, entre otras, que dificultan la decisión de qué materia realizar antes que otra.
 
-Luego, se debe tener en cuenta que en muchos de los planes de estudio, las materias electivas no están clasificadas por ramas o intereses y que es parte de las decisiones que debe tomar el alumno el elegir qué materias desea cursar, muchas veces decidiendo más por el nombre que por el contenido en sí porque no necesariamente sabe si le está aportando conocimiento en el área a la que le gustaría dedicarse. En otros casos, por comentarios de algunos compañeros que previamente cursar dichas materias, es capaz de asesorarse y decidir con un razonamiento más amplio.
+Luego, se debe tener en cuenta que en muchos de los planes de estudio, las materias electivas no están clasificadas por ramas o intereses y que es parte de las decisiones que debe tomar el alumno el elegir qué materias desea cursar, muchas veces decidiendo más por el nombre que por el contenido en sí porque no necesariamente sabe si le está aportando conocimiento en el área a la que le gustaría dedicarse. En otros casos, por comentarios de algunos compañeros que previamente cursaron dichas materias, es capaz de asesorarse y decidir con un razonamiento más amplio.
 
 Actualmente, la decisión de qué materia se cursa primero y cuál después, se toma "manualmente", es decir, se observa el punto en el que se está parado y se decide en base a lo mejor que se puede hacer en el corto plazo ya que es muy difícil observar el panorama completo cuanto más lejos de la meta se está.
 
@@ -93,8 +93,6 @@ El alcance de este trabjo contempla:
 		\begin{itemize}
 			\item Login / Sign In
 			\item Almacenamiento y edición de datos personales, carreras, materias aprobadas
-			%\item Excepciones de correlatividades
-			%\item Simultaneidad de carreras
 			\item Encuestas de cursos / materias
 			\item Busquedas de materias con filtros
 		\end{itemize}
@@ -177,7 +175,7 @@ Además, se deberán tener en cuenta:
 
 Se deberá contar con una sección de encuestas a las que pueda puntuar a cada materia con el horario real de cursada que tuvo la materia, la cantidad de horas extras además de la cursada que requiere la materia por semana, un puntaje del curso, la dificultad de los temas, la dificultad de los TPs y exámenes, preguntas acerca de la materia, de los profesores y comentarios personales.
 
-Además, se añadirá una sección de Tema Principal para las materias de carácter de "electiva", con el que se podrá clasificar la materia para determinar si está relacionada con el Data Mining, Robótica, Gestión, etc de forma que pueda ser utilizado como preferencia para priorizar una materia electiva por sobre otra en el armado del plan. Respecto de esto, se busca que la cantidad de materias electivas que se seleccionen automáticamente en el plan correspondan a porcentajes de 'afinidad' que establezca el alumno con cada uno de estos temas.
+Además, se añadirá una sección de Tema Principal para las materias de carácter de 'electiva', con el que se podrá clasificar la materia para determinar si está relacionada con el Data Mining, Robótica, Gestión, etc de forma que pueda ser utilizado como preferencia para priorizar una materia electiva por sobre otra en el armado del plan. Respecto de esto, se busca que la cantidad de materias electivas que se seleccionen automáticamente en el plan correspondan a porcentajes de 'afinidad' que establezca el alumno con cada uno de estos temas.
 
 Adicionalmente, se podrán indicar hasta 3 palabras claves (tags) con las que el alumno podría identificar la materia. Las 3 palabras más elegidas, serán las utilizadas para la agilización de búsquedas de materias puntuales.
 
@@ -212,10 +210,10 @@ Los árboles que desencadenaban en una imposibilidad de continuar por no quedar 
 De esta forma, para pocas materias, era posible conseguir en poco tiempo los planes de estudio posibles, y luego, elegir de estos el de menor duración en cuatrimestres. Ahora bien, para una cantidad de materias de la magnitud de un plan de estudios general, no es posible realizar por fuerza bruta con poda los posibles planes de estudio en un tiempo pequeño, ya que la cantidad de ramificaciones se incrementaba en $2^{n}$.\newline
 
 
-Otra posibilidad que se analizó es la generación a través de un algoritmo Greedy, que sencillamente elija las materias en base a lo que, según números como la cantidad de créditos que añade, la cantidad de correlatividades que libera, etc, seleccione las materias más convenientes para el cuatrimestre que se esté analizando. El problema con esto, es que no realiza un análisis del problema global sino localizado, y si bien puede tener una buena solución, no necesariamente será la óptima, ya que no dista mucho de lo que hoy realizan los alumnos intuitivamente para decidir su cuatrimestre.\newline
+Uno de los algoritmos posibles a utilizar es uno de tipo Greedy, que sencillamente elija las materias en base a lo que, según números como la cantidad de créditos que añade, la cantidad de correlatividades que libera, etc, seleccione las materias más convenientes para el cuatrimestre que se esté analizando. Si bien la solución de este algoritmo puede no ser óptima, será una solución válida para los parámetros indicados y tendrá como ventaja la velocidad con la que puede diseñar el plan de carrera.\newline
 
 
-En base a la investigación, se encontró que en algunas universidades han desarrollado sistemas para determinar las aulas y los horarios de los cursos que se dictarán utilizando <<Programación Lineal Entera>>, que es la línea que se seguirá en este trabajo.
+En base a la investigación, se encontró que en algunas universidades han desarrollado sistemas para determinar las aulas y los horarios de los cursos que se dictarán utilizando <<Programación Lineal Entera>>, que es una de las líneas que se investigarán en este trabajo.
 
 Básicamente, se plantean restricciones que llamaremos "fuertes"  que consisten en restricciones que si o sí deben cumplirse (por ejemplo, no es posible estar en dos lugares al mismo tiempo, o que todas las materias obligatorias deben cumplirse), y por otro lado, restricciones que son "deseables", es decir, que cumplirlas hace que la solución elegida sea mejor, pero si no pueden cumplirse, es posible relajarlas pero puntuando negativo a la solución. De esta forma, se permite flexibilidad al problema. Una posible restricción deseable es que el puntaje del curso sea mayor a un determinado valor.
 
@@ -281,7 +279,7 @@ Una vez confeccionado el plan, éste debe poder visualizarse tanto en una grilla
 
 \subsection{Librería: PuLP}
 
-PuLP es una librería Open Source escrita en Python.
+En caso de que la solución elegida sea la programación lineal entera, la librería que se utilizará será PuLP. PuLP es una librería Open Source escrita en Python.
 
 Es usada para describir problemas de optimización como modelos matemáticos. PuLP puede llamar a numerosos solvers de programación lineal, tales como CBC, GLPK, CPLEX, Gurobi, etc, para resolver el modelo y luego utilizar comandos de Python para manipular y mostrar el resultado de la solución.
 
@@ -337,7 +335,7 @@ Cada una de las tareas secundarias se corresponderá con un issue en gitHub para
 
 Por otro lado, se establecerá un período de tiempo (como un sprint) en el que se establecerán las tareas secundarias deseadas a desarrollar durante ese lapso. Al finalizar el sprint se realizará la entrega del avance que haya sido completado. Los sprints durarán un tiempo no mayor a dos semanas. En caso que durante el sprint se detecte que se debe modificar alguna tarea, se realizará el ajuste correspondiente y se intercambiará por otras menos prioritarias de la misma duración que las nuevas que se incorporan.
 
-A medida que se vayan avanzando en los sprints se realizarán los ajustes que se consideren necesarios en base a lo que se establezca con el tutor y el cotutor en las correspondientes reuiniones.
+A medida que se vayan avanzando en los sprints se realizarán los ajustes que se consideren necesarios en base a lo que se establezca con el tutor y el cotutor en las correspondientes reuniones.
 
 \subsection{Estimaciones}
 
