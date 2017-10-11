@@ -99,8 +99,22 @@ def limpiar_linea(parametros, linea, variables_a_eliminar):
             return """    arch.write("{};0" + '\\n')\n""".format(variable)
             
         linea = reemplazar_todas_las_apariciones(linea, variable, "0")
-        linea = reemplazar_todas_las_apariciones(linea, "+ 0 ", "")
+
+        linea = reemplazar_apariciones_suma_cero(linea)
+
         linea = reemplazar_productos_franjas_por_cero(parametros, linea)
+
+        linea = reemplazar_apariciones_suma_cero(linea)
+
+    return linea
+
+
+def reemplazar_apariciones_suma_cero(linea):
+    linea = reemplazar_todas_las_apariciones(linea, "+ 0 ", "")
+    linea = reemplazar_todas_las_apariciones(linea, "- 0 ", "")
+    linea = reemplazar_todas_las_apariciones(linea, " 0 + 0 ", "0")
+    linea = reemplazar_todas_las_apariciones(linea, "(0 + 0)", "0")
+    linea = reemplazar_todas_las_apariciones(linea, " 0 + 0)", "0)")
 
     return linea
 

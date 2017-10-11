@@ -6,6 +6,7 @@ sys.path.append("../app")
 from GeneradorCodigoPulp import generar_archivo_pulp
 from ParametrosDAO import Parametros
 from Constantes import *
+from my_utils import get_str_cuatrimestre
 
 from Materia import Materia
 from Curso import Curso
@@ -50,10 +51,10 @@ class Test_creditos_minimos_para_cursar(TestPulp):
         return 0
 
     def get_franjas_minima_y_maxima(self):
-        return 1, 33
+        return 1, 20
 
     def get_maxima_cantidad_cuatrimestres(self):
-        return 5
+        return 3
 
     def get_maxima_cantidad_materias_por_cuatrimestre(self):
         return 3
@@ -70,7 +71,7 @@ class Test_creditos_minimos_para_cursar(TestPulp):
 
             cont = 0
             for cuatri in range(1, parametros.max_cuatrimestres + 1):
-                variable = "Y_{}_{}".format(materia.codigo, cuatri)
+                variable = "Y_{}_{}".format(materia.codigo, get_str_cuatrimestre(cuatri))
                 cont += resultados[variable]
 
             assert(cont == 1)
@@ -90,7 +91,7 @@ class Test_creditos_minimos_para_cursar(TestPulp):
             materia = parametros.materia[codigo]
             cuatrimestre_cursada = resultados["C{}".format(codigo)]
             cuatri_anterior = cuatrimestre_cursada - 1
-            creditos_acumulados  = resultados["CRED{}".format(cuatri_anterior)] if cuatri_anterior > 0 else 0
+            creditos_acumulados  = resultados["CRED{}".format(get_str_cuatrimestre(cuatri_anterior))] if cuatri_anterior > 0 else 0
             assert(creditos_acumulados >= materia.creditos_minimos_aprobados)
 
 

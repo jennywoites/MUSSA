@@ -30,3 +30,5 @@ class Horario:
         franja_final = self.convertir_a_franja(self.hora_fin)
         return [x for x in range(franja_inicio, franja_final)]
 
+    def __str__(self):
+        return "Horario: {} - Desde: {} A: {}".format(self.dia, self.hora_inicio, self.hora_fin)

@@ -44,6 +44,22 @@ def definir_funcion_objetivo(arch):
     arch.write(ecuacion + ENTER + ENTER)
 
 
+def escribir_funcion_de_conversion_de_tiempo(arch):
+    arch.write("def convertir_tiempo(tiempo):" + ENTER)
+    arch.write("    segundos = tiempo" + ENTER)
+    arch.write("    minutos = segundos // 60" + ENTER)
+    arch.write("    segundos = tiempo - minutos * 60" + ENTER)
+    arch.write("    horas = minutos // 60" + ENTER)
+    arch.write("    minutos = minutos - horas * 60" + ENTER)
+    arch.write("    msj = ''" + ENTER)
+    arch.write("    if horas > 0:" + ENTER)
+    arch.write("        msj += 'Horas: {} '.format(horas)" + ENTER)
+    arch.write("    if minutos > 0:" + ENTER)
+    arch.write("        msj += 'Minutos: {} '.format(minutos)" + ENTER)
+    arch.write("    msj += 'Segundos: {0:.2f}'.format(segundos)" + ENTER)
+    arch.write("    return msj" + ENTER + ENTER)
+
+
 def resolver_problema(arch):
     arch.write("# Resolucion del problema" + ENTER + ENTER)
     arch.write("tiempo_inicial = time()" + ENTER)
@@ -51,12 +67,13 @@ def resolver_problema(arch):
     arch.write("tiempo_final = time()" + ENTER)
 
     arch.write("DURACION_EJECUCION_PULP = tiempo_final - tiempo_inicial" + ENTER)
-    arch.write("print('Duracion: {}'.format(DURACION_EJECUCION_PULP))" + ENTER + ENTER)
+    arch.write("print('Duracion: {}'.format(convertir_tiempo(DURACION_EJECUCION_PULP)))" + ENTER + ENTER)
 
 
 def generar_codigo(arch, parametros):
     importar_pulp(arch)
     importar_time(arch)
+    escribir_funcion_de_conversion_de_tiempo(arch)
     definir_variables(arch, parametros)
     definir_problema_minimizacion(arch)
     generar_restricciones(arch, parametros)

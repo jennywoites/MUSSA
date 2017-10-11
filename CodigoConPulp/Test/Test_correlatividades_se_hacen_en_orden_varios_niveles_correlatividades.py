@@ -6,6 +6,7 @@ sys.path.append("../app")
 from GeneradorCodigoPulp import generar_archivo_pulp
 from ParametrosDAO import Parametros
 from Constantes import *
+from my_utils import get_str_cuatrimestre
 
 from Materia import Materia
 from Curso import Curso
@@ -73,7 +74,7 @@ class Test_correlatividades_se_hacen_en_orden_varios_niveles_correlatividades(Te
 
             cont = 0
             for cuatri in range(1, parametros.max_cuatrimestres + 1):
-                variable = "Y_{}_{}".format(materia.codigo, cuatri)
+                variable = "Y_{}_{}".format(materia.codigo, get_str_cuatrimestre(cuatri))
                 cont += resultados[variable]
 
             assert(cont == 1)
