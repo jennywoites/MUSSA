@@ -14,6 +14,9 @@ class Carrera(db.Model):
     materias = db.relationship('Materia', backref='carrera', lazy='dynamic')
     orientaciones = db.relationship('Orientacion', lazy='dynamic')
 
+    def __str__(self):
+        return "{} - {}".format(self.codigo, self.nombre)
+
 
 class Creditos(db.Model):
     __tablename__ = 'creditos'
@@ -73,6 +76,9 @@ class Correlativas(db.Model):
 
     materia_id = db.Column(db.Integer, db.ForeignKey('materia.id'))
     materia_correlativa_id = db.Column(db.Integer, db.ForeignKey('materia.id'))
+
+    def __str__(self):
+        return "La materia {} tiene como correlativa a {}".format(self.materia_id, self.materia_correlativa_id)
 
 
 class Orientacion(db.Model):
