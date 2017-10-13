@@ -28,6 +28,11 @@ def buscar_materias_page():
                 carreras= carreras)
 
 
+@main_blueprint.route('/materias/<int:idMateria>', methods=['GET'])
+def materia_page(idMateria):
+    return render_template('pages/materia_page.html')
+
+
 @main_blueprint.route('/contacto')
 def contacto_page():
     return render_template('pages/contacto_page.html')
