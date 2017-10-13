@@ -2,15 +2,15 @@
 # Usage: pip install -r requirements.txt
 
 # Flask Framework
-Flask==0.12
+Flask
 
 # Flask Packages
 Flask-Login==0.4.0
-Flask-Migrate==2.0.2
+Flask-Migrate
 Flask-Script==2.0.5
 Flask-SQLAlchemy==2.1
 Flask-User==0.6.12
-Flask-WTF==0.14
+Flask-WTF
 
 # Automated tests
 pytest==3.0.5
@@ -19,4 +19,15 @@ pytest-cov==2.4.0
 # Development tools
 # Fabric3==1.13.1.post1
 # tox==2.7.0
+
+#Flask-BabelEx (para idioma)
+flask_babel
+Flask-BabelEx
+
+#Instalar Flask Restful (API REST)
+flask-restful
+request
+requests
+
+
 
