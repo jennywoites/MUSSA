@@ -33,7 +33,7 @@ def definir_problema_minimizacion(arch):
 def definir_funcion_objetivo(arch):
     arch.write("# Definicion de la funcion objetivo a minimizar." + ENTER + ENTER)
     funciones = [] #[(factor, variable)]
-    funciones.append((1, "TOTAL_CUATRIMESTRES"))
+    funciones.append((10, "TOTAL_CUATRIMESTRES"))
     funciones.append((1,"HORAS_LIBRES_TOTALES"))
     
     ecuacion = "prob += "
@@ -63,7 +63,7 @@ def escribir_funcion_de_conversion_de_tiempo(arch):
 def resolver_problema(arch):
     arch.write("# Resolucion del problema" + ENTER + ENTER)
     arch.write("tiempo_inicial = time()" + ENTER)
-    arch.write("status = prob.solve(GLPK(msg=0))" + ENTER)
+    arch.write("status = prob.solve(COIN(threads=4, msg=True))" + ENTER)
     arch.write("tiempo_final = time()" + ENTER)
 
     arch.write("DURACION_EJECUCION_PULP = tiempo_final - tiempo_inicial" + ENTER)

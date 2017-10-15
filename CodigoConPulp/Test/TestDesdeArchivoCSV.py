@@ -85,9 +85,12 @@ class TestDesdeArchivoCSV(TestPulp):
         return OBLIGATORIA
 
 
+    def get_franjas_minima_y_maxima(self):
+        return 1, 33
+
     def proximo_horario(self, dia, franja):
         franja += 1
-        if franja >= 21: #Ultima franja considerada 21hs
+        if franja >= 23: #Ultima franja considerada 23hs
             franja = 7 #7am
             dia = self.avanzar_dia(dia)
         return dia, franja

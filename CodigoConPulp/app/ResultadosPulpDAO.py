@@ -2,7 +2,7 @@ from Constantes import *
 
 from my_utils import get_str_cuatrimestre
 
-LINEA_GUARDAR = """    arch.write("{};{}".format(value({})) + "\\n")"""
+LINEA_GUARDAR = """    arch.write("{};{}".format(int(value({}))) + "\\n")"""
 
 
 def guardar_variable_materia_i_en_cuatri_j(arch, parametros):
