@@ -61,29 +61,6 @@ class Test_correlatividades_se_hacen_en_orden(TestPulp):
     ##                  Verificacion de resultados                 ##
     #################################################################
 
-    def todas_las_materias_obligatorias_se_hacen(self, parametros, resultados):
-        for codigo in parametros.materias:
-            materia = parametros.materias[codigo]
-            if materia.tipo == ELECTIVA:
-                continue
-
-            cont = 0
-            for cuatri in range(1, parametros.max_cuatrimestres + 1):
-                variable = "Y_{}_{}".format(materia.codigo, get_str_cuatrimestre(cuatri))
-                cont += resultados[variable]
-
-            assert(cont == 1)
-
-
-    def los_cuatrimestres_de_las_correlativas_son_menores(self, parametros, resultados):
-        for codigo in parametros.materias:
-            materia = parametros.materias[codigo]
-            cod_actual = "C" + materia.codigo
-            for cor_materia in materia.correlativas:
-                cod_corr = "C" + cor_materia
-                assert(resultados[cod_actual] > resultados[cod_corr])
-
-
     def verificar_resultados(self, parametros, resultados):
         self.todas_las_materias_obligatorias_se_hacen(parametros, resultados)
         self.los_cuatrimestres_de_las_correlativas_son_menores(parametros, resultados)

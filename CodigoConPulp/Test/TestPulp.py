@@ -7,6 +7,7 @@ from GeneradorCodigoPulp import generar_archivo_pulp
 from ParametrosDAO import Parametros
 from Constantes import *
 from OptimizadorCodigoPulp import optimizar_codigo_pulp
+from my_utils import get_str_cuatrimestre
 
 from Materia import Materia
 from Curso import Curso
@@ -116,6 +117,55 @@ class TestPulp:
         raise Exception("Obligatorio implementar en las clases hijas")
 
 
+    def imprimir_plan_carrera(self, parametros, resultados):
+        print()
+        print("Plan de carrera generado:")
+        plan_carrera = self.armar_plan(parametros, resultados)
+        for cuatrimestre in range(1, len(plan_carrera) +1):
+            msj = "{} Cuatrimestre: [ ".format(cuatrimestre)
+            materias = plan_carrera[cuatrimestre]
+            for materia in materias:
+                msj += materia + " - "
+            msj = msj[:-3] + " ]"
+            print(msj)
+
+
+    def armar_plan(self, parametros, resultados):
+        VARIABLE = 0
+        MATERIA = 1
+        CUATRIMESTRE = 2
+
+        plan_carrera = {}
+        for variable in resultados:
+            valor = resultados[variable]
+            if (not "Y_" in variable) or (valor == 0):
+                continue
+            datos_variable = variable.split("_")
+
+            cuatri = int(datos_variable[CUATRIMESTRE])
+            materias = plan_carrera.get(cuatri, [])
+            materias.append(datos_variable[MATERIA])
+            plan_carrera[cuatri] = materias
+        return plan_carrera
+
+
+    def obtener_todas_las_materias_que_se_cursan(self, parametros, resultados):
+        materias_cursadas = set()
+
+        for codigo in parametros.materias:
+            materia = parametros.materias[codigo]
+
+            cont = 0
+            for cuatri in range(1, parametros.max_cuatrimestres + 1):
+                variable = "Y_{}_{}".format(materia.codigo, get_str_cuatrimestre(cuatri))
+                cont += resultados[variable]
+
+            if (cont == 1):
+                materias_cursadas.add(codigo)
+
+        return materias_cursadas
+
+
     def ejecutar_test(self):
         if not os.path.exists(RUTA_EJECUCION_TEST):
             os.system('mkdir {}'.format(RUTA_EJECUCION_TEST))
@@ -127,3 +177,38 @@ class TestPulp:
         self.ejecutar_codigo_pulp(parametros)
         resultados = self.obtener_resultados_pulp(parametros)
         self.verificar_resultados(parametros, resultados)
+
+        self.imprimir_plan_carrera(parametros, resultados)
+
+    #################################################################
+    ##                  Test de uso general                        ##
+    #################################################################
+
+    def todas_las_materias_obligatorias_se_hacen(self, parametros, resultados):
+        for codigo in parametros.materias:
+            materia = parametros.materias[codigo]
+            if materia.tipo == ELECTIVA:
+                continue
+
+            cont = 0
+            for cuatri in range(1, parametros.max_cuatrimestres + 1):
+                variable = "Y_{}_{}".format(materia.codigo, get_str_cuatrimestre(cuatri))
+                cont += resultados[variable]
+
+            assert(cont == 1)
+
+
+    def los_cuatrimestres_de_las_correlativas_son_menores(self, parametros, resultados):
+        materias_cursadas = self.obtener_todas_las_materias_que_se_cursan(parametros, resultados)
+
+        for codigo in parametros.materias:
+            materia = parametros.materias[codigo]
+            
+            #Si la materia no se cursa no puede tener un numero de cuatrimestre
+            if not materia in materias_cursadas:
+                continue
+
+            cod_actual = "C" + materia.codigo
+            for cor_materia in materia.correlativas:
+                cod_corr = "C" + cor_materia
+                assert(resultados[cod_actual] > resultados[cod_corr])

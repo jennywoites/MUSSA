@@ -7,6 +7,7 @@ from Test_correlatividades_se_hacen_en_orden_varios_niveles_correlatividades imp
 from Test_creditos_minimos_para_cursar import Test_creditos_minimos_para_cursar
 from Test_plan_licenciatura_con_unico_horario_por_materia_no_superpuestos import Test_plan_licenciatura_con_unico_horario_por_materia_no_superpuestos
 from Test_plan_licenciatura_con_unico_horario_por_materia_no_superpuestos_con_materias_electivas import Test_plan_licenciatura_con_unico_horario_por_materia_no_superpuestos_con_materias_electivas
+from Test_plan_licenciatura_completo_con_unico_horario_por_materia_no_superpuestos import Test_plan_licenciatura_completo_con_unico_horario_por_materia_no_superpuestos
 
 
 def tests_a_ejecutar():
@@ -18,6 +19,7 @@ def tests_a_ejecutar():
     tests.append(Test_creditos_minimos_para_cursar())
     tests.append(Test_plan_licenciatura_con_unico_horario_por_materia_no_superpuestos())
     tests.append(Test_plan_licenciatura_con_unico_horario_por_materia_no_superpuestos_con_materias_electivas())
+    tests.append(Test_plan_licenciatura_completo_con_unico_horario_por_materia_no_superpuestos())
     return tests
 
 

@@ -12,10 +12,10 @@ from Materia import Materia
 from Curso import Curso
 from Horario import Horario
 
-class Test_plan_licenciatura_con_unico_horario_por_materia_no_superpuestos_con_materias_electivas(TestDesdeArchivoCSV):
+class Test_plan_licenciatura_completo_con_unico_horario_por_materia_no_superpuestos(TestDesdeArchivoCSV):
 
     def get_nombre_test(self):
-        return "test_plan_licenciatura_con_unico_horario_por_materia_no_superpuestos_con_materias_electivas"
+        return "test_plan_licenciatura_completo_con_unico_horario_por_materia_no_superpuestos"
 
     def get_plan_carrera_test(self):
         return self.plan_carrera
@@ -30,10 +30,10 @@ class Test_plan_licenciatura_con_unico_horario_por_materia_no_superpuestos_con_m
         return []
 
     def get_creditos_minimos_electivas(self):
-        return 10
+        return 40
 
     def get_maxima_cantidad_cuatrimestres(self):
-        return 12
+        return 18 #Plan tiene 4,5 años == 9 cuatrimestres. Puede llevar hasta el doble: 18
 
     def get_maxima_cantidad_materias_por_cuatrimestre(self):
         return 4
@@ -69,5 +69,5 @@ class Test_plan_licenciatura_con_unico_horario_por_materia_no_superpuestos_con_m
 
 
 if __name__ == "__main__":
-    test_a_ejecutar = Test_plan_licenciatura_con_unico_horario_por_materia_no_superpuestos_con_materias_electivas()
+    test_a_ejecutar = Test_plan_licenciatura_completo_con_unico_horario_por_materia_no_superpuestos()
     test_a_ejecutar.ejecutar_test()

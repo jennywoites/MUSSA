@@ -239,12 +239,32 @@ $\sum_{i=1}^{M} Y_{ij} = 1;  \forall i \in [Materias]$
 $C_{i} = \sum_{j=1}^{M} j * Y_{ij};  \forall i \in [Materias]$
 
 \begin{itemize}
-	\item Si la materia B tiene como correlativa a A, entonces, la materia A debe realizarse primero. Lo que quiere decir, que el cuatrimestre de A debe ser menor que el número de cuatrimestre de la materia B. 
+	\item Si la materia B tiene como correlativa a A, entonces, la materia A debe realizarse primero. Lo que quiere decir, que el cuatrimestre de A debe ser menor que el número de cuatrimestre de la materia B.
 \end{itemize}
 
-$C_{A} < C_{B}$; o en general:
+$C_{A} < C_{B}$; o en general:\\
 
-$C_{i} < C_{j};  \forall$ j que tenga como correlativa a la materia i
+$C_{i} < C_{j};  \forall$ j que tenga como correlativa a la materia i \\
+
+Considerando que debe ser al menos un cuatrimestre mayor:\\
+
+$C_{j} \geq C_{i} + 1;  \forall$ j que tenga como correlativa a la materia i \\
+
+Ahora bien, para este juego de ecuaciones, depende de si i o j son obligatorias o electivas:\\
+
+- Si la materia i y la materia j son obligatorias:\\
+
+$C_{j} \geq C_{i} + 1;  \forall$ j obligatoria que tenga como correlativa a la materia obligatoria i\\
+
+- Si la materia i es obligatoria y la materia j es electiva:\\
+
+$C_{j} + INFINITO * (1 - \sum_{\forall cuat \in MAX CUATRIMESTRES} Y_{j,cuat}) \geq C_{i} + 1;  \forall$ j electiva que tenga como correlativa a la materia obligatoria i \\
+
+- Si la materia i y la materia j son electivas, se generan dos juegos de ecuaciones en lugar de uno:\\
+
+$C_{j} + INFINITO * (1 - \sum_{\forall cuat \in MAX CUATRIMESTRES} Y_{j,cuat}) \geq C_{i} + (1 * \sum_{\forall cuat \in MAX CUATRIMESTRES} Y_{i,cuat});  \forall$ j electiva que tenga como correlativa a la materia electiva i \\
+
+$C_{j} \leq INFINITO * \sum_{\forall cuat \in MAX CUATRIMESTRES} Y_{i,cuat};  \forall$ j electiva que tenga como correlativa a la materia electiva i \\
 
 \begin{itemize}
 	\item La cantidad de materias por cuatrimestre no puede superar un valor máximo preestablecido por el usuario. (cantidad de materias máxima que el alumno está dispuesto a cursar por cuatrimestre).

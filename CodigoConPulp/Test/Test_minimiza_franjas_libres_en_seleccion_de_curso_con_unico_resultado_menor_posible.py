@@ -6,6 +6,7 @@ sys.path.append("../app")
 from GeneradorCodigoPulp import generar_archivo_pulp
 from ParametrosDAO import Parametros
 from Constantes import *
+from my_utils import get_str_cuatrimestre
 
 from Materia import Materia
 from Curso import Curso
