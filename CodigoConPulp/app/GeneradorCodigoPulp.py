@@ -63,7 +63,7 @@ def escribir_funcion_de_conversion_de_tiempo(arch):
 def resolver_problema(arch):
     arch.write("# Resolucion del problema" + ENTER + ENTER)
     arch.write("tiempo_inicial = time()" + ENTER)
-    arch.write("status = prob.solve(COIN(threads=4, msg=True))" + ENTER)
+    arch.write("status = prob.solve(COIN(threads=2, msg=True))" + ENTER)
     arch.write("tiempo_final = time()" + ENTER)
 
     arch.write("DURACION_EJECUCION_PULP = tiempo_final - tiempo_inicial" + ENTER)

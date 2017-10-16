@@ -39,10 +39,9 @@ def generar_restriccion_valor_cuatrimestre_en_que_se_cursa_la_materia(arch, para
             ecuacion += "{}*{}".format(cuatrimestre,variable)
         
         variable_c_materia = "C{}".format(materia)
-        ecuacion += " - {} ".format(variable_c_materia)
         ecuacion_complementaria = ecuacion
-        ecuacion += "<= 0)"
-        ecuacion_complementaria += ">= 0)"
+        ecuacion += "<= {})".format(variable_c_materia)
+        ecuacion_complementaria += ">= {})".format(variable_c_materia)
 
         arch.write(ecuacion + ENTER)
         arch.write(ecuacion_complementaria + ENTER)
@@ -52,21 +51,71 @@ def generar_restriccion_valor_cuatrimestre_en_que_se_cursa_la_materia(arch, para
 
 def generar_restriccion_correlativas(arch, parametros):
     plan = parametros.plan
+    materias = parametros.materias
 
-    arch.write("# Los cuatrimestres de las correlativas deben ser menores" + ENTER + ENTER)
-    for materia in plan:
-        correlativas = plan[materia]
+    arch.write("# Los cuatrimestres de las correlativas deben ser menores (cuando la materia se cursa)" + ENTER + ENTER)
+    for cod_materia in plan:
+        correlativas = plan[cod_materia]
         if not correlativas:
             continue
 
-        primera = "C{}".format(materia)
-        for m_correlativa in correlativas:
-            segunda = "C{}".format(m_correlativa)
+        materia = materias[cod_materia]
+
+        for cod_m_correlativa in correlativas:
             
-            #La segunda (correlativa) se tiene que hacer despues
-            arch.write("prob += ({} - {} >= 1)".format(segunda, primera) + ENTER)
+            if materia.tipo == OBLIGATORIA:
+                escribir_ecuacion_correlativa_depende_de_obligatoria(arch, parametros, cod_materia, cod_m_correlativa)
+            else:
+                escribir_ecuacion_correlativa_depende_de_electiva(arch, parametros, cod_materia, cod_m_correlativa)
 
     arch.write(ENTER + ENTER)
+
+
+def escribir_ecuacion_correlativa_depende_de_obligatoria(arch, parametros, cod_materia, cod_m_correlativa):
+    materias = parametros.materias
+
+    cuatri_materia = "C{}".format(cod_materia)
+    cuatri_correlativa = "C{}".format(cod_m_correlativa)
+
+    if materias[cod_m_correlativa].tipo == OBLIGATORIA:
+        ecuacion = "prob += ({} >= {} + 1)".format(cuatri_correlativa, cuatri_materia)
+        arch.write(ecuacion + ENTER)
+    else:
+        sumatoria = obtener_sumatoria_Y_cuatrimestres_para_materia(parametros, materias[cod_m_correlativa])
+        ajuste_electiva_no_cursada = "{} * (1 - ({}))".format(INFINITO, sumatoria)
+        ecuacion = "prob += ({} + {} >= {} + 1)".format(cuatri_correlativa, ajuste_electiva_no_cursada, cuatri_materia)
+        arch.write(ecuacion + ENTER)
+
+
+def obtener_sumatoria_Y_cuatrimestres_para_materia(parametros, materia):
+    sumatoria = ""
+    for cuatrimestre in range (1, parametros.max_cuatrimestres + 1):
+        variable = "Y_{}_{}".format(materia.codigo, get_str_cuatrimestre(cuatrimestre))
+        sumatoria += variable + " + "
+    return sumatoria[:-3]
+
+
+def escribir_ecuacion_correlativa_depende_de_electiva(arch, parametros, cod_materia, cod_m_correlativa):
+    materias = parametros.materias
+
+    cuatri_materia = "C{}".format(cod_materia)
+    cuatri_correlativa = "C{}".format(cod_m_correlativa)
+
+    #Si la materia electiva primera se cursa, entonces el cuatrimestre debe ser mayor
+    sumatoria_correlativa = obtener_sumatoria_Y_cuatrimestres_para_materia(parametros, materias[cod_m_correlativa])
+    ajuste_electiva_no_cursada = "{} * (1 - ({}))".format(INFINITO, sumatoria_correlativa)
+    ec_correlativa = "{} + {}".format(cuatri_correlativa, ajuste_electiva_no_cursada)
+
+    sumatoria_primaria = obtener_sumatoria_Y_cuatrimestres_para_materia(parametros, materias[cod_materia])    
+    ajuste_electiva_primaria_no_cursada = "(1 * ({}))".format(sumatoria_primaria) 
+    ec_primer_materia = "{} + {}".format(cuatri_materia, ajuste_electiva_primaria_no_cursada)
+
+    ecuacion = "prob += ({} >= {})".format(ec_correlativa, ec_primer_materia)
+    arch.write(ecuacion + ENTER)
+
+    #Si la materia electiva primera no se cursa, entonces no se puede cursar la que la tiene como correlativa
+    ecuacion = "prob += ({} <= {} * ({}))".format(cuatri_correlativa, INFINITO, sumatoria_primaria)    
+    arch.write(ecuacion + ENTER)
 
 
 def generar_restriccion_maxima_cant_materias_por_cuatrimestre(arch, parametros):
@@ -77,7 +126,7 @@ def generar_restriccion_maxima_cant_materias_por_cuatrimestre(arch, parametros):
         ecuacion = "prob += ("
         es_inicial = True        
         for materia in plan:
-            ecuacion = ecuacion if es_inicial else (ecuacion + " + ") 
+            ecuacion = ecuacion if es_inicial else (ecuacion + " + ")
             if es_inicial:
                 es_inicial = False
 
@@ -117,12 +166,10 @@ def generar_restriccion_calculo_creditos_obtenidos_por_cuatrimestre(arch, parame
         ecuacion = ecuacion[:-2] #elimino el ultimo + agregado
 
         if i > 1:
-            ecuacion += "+ CRED{} - CRED{}".format(get_str_cuatrimestre(i-1), get_str_cuatrimestre(i))        
-        else:
-            ecuacion += "- CRED{}".format(get_str_cuatrimestre(i))            
+            ecuacion += "+ CRED{}".format(get_str_cuatrimestre(i-1))        
 
-        arch.write(ecuacion + " <= 0)" + ENTER)
-        arch.write(ecuacion + " >= 0)" + ENTER)
+        arch.write(ecuacion + " <= CRED{})".format(get_str_cuatrimestre(i)) + ENTER)
+        arch.write(ecuacion + " >= CRED{})".format(get_str_cuatrimestre(i)) + ENTER)
     arch.write(ENTER)          
 
 
