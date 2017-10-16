@@ -80,15 +80,6 @@ class Test_correlatividades_se_hacen_en_orden_varios_niveles_correlatividades(Te
             assert(cont == 1)
 
 
-    def los_cuatrimestres_de_las_correlativas_son_menores(self, parametros, resultados):
-        for codigo in parametros.materias:
-            materia = parametros.materias[codigo]
-            cod_actual = "C" + materia.codigo
-            for cor_materia in materia.correlativas:
-                cod_corr = "C" + cor_materia
-                assert(resultados[cod_actual] > resultados[cod_corr])
-
-
     def verificar_resultados(self, parametros, resultados):
         self.todas_las_materias_obligatorias_se_hacen(parametros, resultados)
         self.los_cuatrimestres_de_las_correlativas_son_menores(parametros, resultados)
