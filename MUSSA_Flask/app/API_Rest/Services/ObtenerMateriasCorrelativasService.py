@@ -29,6 +29,8 @@ class ObtenerMateriasCorrelativas(Resource):
                 'nombre': materia.nombre,
             })
 
+        materias_result.sort(key=lambda materia : materia["codigo"] if len(materia["codigo"]) > 1 else "0" + materia["codigo"])
+
         result = ({'correlativas': materias_result}, SUCCESS_OK)
         logging.info('Obtener Materias Correlativas devuelve como resultado: {}'.format(result))
 

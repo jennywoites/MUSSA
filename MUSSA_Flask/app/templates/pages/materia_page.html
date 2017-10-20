@@ -12,13 +12,16 @@
         {% if carreras | length > 0 %}
             <br>
             <p>Otras carreras en las que se dicta esta materia:</p>
-        {% endif %}
 
-        {% for otra_carrera in carreras %}
-            {% if otra_carrera["id"] != materia["carrera_id"] %}
-                <a href='{{otra_carrera["link"]}}'>{{otra_carrera["nombre"]}}</a>
-            {% endif %}
-        {% endfor %}
+            {% for otra_carrera in carreras %}
+                {% if otra_carrera["id"] != materia["carrera_id"] %}
+                    <a href='/materias/{{otra_carrera["id_materia"]}}'>{{otra_carrera["nombre"]}}</a>
+                {% endif %}
+            {% endfor %}
+
+            <br>
+
+        {% endif %}
 
         <br>
 

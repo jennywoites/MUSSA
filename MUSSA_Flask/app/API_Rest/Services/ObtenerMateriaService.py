@@ -20,8 +20,6 @@ class ObtenerMateria(Resource):
         query = Materia.query.filter_by(id=q_id)
         materia = query.first()
 
-        print(materia)
-
         materia_result = {
             'id': materia.id,
             'codigo': materia.codigo,
