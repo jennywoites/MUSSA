@@ -133,4 +133,6 @@ def init_email_error_handler(app):
 
 def add_resources_api_rest(api):
     api.add_resource(BuscarCarreras, '/api/BuscarCarreras')
-    api.add_resource(BuscarMaterias, '/api/BuscarMaterias')    
+    api.add_resource(BuscarMaterias, '/api/BuscarMaterias') 
+    api.add_resource(ObtenerMateria, '/api/ObtenerMateria')  
+    api.add_resource(ObtenerMateriasCorrelativas, '/api/ObtenerMateriasCorrelativas')

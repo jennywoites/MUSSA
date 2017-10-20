@@ -1,0 +1,78 @@
+{% extends "common/page_base.html" %}
+
+{% block content %}
+
+    <div class="container">
+
+        <h2>{{materia["codigo"]}} - {{materia["nombre"]}}</h2>
+
+        <h3>{{materia["carrera"]}}</h3>
+
+        <!-- OTRAS CARRERAS EN LAS QUE SE DICTA LA MATERIA -->
+        {% if carreras | length > 0 %}
+            <br>
+            <p>Otras carreras en las que se dicta esta materia:</p>
+        {% endif %}
+
+        {% for otra_carrera in carreras %}
+            {% if otra_carrera["id"] != materia["carrera_id"] %}
+                <a href='{{otra_carrera["link"]}}'>{{otra_carrera["nombre"]}}</a>
+            {% endif %}
+        {% endfor %}
+
+        <br>
+
+        <!-- CREDITOS -->
+
+        {% if materia["creditos"] > 0 %}
+            <p>Creditos: {{materia["creditos"]}}</p>
+        {% endif %}
+
+        {% if materia["creditos_minimos_para_cursarla"] > 0 %}
+            <p>Requiere {{materia["creditos_minimos_para_cursarla"]}} créditos como mínimo para poder cursarse.</p>
+        {% endif %}
+
+        <!-- MATERIAS CORRELATIVAS --> 
+        {% if correlativas | length > 0 %}
+
+            <br>
+            <p>Materias correlativas:</p>
+
+            <div class='table-responsive'>
+                <table class='table'>
+                    <tr>
+                        <th>Código</th>
+                        <th>Materia</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+
+                        {% for correlativa in correlativas %}
+                            <tr>
+                                <td>
+                                    <a href='/materias/{{correlativa["id"]}}'>
+                                        {{correlativa["codigo"]}}
+                                    </a>
+                                </td>
+                                <td>{{correlativa["nombre"]}}</td>
+                            </tr>
+
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+        {% endif %}
+
+        <!-- Objetivos -->
+        <!-- Contenido -->
+
+        <!-- Tabla de cursos y links a las encuestas -->
+
+        <br>
+
+        <div id="search_results"></div>
+
+    </div>
+
+{% endblock %}
