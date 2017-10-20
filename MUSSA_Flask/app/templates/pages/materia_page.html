@@ -9,7 +9,8 @@
         <h3>{{materia["carrera"]}}</h3>
 
         <!-- OTRAS CARRERAS EN LAS QUE SE DICTA LA MATERIA -->
-        {% if carreras | length > 0 %}
+        <!-- Mayor a 1 porque al menos se dicta en la carrera actual -->
+        {% if carreras | length > 1 %}
             <br>
             <p>Otras carreras en las que se dicta esta materia:</p>
 

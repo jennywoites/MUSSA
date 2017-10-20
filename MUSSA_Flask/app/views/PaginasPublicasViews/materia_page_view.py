@@ -14,7 +14,6 @@ def materia_page(idMateria):
     carreras = invocar_servicio_obtener_carreras_para_una_materia(materia["codigo"])
 
     correlativas = invocar_servicio_obtener_correlativas(idMateria)
-    print(correlativas)
 
     return render_template('pages/materia_page.html',
                 materia=materia,
