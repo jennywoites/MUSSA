@@ -35,7 +35,7 @@ REQUIERE_SUFICIENCIA_IDIOMA = "REQUIERE_SUFICIENCIA_IDIOMA"
 
 def create_carreras():
     # Create all tables
-    db.create_all() #es necesario???
+    db.create_all()
 
     for codigo in CARRERAS:
         carrera = CARRERAS[codigo]

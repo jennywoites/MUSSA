@@ -1,0 +1,12 @@
+{% extends "common/page_base.html" %}
+
+{% block content %}
+
+<form action = "http://localhost:5000/admin/administrar_horarios/uploader" method="POST"
+enctype="multipart/form-data">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+    <input type="file" name="file"/>
+    <input type="submit"/>
+</form>
+
+{% endblock %}
