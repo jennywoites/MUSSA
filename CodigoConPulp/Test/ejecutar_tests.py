@@ -8,18 +8,19 @@ from Test_creditos_minimos_para_cursar import Test_creditos_minimos_para_cursar
 from Test_plan_licenciatura_con_unico_horario_por_materia_no_superpuestos import Test_plan_licenciatura_con_unico_horario_por_materia_no_superpuestos
 from Test_plan_licenciatura_con_unico_horario_por_materia_no_superpuestos_con_materias_electivas import Test_plan_licenciatura_con_unico_horario_por_materia_no_superpuestos_con_materias_electivas
 from Test_plan_licenciatura_completo_con_unico_horario_por_materia_no_superpuestos import Test_plan_licenciatura_completo_con_unico_horario_por_materia_no_superpuestos
-
+from Test_plan_licenciatura_con_horarios_cargados_desde_pdf_fiuba import Test_plan_licenciatura_con_horarios_cargados_desde_pdf_fiuba
 
 def tests_a_ejecutar():
     tests = []
-    tests.append(Test_minimiza_franjas_libres_en_seleccion_de_curso_con_unico_resultado_menor_posible())
-    tests.append(Test_minimiza_franjas_libres_en_seleccion_de_curso_con_dos_posibles_resultados())
+    #tests.append(Test_minimiza_franjas_libres_en_seleccion_de_curso_con_unico_resultado_menor_posible())
+    #tests.append(Test_minimiza_franjas_libres_en_seleccion_de_curso_con_dos_posibles_resultados())
     tests.append(Test_correlatividades_se_hacen_en_orden())
     tests.append(Test_correlatividades_se_hacen_en_orden_varios_niveles_correlatividades())
     tests.append(Test_creditos_minimos_para_cursar())
     tests.append(Test_plan_licenciatura_con_unico_horario_por_materia_no_superpuestos())
     tests.append(Test_plan_licenciatura_con_unico_horario_por_materia_no_superpuestos_con_materias_electivas())
     tests.append(Test_plan_licenciatura_completo_con_unico_horario_por_materia_no_superpuestos())
+    tests.append(Test_plan_licenciatura_con_horarios_cargados_desde_pdf_fiuba())
     return tests
 
 

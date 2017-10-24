@@ -109,4 +109,4 @@ def guardar_variables(arch, parametros):
     guardar_total_cuatrimestres(arch)
     guardar_variable_cantidad_creditos_por_cuatrimestre(arch, parametros)    
     guardar_variables_horarios_de_materias(arch, parametros)
-    guardar_variables_horas_libres_entre_materias(arch, parametros)
+    #guardar_variables_horas_libres_entre_materias(arch, parametros)

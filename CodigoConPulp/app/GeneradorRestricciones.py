@@ -398,4 +398,4 @@ def generar_restricciones(arch, parametros):
     generar_restriccion_creditos_minimos_para_cursar(arch, parametros)
     generar_restriccion_horarios_cursos(arch, parametros)
     generar_restriccion_creditos_minimos_electivas(arch, parametros)
-    generar_restriccion_minimizar_horas_libres_entre_materias(arch, parametros)
+    #generar_restriccion_minimizar_horas_libres_entre_materias(arch, parametros)
