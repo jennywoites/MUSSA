@@ -2,11 +2,110 @@
 
 {% block content %}
 
-<form action = "http://localhost:5000/admin/administrar_horarios/uploader" method="POST"
-enctype="multipart/form-data">
-    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
-    <input type="file" name="file"/>
-    <input type="submit"/>
-</form>
+    <h2>Cargar horarios de cuatrimestres</h2>
+
+    <form action="{{ url_for('main.administrar_horarios_upload_file') }}" method="POST"
+    enctype="multipart/form-data">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+        
+        <div class="form-group">
+            <label for="archivo">Archivo de horarios:</label>
+                <input type="file" name="file">
+            </label>
+        </div>
+
+        <div>
+            <div class="row">
+                <div class="col-sm-4">
+                    <div class="form-group">
+                        <label for="codigo_materia">Número de cuatrimestre:</label>
+                        <input type="text" class="form-control" id="numero_cuatrimestre" name="numero_cuatrimestre">
+                    </div>
+                </div>
+                <div class="col-sm-4">
+                    <div class="form-group">
+                        <label for="nombre_materia">Año:</label>
+                        <input type="text" class="form-control" id="anio">
+                    </div>
+                </div>
+            </div>
+        </div>        
+
+        <input type="submit" class="btn btn-default"/>
+    </form>
+
+    {% if cursos | length == 0 %}
+        <h3>No hay horarios cargados</h3>
+    {% else %}
+        <br>
+        <h3>Cursos guardados:</h3>
+
+        <div class='table-responsive'>
+            <table class='table'>
+                <tr>
+                    <th>Materia</th>
+                    <th>Curso</th>
+                    <th>Carreras</th>
+                    <th>Horarios</th>
+                    <th>1º Cuatrimestre</th>
+                    <th>2º Cuatrimestre</th>
+                    <th>Acciones</th>
+                </tr>
+                </thead>
+                <tbody>
+                    {% for curso in cursos %}
+                        <tr>
+                            <td>{{curso["codigo_materia"]}}</td>
+                            <td>{{curso["codigo_curso"]}}</td>
+                            <td>
+                                <ul class="list-group">
+                                    {% for carrera in curso["carreras"] %}
+                                        <li class="list-group-item">
+                                            {{carrera["codigo"]}} - {{carrera["nombre"]}}
+                                        </li>
+                                    {% endfor %}
+                                </ul>
+                            </td>
+                            <td>
+                                <ul class="list-group">
+                                    {% for horario in curso["horarios"] %}
+                                        <li class="list-group-item">
+                                            {{horario["dia"]}} de {{horario["hora_desde"]}} a {{horario["hora_hasta"]}}
+                                        </li>
+                                    {% endfor %}
+                                </ul>
+                            </td>
+                            <td>
+                                <p>
+                                {% if curso["se_dicta_primer_cuatri"] %}
+                                    SI
+                                {% else %}
+                                    NO
+                                {% endif %}
+                                <p>
+                            </td>
+                            <td>
+                                <p>
+                                {% if curso["se_dicta_segundo_cuatri"] %}
+                                    SI
+                                {% else %}
+                                    NO
+                                {% endif %}
+                                <p>
+                            </td>
+                            <td>
+                                <a href='/admin/curso/{{curso["id"]}}'>
+                                    <span class='glyphicon glyphicon-pencil'></span>
+                                </a>
+                            </td>
+                        </tr>
+
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        {% endif %}
+
 
 {% endblock %}

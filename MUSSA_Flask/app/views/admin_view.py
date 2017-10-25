@@ -1,13 +1,14 @@
 from flask import redirect, render_template
-from flask import request, url_for
+from flask import request, url_for, flash
 from flask_user import current_user, login_required, roles_accepted
 from werkzeug import secure_filename
 
 from app import db
 from app.models.user_models import UserProfileForm
-from app.models.carreras_models import Carrera
 
 from app.views.base_view import main_blueprint
+
+from app.views.Utils.invocaciones_de_servicios import *
 
 # The Admin page is accessible to users with the 'admin' role
 @main_blueprint.route('/admin')
@@ -19,18 +20,20 @@ def admin_page():
 @main_blueprint.route('/admin/administrar_horarios')
 @roles_accepted('admin')
 def administrar_horarios_page():
-   return render_template('pages/administrar_horarios_page.html')
+    cursos = invocar_buscar_cursos()
+    return render_template('pages/administrar_horarios_page.html', cursos=cursos)
 
 
 @main_blueprint.route('/admin/administrar_horarios/uploader', methods = ['POST'])
 @roles_accepted('admin')
-def upload_file():
+def administrar_horarios_upload_file():
     if request.method == 'POST':
         f = request.files['file']
         ruta = 'app/tmp/' + secure_filename(f.filename)
         f.save(ruta)
 
-        #Guardar los horarios que esten en el archivo
-        #invocando al servicio correspondiente con la ruta del archivo
+        #cuatrimestre = request.files['numero_cuatrimestre']
+        invocar_guardar_horarios_desde_PDF(ruta, 2)
 
-        return 'file uploaded successfully'
+        flash("Los horarios han sido guardados")
+        return redirect(url_for("main.administrar_horarios_page"))
