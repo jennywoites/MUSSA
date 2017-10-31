@@ -45,6 +45,7 @@
                 <tr>
                     <th>Materia</th>
                     <th>Curso</th>
+                    <th>Docentes</th>
                     <th>Carreras</th>
                     <th>Horarios</th>
                     <th>1º Cuatrimestre</th>
@@ -57,6 +58,7 @@
                         <tr>
                             <td>{{curso["codigo_materia"]}}</td>
                             <td>{{curso["codigo_curso"]}}</td>
+                            <td>{{curso["docentes"]}}</td>
                             <td>
                                 <ul class="list-group">
                                     {% for carrera in curso["carreras"] %}

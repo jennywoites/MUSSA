@@ -10,6 +10,8 @@ class Curso(db.Model):
     docentes = db.Column(db.String(250), nullable=True, server_default='')
     se_dicta_primer_cuatrimestre = db.Column(db.Boolean(), nullable=False, server_default='0')
     se_dicta_segundo_cuatrimestre = db.Column(db.Boolean(), nullable=False, server_default='0')
+    cantidad_encuestas_completas = db.Column(db.Integer, nullable=False, server_default='0')
+    puntaje_total_encuestas = db.Column(db.Integer, nullable=False, server_default='0')
 
     def __str__(self):
         return "Curso {} de {}".format(self.codigo, self.codigo_materia)
@@ -47,4 +49,4 @@ class CarreraPorCurso(db.Model):
     carrera_id = db.Column(db.Integer, db.ForeignKey('carrera.id'))
 
     def __str__(self):
-        return "El curso {} es de esta carrrea: {}".format(self.curso_id, self.carrera_id)
+        return "El curso con id {} es de esta carrera: {}".format(self.curso_id, self.carrera_id)

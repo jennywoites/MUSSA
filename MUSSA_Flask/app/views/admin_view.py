@@ -32,6 +32,7 @@ def administrar_horarios_upload_file():
         ruta = 'app/tmp/' + secure_filename(f.filename)
         f.save(ruta)
 
+        print(request.files)
         #cuatrimestre = request.files['numero_cuatrimestre']
         invocar_guardar_horarios_desde_PDF(ruta, 2)
 

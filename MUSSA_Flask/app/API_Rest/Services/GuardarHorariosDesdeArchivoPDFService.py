@@ -65,6 +65,7 @@ class GuardarHorariosDesdeArchivoPDF(Resource):
         if not curso:
             curso = self.crear_curso(nombre_curso, codigo_materia, docentes, horarios_materia)
 
+        print(cuatrimestre)
         if cuatrimestre == 1 or cuatrimestre == '1':
             curso.se_dicta_primer_cuatrimestre = True
         else:
@@ -94,7 +95,9 @@ class GuardarHorariosDesdeArchivoPDF(Resource):
         curso = Curso(
             codigo_materia = codigo_materia,
             codigo = nombre_curso,
-            docentes = docentes
+            docentes = docentes,
+            cantidad_encuestas_completas = 0,
+            puntaje_total_encuestas = 0
         )
         db.session.add(curso)
 

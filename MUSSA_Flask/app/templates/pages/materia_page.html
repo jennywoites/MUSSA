@@ -40,7 +40,7 @@
         {% if correlativas | length > 0 %}
 
             <br>
-            <p>Materias correlativas:</p>
+            <h4>Materias correlativas:</h4>
 
             <div class='table-responsive'>
                 <table class='table'>
@@ -68,10 +68,51 @@
 
         {% endif %}
 
-        <!-- Objetivos -->
-        <!-- Contenido -->
-
         <!-- Tabla de cursos y links a las encuestas -->
+        {% if cursos | length > 0 %}
+
+            <br>
+            <h4>Cursos:</h4>
+
+            <div class='table-responsive'>
+                <table class='table'>
+                    <tr>
+                        <th>Curso</th>
+                        <th>Docentes</th>
+                        <th>Horarios</th>
+                        <th>Cuatrimestre en que es dictada</th>
+                        <th>Puntaje</th>
+                        <th>Encuestas</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                        {% for curso in cursos %}
+                            <tr>
+                                <td>{{curso["codigo_curso"]}}</td>
+                                <td>{{curso["docentes"]}}</td>
+                                <td>
+                                    <ul class="list-group">
+                                        {% for horario in curso["horarios"] %}
+                                            <li class="list-group-item">
+                                                {{horario["dia"]}} de {{horario["hora_desde"]}} a {{horario["hora_hasta"]}}
+                                            </li>
+                                        {% endfor %}
+                                    </ul>
+                                </td>
+                                <td>{{curso["cuatrimestre"]}}</td>
+                                <td>{{curso["puntaje"]}}</td>
+                                <td>
+                                    <a href='/materias/encuestas/{{curso["id"]}}'>
+                                        <span class='glyphicon glyphicon-search'></span>
+                                    </a>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+        {% endif %}
 
         <br>
 

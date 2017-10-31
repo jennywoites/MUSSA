@@ -15,7 +15,10 @@ def materia_page(idMateria):
 
     correlativas = invocar_servicio_obtener_correlativas(idMateria)
 
+    cursos = invocar_servicio_obtener_curso(materia["codigo"], materia["carrera_id"])
+
     return render_template('pages/materia_page.html',
                 materia=materia,
                 carreras=carreras,
-                correlativas = correlativas)
+                correlativas = correlativas,
+                cursos = cursos)    

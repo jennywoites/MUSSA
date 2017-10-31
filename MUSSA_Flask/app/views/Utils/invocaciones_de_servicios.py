@@ -56,7 +56,19 @@ def invocar_buscar_cursos(codigo_materia='', nombre_curso=''):
     parametros = parametros + "&" if parametros and nombre_curso else parametros
     parametros = parametros + "nombre_curso=" + str(nombre_curso) if nombre_curso else parametros
 
-    url = BUSCAR_CURSOS_SERVICE + "?" + parametros
+    url = BUSCAR_CURSOS_SERVICE
+    if parametros: url + '?' + parametros
+
     cursos_response = requests.get(url)
     escribir_resultado_servicio('Buscar Cursos', cursos_response)
     return json.loads(cursos_response.text)["cursos"]
+
+def invocar_servicio_obtener_curso(codigo_materia, id_carrera):
+    parametros = "codigo_materia=" + str(codigo_materia)
+    parametros = parametros + "&id_carrera=" + str(id_carrera)
+
+    url = BUSCAR_CURSOS_SERVICE + "?" + parametros
+    cursos_response = requests.get(url)
+    escribir_resultado_servicio('Buscar Cursos', cursos_response)
+    return json.loads(cursos_response.text)["cursos"]    
+
