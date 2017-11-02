@@ -107,5 +107,5 @@ propuesta.out
 propuesta.toc
 propuesta.synctex.gz
 
-#Archivos de resultados de tests de codigo Pulp
-CodigoConPulp/Test/resultados_tests/*
+#Resultados de tests
+tests/TestResolucionPlanDeEstudios/resultados_tests/*

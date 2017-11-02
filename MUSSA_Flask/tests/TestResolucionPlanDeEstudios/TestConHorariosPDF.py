@@ -53,5 +53,7 @@ class TestConHorariosPDF(TestDesdeArchivoCSV):
         return Curso(
                 cod_materia = horarioPDF["Codigo"],
                 nombre_curso = "Curso" + horarioPDF["Curso"],
-                horarios = horarios
+                horarios = horarios,
+                se_dicta_primer_cuatrimestre = True,
+                se_dicta_segundo_cuatrimestre = True
             )

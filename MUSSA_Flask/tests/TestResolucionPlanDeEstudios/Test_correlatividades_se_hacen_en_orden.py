@@ -34,9 +34,9 @@ class Test_correlatividades_se_hacen_en_orden(TestPulp):
 
     def get_horarios_test(self):
         return {
-        "A": [Curso("A", "Curso1A", [Horario(LUNES, 7, 8)])],
-        "B": [Curso("B", "Curso1B", [Horario(LUNES, 8, 9)])],
-        "C": [Curso("C", "Curso1C", [Horario(LUNES, 9, 10)])]
+        "A": [Curso("A", "Curso1A", [Horario(LUNES, 7, 8)], True, True)],
+        "B": [Curso("B", "Curso1B", [Horario(LUNES, 8, 9)], True, True)],
+        "C": [Curso("C", "Curso1C", [Horario(LUNES, 9, 10)], True, True)],
     }
 
     def get_horarios_no_permitidos_test(self):

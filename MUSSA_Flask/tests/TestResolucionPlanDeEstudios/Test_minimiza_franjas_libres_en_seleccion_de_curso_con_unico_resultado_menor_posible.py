@@ -26,14 +26,14 @@ class Test_minimiza_franjas_libres_en_seleccion_de_curso_con_unico_resultado_men
 
     def get_materias_test(self):
         return {
-        "A": Materia("A", "A", 1, OBLIGATORIA, 0, []),
-        "B": Materia("B", "B", 1, OBLIGATORIA, 0, [])
+            "A": Materia("A", "A", 1, OBLIGATORIA, 0, []),
+            "B": Materia("B", "B", 1, OBLIGATORIA, 0, [])
         }
 
     def get_horarios_test(self):
         return {
-        "A": [Curso("A", "Curso1A", [Horario(LUNES, 7, 8.5)]), Curso("A", "Curso2A", [Horario(LUNES, 7.5, 8.5), Horario(LUNES, 9, 10.5)])],
-        "B": [Curso("B", "Curso1B", [Horario(LUNES, 7, 8.5)]), Curso("B", "Curso2B", [Horario(LUNES, 8.5, 9), Horario(LUNES, 11, 11.5)]), Curso("B", "Curso3B", [Horario(LUNES, 10, 12)]), Curso("B", "Curso4B", [Horario(LUNES, 11, 12)])],
+            "A": [Curso("A", "Curso1A", [Horario(LUNES, 7, 8.5)], True, True), Curso("A", "Curso2A", [Horario(LUNES, 7.5, 8.5), Horario(LUNES, 9, 10.5)], True, True)],
+            "B": [Curso("B", "Curso1B", [Horario(LUNES, 7, 8.5)], True, True), Curso("B", "Curso2B", [Horario(LUNES, 8.5, 9), Horario(LUNES, 11, 11.5)], True, True), Curso("B", "Curso3B", [Horario(LUNES, 10, 12)], True, True), Curso("B", "Curso4B", [Horario(LUNES, 11, 12)], True, True)],
         }
 
     def get_horarios_no_permitidos_test(self):

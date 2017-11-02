@@ -38,11 +38,11 @@ class Test_correlatividades_se_hacen_en_orden_varios_niveles_correlatividades(Te
 
     def get_horarios_test(self):
         return {
-        "A": [Curso("A", "Curso1A", [Horario(LUNES, 7, 7.5)])],
-        "B": [Curso("B", "Curso1B", [Horario(LUNES, 7.5, 8)])],
-        "C": [Curso("C", "Curso1C", [Horario(LUNES, 8, 8.5)])],
-        "D": [Curso("D", "Curso1D", [Horario(LUNES, 8.5, 9)])],
-        "E": [Curso("E", "Curso1E", [Horario(LUNES, 9, 9.5)])],
+        "A": [Curso("A", "Curso1A", [Horario(LUNES, 7, 7.5)], True, True)],
+        "B": [Curso("B", "Curso1B", [Horario(LUNES, 7.5, 8)], True, True)],
+        "C": [Curso("C", "Curso1C", [Horario(LUNES, 8, 8.5)], True, True)],
+        "D": [Curso("D", "Curso1D", [Horario(LUNES, 8.5, 9)], True, True)],
+        "E": [Curso("E", "Curso1E", [Horario(LUNES, 9, 9.5)], True, True)]
     }
 
     def get_horarios_no_permitidos_test(self):
