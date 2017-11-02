@@ -10,6 +10,8 @@ from app.views.base_view import main_blueprint
 
 from app.views.Utils.invocaciones_de_servicios import *
 
+from datetime import datetime
+
 # The Admin page is accessible to users with the 'admin' role
 @main_blueprint.route('/admin')
 @roles_accepted('admin')  # Limits access to users with the 'admin' role
@@ -20,8 +22,13 @@ def admin_page():
 @main_blueprint.route('/admin/administrar_horarios')
 @roles_accepted('admin')
 def administrar_horarios_page():
+    MAX_TIEMPO = 5
     cursos = invocar_buscar_cursos()
-    return render_template('pages/administrar_horarios_page.html', cursos=cursos)
+    hoy = datetime.now().year
+    anios = [x for x in range(hoy, hoy - MAX_TIEMPO, -1)]
+    return render_template('pages/administrar_horarios_page.html',
+        cursos=cursos,
+        anios=anios)
 
 
 @main_blueprint.route('/admin/administrar_horarios/uploader', methods = ['POST'])

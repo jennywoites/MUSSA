@@ -8,7 +8,7 @@ from app.models.horarios_models import Curso, Horario, HorarioPorCurso, CarreraP
 
 import logging
 
-from app.API_Rest.CodigoConPulp.app.ParserHorarios import parsear_pdf
+from app.API_Rest.GeneradorPlanCarreras.ParserHorarios import parsear_pdf
 
 class GuardarHorariosDesdeArchivoPDF(Resource):
     def get(self):
