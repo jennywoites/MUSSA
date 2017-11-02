@@ -9,16 +9,20 @@
         <h3>{{materia["carrera"]}}</h3>
 
         <!-- OTRAS CARRERAS EN LAS QUE SE DICTA LA MATERIA -->
-        {% if carreras | length > 0 %}
+        <!-- Mayor a 1 porque al menos se dicta en la carrera actual -->
+        {% if carreras | length > 1 %}
             <br>
             <p>Otras carreras en las que se dicta esta materia:</p>
-        {% endif %}
 
-        {% for otra_carrera in carreras %}
-            {% if otra_carrera["id"] != materia["carrera_id"] %}
-                <a href='{{otra_carrera["link"]}}'>{{otra_carrera["nombre"]}}</a>
-            {% endif %}
-        {% endfor %}
+            {% for otra_carrera in carreras %}
+                {% if otra_carrera["id"] != materia["carrera_id"] %}
+                    <a href='/materias/{{otra_carrera["id_materia"]}}'>{{otra_carrera["nombre"]}}</a>
+                {% endif %}
+            {% endfor %}
+
+            <br>
+
+        {% endif %}
 
         <br>
 
@@ -36,7 +40,7 @@
         {% if correlativas | length > 0 %}
 
             <br>
-            <p>Materias correlativas:</p>
+            <h4>Materias correlativas:</h4>
 
             <div class='table-responsive'>
                 <table class='table'>
@@ -64,10 +68,51 @@
 
         {% endif %}
 
-        <!-- Objetivos -->
-        <!-- Contenido -->
-
         <!-- Tabla de cursos y links a las encuestas -->
+        {% if cursos | length > 0 %}
+
+            <br>
+            <h4>Cursos:</h4>
+
+            <div class='table-responsive'>
+                <table class='table'>
+                    <tr>
+                        <th>Curso</th>
+                        <th>Docentes</th>
+                        <th>Horarios</th>
+                        <th>Cuatrimestre en que es dictada</th>
+                        <th>Puntaje</th>
+                        <th>Encuestas</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                        {% for curso in cursos %}
+                            <tr>
+                                <td>{{curso["codigo_curso"]}}</td>
+                                <td>{{curso["docentes"]}}</td>
+                                <td>
+                                    <ul class="list-group">
+                                        {% for horario in curso["horarios"] %}
+                                            <li class="list-group-item">
+                                                {{horario["dia"]}} de {{horario["hora_desde"]}} a {{horario["hora_hasta"]}}
+                                            </li>
+                                        {% endfor %}
+                                    </ul>
+                                </td>
+                                <td>{{curso["cuatrimestre"]}}</td>
+                                <td>{{curso["puntaje"]}}</td>
+                                <td>
+                                    <a href='/materias/encuestas/{{curso["id"]}}'>
+                                        <span class='glyphicon glyphicon-search'></span>
+                                    </a>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+        {% endif %}
 
         <br>
 

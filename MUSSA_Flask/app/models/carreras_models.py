@@ -54,11 +54,6 @@ class Materia(db.Model):
 
     tipo_materia_id = db.Column(db.Integer, db.ForeignKey('tipo_materia.id'))
 
-    #Programa sintetico
-    #Programa analitico
-
-    #cursos 
-
     carrera_id = db.Column(db.Integer, db.ForeignKey('carrera.id'))
 
     def __str__(self):

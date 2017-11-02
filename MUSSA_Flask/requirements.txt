@@ -29,5 +29,8 @@ flask-restful
 request
 requests
 
+#Para parsear el PDF
+PyPDF2
+
 
 

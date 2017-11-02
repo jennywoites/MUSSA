@@ -35,7 +35,7 @@ REQUIERE_SUFICIENCIA_IDIOMA = "REQUIERE_SUFICIENCIA_IDIOMA"
 
 def create_carreras():
     # Create all tables
-    db.create_all() #es necesario???
+    db.create_all()
 
     for codigo in CARRERAS:
         carrera = CARRERAS[codigo]
@@ -216,15 +216,13 @@ def find_or_create_correlativa(id_materia_actual, id_materia_correlativa):
     materia_id = db.Column(db.Integer, db.ForeignKey('materia.id'))
     materia_correlativa_id = db.Column(db.Integer, db.ForeignKey('materia.id'))
 
-    correlatividad = Correlativas.query.filter(
-        Correlativas.materia_id == id_materia_actual
-        and
-        Correlativas.materia_correlativa_id == id_materia_correlativa        
-    ).first()
+    query = Correlativas.query.filter_by(materia_id=id_materia_actual)
+    query = query.filter_by(materia_correlativa_id=id_materia_correlativa)
+    correlatividad = query.first()
 
     if not correlatividad:
         correlatividad = Correlativas(materia_id=id_materia_actual, materia_correlativa_id=id_materia_correlativa)
-        db.session.add(correlatividad)        
+        db.session.add(correlatividad)
 
 
 def guardar_correlativas(dic_correlativas):
