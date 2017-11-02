@@ -136,4 +136,7 @@ def add_resources_api_rest(api):
     api.add_resource(BuscarMaterias, '/api/BuscarMaterias') 
     api.add_resource(ObtenerMateria, '/api/ObtenerMateria')  
     api.add_resource(ObtenerMateriasCorrelativas, '/api/ObtenerMateriasCorrelativas')
-    api.add_resource(ObtenerCarrerasDondeSeDictaLaMateria, '/api/ObtenerCarrerasDondeSeDictaLaMateria')    
+    api.add_resource(ObtenerCarrerasDondeSeDictaLaMateria, '/api/ObtenerCarrerasDondeSeDictaLaMateria')
+    api.add_resource(BuscarCursos, '/api/BuscarCursos')
+
+    api.add_resource(GuardarHorariosDesdeArchivoPDF, '/api/admin/GuardarHorariosDesdeArchivoPDF')
