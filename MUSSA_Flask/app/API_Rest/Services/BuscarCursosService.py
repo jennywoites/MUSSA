@@ -16,7 +16,9 @@ class BuscarCursos(Resource):
         q_codigo_materia = args["codigo_materia"] if "codigo_materia" in args else None
         q_carrera = args["id_carrera"] if "id_carrera" in args else None
 
-        #Agregar validaciones de los parametros enviados
+        if not self.parametros_son_validos(q_nombre_curso, q_codigo_materia, q_carrera):
+            logging.error('El servicio Buscar Cursos recibió parámetros inválidos')
+            return {'Error': 'Este servicio recibió parámetros inválidos'}, CLIENT_ERROR_BAD_REQUEST
 
         query = Curso.query
         if q_nombre_curso: query = query.filter(Curso.codigo.like("%" + q_nombre_curso + "%"))
@@ -71,16 +73,19 @@ class BuscarCursos(Resource):
 
         return result
 
+
     def calcular_puntaje(self, curso):
         if curso.cantidad_encuestas_completas == 0:
             return 0
         return (curso.puntaje_total_encuestas / curso.cantidad_encuestas_completas)
+
 
     def convertir_hora(self, horario):
         l_horario = str(horario).split(".")
         if len(l_horario) == 1:
             return l_horario[0] + ":00"
         return l_horario[0] + ":30"
+
 
     def mensaje_cuatrimestre(slef, curso):
         if not curso.se_dicta_primer_cuatrimestre and not curso.se_dicta_segundo_cuatrimestre:
@@ -90,4 +95,46 @@ class BuscarCursos(Resource):
         if curso.se_dicta_primer_cuatrimestre:
             return "Solo el 1º cuatrimestre"
         return "Solo el 2º cuatrimestre"
+
+
+    def parametros_son_validos(self, q_nombre_curso, q_codigo_materia, q_carrera):
+        return self.nombre_curso_es_valido(q_nombre_curso) and self.codigo_materia_es_valido(q_codigo_materia) and self.carrera_es_valida(q_carrera)
+
+
+    def nombre_curso_es_valido(self, nombre):
+        if not nombre:
+            return True
+
+        for letra in nombre:
+            if not letra.isdigit() and not letra.isalpha():
+                return False
+        return True
+
+
+    def codigo_materia_es_valido(self, codigo):
+        if not codigo:
+            return True
+
+        codigo = str(codigo)
+        if len(codigo) < 2 or len(codigo) > 4:
+            return False
+
+        return self.esta_formado_solo_por_numeros(codigo)
+
+
+    def carrera_es_valida(self, carrera):
+        if not carrera:
+            return True
+
+        carrera = str(carrera)
+        return self.esta_formado_solo_por_numeros(carrera)
+
+
+    def esta_formado_solo_por_numeros(self, cadena):
+        for letra in cadena:
+            if not letra.isdigit():
+                return False
+        return True
+
+
 

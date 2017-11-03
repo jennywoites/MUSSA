@@ -21,6 +21,10 @@ class Parametros:
         self.set_valores_default()
 
     def set_valores_default(self):
+        # Si el primer cuatrimestre es 1 entonces es True.
+        # Si el primer cuatrimestres es 2 entonces es False
+        self.primer_cuatrimestre_es_impar = True
+
         self.plan = {}
         self.materias = {}
         self.horarios = {}

@@ -1,7 +1,7 @@
 import os
 
 from app.API_Rest.GeneradorPlanCarreras.GeneradorCodigoPulp import generar_archivo_pulp
-from app.API_Rest.GeneradorPlanCarreras.ParametrosDAO import Parametros
+from app.API_Rest.GeneradorPlanCarreras.ParametrosDTO import Parametros
 from app.API_Rest.GeneradorPlanCarreras.Constantes import *
 from app.API_Rest.GeneradorPlanCarreras.OptimizadorCodigoPulp import optimizar_codigo_pulp
 from app.API_Rest.GeneradorPlanCarreras.my_utils import get_str_cuatrimestre
@@ -66,6 +66,10 @@ class TestPulp:
         return 4
 
 
+    def comienza_en_primer_cuatrimestre(self):
+        return True
+
+
     def configurar_parametros_test(self):
         parametros = Parametros()
 
@@ -84,6 +88,8 @@ class TestPulp:
         parametros.dias = self.get_dias()
         parametros.max_cuatrimestres = self.get_maxima_cantidad_cuatrimestres()
         parametros.max_cant_materias_por_cuatrimestre = self.get_maxima_cantidad_materias_por_cuatrimestre()
+
+        parametros.primer_cuatrimestre_es_impar = self.comienza_en_primer_cuatrimestre()
 
         return parametros
 

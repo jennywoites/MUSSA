@@ -1,6 +1,6 @@
 from app.API_Rest.GeneradorPlanCarreras.Constantes import *
 
-from app.API_Rest.GeneradorPlanCarreras.ParametrosDAO import Parametros
+from app.API_Rest.GeneradorPlanCarreras.ParametrosDTO import Parametros
 
 from app.API_Rest.GeneradorPlanCarreras.GeneradorRestricciones import generar_restricciones
 from app.API_Rest.GeneradorPlanCarreras.GeneradorVariables import definir_variables

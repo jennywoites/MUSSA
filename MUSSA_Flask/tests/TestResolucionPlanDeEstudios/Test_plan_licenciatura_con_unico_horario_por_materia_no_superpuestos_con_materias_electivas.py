@@ -5,7 +5,7 @@ if __name__ == "__main__":
 from tests.TestResolucionPlanDeEstudios.TestDesdeArchivoCSV import TestDesdeArchivoCSV
 
 from app.API_Rest.GeneradorPlanCarreras.GeneradorCodigoPulp import generar_archivo_pulp
-from app.API_Rest.GeneradorPlanCarreras.ParametrosDAO import Parametros
+from app.API_Rest.GeneradorPlanCarreras.ParametrosDTO import Parametros
 from app.API_Rest.GeneradorPlanCarreras.Constantes import *
 from app.API_Rest.GeneradorPlanCarreras.my_utils import get_str_cuatrimestre
 
