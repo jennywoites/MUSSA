@@ -1,5 +1,6 @@
 from app.API_Rest.GeneradorPlanCarreras.Constantes import *
-from app.API_Rest.GeneradorPlanCarreras.my_utils import get_str_cuatrimestre
+from app.API_Rest.GeneradorPlanCarreras.my_utils import get_str_cuatrimestre, es_horario_valido_para_el_cuatrimestre
+
 
 def generar_restriccion_la_materia_debe_cursarse_en_unico_cuatrimestre(arch, parametros):
     materias = parametros.materias
@@ -206,6 +207,10 @@ def generar_restriccion_si_se_elige_un_curso_se_cursa_su_horario_completo(arch, 
             cursos = horarios[materia]
             for curso in cursos:
                 H = "H_{}_{}_{}".format(materia, curso.nombre, get_str_cuatrimestre(cuatri))
+
+                if not es_horario_valido_para_el_cuatrimestre(parametros, curso, cuatri):
+                    continue
+
                 for c_horario in curso.horarios:
                     dia = c_horario.dia
                     franjas = c_horario.get_franjas_utilizadas()
@@ -226,6 +231,9 @@ def generar_restriccion_solo_puede_cursarse_en_un_lugar_al_mismo_tiempo(arch, pa
                 ec_suma = ""
                 for materia in horarios:
                     for curso in horarios[materia]:
+                        if not es_horario_valido_para_el_cuatrimestre(parametros, curso, cuatrimestre):
+                            continue
+
                         if es_horario_restriccion_valido(curso, dia, franja):
                             ec_suma += "R_{}_{}_{}_{}_{} + ".format(materia, curso.nombre, dia, franja, get_str_cuatrimestre(cuatrimestre))
                 ec_suma = ec_suma[:-3]
@@ -297,12 +305,29 @@ def generar_restriccion_creditos_minimos_electivas(arch, parametros):
     arch.write(ecuacion + ENTER + ENTER)
 
 
+def generar_restriccion_no_todos_los_cursos_se_dictan_ambos_cuatrimestres(arch, parametros):
+    arch.write("# No todos los cursos se dictan ambos cuatrimestres" + ENTER + ENTER)
+    for cuatrimestre in range(1, parametros.max_cuatrimestres + 1):
+        for materia in parametros.horarios:
+            ecuacion = ""
+            for curso in parametros.horarios[materia]:
+
+                if es_horario_valido_para_el_cuatrimestre(parametros, curso, cuatrimestre):
+                    continue
+
+                variable = "H_{}_{}_{}".format(materia, curso.nombre, get_str_cuatrimestre(cuatrimestre))
+                arch.write("prob += ({} <= 0)".format(variable) + ENTER)
+                arch.write("prob += ({} >= 0)".format(variable) + ENTER)
+    arch.write(ENTER)    
+
+
 def generar_restriccion_horarios_cursos(arch, parametros):
     generar_restriccion_horarios_no_permitidos_por_el_alumno(arch, parametros)
     generar_restriccion_si_se_elige_un_curso_se_cursa_su_horario_completo(arch, parametros)
     generar_restriccion_solo_puede_cursarse_en_un_lugar_al_mismo_tiempo(arch, parametros)
     generar_restriccion_si_la_materia_no_se_cursa_en_ese_cuatrimestre_no_se_cursa_ninguno_de_sus_cursos(arch, parametros)
     generar_restriccion_la_materia_no_puede_cursarse_en_mas_de_un_curso(arch, parametros)
+    generar_restriccion_no_todos_los_cursos_se_dictan_ambos_cuatrimestres(arch, parametros)
 
 
 def generar_restriccion_calcular_maxima_franja_por_dia_y_cuatrimestre(arch, parametros):

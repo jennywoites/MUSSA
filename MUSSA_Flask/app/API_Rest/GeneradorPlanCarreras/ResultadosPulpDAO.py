@@ -1,7 +1,8 @@
 from app.API_Rest.GeneradorPlanCarreras.Constantes import *
-from app.API_Rest.GeneradorPlanCarreras.my_utils import get_str_cuatrimestre
+from app.API_Rest.GeneradorPlanCarreras.my_utils import get_str_cuatrimestre, es_horario_valido_para_el_cuatrimestre
 
 LINEA_GUARDAR = """    arch.write("{};{}".format(int(value({}))) + "\\n")"""
+
 
 def guardar_variable_materia_i_en_cuatri_j(arch, parametros):
     for materia in parametros.plan:
@@ -51,6 +52,10 @@ def guardar_variables_horario_de_la_materia_en_dia_y_cuatrimestre(arch, parametr
         for materia in horarios:
             for curso in horarios[materia]:
                 for c_horario in curso.horarios:
+
+                    if not es_horario_valido_para_el_cuatrimestre(parametros, curso, cuatrimestre):
+                        continue
+
                     dia = c_horario.dia
                     franjas = c_horario.get_franjas_utilizadas()
                     for franja in franjas:

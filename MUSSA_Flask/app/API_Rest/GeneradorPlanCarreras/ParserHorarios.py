@@ -17,6 +17,7 @@ CARRERAS = {
     'CIVIL': 1,
     'INDUSTRIAL': 2,
     'NAVAL': 3,
+    'TECNICATURA NAVAL': 3,
     'AGRIM': 4,
     'MECANICA': 5,
     'ELECTRICISTA': 6,
@@ -41,7 +42,7 @@ def parsear_carreras(linea):
             carreras.append(CARRERAS[dato])
         else:
             print(dato)
-            input("Error en la carrera!")
+            input("Error en la carrera! - Presionar ENTER")
 
     return carreras
 
@@ -181,7 +182,7 @@ def parsear_horarios_de_materias(texto):
 
 def parsear_pdf(ruta):
     pdfFileObj = open(ruta,'rb')
-    pdfReader = PyPDF2.PdfFileReader(pdfFileObj)
+    pdfReader = PyPDF2.PdfFileReader(pdfFileObj, strict=False)
 
     texto = ""
     for i in range(0, pdfReader.numPages):

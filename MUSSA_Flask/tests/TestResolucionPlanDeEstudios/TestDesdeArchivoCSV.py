@@ -1,7 +1,7 @@
 from tests.TestResolucionPlanDeEstudios.TestPulp import TestPulp
 
 from app.API_Rest.GeneradorPlanCarreras.GeneradorCodigoPulp import generar_archivo_pulp
-from app.API_Rest.GeneradorPlanCarreras.ParametrosDAO import Parametros
+from app.API_Rest.GeneradorPlanCarreras.ParametrosDTO import Parametros
 from app.API_Rest.GeneradorPlanCarreras.Constantes import *
 from app.API_Rest.GeneradorPlanCarreras.my_utils import get_str_cuatrimestre
 
@@ -59,7 +59,7 @@ class TestDesdeArchivoCSV(TestPulp):
             correlativas = correlativas
         )
 
-        horarios_curso = [Curso(codigo, "Curso" + codigo, [Horario(dia, hora, hora + 1)])]
+        horarios_curso = [Curso(codigo, "Curso" + codigo, [Horario(dia, hora, hora + 1)], True, True)]
 
         self.materias[codigo] = materia
         self.horarios[codigo] = horarios_curso

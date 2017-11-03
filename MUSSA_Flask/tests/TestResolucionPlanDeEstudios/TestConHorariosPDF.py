@@ -1,7 +1,7 @@
 from tests.TestResolucionPlanDeEstudios.TestDesdeArchivoCSV import TestDesdeArchivoCSV
 
 from app.API_Rest.GeneradorPlanCarreras.GeneradorCodigoPulp import generar_archivo_pulp
-from app.API_Rest.GeneradorPlanCarreras.ParametrosDAO import Parametros
+from app.API_Rest.GeneradorPlanCarreras.ParametrosDTO import Parametros
 from app.API_Rest.GeneradorPlanCarreras.Constantes import *
 from app.API_Rest.GeneradorPlanCarreras.my_utils import get_str_cuatrimestre
 from app.API_Rest.GeneradorPlanCarreras.ParserHorarios import parsear_pdf
@@ -53,5 +53,7 @@ class TestConHorariosPDF(TestDesdeArchivoCSV):
         return Curso(
                 cod_materia = horarioPDF["Codigo"],
                 nombre_curso = "Curso" + horarioPDF["Curso"],
-                horarios = horarios
+                horarios = horarios,
+                se_dicta_primer_cuatrimestre = True,
+                se_dicta_segundo_cuatrimestre = True
             )

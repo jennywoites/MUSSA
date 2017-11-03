@@ -5,7 +5,7 @@ if __name__ == "__main__":
 from tests.TestResolucionPlanDeEstudios.TestPulp import TestPulp
 
 from app.API_Rest.GeneradorPlanCarreras.GeneradorCodigoPulp import generar_archivo_pulp
-from app.API_Rest.GeneradorPlanCarreras.ParametrosDAO import Parametros
+from app.API_Rest.GeneradorPlanCarreras.ParametrosDTO import Parametros
 from app.API_Rest.GeneradorPlanCarreras.Constantes import *
 from app.API_Rest.GeneradorPlanCarreras.my_utils import get_str_cuatrimestre
 
@@ -38,11 +38,11 @@ class Test_creditos_minimos_para_cursar(TestPulp):
 
     def get_horarios_test(self):
         return {
-            "A": [Curso("A", "Curso1A", [Horario(LUNES, 7, 10),Horario(MARTES,8,12)]), Curso("A", "Curso2A", [Horario(JUEVES, 8, 15),Horario(SABADO,9,13)])],
-            "B": [Curso("B", "Curso1B", [Horario(LUNES, 7, 10),Horario(JUEVES,7,10)])],
-            "C": [Curso("C", "Curso1C", [Horario(LUNES, 12, 15),Horario(MIERCOLES,8,12)])],
-            "D": [Curso("D", "Curso1D", [Horario(LUNES, 7, 10),Horario(VIERNES,8,12)]), Curso("D", "Curso2D", [Horario(LUNES, 12, 15),Horario(MIERCOLES,8,9)]), Curso("D", "Curso3D", [Horario(JUEVES, 12, 15),Horario(VIERNES,12,15)]), Curso("D", "Curso4D", [Horario(MARTES, 9, 11),Horario(JUEVES,10.5,12.5)])],
-            "E": [Curso("E", "Curso1E", [Horario(LUNES, 7, 10),Horario(VIERNES,8,11)]), Curso("E", "Curso2E", [Horario(MARTES, 8, 15)])],
+            "A": [Curso("A", "Curso1A", [Horario(LUNES, 7, 10),Horario(MARTES,8,12)], True, True), Curso("A", "Curso2A", [Horario(JUEVES, 8, 15),Horario(SABADO,9,13)], True, True)],
+            "B": [Curso("B", "Curso1B", [Horario(LUNES, 7, 10),Horario(JUEVES,7,10)], True, True)],
+            "C": [Curso("C", "Curso1C", [Horario(LUNES, 12, 15),Horario(MIERCOLES,8,12)], True, True)],
+            "D": [Curso("D", "Curso1D", [Horario(LUNES, 7, 10),Horario(VIERNES,8,12)], True, True), Curso("D", "Curso2D", [Horario(LUNES, 12, 15),Horario(MIERCOLES,8,9)], True, True), Curso("D", "Curso3D", [Horario(JUEVES, 12, 15),Horario(VIERNES,12,15)], True, True), Curso("D", "Curso4D", [Horario(MARTES, 9, 11),Horario(JUEVES,10.5,12.5)], True, True)],
+            "E": [Curso("E", "Curso1E", [Horario(LUNES, 7, 10),Horario(VIERNES,8,11)], True, True), Curso("E", "Curso2E", [Horario(MARTES, 8, 15)], True, True)],
         }
 
     def get_horarios_no_permitidos_test(self):

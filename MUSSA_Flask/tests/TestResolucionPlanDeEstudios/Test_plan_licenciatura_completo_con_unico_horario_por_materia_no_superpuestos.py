@@ -5,7 +5,7 @@ if __name__ == "__main__":
 from tests.TestResolucionPlanDeEstudios.TestDesdeArchivoCSV import TestDesdeArchivoCSV
 
 from app.API_Rest.GeneradorPlanCarreras.GeneradorCodigoPulp import generar_archivo_pulp
-from app.API_Rest.GeneradorPlanCarreras.ParametrosDAO import Parametros
+from app.API_Rest.GeneradorPlanCarreras.ParametrosDTO import Parametros
 from app.API_Rest.GeneradorPlanCarreras.Constantes import *
 from app.API_Rest.GeneradorPlanCarreras.my_utils import get_str_cuatrimestre
 
@@ -42,26 +42,6 @@ class Test_plan_licenciatura_completo_con_unico_horario_por_materia_no_superpues
     #################################################################
     ##                  Verificacion de resultados                 ##
     #################################################################
-
-    def los_creditos_en_electivas_cumplen_con_el_minimo(self, parametros, resultados):
-        creditos_acumulados = 0
-        for codigo in parametros.materias:
-            materia = parametros.materias[codigo]
-            if materia.tipo != ELECTIVA:
-                continue
-
-            cont = 0
-            for cuatri in range(1, parametros.max_cuatrimestres + 1):
-                variable = "Y_{}_{}".format(materia.codigo, get_str_cuatrimestre(cuatri))
-                cont += resultados[variable]
-
-            if (cont == 1):
-                creditos_acumulados += materia.creditos
-            elif (cont > 1):
-                raise Exception("La materia electiva se está cursando en más de un cuatrimestre")
-
-        assert(creditos_acumulados >= parametros.creditos_minimos_electivas)       
-
 
     def verificar_resultados(self, parametros, resultados):
         self.todas_las_materias_obligatorias_se_hacen(parametros, resultados)
