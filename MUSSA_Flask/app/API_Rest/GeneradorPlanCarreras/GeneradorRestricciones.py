@@ -1,5 +1,6 @@
 from app.API_Rest.GeneradorPlanCarreras.Constantes import *
-from app.API_Rest.GeneradorPlanCarreras.my_utils import get_str_cuatrimestre
+from app.API_Rest.GeneradorPlanCarreras.my_utils import get_str_cuatrimestre, es_horario_valido_para_el_cuatrimestre
+
 
 def generar_restriccion_la_materia_debe_cursarse_en_unico_cuatrimestre(arch, parametros):
     materias = parametros.materias
@@ -195,24 +196,6 @@ def generar_restriccion_creditos_minimos_para_cursar(arch, parametros):
 
 def generar_restriccion_horarios_no_permitidos_por_el_alumno(arch, parametros):
     print("Hacer horarios no permitidos por el alumno.")
-
-
-def es_par(num):
-    return num % 2 == 0
-
-
-def es_horario_valido_para_el_cuatrimestre(parametros, curso, cuatrimestre):
-    if parametros.primer_cuatrimestre_es_impar:
-
-        if not es_par(cuatrimestre): #Es un primer cuatrimestre del anio
-            return curso.se_dicta_primer_cuatrimestre
-
-        return curso.se_dicta_segundo_cuatrimestre
-
-    if not es_par(cuatrimestre): #Es un segundo cuatrimestre del anio
-        return curso.se_dicta_segundo_cuatrimestre
-
-    return curso.se_dicta_primer_cuatrimestre
 
 
 def generar_restriccion_si_se_elige_un_curso_se_cursa_su_horario_completo(arch, parametros):
