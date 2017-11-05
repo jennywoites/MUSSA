@@ -23,7 +23,7 @@ def admin_page():
 @roles_accepted('admin')
 def administrar_horarios_page():
     MAX_TIEMPO = 5
-    cursos = invocar_buscar_cursos()
+    cursos = invocar_buscar_cursos(request.cookies)
     hoy = datetime.now().year
     anios = [x for x in range(hoy, hoy - MAX_TIEMPO, -1)]
     return render_template('pages/administrar_horarios_page.html',
@@ -34,14 +34,12 @@ def administrar_horarios_page():
 @main_blueprint.route('/admin/administrar_horarios/uploader', methods = ['POST'])
 @roles_accepted('admin')
 def administrar_horarios_upload_file():
-    if request.method == 'POST':
-        f = request.files['file']
-        ruta = 'app/tmp/' + secure_filename(f.filename)
-        f.save(ruta)
+    f = request.files['file']
+    ruta = 'app/tmp/' + secure_filename(f.filename)
+    f.save(ruta)
 
-        print(request.files)
-        #cuatrimestre = request.files['numero_cuatrimestre']
-        invocar_guardar_horarios_desde_PDF(ruta, 2)
+    cuatrimestre = request.form['numero_cuatrimestre']
+    invocar_guardar_horarios_desde_PDF(request.cookies, ruta, cuatrimestre)
 
-        flash("Los horarios han sido guardados")
-        return redirect(url_for("main.administrar_horarios_page"))
+    flash("Los horarios han sido guardados")
+    return redirect(url_for("main.administrar_horarios_page"))

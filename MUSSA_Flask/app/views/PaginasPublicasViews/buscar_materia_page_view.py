@@ -9,6 +9,6 @@ from app.views.Utils.invocaciones_de_servicios import *
 
 @main_blueprint.route('/buscar_materias', methods=['GET'])
 def buscar_materias_page():
-    carreras = invocar_servicio_buscar_carreras()
+    carreras = invocar_servicio_buscar_carreras(request.cookies)
     return render_template('pages/buscar_materias_page.html',
                 carreras= carreras)

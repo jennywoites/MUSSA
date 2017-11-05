@@ -1,6 +1,7 @@
 from flask_restful import Resource
 from app.API_Rest.codes import *
 from flask import request
+from flask_user import roles_accepted
 
 from app import db
 from app.models.carreras_models import Carrera
@@ -11,10 +12,9 @@ import logging
 from app.API_Rest.GeneradorPlanCarreras.ParserHorarios import parsear_pdf
 
 class GuardarHorariosDesdeArchivoPDF(Resource):
-    def get(self):
+    @roles_accepted('admin')
+    def post(self):
         logging.info('Se invoco al servicio Gurdar Horarios Desde Archivo PDF')
-
-        #Validar que el usuario este logueado y sea admin (ver has_role)
 
         args = request.args
 
