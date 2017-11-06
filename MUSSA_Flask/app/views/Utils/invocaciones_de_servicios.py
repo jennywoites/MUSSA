@@ -67,6 +67,7 @@ def invocar_buscar_cursos(cookie, codigo_materia='', nombre_curso=''):
     parametros = {}
     if codigo_materia: parametros["codigo_materia"] = codigo_materia
     if nombre_curso: parametros["nombre_curso"] = nombre_curso
+    parametros["filtrar_cursos"] = False
 
     cursos_response = requests.get(BUSCAR_CURSOS_SERVICE, params=parametros, cookies=cookie)
     escribir_resultado_servicio('Buscar Cursos', cursos_response)
@@ -77,6 +78,7 @@ def invocar_servicio_obtener_curso(cookie, codigo_materia, id_carrera):
     parametros = {}
     parametros["codigo_materia"] = codigo_materia
     parametros["id_carrera"] = id_carrera
+    parametros["filtrar_cursos"] = True
 
     cursos_response = requests.get(BUSCAR_CURSOS_SERVICE, params=parametros, cookies=cookie)
     escribir_resultado_servicio('Buscar Cursos', cursos_response)

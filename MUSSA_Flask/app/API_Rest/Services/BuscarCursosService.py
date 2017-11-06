@@ -15,6 +15,7 @@ class BuscarCursos(Resource):
         q_nombre_curso = args["nombre_curso"] if "nombre_curso" in args else None
         q_codigo_materia = args["codigo_materia"] if "codigo_materia" in args else None
         q_carrera = args["id_carrera"] if "id_carrera" in args else None
+        filtrar_cursos = args["filtrar_cursos"] if "filtrar_cursos" in args else True
 
         if not self.parametros_son_validos(q_nombre_curso, q_codigo_materia, q_carrera):
             logging.error('El servicio Buscar Cursos recibió parámetros inválidos')
@@ -24,7 +25,9 @@ class BuscarCursos(Resource):
         if q_nombre_curso: query = query.filter(Curso.codigo.like("%" + q_nombre_curso + "%"))
         if q_codigo_materia: query = query.filter(Curso.codigo_materia.like(q_codigo_materia + "%"))
 
-        query = query.filter((Curso.se_dicta_primer_cuatrimestre == True) | (Curso.se_dicta_segundo_cuatrimestre == True))
+        if filtrar_cursos:
+            query = query.filter((Curso.se_dicta_primer_cuatrimestre == True) | (Curso.se_dicta_segundo_cuatrimestre == True))
+    
         cursos = query.all()
 
         cursos_result = []
