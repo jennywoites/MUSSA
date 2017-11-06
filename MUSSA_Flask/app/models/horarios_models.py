@@ -12,6 +12,7 @@ class Curso(db.Model):
     se_dicta_segundo_cuatrimestre = db.Column(db.Boolean(), nullable=False, server_default='0')
     cantidad_encuestas_completas = db.Column(db.Integer, nullable=False, server_default='0')
     puntaje_total_encuestas = db.Column(db.Integer, nullable=False, server_default='0')
+    fecha_actualizacion = db.Column(db.DateTime)
 
     def __str__(self):
         return "Curso {} de {}".format(self.codigo, self.codigo_materia)
@@ -50,3 +51,14 @@ class CarreraPorCurso(db.Model):
 
     def __str__(self):
         return "El curso con id {} es de esta carrera: {}".format(self.curso_id, self.carrera_id)
+
+
+class HorariosYaCargados(db.Model):
+    __tablename__ = 'horarios_ya_cargados'
+    id = db.Column(db.Integer, primary_key=True)
+
+    anio = db.Column(db.String(4), nullable=False, server_default='')
+    cuatrimestre = db.Column(db.String(1), nullable=False, server_default='')
+
+    def __str__(self):
+        return "Año: {} - {}C".format(self.anio, self.cuatrimestre)

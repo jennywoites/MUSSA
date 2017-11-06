@@ -11,6 +11,8 @@ from app.views.base_view import main_blueprint
 from app.views.Utils.invocaciones_de_servicios import *
 
 from datetime import datetime
+from flask_babel import gettext
+
 
 # The Admin page is accessible to users with the 'admin' role
 @main_blueprint.route('/admin')
@@ -35,11 +37,17 @@ def administrar_horarios_page():
 @roles_accepted('admin')
 def administrar_horarios_upload_file():
     f = request.files['file']
-    ruta = 'app/tmp/' + secure_filename(f.filename)
+    cuatrimestre = request.form['numero_cuatrimestre']
+    anio = request.form['anio']
+    ruta = 'app/tmp/' + secure_filename('Horarios_' + anio + "_" + cuatrimestre + "C.pdf") 
     f.save(ruta)
 
-    cuatrimestre = request.form['numero_cuatrimestre']
-    invocar_guardar_horarios_desde_PDF(request.cookies, ruta, cuatrimestre)
+    response = invocar_guardar_horarios_desde_PDF(request.cookies, ruta, anio, cuatrimestre)
+    print(response)
 
-    flash("Los horarios han sido guardados")
+    if 'OK' in response:
+        flash(gettext('Los horarios han sido guardados satisfactoriamente'), 'success')
+    else:
+        flash(response["Error"], 'error')
+
     return redirect(url_for("main.administrar_horarios_page"))

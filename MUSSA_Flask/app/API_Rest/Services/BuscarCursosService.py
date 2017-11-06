@@ -24,8 +24,7 @@ class BuscarCursos(Resource):
         if q_nombre_curso: query = query.filter(Curso.codigo.like("%" + q_nombre_curso + "%"))
         if q_codigo_materia: query = query.filter(Curso.codigo_materia.like(q_codigo_materia + "%"))
 
-        #Filtrar aquellos cursos que no se estan dando ni el primer ni el segundo cuatrimestre (ambos en false)
-
+        query = query.filter((Curso.se_dicta_primer_cuatrimestre == True) | (Curso.se_dicta_segundo_cuatrimestre == True))
         cursos = query.all()
 
         cursos_result = []

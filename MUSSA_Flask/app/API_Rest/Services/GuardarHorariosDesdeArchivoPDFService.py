@@ -5,39 +5,52 @@ from flask_user import roles_accepted
 
 from app import db
 from app.models.carreras_models import Carrera
-from app.models.horarios_models import Curso, Horario, HorarioPorCurso, CarreraPorCurso
+from app.models.horarios_models import Curso, Horario, HorarioPorCurso, CarreraPorCurso, HorariosYaCargados
 
 import logging
 
 from app.API_Rest.GeneradorPlanCarreras.ParserHorarios import parsear_pdf
 
+import datetime
+
 class GuardarHorariosDesdeArchivoPDF(Resource):
+
     @roles_accepted('admin')
-    def post(self):
+    def get(self):
         logging.info('Se invoco al servicio Gurdar Horarios Desde Archivo PDF')
 
         args = request.args
 
         q_ruta = args["ruta"] if "ruta" in args else None
         q_cuatrimestre = args["cuatrimestre"] if "cuatrimestre" in args else None
+        q_anio = args["anio"] if "anio" in args else None
 
-        if not q_ruta or not q_cuatrimestre:
-            logging.error('El servicio Gurdar Horarios Desde Archivo PDF recibe la ruta del archivo y el cuatrimestre al que pertenece')
-            return {'Error': 'Este servicio debe recibir la ruta del archivo y el cuatrimestre al que pertenece'}, CLIENT_ERROR_BAD_REQUEST
+        if not q_ruta or not q_cuatrimestre or not q_anio:
+            logging.error('El servicio Gurdar Horarios Desde Archivo PDF recibe la ruta del archivo, el cuatrimestre  el año al que pertenece')
+            return {'Error': 'Este servicio debe recibir la ruta del archivo, el cuatrimestre y el año al que pertenece'}, CLIENT_ERROR_BAD_REQUEST
+
+        if self.horario_fue_cargado_anteriormente(q_anio, q_cuatrimestre):
+            logging.error('Este horario ya fue cargado anteriormente: {} - {}C'.format(q_anio, q_cuatrimestre))
+            return {'Error': 'Este horario ya fue cargado anteriormente'}, CLIENT_ERROR_CONFLICT
+
+        if self.ya_hay_horarios_nuevos_cargados(q_anio, q_cuatrimestre):
+            logging.error('Este es un horario viejo. Ya hay horarios nuevos cargados en el sistema.')
+            return {'Error': 'Este es un horario viejo. Ya hay horarios nuevos cargados en el sistema.'}, CLIENT_ERROR_CONFLICT
 
         horarios_pdf = parsear_pdf(q_ruta)
 
-        self.guardar_horarios_pdf(horarios_pdf, q_cuatrimestre)
+        fecha_actualizacion = datetime.datetime.now()
 
-        #Para todos aquellos que no se actualizaron esta vez colocar el cuatrimestre en NO
-        #Ya que no se estaria dictando la materia este cuatrimestre
+        self.guardar_horarios_pdf(horarios_pdf, q_cuatrimestre, fecha_actualizacion)
+
+        self.guardar_ultima_actualizacion_horarios(q_cuatrimestre, q_anio, fecha_actualizacion)
 
         result = ({'OK': 'Los horarios fueron cargados correctamente'}, SUCCESS_OK) 
         logging.info('Gurdar Horarios Desde Archivo PDF devuelve como resultado: {}'.format(result))
         return result
 
 
-    def guardar_horarios_pdf(self, horarios_pdf, cuatrimestre):
+    def guardar_horarios_pdf(self, horarios_pdf, cuatrimestre, fecha_actualizacion):
         carreras_en_sistema = []
         for carrera in Carrera.query.all():
             carreras_en_sistema.append(carrera.codigo)
@@ -53,24 +66,24 @@ class GuardarHorariosDesdeArchivoPDF(Resource):
             horarios_materia = horario_pdf["Horarios"]
 
             self.find_or_create_curso(nombre_curso, codigo_materia, docentes, carreras,
-                horarios_materia, cuatrimestre)
+                horarios_materia, cuatrimestre, fecha_actualizacion)
 
             db.session.commit()
 
 
     def find_or_create_curso(self, nombre_curso, codigo_materia, docentes, carreras,
-        horarios_materia, cuatrimestre):
+        horarios_materia, cuatrimestre, fecha_actualizacion):
         curso = Curso.query.filter_by(codigo_materia=codigo_materia).filter_by(codigo=nombre_curso).first()
 
         if not curso:
             curso = self.crear_curso(nombre_curso, codigo_materia, docentes, horarios_materia)
 
-        print(cuatrimestre)
         if cuatrimestre == 1 or cuatrimestre == '1':
             curso.se_dicta_primer_cuatrimestre = True
         else:
             curso.se_dicta_segundo_cuatrimestre = True
         
+        curso.fecha_actualizacion = fecha_actualizacion
         self.agregar_carreras_al_curso(curso, carreras)
 
 
@@ -125,3 +138,42 @@ class GuardarHorariosDesdeArchivoPDF(Resource):
             if str(carrera) in carreras_en_sistema:                
                 carreras.append(carrera)
         return carreras
+
+
+    def horario_fue_cargado_anteriormente(self, anio, cuatrimestre):
+        query = HorariosYaCargados.query.filter_by(anio=anio).filter_by(cuatrimestre=cuatrimestre)
+        ya_cargados = query.all()
+        return len(ya_cargados) > 0
+
+
+    def ya_hay_horarios_nuevos_cargados(self, anio, cuatrimestre):
+        query = HorariosYaCargados.query
+        query = query.order_by(HorariosYaCargados.anio.desc(),HorariosYaCargados.cuatrimestre.desc())
+        ultimo_horario_cargado = query.first()
+
+        if not ultimo_horario_cargado:
+            return False
+
+        if ultimo_horario_cargado.anio > anio:
+            return True
+
+        if ultimo_horario_cargado.anio < anio:
+            return False
+
+        return ultimo_horario_cargado.cuatrimestre > cuatrimestre
+
+
+    def guardar_ultima_actualizacion_horarios(self, cuatrimestre, anio, fecha_actualizacion):
+        db.session.add(HorariosYaCargados(anio=anio, cuatrimestre=cuatrimestre))
+
+        # Actualizar todos los cuatrimestres que no tuvieron update como
+        # NO que no se cursa en el cuatrimestre actual.
+        cursos = Curso.query.filter(Curso.fecha_actualizacion < fecha_actualizacion).all()
+        for curso in cursos:
+            if cuatrimestre == 1 or cuatrimestre == '1':
+                curso.se_dicta_primer_cuatrimestre = False
+            else:
+                curso.se_dicta_segundo_cuatrimestre = False
+
+        db.session.commit()
+
