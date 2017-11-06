@@ -1,0 +1,158 @@
+{% extends "common/page_base.html" %}
+
+{% block content %}
+
+    <script>
+
+    </script>
+
+    <div class="container">
+
+        <h2>Modificar curso: {{curso["codigo_curso"]}} - Materia: {{curso["codigo_materia"]}}</h2>
+
+        <br>
+
+        <form action="{{ url_for('main.administrar_horarios_upload_file') }}" method="POST" enctype="multipart/form-data">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+
+            <div class="form-group">
+                <label for="archivo">Carreras habilitadas:</label>
+
+                {% for carrera in carreras %}
+                    <div class="checkbox" id="carrera-{{carrera.codigo}}">
+                        <label>
+                            {% if carrera['codigo'] in carreras_activas %}
+                                <input type="checkbox" name="carrera-{{carrera['codigo']}}" value="{{carrera['codigo']}}" checked="True">{{ carrera['codigo'] }} - {{ carrera['nombre'] }}
+                            {% else %}
+                                <input type="checkbox" name="carrera-{{carrera['codigo']}}" value="{{carrera['codigo']}}" checked="False">{{ carrera['codigo'] }} - {{ carrera['nombre'] }}
+                            {% endif %}
+                        </label>
+                    </div>
+                {% endfor %}
+
+            </div>
+
+            <div class="form-group">
+                <label for="archivo">Cuatrimestres en que se dicta la materia:</label>
+
+                <div class="checkbox" id="check_primer_cuatri">
+                    <label><input type="checkbox" checked="{{curso['se_dicta_primer_cuatri']}}" value="">Primer cuatrimestre</label>
+                </div>
+                <div class="checkbox" id="check_segundo_cuatri">
+                    <label><input type="checkbox" checked="{{curso['se_dicta_segundo_cuatri']}}" value="">Segundo cuatrimestre</label>
+                </div>
+
+            </div>
+
+            <div class="form-group">
+                <label for="archivo">Docentes:</label>
+                <input type="text" class="form-control" id="docentes" name="docentes" value="{{curso['docentes']}}">
+            </div>
+
+                
+            <label for="archivo">Horarios:</label>
+
+            <div>
+                <div class="row">
+                    <div class="col-sm-2">
+                        <div class="form-group">
+                
+                            <select class="form-control" id="dia" name="dia">
+                                {% for dia in dias %}
+                                    <option>{{dia}}</option>
+                                {% endfor %}
+                       </select>
+
+                        </div>
+                    </div>
+
+                    <div class="col-xs-1">
+                        <p>De:</p>
+                    </div>
+
+                    <div class="col-sm-2">
+                        <div class="form-group">                
+                            <select class="form-control" id="hora_desde" name="hora_desde">
+                                {% for h in hora_desde %}
+                                    <option>{{h}}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="col-xs-1">
+                        <p>A:</p>
+                    </div>
+
+                    <div class="col-sm-2">
+                        <div class="form-group">                
+                            <select class="form-control" id="hora_hasta" name="hora_hasta">
+                                {% for h in hora_hasta %}
+                                    <option>{{h}}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="col-sm-2">
+                        <div class="form-group"> 
+                            <button type="button" class="btn btn-default">Agregar horario</button>
+                        </div>
+                    </div>               
+
+                </div>
+            </div>
+
+            <br>
+
+            <div class="form-group">
+                <div class='table-responsive'>
+                    <table class='table' id="tabla_cursos_guardados">
+                        <tr>
+                            <th>Dia</th>
+                            <th>De</th>
+                            <th>A</th>
+                            <th>Eliminar</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for horario in curso["horarios"] %}
+                            <tr>
+                                <td>{{horario["dia"]}}</td>
+                                <td>{{horario["hora_desde"]}}</td>
+                                <td>{{horario["hora_hasta"]}}</td>
+                                <td><button type="button" class="btn btn-default"><span class='glyphicon glyphicon-trash'></span></button></td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div>
+                <div class="row">
+                    <div class="col-sm-4">
+                    </div>
+                    <div class="col-sm-3">
+                        <button type="button" class="btn btn-success">Guardar</button>
+                    </div>
+                    <div class="col-sm-4">
+                        <a href="{{ url_for('main.administrar_horarios_page') }}">
+                            <input type="button" class="btn btn-danger" value="Descartar"/>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+        </form>
+
+    </div>
+
+{% endblock %}
+
+<!-- TODO:
+- Cuando se cambia la hora desde filtrar los resultados de hora_hasta que no tienen sentido y elegir el siguiente
+- Cuando se da click en guardar, guardar todos los cambios
+- Cuando se elimina un horario, quitarlo de la lista
+- CUando se agrega un horario agregarlo a la lista y a la tabla
+-->

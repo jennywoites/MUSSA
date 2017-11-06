@@ -63,10 +63,11 @@ def invocar_guardar_horarios_desde_PDF(cookie, ruta, anio, cuatrimestre):
     return json.loads(horarios_response.text)
 
 
-def invocar_buscar_cursos(cookie, codigo_materia='', nombre_curso=''):
+def invocar_buscar_cursos(cookie, codigo_materia='', nombre_curso='', id_curso=''):
     parametros = {}
     if codigo_materia: parametros["codigo_materia"] = codigo_materia
     if nombre_curso: parametros["nombre_curso"] = nombre_curso
+    if id_curso: parametros["id_curso"] = id_curso
     parametros["filtrar_cursos"] = False
 
     cursos_response = requests.get(BUSCAR_CURSOS_SERVICE, params=parametros, cookies=cookie)

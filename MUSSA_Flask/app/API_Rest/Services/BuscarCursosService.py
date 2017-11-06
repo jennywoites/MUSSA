@@ -12,18 +12,23 @@ class BuscarCursos(Resource):
         args = request.args
         logging.info('Se invoco al servicio Buscar Cursos con los siguientes parametros: {}'.format(args))
 
+        q_id_curso = args["id_curso"] if "id_curso" in args else None
         q_nombre_curso = args["nombre_curso"] if "nombre_curso" in args else None
         q_codigo_materia = args["codigo_materia"] if "codigo_materia" in args else None
         q_carrera = args["id_carrera"] if "id_carrera" in args else None
         filtrar_cursos = args["filtrar_cursos"] if "filtrar_cursos" in args else True
 
-        if not self.parametros_son_validos(q_nombre_curso, q_codigo_materia, q_carrera):
+        if not self.parametros_son_validos(q_id_curso, q_nombre_curso, q_codigo_materia, q_carrera):
             logging.error('El servicio Buscar Cursos recibió parámetros inválidos')
             return {'Error': 'Este servicio recibió parámetros inválidos'}, CLIENT_ERROR_BAD_REQUEST
 
         query = Curso.query
-        if q_nombre_curso: query = query.filter(Curso.codigo.like("%" + q_nombre_curso + "%"))
-        if q_codigo_materia: query = query.filter(Curso.codigo_materia.like(q_codigo_materia + "%"))
+
+        if q_id_curso:
+            query = query.filter_by(id=q_id_curso)
+        else:
+            if q_nombre_curso: query = query.filter(Curso.codigo.like("%" + q_nombre_curso + "%"))
+            if q_codigo_materia: query = query.filter(Curso.codigo_materia.like(q_codigo_materia + "%"))
 
         if filtrar_cursos:
             query = query.filter((Curso.se_dicta_primer_cuatrimestre == True) | (Curso.se_dicta_segundo_cuatrimestre == True))
@@ -99,8 +104,19 @@ class BuscarCursos(Resource):
         return "Solo el 2º cuatrimestre"
 
 
-    def parametros_son_validos(self, q_nombre_curso, q_codigo_materia, q_carrera):
-        return self.nombre_curso_es_valido(q_nombre_curso) and self.codigo_materia_es_valido(q_codigo_materia) and self.carrera_es_valida(q_carrera)
+    def parametros_son_validos(self, q_id_curso, q_nombre_curso, q_codigo_materia, q_carrera):
+        return (self.id_curso_es_valido(q_id_curso)
+                and self.nombre_curso_es_valido(q_nombre_curso)
+                and self.codigo_materia_es_valido(q_codigo_materia)
+                and self.carrera_es_valida(q_carrera))
+
+
+    def id_curso_es_valido(self, id_curso):
+        if not id_curso:
+            return True
+
+        id_curso = str(id_curso)
+        return self.esta_formado_solo_por_numeros(id_curso)
 
 
     def nombre_curso_es_valido(self, nombre):

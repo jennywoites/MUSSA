@@ -5,8 +5,6 @@
     <script>
 
         function filtrar_resultados() {
-            debugger;
-
             var input = document.getElementById('filtroCursos');
             var filter = input.value.toUpperCase();
 
@@ -23,6 +21,7 @@
 
     </script>
 
+    <div class="container">
     <h2>Cargar horarios de cuatrimestres</h2>
 
     <form action="{{ url_for('main.administrar_horarios_upload_file') }}" method="POST"
@@ -125,7 +124,7 @@
                                 {% else %}
                                     NO
                                 {% endif %}
-                                <p>
+                                </p>
                             </td>
                             <td>
                                 <p>
@@ -134,7 +133,7 @@
                                 {% else %}
                                     NO
                                 {% endif %}
-                                <p>
+                                </p>
                             </td>
                             <td>
                                 <a href='/admin/curso/{{curso["id"]}}'>
@@ -150,5 +149,6 @@
 
         {% endif %}
 
+    </div>
 
 {% endblock %}
