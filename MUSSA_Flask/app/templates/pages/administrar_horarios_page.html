@@ -2,6 +2,27 @@
 
 {% block content %}
 
+    <script>
+
+        function filtrar_resultados() {
+            debugger;
+
+            var input = document.getElementById('filtroCursos');
+            var filter = input.value.toUpperCase();
+
+            var rows = document.getElementsByTagName("table")[0].rows;
+            for (var i = 1; i < rows.length; i++) {
+                var codigo = rows[i].cells[0].innerHTML.toUpperCase();
+                if (codigo.indexOf(filter) > -1) {
+                    rows[i].style.display = "";
+                } else {
+                    rows[i].style.display = "none";
+                }
+            }
+        }
+
+    </script>
+
     <h2>Cargar horarios de cuatrimestres</h2>
 
     <form action="{{ url_for('main.administrar_horarios_upload_file') }}" method="POST"
@@ -47,8 +68,21 @@
         <br>
         <h3>Cursos guardados:</h3>
 
+        <div>
+            <div class="row">
+                <div class="col-sm-4">
+                    <div class="input-group">
+                        <span class="input-group-addon"><i class="glyphicon glyphicon-search"></i></span>
+                        <input type="text" class="form-control" id="filtroCursos" onkeyup="filtrar_resultados()" placeholder="Filtrar por código de materia...">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <br>
+
         <div class='table-responsive'>
-            <table class='table'>
+            <table class='table' id="tabla_cursos_guardados">
                 <tr>
                     <th>Materia</th>
                     <th>Curso</th>
