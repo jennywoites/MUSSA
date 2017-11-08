@@ -4,6 +4,95 @@
 
     <script>
 
+        function actualizarHoraHasta() {
+            var hora_desde_element = document.getElementById("hora_desde");
+            var indice_seleccionado = hora_desde_element.selectedIndex;
+
+            var hora_hasta_element = document.getElementById("hora_hasta");
+            for (var i=0; i < hora_hasta_element.length; i++) {
+                var opcion = hora_hasta_element[i];
+                if (i < indice_seleccionado)
+                    opcion.style["display"] = "none";
+                else
+                    opcion.style["display"] = "";                    
+            }
+
+            hora_hasta_element.selectedIndex = indice_seleccionado;
+        }
+
+        function agregarHorario() {
+            var dia_element = document.getElementById("dia")
+            var dia = dia_element[dia_element.selectedIndex].innerHTML;
+
+            var hora_desde_element = document.getElementById("hora_desde");
+            var hora_desde = hora_desde_element[hora_desde_element.selectedIndex].innerHTML;
+
+            var hora_hasta_element = document.getElementById("hora_hasta");
+            var hora_hasta = hora_hasta_element[hora_hasta_element.selectedIndex].innerHTML;
+
+            if (!horarioParaAgregarEsValido(dia, hora_desde, hora_hasta))
+                return false;
+
+            var horarios_table = document.getElementById("tabla_cursos_guardados");
+            var horarios = horarios_table.rows;
+
+            var indice = horarios_table.rows.length;
+            var row = horarios_table.insertRow(indice);
+            var ultimo_id = horarios_table.rows[indice-1].id
+            var numero_id = parseInt(ultimo_id.substr(ultimo_id.indexOf("_")+1)) + 1;
+            row.id = "horario_" + numero_id;
+            row.insertCell(0).innerHTML = dia;
+            row.insertCell(1).innerHTML = hora_desde;
+            row.insertCell(2).innerHTML = hora_hasta;
+            row.insertCell(3).innerHTML = '<button type="button" class="btn btn-default" onclick="eliminarHorario(' + numero_id +')"><span class="glyphicon glyphicon-trash"></span></button></td>'
+        }
+
+        function eliminarHorario(idHorario) {
+            var horarios = document.getElementById("tabla_cursos_guardados").rows;
+            horarios["horario_" + idHorario].remove()
+        }
+
+        function convertirHorario(horario) {
+            hora = parseInt(horario.substring(0,2))
+            minutos = parseInt(horario.substring(3))
+            if (minutos == 30)
+                hora += 0.5
+            return hora
+        }
+
+        function horarioParaAgregarEsValido(dia, hora_desde, hora_hasta) {
+            var error_label = document.getElementById("error_label");
+
+            hora_desde = convertirHorario(hora_desde);
+            hora_hasta = convertirHorario(hora_hasta);
+            
+            var horarios = document.getElementById("tabla_cursos_guardados").rows;
+            for (var i=0; i<horarios.length; i++) {
+                var horario = horarios[i];
+                var dia_actual = horario.cells[0].innerText;
+
+                if (dia_actual != dia)
+                    continue;
+
+                var hora_desde_actual = convertirHorario(horario.cells[1].innerText);
+                var hora_hasta_actual = convertirHorario(horario.cells[2].innerText);
+
+                //El curso empieza despues de que termina el nuevo
+                if (hora_desde_actual >= hora_hasta)
+                    continue;
+
+                //El curso comienza antes que el nuevo y termina antes que el
+                if (hora_desde_actual < hora_desde && hora_hasta_actual < hora_desde)
+                    continue;
+
+                error_label.style["display"] = "";
+                return false;
+            }
+
+            error_label.style["display"] = "none";
+            return true;
+        }
+
     </script>
 
     <div class="container">
@@ -72,9 +161,9 @@
 
                     <div class="col-sm-2">
                         <div class="form-group">                
-                            <select class="form-control" id="hora_desde" name="hora_desde">
-                                {% for h in hora_desde %}
-                                    <option>{{h}}</option>
+                            <select class="form-control" id="hora_desde" name="hora_desde" onchange="actualizarHoraHasta()">
+                                {% for i in range(hora_desde | length) %}
+                                    <option id="hora_desde_{{i}}">{{hora_desde[i]}}</option>
                                 {% endfor %}
                             </select>
                         </div>
@@ -87,8 +176,8 @@
                     <div class="col-sm-2">
                         <div class="form-group">                
                             <select class="form-control" id="hora_hasta" name="hora_hasta">
-                                {% for h in hora_hasta %}
-                                    <option>{{h}}</option>
+                                {% for i in range(hora_hasta | length) %}
+                                    <option id="hora_hasta_{{i}}">{{hora_hasta[i]}}</option>
                                 {% endfor %}
                             </select>
                         </div>
@@ -96,11 +185,16 @@
 
                     <div class="col-sm-2">
                         <div class="form-group"> 
-                            <button type="button" class="btn btn-default">Agregar horario</button>
+                            <button type="button" class="btn btn-default" onclick="agregarHorario()">Agregar horario</button>
                         </div>
-                    </div>               
+                    </div>
 
                 </div>
+                    
+                <div class="alert alert-danger" id="error_label" style="display:none">
+                    Este horario es incompatible con los que han sido cargados previamente.
+                </div>
+
             </div>
 
             <br>
@@ -116,12 +210,13 @@
                         </tr>
                         </thead>
                         <tbody>
-                        {% for horario in curso["horarios"] %}
-                            <tr>
-                                <td>{{horario["dia"]}}</td>
-                                <td>{{horario["hora_desde"]}}</td>
-                                <td>{{horario["hora_hasta"]}}</td>
-                                <td><button type="button" class="btn btn-default"><span class='glyphicon glyphicon-trash'></span></button></td>
+                        {% for i in range(curso["horarios"] | length) %}
+
+                            <tr id="horario_{{i}}"">
+                                <td>{{curso["horarios"][i]["dia"]}}</td>
+                                <td>{{curso["horarios"][i]["hora_desde"]}}</td>
+                                <td>{{curso["horarios"][i]["hora_hasta"]}}</td>
+                                <td><button type="button" class="btn btn-default" onclick="eliminarHorario({{i}})"><span class='glyphicon glyphicon-trash'></span></button></td>
                             </tr>
                         {% endfor %}
                         </tbody>
@@ -151,8 +246,5 @@
 {% endblock %}
 
 <!-- TODO:
-- Cuando se cambia la hora desde filtrar los resultados de hora_hasta que no tienen sentido y elegir el siguiente
 - Cuando se da click en guardar, guardar todos los cambios
-- Cuando se elimina un horario, quitarlo de la lista
-- CUando se agrega un horario agregarlo a la lista y a la tabla
 -->
