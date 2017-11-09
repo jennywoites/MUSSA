@@ -16,10 +16,10 @@ import datetime
 class GuardarHorariosDesdeArchivoPDF(Resource):
 
     @roles_accepted('admin')
-    def get(self):
+    def post(self):
         logging.info('Se invoco al servicio Gurdar Horarios Desde Archivo PDF')
 
-        args = request.args
+        args = request.form
 
         q_ruta = args["ruta"] if "ruta" in args else None
         q_cuatrimestre = args["cuatrimestre"] if "cuatrimestre" in args else None

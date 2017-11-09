@@ -43,9 +43,3 @@ def modificar_curso_page(idCurso):
                             dias = dias,
                             hora_desde = horarios[:-1],
                             hora_hasta = horarios[1:])
-
-
-@main_blueprint.route('/admin/curso/<int:idCurso>/modificar', methods = ['POST'])
-@roles_accepted('admin')
-def modificar_datos_del_curso():
-    return "NO IMPLEMENTADO"

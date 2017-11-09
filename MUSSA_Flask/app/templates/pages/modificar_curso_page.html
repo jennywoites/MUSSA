@@ -93,6 +93,98 @@
             return true;
         }
 
+        //*****************************************************************************
+        SERVICE_MODIFICAR_CURSO = '/api/admin/ModificarCurso'
+        SUCCESS = 200
+
+        function do_request(method, page, parametros, onSucces, onError) {
+            var method = method || "GET";
+
+            xmlhttp = new XMLHttpRequest();
+
+            xmlhttp.onreadystatechange = function() {
+                if (this.status == 0 || this.readyState != 4)
+                    return;
+
+                if ( this.status != SUCCESS ) {
+                    onError(this.status, this.responseText);
+                }
+                else { 
+                    json_result = (this.responseText == "") ? {} : JSON.parse(this.responseText)
+                    onSucces(this.status, json_result);
+                }
+            }
+
+            debugger;
+            var encoded_params = jQuery.param($parametros)
+            var url = page + '?' + encoded_params
+            xmlhttp.open(method, url, true);
+            xmlhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+            xmlhttp.withCredentials = true;
+            xmlhttp.send();
+        }
+
+        function obtener_parametros() {
+            var parametros = {};
+            parametros["id_curso"] = {{curso["id"]}};
+            parametros["carreras"] = obtener_carreras_seleccionadas();
+            parametros["primer_cuatrimestre"] = se_cursa_primer_cuatrimestre();
+            parametros["segundo_cuatrimestre"] = se_cursa_segundo_cuatrimestre();
+            parametros["docentes"] = obtener_docentes();
+            parametros["horarios"] = obtener_horarios();
+
+            return parametros;
+        }
+
+        function obtener_horarios() {
+            l_horarios = [];
+            var horarios = document.getElementById("tabla_cursos_guardados").rows;
+            for (var i=1; i<horarios.length; i++) {
+                horario = horarios[i].cells;
+                l_horarios.push({
+                    "dia": horario[0].innerText,
+                    "hora_desde": horario[1].innerText,
+                    "hora_hasta": horario[2].innerText,
+                })
+            }
+            return l_horarios;
+        }
+
+        function obtener_docentes() {
+            return document.getElementById('docentes').value;
+        }
+
+        function se_cursa_primer_cuatrimestre() {
+            return $("input:checkbox[name^='check_primer_cuatri']")[0].checked;
+        }
+
+        function se_cursa_segundo_cuatrimestre() {
+            return $("input:checkbox[name^='check_segundo_cuatri']")[0].checked;
+        }
+
+        function obtener_carreras_seleccionadas() {
+            var carreras = {{carreras|safe}};
+            var ids_carreras = []
+            for (var i=0; i<carreras.length; i++) {
+                var carrera = carreras[i];
+                var nombre_input = "input:checkbox[name^='carrera-" + carrera["codigo"] + "']";
+                if ($(nombre_input)[0].checked)
+                    ids_carreras.push(carrera["id"]);
+            }
+            return ids_carreras;            
+        }
+
+        function guardarHorario() {
+            var param = obtener_parametros();
+
+            do_request('GET', SERVICE_MODIFICAR_CURSO, param, function(state, result) {
+                window.location.replace("{{ url_for('main.administrar_horarios_page') }}");
+            }, function(state, result) {
+                var error_label = document.getElementById("error_al_guardar_label");
+                error_label.style["display"] = "";
+            })
+        }
+
     </script>
 
     <div class="container">
@@ -101,7 +193,7 @@
 
         <br>
 
-        <form action="{{ url_for('main.administrar_horarios_upload_file') }}" method="POST" enctype="multipart/form-data">
+        <form>
             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
 
             <div class="form-group">
@@ -125,10 +217,10 @@
                 <label for="archivo">Cuatrimestres en que se dicta la materia:</label>
 
                 <div class="checkbox" id="check_primer_cuatri">
-                    <label><input type="checkbox" checked="{{curso['se_dicta_primer_cuatri']}}" value="">Primer cuatrimestre</label>
+                    <label><input type="checkbox" checked="{{curso['se_dicta_primer_cuatri']}}" value="" name="check_primer_cuatri">Primer cuatrimestre</label>
                 </div>
                 <div class="checkbox" id="check_segundo_cuatri">
-                    <label><input type="checkbox" checked="{{curso['se_dicta_segundo_cuatri']}}" value="">Segundo cuatrimestre</label>
+                    <label><input type="checkbox" checked="{{curso['se_dicta_segundo_cuatri']}}" value="" name="check_segundo_cuatri">Segundo cuatrimestre</label>
                 </div>
 
             </div>
@@ -224,13 +316,21 @@
                 </div>
             </div>
 
+            <div class="alert alert-danger" id="error_al_guardar_label" style="display:none">
+                Los datos no se han guardado. Intente nuevamente.
+            </div>
+
             <div>
                 <div class="row">
                     <div class="col-sm-4">
                     </div>
+
                     <div class="col-sm-3">
-                        <button type="button" class="btn btn-success">Guardar</button>
+                        <button type="button" class="btn btn-success" onclick="guardarHorario()">
+                            Guardar
+                        </button>
                     </div>
+
                     <div class="col-sm-4">
                         <a href="{{ url_for('main.administrar_horarios_page') }}">
                             <input type="button" class="btn btn-danger" value="Descartar"/>
@@ -244,7 +344,3 @@
     </div>
 
 {% endblock %}
-
-<!-- TODO:
-- Cuando se da click en guardar, guardar todos los cambios
--->

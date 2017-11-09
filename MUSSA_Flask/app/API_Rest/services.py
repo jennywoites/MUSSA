@@ -16,3 +16,4 @@ BUSCAR_CURSOS_SERVICE = BASE_URL + "BuscarCursos"
 
 #Requiere ser administrador
 GUARDAR_HORARIOS_DESDE_ARCHIVO_PDF_SERVICE = BASE_URL + ADMIN + "GuardarHorariosDesdeArchivoPDF"
+MODIFICAR_CURSO = BASE_URL + ADMIN + "ModificarCurso"

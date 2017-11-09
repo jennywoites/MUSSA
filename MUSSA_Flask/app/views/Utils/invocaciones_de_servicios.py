@@ -50,13 +50,14 @@ def invocar_servicio_obtener_carreras_para_una_materia(cookie, codigo):
     return json.loads(carreras_response.text)["carreras"]
 
 
-def invocar_guardar_horarios_desde_PDF(cookie, ruta, anio, cuatrimestre):
+def invocar_guardar_horarios_desde_PDF(csrf_token, cookie, ruta, anio, cuatrimestre):
     parametros = {}
     parametros["ruta"] = ruta
     parametros["anio"] = anio
     parametros["cuatrimestre"] = cuatrimestre
 
-    horarios_response = requests.get(GUARDAR_HORARIOS_DESDE_ARCHIVO_PDF_SERVICE, params=parametros, cookies=cookie)
+    horarios_response = requests.post(GUARDAR_HORARIOS_DESDE_ARCHIVO_PDF_SERVICE, 
+        data=parametros, cookies=cookie, headers={"X-CSRFToken": csrf_token})
     print(horarios_response)
 
     escribir_resultado_servicio('Guardar Horarios desde PDF', horarios_response)
