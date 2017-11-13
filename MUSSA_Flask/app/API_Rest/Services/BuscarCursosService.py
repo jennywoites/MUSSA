@@ -42,17 +42,20 @@ class BuscarCursos(Resource):
             query = CarreraPorCurso.query.filter_by(curso_id=curso.id)
             if q_carrera: query = query.filter_by(carrera_id=q_carrera)
             carrerasPorCurso = query.all()
+
             for carrera in carrerasPorCurso:
                 carrera_db = Carrera.query.filter_by(id=carrera.carrera_id).first()
                 carreras_response.append({
                     'codigo': carrera_db.codigo,
                     'nombre': carrera_db.nombre
                 })
+
             if not carreras_response: #No es un curso valido para la query elegida
                 continue
 
             horarios_response = []
-            for horario in HorarioPorCurso.query.filter_by(curso_id=curso.id).all():
+            horarios_por_curso = HorarioPorCurso.query.filter_by(curso_id=curso.id).all()
+            for horario in horarios_por_curso:
                 horario_db = Horario.query.filter_by(id=horario.horario_id).first()
                 horarios_response.append({
                     'dia': horario_db.dia,

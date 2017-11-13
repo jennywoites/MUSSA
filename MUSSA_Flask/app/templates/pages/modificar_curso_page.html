@@ -115,8 +115,7 @@
                 }
             }
 
-            debugger;
-            var encoded_params = jQuery.param($parametros)
+            var encoded_params = jQuery.param(parametros)
             var url = page + '?' + encoded_params
             xmlhttp.open(method, url, true);
             xmlhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
@@ -137,15 +136,18 @@
         }
 
         function obtener_horarios() {
-            l_horarios = [];
+            l_horarios = "";
             var horarios = document.getElementById("tabla_cursos_guardados").rows;
             for (var i=1; i<horarios.length; i++) {
                 horario = horarios[i].cells;
-                l_horarios.push({
-                    "dia": horario[0].innerText,
-                    "hora_desde": horario[1].innerText,
-                    "hora_hasta": horario[2].innerText,
-                })
+                if (l_horarios != "")
+                    l_horarios += ";"
+
+                l_horarios += "{";
+                l_horarios += "dia:" + horario[0].innerText + ",";
+                l_horarios += "hora_desde:" + horario[1].innerText + ",";
+                l_horarios += "hora_hasta:" + horario[2].innerText;
+                l_horarios += "}"
             }
             return l_horarios;
         }
@@ -168,14 +170,25 @@
             for (var i=0; i<carreras.length; i++) {
                 var carrera = carreras[i];
                 var nombre_input = "input:checkbox[name^='carrera-" + carrera["codigo"] + "']";
-                if ($(nombre_input)[0].checked)
-                    ids_carreras.push(carrera["id"]);
+                if ($(nombre_input)[0].checked) {
+                    if (ids_carreras != "")
+                        ids_carreras += ";";
+                    ids_carreras += carrera["id"];
+                }
             }
-            return ids_carreras;            
+
+            return ids_carreras;
         }
 
         function guardarHorario() {
             var param = obtener_parametros();
+
+            if (param["carreras"].length == 0) {
+                 document.getElementById("error_label_carrera_habilitada").style["display"] = "";
+                 return false;
+            } else {
+                 document.getElementById("error_label_carrera_habilitada").style["display"] = "none";
+            }
 
             do_request('GET', SERVICE_MODIFICAR_CURSO, param, function(state, result) {
                 window.location.replace("{{ url_for('main.administrar_horarios_page') }}");
@@ -202,14 +215,18 @@
                 {% for carrera in carreras %}
                     <div class="checkbox" id="carrera-{{carrera.codigo}}">
                         <label>
-                            {% if carrera['codigo'] in carreras_activas %}
-                                <input type="checkbox" name="carrera-{{carrera['codigo']}}" value="{{carrera['codigo']}}" checked="True">{{ carrera['codigo'] }} - {{ carrera['nombre'] }}
+                            {% if carrera["activa"] == "true" %}
+                                <input type="checkbox" name="carrera-{{carrera['codigo']}}" value="{{carrera['codigo']}}" checked="checked">{{ carrera['codigo'] }} - {{ carrera['nombre'] }}
                             {% else %}
-                                <input type="checkbox" name="carrera-{{carrera['codigo']}}" value="{{carrera['codigo']}}" checked="False">{{ carrera['codigo'] }} - {{ carrera['nombre'] }}
+                                <input type="checkbox" name="carrera-{{carrera['codigo']}}" value="{{carrera['codigo']}}">{{ carrera['codigo'] }} - {{ carrera['nombre'] }}
                             {% endif %}
                         </label>
                     </div>
                 {% endfor %}
+
+                <div class="alert alert-danger" id="error_label_carrera_habilitada" style="display:none">
+                    Debe seleccionar al menos una carrera en la que el horario esté habilitado.
+                </div>
 
             </div>
 
@@ -217,10 +234,18 @@
                 <label for="archivo">Cuatrimestres en que se dicta la materia:</label>
 
                 <div class="checkbox" id="check_primer_cuatri">
-                    <label><input type="checkbox" checked="{{curso['se_dicta_primer_cuatri']}}" value="" name="check_primer_cuatri">Primer cuatrimestre</label>
+                    {% if curso['se_dicta_primer_cuatri'] %}
+                        <label><input type="checkbox" checked="checked" value="" name="check_primer_cuatri">Primer cuatrimestre</label>
+                    {% else %}
+                        <label><input type="checkbox" value="" name="check_primer_cuatri">Primer cuatrimestre</label>
+                    {% endif %}
                 </div>
                 <div class="checkbox" id="check_segundo_cuatri">
-                    <label><input type="checkbox" checked="{{curso['se_dicta_segundo_cuatri']}}" value="" name="check_segundo_cuatri">Segundo cuatrimestre</label>
+                    {% if curso['se_dicta_segundo_cuatri'] %}
+                        <label><input type="checkbox" checked="checked" value="" name="check_segundo_cuatri">Segundo cuatrimestre</label>
+                    {% else %}
+                        <label><input type="checkbox" value="" name="check_segundo_cuatri">Segundo cuatrimestre</label>
+                    {% endif %}
                 </div>
 
             </div>

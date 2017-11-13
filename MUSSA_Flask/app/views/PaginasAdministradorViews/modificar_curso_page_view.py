@@ -13,7 +13,7 @@ from app.views.Utils.invocaciones_de_servicios import *
 from datetime import datetime
 from flask_babel import gettext
 
-from app.utils import frange, get_numero_dos_digitos
+from app.utils import frange, get_numero_dos_digitos, DIAS
 
 HORA_MIN = 7
 HORA_MAX = 23
@@ -24,11 +24,19 @@ def modificar_curso_page(idCurso):
     curso = invocar_buscar_cursos(request.cookies, id_curso=idCurso).pop()
     carreras = invocar_servicio_buscar_carreras(request.cookies)
 
-    carreras_activas = []
-    for carrera in curso["carreras"]:
-        carreras_activas.append(carrera["codigo"])
+    carreras_curso = []
+    for carrera in carreras:
+        activa = "false"
+        for c_curso in curso["carreras"]:
+            if carrera["codigo"] == c_curso["codigo"]:
+                activa = "true"
 
-    dias = ["LUNES", "MARTES", "MIERCOLES", "JUEVES", "VIERNES", "SABADO"]
+        carreras_curso.append({
+            'id': carrera["id"],
+            'codigo': carrera["codigo"],
+            'nombre': carrera["nombre"],
+            'activa': activa
+        })
 
     horarios = []
     for i in frange(HORA_MIN, HORA_MAX+0.5, 0.5):
@@ -38,8 +46,7 @@ def modificar_curso_page(idCurso):
 
     return render_template('pages/modificar_curso_page.html',
                             curso=curso,
-                            carreras = carreras,
-                            carreras_activas = carreras_activas,
-                            dias = dias,
+                            carreras = carreras_curso,
+                            dias = DIAS,
                             hora_desde = horarios[:-1],
                             hora_hasta = horarios[1:])
