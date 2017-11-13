@@ -114,6 +114,14 @@ class GuardarHorariosDesdeArchivoPDF(Resource):
         )
         db.session.add(curso)
 
+        self.crear_horario(curso, horarios_materia)
+            
+        return curso
+
+
+    def crear_horario(self, curso, horarios_materia):
+        horarios_materia = self.concatenar_horarios(horarios_materia)
+
         for horario_pdf in horarios_materia:
             horario = Horario(
                 dia = horario_pdf[0],
@@ -128,8 +136,38 @@ class GuardarHorariosDesdeArchivoPDF(Resource):
                 horario_id = horario.id
             )
             db.session.add(horario_por_curso)
-            
-        return curso
+
+
+    def concatenar_horarios(self, horarios_materia):
+        concatenados = []
+        pares = []
+        for i in range(len(horarios_materia)):
+            if i in concatenados:
+                continue
+            horario_pdf_i = horarios_materia[i]
+            dia_i = horario_pdf_i[0]
+            for j in range(i+1, len(horarios_materia)):
+                if j in concatenados:
+                    continue
+                horario_pdf_j = horarios_materia[j]
+                dia_j = horario_pdf_j[0]
+                if dia_i == dia_j:
+                    if horario_pdf_i[2] == horario_pdf_j[1]:
+                        concatenados.append(i)
+                        concatenados.append(j)
+                        pares.append((i,j))
+
+        horarios = []
+        for i in range(len(horarios_materia)):
+            if i not in concatenados:
+                horarios.append(horarios_materia[i])
+
+        for i,j in pares:
+            horario_i = horarios_materia[i]
+            horario_j = horarios_materia[j]
+            horarios.append([horario_i[0], horario_i[1], horario_j[2]])
+
+        return horarios
 
 
     def filtrar_solo_carreras_en_sistema(self, carreras_en_sistema, carreras_pdf):

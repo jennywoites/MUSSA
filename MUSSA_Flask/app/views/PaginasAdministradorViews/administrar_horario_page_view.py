@@ -37,7 +37,6 @@ def administrar_horarios_upload_file():
 
     csrf_token = request.form['csrf_token']
     response = invocar_guardar_horarios_desde_PDF(csrf_token, request.cookies, ruta, anio, cuatrimestre)
-    print(response)
 
     if 'OK' in response:
         flash(gettext('Los horarios han sido guardados satisfactoriamente'), 'success')
