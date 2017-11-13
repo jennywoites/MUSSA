@@ -1,0 +1,371 @@
+{% extends "common/page_base.html" %}
+
+{% block content %}
+
+    <script>
+
+        function actualizarHoraHasta() {
+            var hora_desde_element = document.getElementById("hora_desde");
+            var indice_seleccionado = hora_desde_element.selectedIndex;
+
+            var hora_hasta_element = document.getElementById("hora_hasta");
+            for (var i=0; i < hora_hasta_element.length; i++) {
+                var opcion = hora_hasta_element[i];
+                if (i < indice_seleccionado)
+                    opcion.style["display"] = "none";
+                else
+                    opcion.style["display"] = "";                    
+            }
+
+            hora_hasta_element.selectedIndex = indice_seleccionado;
+        }
+
+        function agregarHorario() {
+            var dia_element = document.getElementById("dia")
+            var dia = dia_element[dia_element.selectedIndex].innerHTML;
+
+            var hora_desde_element = document.getElementById("hora_desde");
+            var hora_desde = hora_desde_element[hora_desde_element.selectedIndex].innerHTML;
+
+            var hora_hasta_element = document.getElementById("hora_hasta");
+            var hora_hasta = hora_hasta_element[hora_hasta_element.selectedIndex].innerHTML;
+
+            if (!horarioParaAgregarEsValido(dia, hora_desde, hora_hasta))
+                return false;
+
+            var horarios_table = document.getElementById("tabla_cursos_guardados");
+            var horarios = horarios_table.rows;
+
+            var indice = horarios_table.rows.length;
+            var row = horarios_table.insertRow(indice);
+            var ultimo_id = horarios_table.rows[indice-1].id
+            var numero_id = parseInt(ultimo_id.substr(ultimo_id.indexOf("_")+1)) + 1;
+            row.id = "horario_" + numero_id;
+            row.insertCell(0).innerHTML = dia;
+            row.insertCell(1).innerHTML = hora_desde;
+            row.insertCell(2).innerHTML = hora_hasta;
+            row.insertCell(3).innerHTML = '<button type="button" class="btn btn-default" onclick="eliminarHorario(' + numero_id +')"><span class="glyphicon glyphicon-trash"></span></button></td>'
+        }
+
+        function eliminarHorario(idHorario) {
+            var horarios = document.getElementById("tabla_cursos_guardados").rows;
+            horarios["horario_" + idHorario].remove()
+        }
+
+        function convertirHorario(horario) {
+            hora = parseInt(horario.substring(0,2))
+            minutos = parseInt(horario.substring(3))
+            if (minutos == 30)
+                hora += 0.5
+            return hora
+        }
+
+        function horarioParaAgregarEsValido(dia, hora_desde, hora_hasta) {
+            var error_label = document.getElementById("error_label");
+
+            hora_desde = convertirHorario(hora_desde);
+            hora_hasta = convertirHorario(hora_hasta);
+            
+            var horarios = document.getElementById("tabla_cursos_guardados").rows;
+            for (var i=0; i<horarios.length; i++) {
+                var horario = horarios[i];
+                var dia_actual = horario.cells[0].innerText;
+
+                if (dia_actual != dia)
+                    continue;
+
+                var hora_desde_actual = convertirHorario(horario.cells[1].innerText);
+                var hora_hasta_actual = convertirHorario(horario.cells[2].innerText);
+
+                //El curso empieza despues de que termina el nuevo
+                if (hora_desde_actual >= hora_hasta)
+                    continue;
+
+                //El curso comienza antes que el nuevo y termina antes que el
+                if (hora_desde_actual < hora_desde && hora_hasta_actual < hora_desde)
+                    continue;
+
+                error_label.style["display"] = "";
+                return false;
+            }
+
+            error_label.style["display"] = "none";
+            return true;
+        }
+
+        //*****************************************************************************
+        SERVICE_MODIFICAR_CURSO = '/api/admin/ModificarCurso'
+        SUCCESS = 200
+
+        function do_request(method, page, parametros, onSucces, onError) {
+            var method = method || "GET";
+
+            xmlhttp = new XMLHttpRequest();
+
+            xmlhttp.onreadystatechange = function() {
+                if (this.status == 0 || this.readyState != 4)
+                    return;
+
+                if ( this.status != SUCCESS ) {
+                    onError(this.status, this.responseText);
+                }
+                else { 
+                    json_result = (this.responseText == "") ? {} : JSON.parse(this.responseText)
+                    onSucces(this.status, json_result);
+                }
+            }
+
+            var encoded_params = jQuery.param(parametros)
+            var url = page + '?' + encoded_params
+            xmlhttp.open(method, url, true);
+            xmlhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+            xmlhttp.withCredentials = true;
+            xmlhttp.send();
+        }
+
+        function obtener_parametros() {
+            var parametros = {};
+            parametros["id_curso"] = {{curso["id"]}};
+            parametros["carreras"] = obtener_carreras_seleccionadas();
+            parametros["primer_cuatrimestre"] = se_cursa_primer_cuatrimestre();
+            parametros["segundo_cuatrimestre"] = se_cursa_segundo_cuatrimestre();
+            parametros["docentes"] = obtener_docentes();
+            parametros["horarios"] = obtener_horarios();
+
+            return parametros;
+        }
+
+        function obtener_horarios() {
+            l_horarios = "";
+            var horarios = document.getElementById("tabla_cursos_guardados").rows;
+            for (var i=1; i<horarios.length; i++) {
+                horario = horarios[i].cells;
+                if (l_horarios != "")
+                    l_horarios += ";"
+
+                l_horarios += "{";
+                l_horarios += "dia:" + horario[0].innerText + ",";
+                l_horarios += "hora_desde:" + horario[1].innerText + ",";
+                l_horarios += "hora_hasta:" + horario[2].innerText;
+                l_horarios += "}"
+            }
+            return l_horarios;
+        }
+
+        function obtener_docentes() {
+            return document.getElementById('docentes').value;
+        }
+
+        function se_cursa_primer_cuatrimestre() {
+            return $("input:checkbox[name^='check_primer_cuatri']")[0].checked;
+        }
+
+        function se_cursa_segundo_cuatrimestre() {
+            return $("input:checkbox[name^='check_segundo_cuatri']")[0].checked;
+        }
+
+        function obtener_carreras_seleccionadas() {
+            var carreras = {{carreras|safe}};
+            var ids_carreras = []
+            for (var i=0; i<carreras.length; i++) {
+                var carrera = carreras[i];
+                var nombre_input = "input:checkbox[name^='carrera-" + carrera["codigo"] + "']";
+                if ($(nombre_input)[0].checked) {
+                    if (ids_carreras != "")
+                        ids_carreras += ";";
+                    ids_carreras += carrera["id"];
+                }
+            }
+
+            return ids_carreras;
+        }
+
+        function guardarHorario() {
+            var param = obtener_parametros();
+
+            if (param["carreras"].length == 0) {
+                 document.getElementById("error_label_carrera_habilitada").style["display"] = "";
+                 return false;
+            } else {
+                 document.getElementById("error_label_carrera_habilitada").style["display"] = "none";
+            }
+
+            do_request('GET', SERVICE_MODIFICAR_CURSO, param, function(state, result) {
+                window.location.replace("{{ url_for('main.administrar_horarios_page') }}");
+            }, function(state, result) {
+                var error_label = document.getElementById("error_al_guardar_label");
+                error_label.style["display"] = "";
+            })
+        }
+
+    </script>
+
+    <div class="container">
+
+        <h2>Modificar curso: {{curso["codigo_curso"]}} - Materia: {{curso["codigo_materia"]}}</h2>
+
+        <br>
+
+        <form>
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+
+            <div class="form-group">
+                <label for="archivo">Carreras habilitadas:</label>
+
+                {% for carrera in carreras %}
+                    <div class="checkbox" id="carrera-{{carrera.codigo}}">
+                        <label>
+                            {% if carrera["activa"] == "true" %}
+                                <input type="checkbox" name="carrera-{{carrera['codigo']}}" value="{{carrera['codigo']}}" checked="checked">{{ carrera['codigo'] }} - {{ carrera['nombre'] }}
+                            {% else %}
+                                <input type="checkbox" name="carrera-{{carrera['codigo']}}" value="{{carrera['codigo']}}">{{ carrera['codigo'] }} - {{ carrera['nombre'] }}
+                            {% endif %}
+                        </label>
+                    </div>
+                {% endfor %}
+
+                <div class="alert alert-danger" id="error_label_carrera_habilitada" style="display:none">
+                    Debe seleccionar al menos una carrera en la que el horario esté habilitado.
+                </div>
+
+            </div>
+
+            <div class="form-group">
+                <label for="archivo">Cuatrimestres en que se dicta la materia:</label>
+
+                <div class="checkbox" id="check_primer_cuatri">
+                    {% if curso['se_dicta_primer_cuatri'] %}
+                        <label><input type="checkbox" checked="checked" value="" name="check_primer_cuatri">Primer cuatrimestre</label>
+                    {% else %}
+                        <label><input type="checkbox" value="" name="check_primer_cuatri">Primer cuatrimestre</label>
+                    {% endif %}
+                </div>
+                <div class="checkbox" id="check_segundo_cuatri">
+                    {% if curso['se_dicta_segundo_cuatri'] %}
+                        <label><input type="checkbox" checked="checked" value="" name="check_segundo_cuatri">Segundo cuatrimestre</label>
+                    {% else %}
+                        <label><input type="checkbox" value="" name="check_segundo_cuatri">Segundo cuatrimestre</label>
+                    {% endif %}
+                </div>
+
+            </div>
+
+            <div class="form-group">
+                <label for="archivo">Docentes:</label>
+                <input type="text" class="form-control" id="docentes" name="docentes" value="{{curso['docentes']}}">
+            </div>
+
+                
+            <label for="archivo">Horarios:</label>
+
+            <div>
+                <div class="row">
+                    <div class="col-sm-2">
+                        <div class="form-group">
+                
+                            <select class="form-control" id="dia" name="dia">
+                                {% for dia in dias %}
+                                    <option>{{dia}}</option>
+                                {% endfor %}
+                       </select>
+
+                        </div>
+                    </div>
+
+                    <div class="col-xs-1">
+                        <p>De:</p>
+                    </div>
+
+                    <div class="col-sm-2">
+                        <div class="form-group">                
+                            <select class="form-control" id="hora_desde" name="hora_desde" onchange="actualizarHoraHasta()">
+                                {% for i in range(hora_desde | length) %}
+                                    <option id="hora_desde_{{i}}">{{hora_desde[i]}}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="col-xs-1">
+                        <p>A:</p>
+                    </div>
+
+                    <div class="col-sm-2">
+                        <div class="form-group">                
+                            <select class="form-control" id="hora_hasta" name="hora_hasta">
+                                {% for i in range(hora_hasta | length) %}
+                                    <option id="hora_hasta_{{i}}">{{hora_hasta[i]}}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="col-sm-2">
+                        <div class="form-group"> 
+                            <button type="button" class="btn btn-default" onclick="agregarHorario()">Agregar horario</button>
+                        </div>
+                    </div>
+
+                </div>
+                    
+                <div class="alert alert-danger" id="error_label" style="display:none">
+                    Este horario es incompatible con los que han sido cargados previamente.
+                </div>
+
+            </div>
+
+            <br>
+
+            <div class="form-group">
+                <div class='table-responsive'>
+                    <table class='table' id="tabla_cursos_guardados">
+                        <tr>
+                            <th>Dia</th>
+                            <th>De</th>
+                            <th>A</th>
+                            <th>Eliminar</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for i in range(curso["horarios"] | length) %}
+
+                            <tr id="horario_{{i}}"">
+                                <td>{{curso["horarios"][i]["dia"]}}</td>
+                                <td>{{curso["horarios"][i]["hora_desde"]}}</td>
+                                <td>{{curso["horarios"][i]["hora_hasta"]}}</td>
+                                <td><button type="button" class="btn btn-default" onclick="eliminarHorario({{i}})"><span class='glyphicon glyphicon-trash'></span></button></td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="alert alert-danger" id="error_al_guardar_label" style="display:none">
+                Los datos no se han guardado. Intente nuevamente.
+            </div>
+
+            <div>
+                <div class="row">
+                    <div class="col-sm-4">
+                    </div>
+
+                    <div class="col-sm-3">
+                        <button type="button" class="btn btn-success" onclick="guardarHorario()">
+                            Guardar
+                        </button>
+                    </div>
+
+                    <div class="col-sm-4">
+                        <a href="{{ url_for('main.administrar_horarios_page') }}">
+                            <input type="button" class="btn btn-danger" value="Descartar"/>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+        </form>
+
+    </div>
+
+{% endblock %}

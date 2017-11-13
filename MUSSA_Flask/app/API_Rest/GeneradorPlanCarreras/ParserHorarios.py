@@ -3,7 +3,7 @@ import PyPDF2
 from app.API_Rest.GeneradorPlanCarreras.modelos.Curso import Curso
 from app.API_Rest.GeneradorPlanCarreras.modelos.Horario import Horario
 
-DIAS = ["LUNES", "MARTES", "MIERCOLES", "JUEVES", "VIERNES", "SABADO", "DOMINGO"]
+from app.utils import DIAS
 
 VOCALES = {
     'Á': 'A',

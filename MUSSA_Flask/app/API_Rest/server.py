@@ -5,3 +5,4 @@ from app.API_Rest.Services.ObtenerMateriasCorrelativasService  import *
 from app.API_Rest.Services.ObtenerCarrerasDondeSeDictaLaMateriaService import *
 from app.API_Rest.Services.GuardarHorariosDesdeArchivoPDFService import *
 from app.API_Rest.Services.BuscarCursosService import *
+from app.API_Rest.Services.ModificarCursoService import *

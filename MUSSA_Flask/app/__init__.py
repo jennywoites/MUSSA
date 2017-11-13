@@ -140,3 +140,4 @@ def add_resources_api_rest(api):
     api.add_resource(BuscarCursos, '/api/BuscarCursos')
 
     api.add_resource(GuardarHorariosDesdeArchivoPDF, '/api/admin/GuardarHorariosDesdeArchivoPDF')
+    api.add_resource(ModificarCurso, '/api/admin/ModificarCurso')    

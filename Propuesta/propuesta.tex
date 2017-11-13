@@ -68,7 +68,7 @@ El siguiente documento presenta la propuesta del Trabajo Profesional de Ingenier
 
 El objetivo del proyecto es aplicar los conocimientos adquiridos en la carrera. \newline
 
-El tema elegido para el trabajo profesional es <<MUSSA - Generador de Planes de Carrera personalizados.>> \newline
+El tema elegido para el trabajo profesional es <<MUSSA\footnote{Materias Universitarias en un Sistema Simplificado Automático} - Generador de Planes de Carrera personalizados.>> \newline
 
 El objetivo general del presente trabajo, será la realización de una web responsive que permita a los alumnos la visualización de sus materias, la administración de las mismas, la utilización de encuestas y la generación de un plan de carrera en base a parámetros personalizados. Cabe destacar, que el corazón de este trabajo reside en la modelización y generación del algoritmo que permita la generación del plan de carrera personalizado; para ello se analizarán diferentes opciones para el algoritmo a utilizar, entre ellas algoritmos de fuerza bruta, algoritmos Greedy, algoritmos utilizando programación lineal entera y los algoritmos de planificación basados en preferencias.
 
@@ -212,7 +212,7 @@ Entre los algoritmos a evaluar se encuentran:
 	\item Algoritmos de Planificación basados en Preferencias
 \end{itemize}
 
-De los últimos tipos de algoritmos citados, en base a la investigación realizada se han encontrado algunos trabajos que tienen alguna similitud con el problema que buscamos resolver y que han logrado soluciones factibles en tiempos aceptables (si bien no es posible aplicar el algoritmo tal como fue concebido en esos trabajos, es posible utilizarlos como base teórica para confeccionar algoritmos propios con alguna similitud con ellos).
+De los últimos tipos de algoritmos citados, en base a la investigación realizada se han encontrado algunos trabajos que tienen alguna similitud con el problema que buscamos resolver y que han logrado soluciones factibles en tiempos aceptables (si bien no es posible aplicar el algoritmo tal como fue concebido en esos trabajos, es posible utilizarlos como base teórica para confeccionar algoritmos propios con alguna similitud con ellos).\cite{PLE_HORARIOS_UNIV, MODELOS_PLE, PAPER_ROSITA_PLANNING_WITH_PREFERENCES_1, PAPER_ROSITA_PLANNING_WITH_PREFERENCES_2, PAPER_ROSITA_PLANNING_WITH_PREFERENCES_3, PAPER_ROSITA_PLANNING_WITH_PREFERENCES_4}
 
 \subsection{Armado y Visualización del Plan de Carrera}
 
@@ -251,7 +251,7 @@ Backend										&		Python, Flask \\
 \hline
 Frontend									&		JavaScript, HTML, CSS/SASS, Bootstrap \\
 \hline
-Base de Datos			 					&		SQLAlchemy\tablefootnote{Python SQL toolkit and Object Relational Mapper} \\
+Base de Datos			 					&		SQLAlchemy\tablefootnote{Python SQL toolkit and Object Relational Mapper - \url{https://www.sqlalchemy.org/}} \\
 \hline
 Entornos de Desarrollo						& 		Sublime \\
 \hline
@@ -276,7 +276,7 @@ El equipo de trabajo está compuesto por:
 \begin{itemize}
 	\item Tutor: Lic. Rosa Graciela Wachenchauzer
 	\item Co-tutor: Ing. Diego Essaya
-	\item Desarrollador: Jennifer Andrea Woites
+	\item Estudiante: Jennifer Andrea Woites
 \end{itemize}
 
 \subsection{Metodología}
@@ -592,49 +592,71 @@ A continuación se hace un cronograma de entregables tentativo al finalizar cada
 
 \begin{thebibliography}{X}
 
+%Formato: Articulos con DOI asignado:
+
+% Autor(es): apellido(s) e inicial del nombre. Sólo considerar los dos apellidos si son de origen español y están %indicados en el documento a citar 
+% Año de publicación entre paréntesis, seguido de punto
+% Título del artículo, seguido de punto
+% Título de la revista en letra cursiva, seguido de coma
+
+% Volumen en letra cursiva y número entre paréntesis (si está mencionado, sin cursiva), seguido de coma
+
+% Números de páginas de inicio y final, separadas por un guión, seguidos de punto
+
+% Coloca la expresión http://dx.doi.org/ y a continuación el número DOI asignado (ver APA Style Guide to Electronic  References - American Psychological Association, pág. 12)
+
+% Articulos sin DOI asignado
+
+% Autor(es): apellido(s) e inicial del nombre. Sólo considerar los dos apellidos si son de origen español y están indicados en el documento a citar 
+
+% Año de publicación entre paréntesis, seguido de punto
+
+% Título del artículo, seguido de punto
+
+%Título de la revista en letra cursiva, seguido de coma
+
+% Volumen en letra cursiva y número entre paréntesis (si está mencionado, sin cursiva), seguido de coma
+
+% Números de páginas de inicio y final, separadas por un guión, seguidos de punto
+
+% Coloca la expresión Recuperado de, seguida de la dirección electrónica (URL) de la página principal de la revista
+
+
 % BEGIN Referencia
-\bibitem{PLE_HORARIOS_UNIV} \textit{<<Programación de Horarios de Clases y Asignación de Salas para la Facultad de Ingeniería de la Universidad Diego Portales Mediante un Enfoque de Programacion Entera>>}
-
-\textsc{Rodrigo Hernandez, Jaime Miranda P. y Pablo A. Rey}
-
-\url{http://www.dii.uchile.cl/ris/RISXXII/horariosUDP_RISVersion%20FINAL.pdf}
+\bibitem{PLE_HORARIOS_UNIV} Rodrigo Hernandez, Jaime Miranda P. y Pablo A. Rey (2008). Programación de Horarios de Clases y Asignación de Salas para la Facultad de Ingeniería de la Universidad Diego Portales Mediante un Enfoque de Programacion Entera. \textit{Revista Ingeniería de Sistemas}, \textit{Volumen XXII}, páginas 121-141.
+Recuperado de: \url{http://www.dii.uchile.cl/ris/RISXXII/horariosUDP_RISVersion%20FINAL.pdf}
 % END Referencia
 
 
 % BEGIN Referencia
-\bibitem{MODELOS_PLE} \textit{<<Formulación y Resolución de Modelos de Programación Matemática en Ingeniería y Ciencia>>}
-
-\textsc{Enrique Castillo, Antonio J. Conejo, Pablo Pedregal, Ricardo García y Natalia Alguacil}
-
-\url{http://www.dia.fi.upm.es/~jafernan/teaching/operational-research/LibroCompleto}
+\bibitem{MODELOS_PLE}
+Enrique Castillo, Antonio J. Conejo, Pablo Pedregal, Ricardo García y Natalia Alguacil (2002). Formulación y Resolución de Modelos de Programación Matemática en Ingeniería y Ciencia. Páginas 461-483.
+Recuperado de: \url{http://www.dia.fi.upm.es/~jafernan/teaching/operational-research/LibroCompleto}
 % END Referencia
 
 
 % BEGIN Referencia
-\bibitem{PAPER_ROSITA_PLANNING_WITH_PREFERENCES} \textit{<<Planning with Prederences>>}
-
-\textsc{Jorge A. Baier y Sheila A. McIlraith}
+\bibitem{PAPER_ROSITA_PLANNING_WITH_PREFERENCES_1}
+Jorge A. Baier y Sheila A. McIlraith (2008). Planning with Preferences. \textit{Association for the Advancement of Artificial Intelligence}, \textit{Volumen 29 (4)}, páginas 25-36.
+\url{https://doi.org/10.1609/aimag.v29i4.2204}
 % END Referencia
 
 
 % BEGIN Referencia
-\bibitem{PAPER_ROSITA_PLANNING_WITH_PREFERENCES_2} \textit{<<HTN Planning with Preferences>>}
-
-\textsc{Shirin Sohrabi, Jorge A. Baier y Sheila A. McIlraith}
+\bibitem{PAPER_ROSITA_PLANNING_WITH_PREFERENCES_2}Shirin Sohrabi, Jorge A. Baier y Sheila A. McIlraith (2009). HTN Planning with Preferences. \textit{Proceedings of the 21st international jont conference on Artifical intelligence},  páginas 1790-1797.
+Recuperado de: \url{https://www.ijcai.org/Proceedings/09/Papers/298.pdf}
 % END Referencia
 
 
 % BEGIN Referencia
-\bibitem{PAPER_ROSITA_PLANNING_WITH_PREFERENCES_3} \textit{<<Learning Probabilistic Hierarchical Task Networks as Probabilistic Context-Free Grammars to Capture User Preferences>>}
-
-\textsc{Nan Li, William Cushing, Subbarao Kambhampati y Sungwook Yoon}
+\bibitem{PAPER_ROSITA_PLANNING_WITH_PREFERENCES_3} Nan Li, William Cushing, Subbarao Kambhampati y Sungwook Yoon (2014). Learning Probabilistic Hierarchical Task Networks as Probabilistic Context-Free Grammars to Capture User Preferences. \textit{ACM Transactions on Computational Logic}, \textit{Volumen V}, páginas 1-32.
+Recuperado de: \url{http://rakaposhi.eas.asu.edu/nan-tist.pdf}
 % END Referencia
 
 
 % BEGIN Referencia
-\bibitem{PAPER_ROSITA_PLANNING_WITH_PREFERENCES_4} \textit{<<Learning Probabilistic Hierarchical Task Networks to Capture User Preferences>>}
-
-\textsc{Nan Li, William Cushing, Subbarao Kambhampati y Sungwook Yoon}
+\bibitem{PAPER_ROSITA_PLANNING_WITH_PREFERENCES_4} Nan Li, William Cushing, Subbarao Kambhampati y Sungwook Yoon (2013). Learning Probabilistic Hierarchical Task Networks to Capture User Preferences \textit{Preprint submitted to Artificial Intelligence}, páginas 1-30.
+Recuperado de: \url{https://arxiv.org/pdf/1006.0274.pdf}
 % END Referencia
 
 
@@ -653,13 +675,6 @@ A continuación se hace un cronograma de entregables tentativo al finalizar cada
 \textsc{Stuart Mitchell, Anita Kean, Andrew Mason, Michael O’Sullivan, Antony Phillips}
 
 \url{https://pythonhosted.org/PuLP/}
-% END Referencia
-
-
-% BEGIN Referencia
-\bibitem{SQL_ALCHEMY} \textit{<<SQL Alchemy>>}
-
-\url{https://www.sqlalchemy.org/}
 % END Referencia
 
 

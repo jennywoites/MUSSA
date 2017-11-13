@@ -1,17 +1,9 @@
-from flask import redirect, render_template
-from flask import request, url_for, flash
-from flask_user import current_user, login_required, roles_accepted
-from werkzeug import secure_filename
-
-from app import db
-from app.models.user_models import UserProfileForm
-
+from flask import render_template
+from flask_user import roles_accepted
 from app.views.base_view import main_blueprint
 
-from app.views.Utils.invocaciones_de_servicios import *
-
-from datetime import datetime
-from flask_babel import gettext
+from app.views.PaginasAdministradorViews.administrar_horario_page_view import administrar_horarios_page, administrar_horarios_upload_file
+from app.views.PaginasAdministradorViews.modificar_curso_page_view import modificar_curso_page
 
 
 # The Admin page is accessible to users with the 'admin' role
@@ -19,35 +11,3 @@ from flask_babel import gettext
 @roles_accepted('admin')  # Limits access to users with the 'admin' role
 def admin_page():
     return render_template('pages/admin_page.html')
-
-
-@main_blueprint.route('/admin/administrar_horarios')
-@roles_accepted('admin')
-def administrar_horarios_page():
-    MAX_TIEMPO = 5
-    cursos = invocar_buscar_cursos(request.cookies)
-    hoy = datetime.now().year
-    anios = [x for x in range(hoy, hoy - MAX_TIEMPO, -1)]
-    return render_template('pages/administrar_horarios_page.html',
-        cursos=cursos,
-        anios=anios)
-
-
-@main_blueprint.route('/admin/administrar_horarios/uploader', methods = ['POST'])
-@roles_accepted('admin')
-def administrar_horarios_upload_file():
-    f = request.files['file']
-    cuatrimestre = request.form['numero_cuatrimestre']
-    anio = request.form['anio']
-    ruta = 'app/tmp/' + secure_filename('Horarios_' + anio + "_" + cuatrimestre + "C.pdf") 
-    f.save(ruta)
-
-    response = invocar_guardar_horarios_desde_PDF(request.cookies, ruta, anio, cuatrimestre)
-    print(response)
-
-    if 'OK' in response:
-        flash(gettext('Los horarios han sido guardados satisfactoriamente'), 'success')
-    else:
-        flash(response["Error"], 'error')
-
-    return redirect(url_for("main.administrar_horarios_page"))
