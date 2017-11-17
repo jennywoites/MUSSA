@@ -84,10 +84,7 @@ def crear_carrera(codigo, titulo, plan):
     guardar_orientaciones(carrera, datos)
 
     guardar_materias(carrera, codigo, titulo, plan)
-
-    #TODO:
-    #Cargar horarios iniciales guardados en el historial
-
+    
     db.session.add(carrera)
 
 

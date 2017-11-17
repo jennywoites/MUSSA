@@ -31,6 +31,8 @@ class MateriasAlumno(db.Model):
 
     alumno_id = db.Column(db.Integer(), db.ForeignKey('alumno.id'))
     materia_id = db.Column(db.Integer(), db.ForeignKey('materia.id'))
+    carrera_id = db.Column(db.Integer(), db.ForeignKey('carrera.id'))
+
     estado_id = db.Column(db.Integer(), db.ForeignKey('estado_materia.id'))
     calificacion = db.Column(db.Integer, nullable=True)
     fecha_aprobacion = db.Column(db.DateTime)

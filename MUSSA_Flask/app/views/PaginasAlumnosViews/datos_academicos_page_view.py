@@ -50,9 +50,7 @@ def datos_academicos_agregar_carrera_page():
 
     response = invocar_agregar_carrera_alumno(csrf_token, request.cookies, id_carrera)
 
-    if 'OK' in response:
-        flash(gettext('Se agrego la carrera'), 'success')
-    else:
+    if not 'OK' in response:
         flash(response["Error"], 'error')
 
     return redirect(url_for("main.datos_academicos_page"))

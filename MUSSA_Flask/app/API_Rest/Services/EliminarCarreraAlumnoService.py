@@ -3,7 +3,7 @@ from app.API_Rest.codes import *
 from flask import request
 
 from flask_user import current_user, login_required
-from app.models.alumno_models import Alumno, AlumnosCarreras
+from app.models.alumno_models import Alumno, AlumnosCarreras, MateriasAlumno
 from app.models.carreras_models import Carrera
 
 from app import db
@@ -33,6 +33,8 @@ class EliminarCarreraAlumno(Resource):
         AlumnosCarreras.query.filter_by(alumno_id=alumno.id).filter_by(carrera_id=q_id_carrera).delete()
         db.session.commit()
 
+        self.eliminar_materias_carrera(alumno.id, q_id_carrera)
+
         result = ({'OK': "La carrera ha sido eliminada"}, SUCCESS_OK)
         logging.info('Eliminar Carrera Alumno devuelve como resultado: {}'.format(result))
 
@@ -46,3 +48,9 @@ class EliminarCarreraAlumno(Resource):
     def carrera_no_fue_agregada(self, id_alumno, id_carrera):
         query = AlumnosCarreras.query.filter_by(alumno_id=id_alumno).filter_by(carrera_id=id_carrera)
         return len(query.all()) == 0
+
+
+    def eliminar_materias_carrera(self, id_alumno, id_carrera):
+        query = MateriasAlumno.query.filter_by(alumno_id=id_alumno).filter_by(carrera_id = id_carrera)
+        query.delete()
+        db.session.commit()

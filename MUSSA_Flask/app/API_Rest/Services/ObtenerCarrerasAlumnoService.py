@@ -22,6 +22,13 @@ class ObtenerCarrerasAlumno(Resource):
             return {'Error': 'Este servicio no recibe parámetros'}, CLIENT_ERROR_BAD_REQUEST
 
         alumno = Alumno.query.filter_by(user_id=current_user.id).first()
+
+        if not alumno:
+            logging.info('Se crea el alumno para el usuario {}'.format(current_user.id))
+            alumno = Alumno(user_id=current_user.id)
+            db.session.add(alumno)
+            db.session.commit()
+
         carreras = AlumnosCarreras.query.filter_by(alumno_id=alumno.id).all()
 
         carreras_result = []
