@@ -8,6 +8,7 @@ from app.models.carreras_models import Carrera
 
 from app.views.base_view import main_blueprint
 
+from app.views.PaginasAlumnosViews.datos_academicos_page_view import datos_academicos_page
 
 # The User page is accessible to authenticated users (users that have logged in)
 @main_blueprint.route('/member')

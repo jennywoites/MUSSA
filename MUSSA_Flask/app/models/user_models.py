@@ -26,11 +26,13 @@ class User(db.Model, UserMixin):
     active = db.Column('is_active', db.Boolean(), nullable=False, server_default='0')
     first_name = db.Column(db.Unicode(50), nullable=False, server_default=u'')
     last_name = db.Column(db.Unicode(50), nullable=False, server_default=u'')
-    padron = db.Column(db.Unicode(20), nullable=False, server_default=u'')
 
     # Relationships
     roles = db.relationship('Role', secondary='users_roles',
                             backref=db.backref('users', lazy='dynamic'))
+
+    def __str__(self):
+        return "Usuario id: {} - {} {}".format(self.id, self.first_name, self.last_name)
 
 
 # Define the Role data model
@@ -52,19 +54,17 @@ class UsersRoles(db.Model):
 # Define the User registration form
 # It augments the Flask-User RegisterForm with additional fields
 class MyRegisterForm(RegisterForm):
-    first_name = StringField(gettext('Name'), validators=[
-        validators.DataRequired(gettext('You must write your name'))])
-    last_name = StringField(gettext('Lastname'), validators=[
-        validators.DataRequired(gettext('You must write your lastname'))])
-    padron = StringField(gettext('Student ID Number'))
+    first_name = StringField(gettext('Nombre'), validators=[
+        validators.DataRequired(gettext('Debes escribir tu nombre.'))])
+    last_name = StringField(gettext('Apellido'), validators=[
+        validators.DataRequired(gettext('Debes escribir tu apellido.'))])
 
 
 # Define the User profile form
 class UserProfileForm(FlaskForm):
-    first_name = StringField(gettext('Name'), validators=[
-        validators.DataRequired(gettext('You must write your name'))])
-    last_name = StringField(gettext('Lastname'), validators=[
-        validators.DataRequired(gettext('You must write your lastname'))])
-    padron = StringField(gettext('Student ID Number'))
+    first_name = StringField(gettext('Nombre'), validators=[
+        validators.DataRequired(gettext('Debes escribir tu nombre.'))])
+    last_name = StringField(gettext('Apellido'), validators=[
+        validators.DataRequired(gettext('Debes escribir tu apellido.'))])
 
-    submit = SubmitField(gettext('Save'))
+    submit = SubmitField(gettext('Guardar'))

@@ -75,6 +75,7 @@ def crear_carrera(codigo, titulo, plan):
     carrera = Carrera(
         codigo = codigo,
         nombre = titulo,
+        plan = plan,
         duracion_estimada_en_cuatrimestres = datos[DURACION],
         requiere_prueba_suficiencia_de_idioma = datos[REQUIERE_SUFICIENCIA_IDIOMA]
         )

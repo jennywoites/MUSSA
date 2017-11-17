@@ -7,6 +7,7 @@ class Carrera(db.Model):
 
     codigo = db.Column(db.String(4), nullable=False, unique=True, server_default='')
     nombre = db.Column(db.String(50), nullable=False, server_default='')
+    plan = db.Column(db.String(4), nullable=False, server_default='')
     duracion_estimada_en_cuatrimestres = db.Column(db.Integer, nullable=False)
     requiere_prueba_suficiencia_de_idioma = db.Column('requiere_prueba_suficiencia_de_idioma', db.Boolean(), nullable=False)
 
