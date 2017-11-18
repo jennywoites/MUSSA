@@ -11,3 +11,4 @@ from app.API_Rest.Services.ModificarPadronAlumnoService import *
 from app.API_Rest.Services.AgregarCarreraAlumnoService import *
 from app.API_Rest.Services.ObtenerCarrerasAlumnoService import *
 from app.API_Rest.Services.EliminarCarreraAlumnoService import *
+from app.API_Rest.Services.ObtenerMateriasAlumnoService import *

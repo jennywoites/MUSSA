@@ -7,6 +7,7 @@ from app.views.base_view import main_blueprint
 from app.views.Utils.invocaciones_de_servicios import *
 
 from flask_babel import gettext
+from app.DAO.MateriasDAO import *
 
 
 @main_blueprint.route('/datos_academicos', methods=['GET'])
@@ -19,7 +20,8 @@ def datos_academicos_page():
     mis_carreras = invocar_obtener_carreras_alumno(cookie)
     carreras_nuevas = filtrar_carreras_no_cursadas(carreras, mis_carreras)
 
-    mis_materias = []
+    estados = [EN_CURSO, FINAL_PENDIENTE, APROBADA, DESAPROBADA]
+    mis_materias = invocar_obtener_materias_alumno(cookie, estados)
 
     return render_template('pages/datos_academicos_page.html',
         padron = padron,

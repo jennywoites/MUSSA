@@ -190,6 +190,7 @@
                 <table class='table'>
                     <tr>
                         <th>Código</th>
+                        <th>Materia</th>
                         <th>Carrera</th>
                         <th>Estado</th>
                         <th>Cuatrimestre / Año aprobación cursada</th>
@@ -197,7 +198,7 @@
                         <th>Fecha</th>
                         <th>Acta o Resolución</th>
                         <th>Forma de Aprobación</th>
-                        <th></th>
+                        <th>Acciones</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -205,7 +206,13 @@
                             <tr>
                                 <td>{{materia["codigo"]}}</td>
                                 <td>{{materia["nombre"]}}</td>
-                                <td>{{carrera["plan"]}}</td>
+                                <td>{{materia["carrera"]}}</td>
+                                <td>{{materia["estado"]}}</td>
+                                <td>{{materia["apobacion_cursada"]}}</td>
+                                <td>{{materia["calificacion"]}}</td>
+                                <td>{{materia["fecha_aprobacion"]}}</td>
+                                <td>{{materia["acta_o_resolucion"]}}</td>
+                                <td>{{materia["forma_aprobacion_materia"]}}</td>
                                 <td>
                                     <button type="button" class="btn btn-link"><span class='glyphicon glyphicon-pencil'></span></button>
                                     <button type="button" class="btn btn-link"><span class='glyphicon glyphicon-trash'></span></button>

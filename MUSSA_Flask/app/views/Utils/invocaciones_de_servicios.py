@@ -116,3 +116,15 @@ def invocar_obtener_carreras_alumno(cookie):
     carreras_response = requests.get(OBTENER_CARRERAS_ALUMNO, cookies=cookie)
     escribir_resultado_servicio('Obtener Carreras Alumno', carreras_response)
     return json.loads(carreras_response.text)["carreras"]
+
+
+def invocar_obtener_materias_alumno(cookie, estados):
+    parametros = {}
+    estados_text = ""
+    for estado in estados:
+        estados_text += str(estado) + ";"
+    parametros["estados"] = estados_text[:-1]
+
+    materias_alumno_response = requests.get(OBTENER_MATERIAS_ALUMNO, params=parametros, cookies=cookie)
+    escribir_resultado_servicio('Obtener Materias Alumno', materias_alumno_response)
+    return json.loads(materias_alumno_response.text)["materias"]
