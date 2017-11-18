@@ -1,0 +1,111 @@
+{% extends "common/page_base.html" %}
+
+{% block content %}
+
+    <script>
+
+        function filtrar_materias_segun_carrera() {
+            debugger;
+        }
+
+    </script>
+
+    <div class="container">
+
+        <h2>Agregar Materia</h2>
+
+        <br>
+
+        <form action="{{ url_for('main.agregar_materia_page_save') }}" method="POST">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+
+            <div class="form-group">
+                <label>Carrera:</label>
+
+                <select class="form-control" id="carrera" name="carrera" onpageshow="filtrar_materias_segun_carrera()" onchange="filtrar_materias_segun_carrera()">
+                        <option>Seleccione una carrera</option>
+                    {% for carrera in carreras %}
+                        <option>{{carrera["codigo"]}} - {{carrera["nombre"]}} ({{carrera["plan"]}})</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Materia:</label>
+
+                <select class="form-control" id="materia" name="materia" disabled>
+                    <option>Seleccione una materia</option>
+                    {% for materia in materias %}
+                        <option>{{materia["codigo"]}} - {{materia["nombre"]}}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            
+            <div class="form-group">
+                <label>Estado:</label>
+
+                <select class="form-control" id="estado" name="estado">
+                    {% for estado in estados %}
+                        <option>{{estado}}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-group">
+                <div class="row">
+                    <div class="col-sm-4">
+                        <label for="archivo">Cuatrimestre de aprobación de cursada:</label>
+                        <input type="text" class="form-control" id="cuatrimestre_aprobacion" name="cuatrimestre_aprobacion">
+                    </div>
+                    <div class="col-sm-4">
+                        <label for="archivo">Año:</label>
+                        <input type="text" class="form-control" id="anio_aprobacion" name="anio_aprobacion">
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="archivo">Calificación:</label>
+                <input type="text" class="form-control" id="calificacion" name="calificacion">
+            </div>
+
+            <!-- Fecha aprobacion -->
+
+            <div class="form-group">
+                <label for="archivo">Acta o Resolución:</label>
+                <input type="text" class="form-control" id="acta_resolucion" name="acta_resolucion">
+            </div>
+
+
+            <div class="form-group">
+                <label>Forma de Aprobación:</label>
+
+                <select class="form-control" id="forma_aprobacion" name="forma_aprobacion">
+                    {% for forma in formas_aprobacion %}
+                        <option>{{forma}}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+
+            <div class="row">
+                <div class="col-sm-4">
+                </div>
+
+                <div class="col-sm-3">
+                    <button type="submit" class="btn btn-success">Guardar</button>
+                </div>
+
+                <div class="col-sm-4">
+                    <a href="{{ url_for('main.datos_academicos_page') }}">
+                            <input type="button" class="btn btn-danger" value="Cancelar"/>
+                    </a>
+                </div>
+            </div>
+
+        </form>
+
+    </div>
+
+{% endblock %}
