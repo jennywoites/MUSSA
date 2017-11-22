@@ -77,7 +77,7 @@ def datos_academicos_eliminar_materia_page(idMateria, token):
     response = invocar_eliminar_materia_alumno(token, request.cookies, idMateria)
 
     if 'OK' in response:
-        flash(gettext('Se eliminó la carrera'), 'success')
+        flash(gettext('Se eliminó la materia'), 'success')
     else:
         flash(response["Error"], 'error')
 

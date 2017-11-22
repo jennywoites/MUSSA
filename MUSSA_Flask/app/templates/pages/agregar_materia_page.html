@@ -143,7 +143,7 @@
                 <select class="form-control" id="materia" name="materia" onchange="habilitar_estado()" disabled>
                     <option id="opcion_0">Seleccione una materia</option>
                     {% for materia in materias %}
-                        <option id="carrera_{{materia['id_carrera']}}" value="{{materia['id']}}">{{materia["codigo"]}} - {{materia["nombre"]}}</option>
+                        <option id="carrera_{{materia['id_carrera']}}" value="{{materia['id_materia']}}">{{materia["codigo"]}} - {{materia["nombre"]}}</option>
                     {% endfor %}
                 </select>
             </div>

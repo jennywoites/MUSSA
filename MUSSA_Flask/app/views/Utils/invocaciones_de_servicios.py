@@ -87,7 +87,7 @@ def invocar_servicio_obtener_curso(cookie, codigo_materia, id_carrera):
 
 
 def invocar_obtener_padron_alumno(cookie):
-    padron_response = requests.get(OBTENER_PADRON_ALUMNO, cookies=cookie)
+    padron_response = requests.get(OBTENER_PADRON_ALUMNO_SERVICE, cookies=cookie)
     escribir_resultado_servicio('Obtener Padron Alumno', padron_response)
     return json.loads(padron_response.text)["padron"]
 
@@ -96,7 +96,7 @@ def invocar_agregar_carrera_alumno(csrf_token, cookie, id_carrera):
     parametros = {}
     parametros["id_carrera"] = id_carrera
 
-    agregar_carrera_response = requests.post(AGREGAR_CARRERA_ALUMNO, data=parametros,
+    agregar_carrera_response = requests.post(AGREGAR_CARRERA_ALUMNO_SERVICE, data=parametros,
         cookies=cookie, headers={"X-CSRFToken": csrf_token})
     escribir_resultado_servicio('Agregar Carrera Alumno', agregar_carrera_response)
     return json.loads(agregar_carrera_response.text)
@@ -106,7 +106,7 @@ def invocar_eliminar_carrera_alumno(csrf_token, cookie, id_carrera):
     parametros = {}
     parametros["id_carrera"] = id_carrera
 
-    eliminar_carrera_response = requests.post(ELIMINAR_CARRERA_ALUMNO, data=parametros,
+    eliminar_carrera_response = requests.post(ELIMINAR_CARRERA_ALUMNO_SERVICE, data=parametros,
         cookies=cookie, headers={"X-CSRFToken": csrf_token})
     escribir_resultado_servicio('Eliminar Carrera Alumno', eliminar_carrera_response)
     return json.loads(eliminar_carrera_response.text)
@@ -116,14 +116,14 @@ def invocar_eliminar_materia_alumno(csrf_token, cookie, id_materia):
     parametros = {}
     parametros["id_materia"] = id_materia
 
-    eliminar_materia_response = requests.post(ELIMINAR_MATERIA_ALUMNO, data=parametros,
+    eliminar_materia_response = requests.post(ELIMINAR_MATERIA_ALUMNO_SERVICE, data=parametros,
         cookies=cookie, headers={"X-CSRFToken": csrf_token})
     escribir_resultado_servicio('Eliminar Materia Alumno', eliminar_materia_response)
     return json.loads(eliminar_materia_response.text)
 
 
 def invocar_obtener_carreras_alumno(cookie):
-    carreras_response = requests.get(OBTENER_CARRERAS_ALUMNO, cookies=cookie)
+    carreras_response = requests.get(OBTENER_CARRERAS_ALUMNO_SERVICE, cookies=cookie)
     escribir_resultado_servicio('Obtener Carreras Alumno', carreras_response)
     return json.loads(carreras_response.text)["carreras"]
 
@@ -135,13 +135,13 @@ def invocar_obtener_materias_alumno(cookie, estados):
         estados_text += str(estado) + ";"
     parametros["estados"] = estados_text[:-1]
 
-    materias_alumno_response = requests.get(OBTENER_MATERIAS_ALUMNO, params=parametros, cookies=cookie)
+    materias_alumno_response = requests.get(OBTENER_MATERIAS_ALUMNO_SERVICE, params=parametros, cookies=cookie)
     escribir_resultado_servicio('Obtener Materias Alumno', materias_alumno_response)
     return json.loads(materias_alumno_response.text)["materias"]
 
 
 def invocar_agregar_materia_alumno(csrf_token, cookie, parametros):
-    agregar_materia_alumno_response = requests.post(AGREGAR_MATERIA_ALUMNO, data=parametros,
+    agregar_materia_alumno_response = requests.post(AGREGAR_MATERIA_ALUMNO_SERVICE, data=parametros,
         cookies=cookie, headers={"X-CSRFToken": csrf_token})
     escribir_resultado_servicio('Agregar Materia Alumno', agregar_materia_alumno_response)
     return json.loads(agregar_materia_alumno_response.text)

@@ -57,8 +57,8 @@ class AgregarMateriaAlumno(Resource):
             logging.error(msj)
             return {'Error': msj}, CLIENT_ERROR_BAD_REQUEST
 
-        materia.cuatrimestre_aprobacion = q_cuatrimestre_aprobacion
-        materia.anio_aprobacion = q_anio_aprobacion
+        materia.cuatrimestre_aprobacion_cursada = q_cuatrimestre_aprobacion
+        materia.anio_aprobacion_cursada = q_anio_aprobacion
 
         if (q_estado == ESTADO_MATERIA[FINAL_PENDIENTE]):
             db.session.commit()
@@ -79,10 +79,10 @@ class AgregarMateriaAlumno(Resource):
         anio, mes, dia = q_fecha_aprobacion.split("-")
         materia.fecha_aprobacion = date(int(anio), int(mes), int(dia))
 
-        materia.forma_aprobacion = FormaAprobacionMateria.query.filter_by(forma=q_forma_aprobacion).first()
+        materia.forma_aprobacion_id = FormaAprobacionMateria.query.filter_by(forma=q_forma_aprobacion).first().id
 
         materia.calificacion = int(q_calificacion)
-        materia.acta_resolucion = q_acta_resolucion
+        materia.acta_o_resolucion = q_acta_resolucion
 
         db.session.commit()
 
