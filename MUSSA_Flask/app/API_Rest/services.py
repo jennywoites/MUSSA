@@ -21,6 +21,8 @@ AGREGAR_CARRERA_ALUMNO = BASE_URL + "AgregarCarreraAlumno"
 OBTENER_CARRERAS_ALUMNO = BASE_URL + "ObtenerCarrerasAlumno"
 ELIMINAR_CARRERA_ALUMNO = BASE_URL + "EliminarCarreraAlumno"
 OBTENER_MATERIAS_ALUMNO = BASE_URL + "ObtenerMateriasAlumno"
+AGREGAR_MATERIA_ALUMNO = BASE_URL + "AgregarMateriaAlumno"
+ELIMINAR_MATERIA_ALUMNO = BASE_URL + "EliminarMateriaAlumno"
 
 #Requiere ser administrador
 GUARDAR_HORARIOS_DESDE_ARCHIVO_PDF_SERVICE = BASE_URL + ADMIN + "GuardarHorariosDesdeArchivoPDF"

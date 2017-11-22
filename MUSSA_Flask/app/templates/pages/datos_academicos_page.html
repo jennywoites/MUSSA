@@ -79,6 +79,37 @@
             xmlhttp.send();
         }
 
+        function filtrar_materias_por_carrera() {            
+            var carrera_elegida = document.getElementById("carrera_mostrar_materias");            
+            var id_carrera = carrera_elegida[carrera_elegida.selectedIndex].id;
+
+            var rows = document.getElementById("materias_alumno_table").rows;
+
+            var no_hay_datos = true;
+            for (var i = 1; i < rows.length; i++) {
+                var id_carrera_tabla = rows[i].cells[0].innerText;
+
+                if (id_carrera == "todas_mis_carreras") {
+                    no_hay_datos = false;
+                    rows[i].style.display = "";
+                } else {
+                    if (("carrera_" + id_carrera_tabla) == id_carrera) {
+                        rows[i].style.display = "";
+                        no_hay_datos = false;
+                    }
+                    else {
+                        rows[i].style.display = "none";
+                    }
+                }
+            }
+
+            var materias_alumno_table = document.getElementById("materias_alumno_table");
+            materias_alumno_table.hidden = no_hay_datos;
+
+            var tabla_vacia_label = document.getElementById("tabla_vacia");
+            tabla_vacia_label.hidden = !no_hay_datos;
+        }
+
         </script>
 
         <h2>{%trans%}Registro Académico{%endtrans%}</h2>
@@ -180,10 +211,10 @@
 
             <div class="form-group">
                 <label>Seleccioná la carrera para la cual querés visualizar las materias:</label>
-                <select class="form-control" id="carrera_mostrar_materias" name="carrera_mostrar_materias">
+                <select class="form-control" id="carrera_mostrar_materias" name="carrera_mostrar_materias" onchange="filtrar_materias_por_carrera()">
                     <option id="todas_mis_carreras">Todas mis carreras</option>
                     {% for carrera in mis_carreras %}
-                        <option id="carrera_{{carrera['codigo']}}">{{carrera["codigo"]}} - {{carrera["nombre"]}} ({{carrera["plan"]}})</option>
+                        <option id="carrera_{{carrera['id']}}">{{carrera["codigo"]}} - {{carrera["nombre"]}} ({{carrera["plan"]}})</option>
                     {% endfor %}
                 </select>
             </div>
@@ -191,7 +222,8 @@
             <br>
 
             <div class='table-responsive'>
-                <table class='table'>
+                <p id="tabla_vacia" hidden="true">No hay resultados para mostrar</p>
+                <table class='table' id="materias_alumno_table">
                     <tr>
                         <th>Código</th>
                         <th>Materia</th>
@@ -208,18 +240,21 @@
                     <tbody>
                         {% for materia in mis_materias %}
                             <tr>
+                                <td hidden=true"">{{materia["id_carrera"]}}</td>
                                 <td>{{materia["codigo"]}}</td>
                                 <td>{{materia["nombre"]}}</td>
                                 <td>{{materia["carrera"]}}</td>
                                 <td>{{materia["estado"]}}</td>
-                                <td>{{materia["apobacion_cursada"]}}</td>
+                                <td>{{materia["aprobacion_cursada"]}}</td>
                                 <td>{{materia["calificacion"]}}</td>
                                 <td>{{materia["fecha_aprobacion"]}}</td>
                                 <td>{{materia["acta_o_resolucion"]}}</td>
                                 <td>{{materia["forma_aprobacion_materia"]}}</td>
                                 <td>
                                     <button type="button" class="btn btn-link"><span class='glyphicon glyphicon-pencil'></span></button>
-                                    <button type="button" class="btn btn-link"><span class='glyphicon glyphicon-trash'></span></button>
+                                    <button type="button" class="btn btn-link" onclick="redirect_to('{{ url_for('main.datos_academicos_eliminar_materia_page', idMateria=materia['id'], token=csrf_token())}}')">
+                                        <span class='glyphicon glyphicon-trash'></span>
+                                    </button>
                                 </td>
                             </tr>
 

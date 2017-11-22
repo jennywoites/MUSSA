@@ -69,3 +69,16 @@ def datos_academicos_eliminar_carrera_page(idCarrera, token):
         flash(response["Error"], 'error')
 
     return redirect(url_for("main.datos_academicos_page"))
+
+
+@main_blueprint.route('/datos_academicos/eliminar_materia/<int:idMateria>/<string:token>', methods=['GET', 'POST'])
+@login_required
+def datos_academicos_eliminar_materia_page(idMateria, token):
+    response = invocar_eliminar_materia_alumno(token, request.cookies, idMateria)
+
+    if 'OK' in response:
+        flash(gettext('Se eliminó la carrera'), 'success')
+    else:
+        flash(response["Error"], 'error')
+
+    return redirect(url_for("main.datos_academicos_page"))

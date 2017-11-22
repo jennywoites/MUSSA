@@ -36,12 +36,16 @@ class ObtenerMateriasAlumno(Resource):
             estado = EstadoMateria.query.filter_by(id=materia_alumno.estado_id).first().estado
             
             calificacion = materia_alumno.calificacion if materia_alumno.calificacion else "-"
-            fecha_aprobacion = materia_alumno.fecha_aprobacion if materia_alumno.fecha_aprobacion else "-"
 
-            apobacion_cursada = "-"
+            fecha_aprobacion = "-"
+            if materia_alumno.fecha_aprobacion:
+                anio, mes, dia = str(materia_alumno.fecha_aprobacion ).split(" ")[0].split("-")
+                fecha_aprobacion = "{}/{}/{}".format(dia, mes, anio)
+
+            aprobacion_cursada = "-"
             if (materia_alumno.cuatrimestre_aprobacion_cursada and
                 materia_alumno.anio_aprobacion_cursada):
-                apobacion_cursada = materia_alumno.cuatrimestre_aprobacion_cursada  + "C / "
+                aprobacion_cursada = materia_alumno.cuatrimestre_aprobacion_cursada  + "C / "
                 aprobacion_cursada += materia_alumno.anio_aprobacion_cursada
 
             acta_o_resolucion = materia_alumno.acta_o_resolucion if materia_alumno.acta_o_resolucion else "-"
@@ -56,9 +60,10 @@ class ObtenerMateriasAlumno(Resource):
                 'id_materia': materia_carrera.id,
                 'codigo': materia_carrera.codigo,
                 'nombre': materia_carrera.nombre,
+                'id_carrera': carrera.id,
                 'carrera': carrera.nombre + " (" + carrera.plan + ")",
                 'estado': estado,
-                'apobacion_cursada': apobacion_cursada,
+                'aprobacion_cursada': aprobacion_cursada,
                 'calificacion': calificacion,
                 'fecha_aprobacion': fecha_aprobacion,
                 'acta_o_resolucion': acta_o_resolucion,

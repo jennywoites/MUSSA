@@ -41,6 +41,16 @@ class MateriasAlumno(db.Model):
     acta_o_resolucion = db.Column(db.String(35), nullable=True, server_default='')
     forma_aprobacion_id = db.Column(db.Integer(), db.ForeignKey('forma_aprobacion_materia.id'), nullable=True)
 
+    def __str__(self):
+        string = "Alumno: {}".format(self.alumno_id)
+        string += " - Materia: {}".format(self.materia_id)
+        string += " - Carrera: {}".format(self.carrera_id)
+        string += " - Estado: {}".format(self.estado_id)
+
+        string += " - Cuatrimestre: {}".format(self.cuatrimestre_aprobacion_cursada)
+        string += " - Año: {}".format(self.anio_aprobacion_cursada)
+        return string
+
 
 class EstadoMateria(db.Model):
     __tablename__ = 'estado_materia'
