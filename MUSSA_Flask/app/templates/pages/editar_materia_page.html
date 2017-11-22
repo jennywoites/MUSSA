@@ -4,6 +4,60 @@
 
     <script>
 
+        $( function () {
+            actualizar_valor_seleccionado('estado', '{{materia["estado"]}}');
+
+            mostrar_ocultar_datos_materia_aprobada();
+
+            if ('{{materia["aprobacion_cursada"]}}' != "-") {
+                actualizar_fecha_aprobacion_cursada('{{materia["aprobacion_cursada"]}}');
+            }
+
+            if ('{{materia["calificacion"]}}' != "-") {
+                actualizar_valor_seleccionado('calificacion', '{{materia["calificacion"]}}');
+            }
+
+            if ('{{materia["fecha_aprobacion"]}}' != "-") {
+                actualizar_fecha_examen('{{materia["fecha_aprobacion"]}}');
+            }
+            
+            if ('{{materia["acta_o_resolucion"]}}' != "-") {
+                var elem = document.getElementById("acta_resolucion");
+                elem.value = '{{materia["acta_o_resolucion"]}}';
+            }
+
+            if ('{{materia["forma_aprobacion_materia"]}}' != "-") {
+                actualizar_valor_seleccionado('forma_aprobacion',
+                    '{{materia["forma_aprobacion_materia"]}}')
+            }
+        });
+
+        function actualizar_fecha_examen(fecha) {
+            dia = fecha.substring(0,2);
+            mes = fecha.substring(3,5);
+            anio = fecha.substring(6);
+
+            var fecha_elem = document.getElementById("fecha_aprobacion");
+            fecha_elem.value = anio + "-" + mes + "-" + dia;
+        }
+
+        function actualizar_fecha_aprobacion_cursada(fecha) {
+            var cuatrimestre = fecha.substring(0,1);
+            actualizar_valor_seleccionado("cuatrimestre_aprobacion", cuatrimestre);
+
+            var anio = fecha.substring(5);
+            actualizar_valor_seleccionado("anio_aprobacion", anio);
+        }
+
+        function actualizar_valor_seleccionado(nombre_elemento, valor) {
+            var elemento = document.getElementById(nombre_elemento);
+            for (var i=0; i < elemento.length; i++) {
+                var opcion = elemento[i];
+                if (opcion.innerText == valor)
+                    opcion.selected = true
+            }            
+        }
+
         function validar_guardar() {
             mostrar_error(false);
 
