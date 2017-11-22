@@ -209,17 +209,19 @@
 
         {% if mis_materias | length > 0 %}
 
-            <div class="form-group">
-                <label>Seleccioná la carrera para la cual querés visualizar las materias:</label>
-                <select class="form-control" id="carrera_mostrar_materias" name="carrera_mostrar_materias" onchange="filtrar_materias_por_carrera()">
-                    <option id="todas_mis_carreras">Todas mis carreras</option>
-                    {% for carrera in mis_carreras %}
-                        <option id="carrera_{{carrera['id']}}">{{carrera["codigo"]}} - {{carrera["nombre"]}} ({{carrera["plan"]}})</option>
-                    {% endfor %}
-                </select>
-            </div>
+            {% if mis_carreras | length > 1 %}
+                <div class="form-group">
+                    <label>Seleccioná la carrera para la cual querés visualizar las materias:</label>
+                    <select class="form-control" id="carrera_mostrar_materias" name="carrera_mostrar_materias" onchange="filtrar_materias_por_carrera()">
+                        <option id="todas_mis_carreras">Todas mis carreras</option>
+                        {% for carrera in mis_carreras %}
+                            <option id="carrera_{{carrera['id']}}">{{carrera["codigo"]}} - {{carrera["nombre"]}} ({{carrera["plan"]}})</option>
+                        {% endfor %}
+                    </select>
+                </div>
 
-            <br>
+                <br>
+            {% endif %}
 
             <div class='table-responsive'>
                 <p id="tabla_vacia" hidden="true">No hay resultados para mostrar</p>
@@ -251,7 +253,8 @@
                                 <td>{{materia["acta_o_resolucion"]}}</td>
                                 <td>{{materia["forma_aprobacion_materia"]}}</td>
                                 <td>
-                                    <button type="button" class="btn btn-link"><span class='glyphicon glyphicon-pencil'></span></button>
+                                    <button type="button" class="btn btn-link" onclick="redirect_to('{{ url_for('main.editar_materia_page', idMateria=materia['id'])}}')"><span class='glyphicon glyphicon-pencil'></span></button>
+
                                     <button type="button" class="btn btn-link" onclick="redirect_to('{{ url_for('main.datos_academicos_eliminar_materia_page', idMateria=materia['id'], token=csrf_token())}}')">
                                         <span class='glyphicon glyphicon-trash'></span>
                                     </button>

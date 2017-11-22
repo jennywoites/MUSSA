@@ -140,6 +140,15 @@ def invocar_obtener_materias_alumno(cookie, estados):
     return json.loads(materias_alumno_response.text)["materias"]
 
 
+def invocar_obtener_materia_alumno(cookie, idMateriaAlumno):
+    parametros = {}
+    parametros["id_materia_alumno"] = idMateriaAlumno
+
+    materias_alumno_response = requests.get(OBTENER_MATERIAS_ALUMNO_SERVICE, params=parametros, cookies=cookie)
+    escribir_resultado_servicio('Obtener Materias Alumno', materias_alumno_response)
+    return json.loads(materias_alumno_response.text)["materias"]
+
+
 def invocar_agregar_materia_alumno(csrf_token, cookie, parametros):
     agregar_materia_alumno_response = requests.post(AGREGAR_MATERIA_ALUMNO_SERVICE, data=parametros,
         cookies=cookie, headers={"X-CSRFToken": csrf_token})

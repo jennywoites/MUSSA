@@ -21,9 +21,15 @@ class ObtenerMateriasAlumno(Resource):
 
         estados = self.obtener_ids_estados(args)
 
+        id_materia_alumno = args["id_materia_alumno"] if "id_materia_alumno" in args else None
+
         alumno = Alumno.query.filter_by(user_id=current_user.id).first()
 
         query = MateriasAlumno.query.filter_by(alumno_id=alumno.id)
+
+        if id_materia_alumno:
+            query = query.filter_by(id=id_materia_alumno)
+
         if estados:
             query = query.filter(MateriasAlumno.estado_id.in_(estados))
 

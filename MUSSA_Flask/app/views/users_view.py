@@ -10,6 +10,7 @@ from app.views.base_view import main_blueprint
 
 from app.views.PaginasAlumnosViews.datos_academicos_page_view import datos_academicos_page
 from app.views.PaginasAlumnosViews.agregar_materia_page_view import agregar_materia_page
+from app.views.PaginasAlumnosViews.editar_materia_page_view import editar_materia_page
 
 
 # The User page is accessible to authenticated users (users that have logged in)
