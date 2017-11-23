@@ -1,0 +1,240 @@
+{% extends "common/page_base.html" %}
+
+{% block content %}
+
+    <script>
+
+        function validar_guardar() {
+            mostrar_error(false);
+
+            var carrera_element = document.getElementById("carrera");
+            if (carrera_element.value == "Seleccione una carrera") {
+                mostrar_error(true, "Debe seleccionar una carrera");
+                return false;
+            }
+
+            var materia_element = document.getElementById("materia");
+            if (materia_element.value == "Seleccione una materia") {
+                mostrar_error(true, "Debe seleccionar una materia");
+                return false;
+            }
+
+            var estado_element = document.getElementById("estado");
+            if (estado_element.value == "Cursando actualmente" ||
+                estado_element.value == "Final Pendiente") {
+                return true;
+            }
+
+            var calificacion = document.getElementById("calificacion").value;
+            if (estado_element.value == "Desaprobada" && calificacion >= 4){
+                mostrar_error(true,"Si la materia está desaprobada la calificación debe ser menor que 4");
+                return false;
+            }
+
+            if (estado_element.value == "Aprobada" && calificacion < 4){
+                mostrar_error(true,"Si la materia está aprobada la calificación debe ser mayor o igual que 4");
+                return false;
+            }
+
+            var fecha_aprobacion = document.getElementById("fecha_aprobacion").value;
+
+            if (fecha_aprobacion == ""){
+                mostrar_error(true,"Debe ingresar una fecha");
+                return false;
+            }
+
+            var fecha = new Date(fecha_aprobacion);
+            fecha.setHours(0,0,0,0);
+            var hoy = new Date();
+            hoy.setHours(0,0,0,0);
+
+            if (fecha > hoy){
+                mostrar_error(true,"La fecha de aprobación no puede superar el día de hoy");
+                return false;
+            }
+
+            var acta_resolucion = document.getElementById("acta_resolucion").value;
+            if (acta_resolucion == "") {
+                mostrar_error(true,"Debe ingresar el acta o resolución");
+                return false;                
+            }
+
+            return true;
+        }
+
+        function mostrar_error(mostrar, texto) {
+            var error_element = document.getElementById("error_formulario");
+            error_element.hidden = !mostrar;
+            error_element.innerText = texto || "";
+        }
+
+        function filtrar_materias_segun_carrera() {
+            var carrera_element = document.getElementById("carrera");
+            var id_carrera = carrera_element[carrera_element.selectedIndex].id;
+            var valor_seleccionado = carrera_element.value;
+
+            if (valor_seleccionado == "Seleccione una carrera")
+                return;
+
+            //Deshabilita la opcion de seleccionar una carrera
+            carrera_element[0].style["display"] = "none";
+
+            //Habilitar selector de materias y estado
+            var materia_element = document.getElementById("materia");
+            materia_element.disabled = false;
+            materia_element[0].disabled = true;
+
+            //Filtrar las materias que sean de la carrera
+            for (var i=0; i<materia_element.length; i++) {
+                var opcion = materia_element[i];
+                if (opcion.id == id_carrera)
+                    opcion.style["display"] = "";
+                else
+                    opcion.style["display"] = "none";
+            }
+        }
+
+        function habilitar_estado() {            
+            var materia_element = document.getElementById("materia");
+            materia_element[0].style["display"] = "none";
+
+            var estado_element = document.getElementById("estado");
+            estado_element.disabled = false;
+        }
+
+        function mostrar_ocultar_datos_materia_aprobada() {
+            var estado_element = document.getElementById("estado");
+            var valor_seleccionado = estado_element.value;
+
+            var cursada_aprobada_element = document.getElementById("estado_con_cursada_aprobada");
+            var final_element = document.getElementById("estado_con_final_aprobado_o_desaprobado");
+
+            cursada_aprobada_element.hidden = (valor_seleccionado == "Cursando actualmente");
+            final_element.hidden = (valor_seleccionado == "Cursando actualmente" || valor_seleccionado == "Final Pendiente");
+        }
+
+    </script>
+
+    <div class="container">
+
+        <h2>Agregar Materia</h2>
+
+        <br>
+
+        <div class="alert alert-danger" id="error_formulario" hidden="true"></div>
+
+        <form action="{{ url_for('main.agregar_materia_page_save') }}" method="POST">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+
+            <div class="form-group">
+                <label>Carrera:</label>
+
+                <select class="form-control" id="carrera" name="carrera" onchange="filtrar_materias_segun_carrera()">
+                        <option>Seleccione una carrera</option>
+                    {% for carrera in carreras %}
+                        <option id="carrera_{{carrera['id']}}" value="{{carrera['id']}}">{{carrera["codigo"]}} - {{carrera["nombre"]}} ({{carrera["plan"]}})</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Materia:</label>
+
+                <select class="form-control" id="materia" name="materia" onchange="habilitar_estado()" disabled>
+                    <option id="opcion_0">Seleccione una materia</option>
+                    {% for materia in materias %}
+                        <option id="carrera_{{materia['id_carrera']}}" value="{{materia['id_materia']}}">{{materia["codigo"]}} - {{materia["nombre"]}}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            
+            <div class="form-group">
+                <label>Estado:</label>
+
+                <select class="form-control" id="estado" name="estado" onchange="mostrar_ocultar_datos_materia_aprobada()" disabled>
+                    {% for estado in estados %}
+                        <option>{{estado}}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div id="estado_con_cursada_aprobada" hidden="true">
+
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col-sm-4">
+                            <label>Cuatrimestre de aprobación de cursada:</label>
+                            <select class="form-control" id="cuatrimestre_aprobacion" name="cuatrimestre_aprobacion">
+                                <option>1</option>
+                                <option>2</option>
+                            </select>
+                        </div>
+                        <div class="col-sm-4">
+                            <label>Año:</label>
+                            <select class="form-control" id="anio_aprobacion" name="anio_aprobacion">
+                                {% for anio in anios %}
+                                    <option>{{anio}}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="estado_con_final_aprobado_o_desaprobado" hidden="true">
+    
+                    <div class="form-group">
+                        <label for="archivo">Calificación:</label>
+                        <select class="form-control" id="calificacion" name="calificacion">
+                            {% for i in range(2,11) %}
+                                <option>{{i}}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="archivo">Fecha:</label>
+                        <input id="fecha_aprobacion" name="fecha_aprobacion" type="date">
+                    </div>
+
+
+                    <div class="form-group">
+                        <label for="archivo">Acta o Resolución:</label>
+                        <input type="text" class="form-control" id="acta_resolucion" name="acta_resolucion">
+                    </div>
+
+
+                    <div class="form-group">
+                        <label>Forma de Aprobación:</label>
+
+                        <select class="form-control" id="forma_aprobacion" name="forma_aprobacion">
+                            {% for forma in formas_aprobacion %}
+                                <option>{{forma}}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="row">
+                <div class="col-sm-4">
+                </div>
+
+                <div class="col-sm-3">
+                    <button type="submit" class="btn btn-success" onclick="return validar_guardar();">Guardar</button>
+                </div>
+
+                <div class="col-sm-4">
+                    <a href="{{ url_for('main.datos_academicos_page') }}">
+                        <input type="button" class="btn btn-danger" value="Cancelar"/>
+                    </a>
+                </div>
+            </div>
+
+        </form>
+
+    </div>
+
+{% endblock %}

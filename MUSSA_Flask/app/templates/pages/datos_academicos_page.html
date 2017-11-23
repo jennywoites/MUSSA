@@ -1,0 +1,276 @@
+{% extends "common/page_base.html" %}
+
+{% block content %}
+    
+    <div class="container">
+    
+        <script>
+
+        function redirect_to(url) {
+            window.location.replace(url);
+        }
+
+        function confirmar_eliminar_carrera(carrera, url) {
+            msj = "Vas a eliminar la carrera ";
+            msj += carrera["nombre"] + " (" + carrera["plan"] + ")"
+            msj += ". Esto borrará todas las materias asociadas. "
+            msj += "Esta acción no se puede deshacer. ¿Querés continuar?"
+
+            confirmar=confirm(msj); 
+            if (confirmar) {
+                redirect_to(url);
+            }
+        }
+
+        SERVICE_MODIFICAR_PADRON = '/api/ModificarPadronAlumno'
+        SUCCESS = 200
+
+        function padron_es_valido(padron) {
+            return (padron != "") && (padron.match(/^[0-9]+$/) != null) && (5<=padron.length && padron.length<=7)
+        }
+
+        function actualizar_padron() {
+            var error_label = document.getElementById("error_padron");
+            error_label.style["display"] = "none";
+
+            var ok_label = document.getElementById("ok_actualizar_padron");
+            ok_label.style["display"] = "none";
+
+            var padron = document.getElementById("padron").value;
+            if (!padron_es_valido(padron)) {
+                error_label.style["display"] = "";
+                return false;
+            }
+            
+            param = {"padron": padron};
+
+            do_request('GET', SERVICE_MODIFICAR_PADRON, param, function(state, result) {
+                error_label.style["display"] = "none";
+                ok_label.style["display"] = "";
+            }, function(state, result) {
+                error_label.style["display"] = "";
+                ok_label.style["display"] = "none";
+            })
+        }
+
+        function do_request(method, page, parametros, onSucces, onError) {
+            var method = method || "GET";
+
+            xmlhttp = new XMLHttpRequest();
+
+            xmlhttp.onreadystatechange = function() {
+                if (this.status == 0 || this.readyState != 4)
+                    return;
+
+                if ( this.status != SUCCESS ) {
+                    onError(this.status, this.responseText);
+                }
+                else { 
+                    json_result = (this.responseText == "") ? {} : JSON.parse(this.responseText)
+                    onSucces(this.status, json_result);
+                }
+            }
+
+            var encoded_params = jQuery.param(parametros)
+            var url = page + '?' + encoded_params
+            xmlhttp.open(method, url, true);
+            xmlhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+            xmlhttp.withCredentials = true;
+            xmlhttp.send();
+        }
+
+        function filtrar_materias_por_carrera() {            
+            var carrera_elegida = document.getElementById("carrera_mostrar_materias");            
+            var id_carrera = carrera_elegida[carrera_elegida.selectedIndex].id;
+
+            var rows = document.getElementById("materias_alumno_table").rows;
+
+            var no_hay_datos = true;
+            for (var i = 1; i < rows.length; i++) {
+                var id_carrera_tabla = rows[i].cells[0].innerText;
+
+                if (id_carrera == "todas_mis_carreras") {
+                    no_hay_datos = false;
+                    rows[i].style.display = "";
+                } else {
+                    if (("carrera_" + id_carrera_tabla) == id_carrera) {
+                        rows[i].style.display = "";
+                        no_hay_datos = false;
+                    }
+                    else {
+                        rows[i].style.display = "none";
+                    }
+                }
+            }
+
+            var materias_alumno_table = document.getElementById("materias_alumno_table");
+            materias_alumno_table.hidden = no_hay_datos;
+
+            var tabla_vacia_label = document.getElementById("tabla_vacia");
+            tabla_vacia_label.hidden = !no_hay_datos;
+        }
+
+        </script>
+
+        <h2>{%trans%}Registro Académico{%endtrans%}</h2>
+        
+        <br>
+
+        <!-- Padron -->
+
+        <div class="row">
+            <div class="col-sm-1">
+                <label>Padrón:</label>
+            </div>
+            <div class="col-sm-3">
+                <input type="text" class="form-control" id="padron" name="padron" value="{{padron}}">
+            </div>                        
+            <div class="col-sm-2">
+                <button type="button" class="btn btn-default" onclick="actualizar_padron()">Actualizar</button>
+            </div>
+        </div>
+
+        <br>
+
+        <div class="alert alert-danger" id="error_padron" style="display:none">
+            El padrón es inválido o ya existe un usuario con ese padrón. Un padrón válido está solo formado por números y posee un largo de 5 a 7 caracteres.
+        </div>
+
+        <div class="alert alert-success" id="ok_actualizar_padron" style="display:none">
+            El padrón se ha actualizado.
+        </div>
+
+        <!-- Carreras -->
+
+        <h3>Carreras en las que estoy inscripto</h3>
+
+        <form action="{{ url_for('main.datos_academicos_agregar_carrera_page') }}" method="POST">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+    
+            {% if carreras | length > 0 %}
+                <div class="row">
+                    <div class="col-sm-5">
+                        <div class="form-group">                
+                            <select class="form-control" id="carrera_a_agregar" name="carrera_a_agregar">
+                                {% for carrera in carreras %}
+                                    <option id="carrera_{{carrera['codigo']}}" value="{{carrera['id']}}">{{carrera["codigo"]}} - {{carrera["nombre"]}} ({{carrera["plan"]}})</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-sm-2">
+                        <button type="submit" class="btn btn-default">Agregar</button>  
+                    </div>
+                </div>
+
+                <br>
+            {% endif %}
+        </form>
+
+        {% if mis_carreras | length > 0 %}
+
+            <div class='table-responsive'>
+                <table class='table'>
+                    <tr>
+                        <th>Código</th>
+                        <th>Carrera</th>
+                        <th>Plan</th>
+                        <th>Acciones</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                        {% for carrera in mis_carreras %}
+                            <tr>
+                                <td>{{carrera["codigo"]}}</td>
+                                <td>{{carrera["nombre"]}}</td>
+                                <td>{{carrera["plan"]}}</td>
+                                <td>
+                                    <button type="button" class="btn btn-link" onclick="confirmar_eliminar_carrera({{carrera | safe}}, '{{ url_for('main.datos_academicos_eliminar_carrera_page', idCarrera=carrera['id'], token=csrf_token())}}')"><span class='glyphicon glyphicon-trash'></span></button>
+                                </td>
+                            </tr>
+
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <p>No hay ninguna carrera registrada</p>
+        {% endif %}
+
+
+        <!-- Materias -->
+
+        <h3>Mis Materias</h3>
+
+        <button type="button" onclick="redirect_to('{{ url_for('main.agregar_materia_page') }}')" class="btn btn-default"><span class='glyphicon glyphicon-pencil'></span>     Agregar Materia</button>
+
+        <br>
+        <br>
+
+        {% if mis_materias | length > 0 %}
+
+            {% if mis_carreras | length > 1 %}
+                <div class="form-group">
+                    <label>Seleccioná la carrera para la cual querés visualizar las materias:</label>
+                    <select class="form-control" id="carrera_mostrar_materias" name="carrera_mostrar_materias" onchange="filtrar_materias_por_carrera()">
+                        <option id="todas_mis_carreras">Todas mis carreras</option>
+                        {% for carrera in mis_carreras %}
+                            <option id="carrera_{{carrera['id']}}">{{carrera["codigo"]}} - {{carrera["nombre"]}} ({{carrera["plan"]}})</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <br>
+            {% endif %}
+
+            <div class='table-responsive'>
+                <p id="tabla_vacia" hidden="true">No hay resultados para mostrar</p>
+                <table class='table' id="materias_alumno_table">
+                    <tr>
+                        <th>Código</th>
+                        <th>Materia</th>
+                        <th>Carrera</th>
+                        <th>Estado</th>
+                        <th>Cuatrimestre / Año aprobación cursada</th>
+                        <th>Nota Final</th>
+                        <th>Fecha</th>
+                        <th>Acta o Resolución</th>
+                        <th>Forma de Aprobación</th>
+                        <th>Acciones</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                        {% for materia in mis_materias %}
+                            <tr>
+                                <td hidden=true"">{{materia["id_carrera"]}}</td>
+                                <td>{{materia["codigo"]}}</td>
+                                <td>{{materia["nombre"]}}</td>
+                                <td>{{materia["carrera"]}}</td>
+                                <td>{{materia["estado"]}}</td>
+                                <td>{{materia["aprobacion_cursada"]}}</td>
+                                <td>{{materia["calificacion"]}}</td>
+                                <td>{{materia["fecha_aprobacion"]}}</td>
+                                <td>{{materia["acta_o_resolucion"]}}</td>
+                                <td>{{materia["forma_aprobacion_materia"]}}</td>
+                                <td>
+                                    <button type="button" class="btn btn-link" onclick="redirect_to('{{ url_for('main.editar_materia_page', idMateria=materia['id'])}}')"><span class='glyphicon glyphicon-pencil'></span></button>
+
+                                    <button type="button" class="btn btn-link" onclick="redirect_to('{{ url_for('main.datos_academicos_eliminar_materia_page', idMateria=materia['id'], token=csrf_token())}}')">
+                                        <span class='glyphicon glyphicon-trash'></span>
+                                    </button>
+                                </td>
+                            </tr>
+
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <p>No hay ninguna materia registrada</p>
+        {% endif %}
+
+        <!-- Descarga de listado de materias -->
+
+    </div>
+
+{% endblock %}

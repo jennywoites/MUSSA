@@ -139,5 +139,14 @@ def add_resources_api_rest(api):
     api.add_resource(ObtenerCarrerasDondeSeDictaLaMateria, '/api/ObtenerCarrerasDondeSeDictaLaMateria')
     api.add_resource(BuscarCursos, '/api/BuscarCursos')
 
+    api.add_resource(ObtenerPadronAlumno, '/api/ObtenerPadronAlumno')
+    api.add_resource(ModificarPadronAlumno, '/api/ModificarPadronAlumno')
+    api.add_resource(AgregarCarreraAlumno, '/api/AgregarCarreraAlumno')
+    api.add_resource(ObtenerCarrerasAlumno, '/api/ObtenerCarrerasAlumno')
+    api.add_resource(EliminarCarreraAlumno, '/api/EliminarCarreraAlumno')    
+    api.add_resource(ObtenerMateriasAlumno, '/api/ObtenerMateriasAlumno')
+    api.add_resource(AgregarMateriaAlumno, '/api/AgregarMateriaAlumno')
+    api.add_resource(EliminarMateriaAlumno, '/api/EliminarMateriaAlumno')
+
     api.add_resource(GuardarHorariosDesdeArchivoPDF, '/api/admin/GuardarHorariosDesdeArchivoPDF')
-    api.add_resource(ModificarCurso, '/api/admin/ModificarCurso')    
+    api.add_resource(ModificarCurso, '/api/admin/ModificarCurso') 

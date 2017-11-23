@@ -75,6 +75,7 @@ def crear_carrera(codigo, titulo, plan):
     carrera = Carrera(
         codigo = codigo,
         nombre = titulo,
+        plan = plan,
         duracion_estimada_en_cuatrimestres = datos[DURACION],
         requiere_prueba_suficiencia_de_idioma = datos[REQUIERE_SUFICIENCIA_IDIOMA]
         )
@@ -83,10 +84,7 @@ def crear_carrera(codigo, titulo, plan):
     guardar_orientaciones(carrera, datos)
 
     guardar_materias(carrera, codigo, titulo, plan)
-
-    #TODO:
-    #Cargar horarios iniciales guardados en el historial
-
+    
     db.session.add(carrera)
 
 

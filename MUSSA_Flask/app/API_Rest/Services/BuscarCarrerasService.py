@@ -22,7 +22,8 @@ class BuscarCarreras(Resource):
             carreras_result.append({
                 'id': carrera.id,
                 'codigo': carrera.codigo,
-                'nombre': carrera.nombre
+                'nombre': carrera.nombre,
+                'plan': carrera.plan
             })
 
         result = ({'carreras': carreras_result}, SUCCESS_OK) 

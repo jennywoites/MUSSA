@@ -15,7 +15,9 @@ class BuscarMaterias(Resource):
         q_nombre = args["nombre"] if "nombre" in args else None
         q_carreras = args["carreras"].split(",") if "carreras" in args else None
 
-        #Agregar validaciones de los parametros enviados
+        if not self.son_parametros_validos(q_codigo, q_nombre, q_carreras):
+            logging.error('El servicio Buscar Materias recibió parámetros inválidos')
+            return {'Error': 'Uno o más parámteros enviados son inválidos'}, CLIENT_ERROR_BAD_REQUEST
 
         query = Materia.query
         if q_codigo: query = query.filter(Materia.codigo.like(q_codigo + "%"))
@@ -37,3 +39,38 @@ class BuscarMaterias(Resource):
         logging.info('Buscar Materias devuelve como resultado: {}'.format(result))
 
         return result
+
+
+    def son_parametros_validos(self, codigo, nombre, carreras):
+        if codigo and not self.es_codigo_valido(codigo):
+            return False
+
+        if nombre and not self.es_nombre_de_materia_valido(nombre):
+            return False
+
+        if carreras and not self.son_carreras_validas(carreras):
+            return False
+
+        return True
+
+
+    def es_codigo_valido(self, codigo):
+        LONGITUD_CODIGO_MAXIMA = 4
+        return codigo.isdigit() and len(codigo) <= LONGITUD_CODIGO_MAXIMA
+
+
+    def es_nombre_de_materia_valido(self, nombre):
+        for palabra in nombre.split(" "):
+            if not palabra.isalpha():
+                return False
+        return True
+
+
+    def son_carreras_validas(self, carreras):
+        for carrera in carreras:
+            if (not carrera.isdigit() or
+                not Carrera.query.filter_by(codigo=carrera).first()):
+                
+                return False
+
+        return True

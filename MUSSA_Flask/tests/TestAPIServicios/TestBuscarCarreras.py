@@ -3,12 +3,13 @@ if __name__ == '__main__':
     import sys
     sys.path.append("../..")
 
-from tests.api.TestBase import TestBase
+from tests.TestAPIServicios.TestBase import TestBase
 
 import app
 from app import db
 from app.models.carreras_models import Carrera
 
+from app.API_Rest.services import *
 
 class TestBuscarCarreras(TestBase):
 
@@ -62,7 +63,7 @@ class TestBuscarCarreras(TestBase):
 
     def test_buscar_carreras_sin_parametros_devuelve_todas_las_carreras(self):
         client = self.app.test_client()
-        response = client.get('/api/BuscarCarreras')
+        response = client.get(BUSCAR_CARRERAS_SERVICE)
         assert(response.status_code==200)
 
         carreras = response.json["carreras"]
@@ -82,7 +83,7 @@ class TestBuscarCarreras(TestBase):
 
     def test_buscar_carreras_con_parametros_devuelve_bad_request(self):
         client = self.app.test_client()
-        response = client.get('/api/BuscarCarreras', query_string={"parametro": "dato"})
+        response = client.get(BUSCAR_CARRERAS_SERVICE, query_string={"parametro": "dato"})
         assert(response.status_code==400)
 
 
