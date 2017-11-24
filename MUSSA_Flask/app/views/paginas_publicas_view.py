@@ -18,11 +18,6 @@ def contacto_page():
     return render_template('pages/contacto_page.html')
 
 
-@main_blueprint.route('/preguntas_frecuentes')
-def preguntas_frecuentes_page():
-    return render_template('pages/preguntas_frecuentes_page.html')
-
-
 @main_blueprint.route('/links_utiles')
 def links_utiles_page():
     return render_template('pages/links_utiles_page.html')
