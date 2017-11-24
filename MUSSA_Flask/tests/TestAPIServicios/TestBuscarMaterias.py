@@ -9,6 +9,8 @@ import app
 from app import db
 from app.models.carreras_models import Materia, Carrera, TipoMateria
 
+import json
+
 from app.API_Rest.services import *
 
 class TestBuscarMaterias(TestBase):
@@ -108,7 +110,7 @@ class TestBuscarMaterias(TestBase):
         response = client.get(BUSCAR_MATERIAS_SERVICE)
         assert(response.status_code==200)
 
-        materias = response.json["materias"]
+        materias = json.loads(response.get_data(as_text=True))["materias"]
 
         assert(len(materias_bdd) == len(materias))
 
@@ -121,7 +123,7 @@ class TestBuscarMaterias(TestBase):
         response = client.get(BUSCAR_MATERIAS_SERVICE, query_string=parametros)
         assert(response.status_code==200)
 
-        materias = response.json["materias"]
+        materias = json.loads(response.get_data(as_text=True))["materias"]
 
         assert(len(materias) == 2)
 
@@ -140,7 +142,7 @@ class TestBuscarMaterias(TestBase):
         response = client.get(BUSCAR_MATERIAS_SERVICE, query_string=parametros)
         assert(response.status_code==200)
 
-        materias = response.json["materias"]
+        materias = json.loads(response.get_data(as_text=True))["materias"]
 
         assert(len(materias) == 1)
 
@@ -161,7 +163,7 @@ class TestBuscarMaterias(TestBase):
         response = client.get(BUSCAR_MATERIAS_SERVICE, query_string=parametros)
         assert(response.status_code==200)
 
-        materias = response.json["materias"]
+        materias = json.loads(response.get_data(as_text=True))["materias"]
 
         assert(len(materias) == 4)
 
@@ -181,7 +183,7 @@ class TestBuscarMaterias(TestBase):
         response = client.get(BUSCAR_MATERIAS_SERVICE, query_string=parametros)
         assert(response.status_code==200)
 
-        materias = response.json["materias"]
+        materias = json.loads(response.get_data(as_text=True))["materias"]
 
         assert(len(materias) == 1)
 
@@ -199,7 +201,7 @@ class TestBuscarMaterias(TestBase):
         response = client.get(BUSCAR_MATERIAS_SERVICE, query_string=parametros)
         assert(response.status_code==200)
 
-        materias = response.json["materias"]
+        materias = json.loads(response.get_data(as_text=True))["materias"]
 
         assert(len(materias) == 5)
 
@@ -215,7 +217,7 @@ class TestBuscarMaterias(TestBase):
         response = client.get(BUSCAR_MATERIAS_SERVICE, query_string=parametros)
         assert(response.status_code==200)
 
-        materias = response.json["materias"]
+        materias = json.loads(response.get_data(as_text=True))["materias"]
 
         assert(len(materias) == 1)
 
@@ -231,7 +233,7 @@ class TestBuscarMaterias(TestBase):
         response = client.get(BUSCAR_MATERIAS_SERVICE, query_string=parametros)
         assert(response.status_code==200)
 
-        materias = response.json["materias"]
+        materias = json.loads(response.get_data(as_text=True))["materias"]
 
         assert(len(materias) == 6)
 

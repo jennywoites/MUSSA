@@ -4,8 +4,9 @@ import unittest
 import requests
 import app
 
-from flask_testing import TestCase
+from flask_testing import TestCase, LiveServerTestCase
 from flask import url_for
+from flask_wtf.csrf import generate_csrf
 from app import create_app, db
 
 from app.DAO.UsersDAO import create_users
@@ -14,7 +15,11 @@ from app.DAO.MateriasDAO import create_estados_materia, create_forma_aprobacion_
 from app.models.user_models import User
 
 
-class TestBase(TestCase):
+class TestBase(LiveServerTestCase):
+    ADMIN_MAIL = 'admin@example.com'
+    MEMBER_MAIL = 'member@example.com'
+    PASSSWORD = "Password1"
+
     def get_test_db_name(self):
         return "sqlite:///tmp/" + self.get_test_name() + ".sql"
 
@@ -26,31 +31,36 @@ class TestBase(TestCase):
     def create_app(self):
         settings = {}
         settings['SQLALCHEMY_DATABASE_URI'] = self.get_test_db_name()
+        settings['PRESERVE_CONTEXT_ON_EXCEPTION'] = False
+        # settings['WTF_CSRF_METHODS'] = []
+        # self.test_port = 8080
+        # settings['LIVESERVER_PORT'] = self.test_port
         self.app = app.create_app(extra_config_settings=settings)
         return self.app
 
 
     def loguear_usuario(self):
         client = self.app.test_client()
-        response = client.post(url_for('user.login'), follow_redirects=True,
-                    data=dict(email='member@example.com', password='Password1'))
-        print(response)
-        assert(response.status_code==200)
+        data = {"email":self.MEMBER_MAIL, "password": self.PASSSWORD}
+        url = 'http://localhost:%s%s' % (self.test_port, url_for('user.login')) 
+        response = requests.post(url, data=data)    
+        return response.cookies
 
 
     def loguear_administrador(self):
         client = self.app.test_client()
-        response = client.post(url_for('user.login'), follow_redirects=True,
-                    data=dict(email='admin@example.com', password='Password1'))
-        assert(response.status_code==200)
-
+        data = {"email":self.ADMIN_MAIL, "password": self.PASSSWORD}
+        url = 'http://localhost:%s%s' % (self.test_port, url_for('user.login')) 
+        response = requests.post(url, data=data)    
+        return response.cookies
+        
 
     def get_usuario(self):
-        return User.query.filter_by(email='member@example.com').first()
+        return User.query.filter_by(email=self.MEMBER_MAIL).first()
 
 
     def get_administrador(self):
-        return User.query.filter_by(email='admin@example.com').first()
+        return User.query.filter_by(email=self.ADMIN_MAIL).first()
 
 
     def setUp(self):
@@ -58,6 +68,8 @@ class TestBase(TestCase):
         create_users()
         create_estados_materia()
         create_forma_aprobacion_materias()
+        db.session.commit()
+
         self.crear_datos_bd()
         db.session.commit()
 

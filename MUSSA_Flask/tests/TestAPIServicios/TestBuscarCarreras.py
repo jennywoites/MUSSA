@@ -9,6 +9,8 @@ import app
 from app import db
 from app.models.carreras_models import Carrera
 
+import json
+
 from app.API_Rest.services import *
 
 class TestBuscarCarreras(TestBase):
@@ -22,10 +24,6 @@ class TestBuscarCarreras(TestBase):
 
 
     def crear_datos_bd(self):
-        self.agregar_carreras()
-
-
-    def agregar_carreras(self):
         db.session.add(Carrera(
             codigo = '9',
             nombre = 'Licenciatura en Análisis de Sistemas',
@@ -66,7 +64,7 @@ class TestBuscarCarreras(TestBase):
         response = client.get(BUSCAR_CARRERAS_SERVICE)
         assert(response.status_code==200)
 
-        carreras = response.json["carreras"]
+        carreras = json.loads(response.get_data(as_text=True))["carreras"]
 
         assert(len(carreras) == 2)
 
