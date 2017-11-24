@@ -2,7 +2,7 @@ from flask_restful import Resource
 from app.API_Rest.codes import *
 from flask import request
 
-from app.models.carreras_models import Materia
+from app.models.carreras_models import Materia, TipoMateria
 
 import logging
 
@@ -20,13 +20,17 @@ class ObtenerMateria(Resource):
         query = Materia.query.filter_by(id=q_id)
         materia = query.first()
 
+        if not materia:
+            logging.error('El servicio Obtener Materia recibió un id de materia inválido')
+            return {'Error': 'Este servicio debe recibir el id de la materia'}, CLIENT_ERROR_BAD_REQUEST
+
         materia_result = {
             'id': materia.id,
             'codigo': materia.codigo,
             'nombre': materia.nombre,
             'creditos': materia.creditos,
             'creditos_minimos_para_cursarla': materia.creditos_minimos_para_cursarla,
-            #'tipo': materia.tipo_materia_id.descripcion,
+            'tipo': TipoMateria.query.filter_by(id=materia.tipo_materia_id).first().descripcion,
             'carrera_id': materia.carrera.id,
             'carrera': materia.carrera.nombre
         }

@@ -1,11 +1,57 @@
 {% extends "common/page_base.html" %}
 
 {% block content %}
-    <h2>{%trans%}Home page{%endtrans%}</h2>
-    <p><a href={{ url_for('user.register') }}>{%trans%}Register{%endtrans%}</a></p>
-    <p><a href={{ url_for('user.login') }}>{%trans%}Sign in{%endtrans%}</a></p>
-    <p><a href={{ url_for('main.home_page') }}>{%trans%}Home Page{%endtrans%}</a> (accessible to anyone)</p>
-    <p><a href={{ url_for('main.member_page') }}>{%trans%}Member Page{%endtrans%}</a> (login_required: member@example.com / Password1)</p>
-    <p><a href={{ url_for('main.admin_page') }}>{%trans%}Admin Page{%endtrans%}</a> (roles_required: admin@example.com / Password1)</p>
-    <p><a href={{ url_for('user.logout') }}>{%trans%}Sign out{%endtrans%}</a></p>
+
+    <div id="myCarousel" class="carousel slide" data-ride="carousel">
+        <ol class="carousel-indicators">
+            <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
+            <li data-target="#myCarousel" data-slide-to="1"></li>
+            <li data-target="#myCarousel" data-slide-to="2"></li>
+        </ol>
+
+        <div class="carousel-inner">
+            <div class="item active">
+                <a href="http://fi.uba.ar/" target="_blank"> 
+                    <img src="../../static/images/fiuba.jpg" alt="FIUBA">
+                    <div class="carousel-caption">
+                        <h3>FIUBA</h3>
+                        <p>Página oficial</p>
+                    </div>
+                </a>
+            </div>
+
+            <div class="item">
+                <a href="http://sietgraduados.rec.uba.ar/" target="_blank"> 
+                    <img src="../../static/images/egresados.jpg" alt="EstadoDelTitulo">
+                    <div class="carousel-caption">
+                        <h3>EGRESADOS</h3>
+                        <p>Verificar el estado del trámite del título</p>
+                    </div>
+                </a>
+            </div>
+
+            <div class="item">
+                <a href="https://www.facebook.com/groups/fiubaconsultas2/" target="_blank"> 
+                    <img src="../../static/images/fiuba_consultas.jpg" alt="FIUBAConsultas">
+                    <div class="carousel-caption">
+                        <h3>FIUBA CONSULTAS</h3>
+                        <p>Plataforma en Facebook</p>
+                    </div>
+                </a>
+            </div>
+
+        </div>
+
+        <a class="left carousel-control" href="#myCarousel" data-slide="prev">
+            <span class="glyphicon glyphicon-chevron-left"></span>
+            <span class="sr-only">Anterior</span>
+        </a>
+      
+        <a class="right carousel-control" href="#myCarousel" data-slide="next">
+            <span class="glyphicon glyphicon-chevron-right"></span>
+            <span class="sr-only">Siguiente</span>
+        </a>
+    
+    </div>
+
 {% endblock %}

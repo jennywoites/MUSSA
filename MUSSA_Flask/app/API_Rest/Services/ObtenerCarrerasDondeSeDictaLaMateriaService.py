@@ -13,7 +13,7 @@ class ObtenerCarrerasDondeSeDictaLaMateria(Resource):
 
         q_codigo = args["codigo_materia"] if "codigo_materia" in args else None
 
-        if not q_codigo or not q_codigo.isdigit():
+        if not q_codigo or not self.codigo_es_valido(q_codigo):
             logging.error('El servicio Obtener Carreras donde se dicta la materia recibe el codigo de la materia')
             return {'Error': 'Este servicio debe recibir el codigo de la materia'}, CLIENT_ERROR_BAD_REQUEST
 
@@ -34,3 +34,9 @@ class ObtenerCarrerasDondeSeDictaLaMateria(Resource):
         logging.info('Obtener Carreras donde se dicta la materia devuelve como resultado: {}'.format(result))
 
         return result
+
+    def codigo_es_valido(self, codigo):
+        if not codigo.isdigit():
+            return False
+
+        return len(Materia.query.filter_by(codigo=codigo).all()) > 0

@@ -17,7 +17,7 @@ from app.views.PaginasAlumnosViews.editar_materia_page_view import editar_materi
 @main_blueprint.route('/member')
 @login_required  # Limits access to authenticated users
 def member_page():
-    return render_template('pages/user_page.html')
+    return render_template('pages/home_page.html')
 
 
 @main_blueprint.route('/pages/profile', methods=['GET', 'POST'])
