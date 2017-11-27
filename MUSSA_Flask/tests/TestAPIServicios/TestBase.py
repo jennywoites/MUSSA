@@ -13,7 +13,7 @@ from app.DAO.UsersDAO import create_users
 from app.DAO.MateriasDAO import create_estados_materia, create_forma_aprobacion_materias
 
 from app.models.user_models import User
-
+from app.API_Rest.services import *
 
 class TestBase(LiveServerTestCase):
     ADMIN_MAIL = 'admin@example.com'
@@ -32,27 +32,28 @@ class TestBase(LiveServerTestCase):
         settings = {}
         settings['SQLALCHEMY_DATABASE_URI'] = self.get_test_db_name()
         settings['PRESERVE_CONTEXT_ON_EXCEPTION'] = False
-        # settings['WTF_CSRF_METHODS'] = []
-        # self.test_port = 8080
-        # settings['LIVESERVER_PORT'] = self.test_port
+        settings['WTF_CSRF_METHODS'] = []
+        settings['TESTING'] = True
+        settings['WTF_CSRF_ENABLED'] = False
+        settings['DEBUG'] = True
+
         self.app = app.create_app(extra_config_settings=settings)
         return self.app
 
 
+    def do_login(self, data):
+        url = BASE_URL + url_for('user.login')
+        response = requests.post(url, data=data)
+        session = response.cookies.get('session')
+        return {'session': session}
+
+
     def loguear_usuario(self):
-        client = self.app.test_client()
-        data = {"email":self.MEMBER_MAIL, "password": self.PASSSWORD}
-        url = 'http://localhost:%s%s' % (self.test_port, url_for('user.login')) 
-        response = requests.post(url, data=data)    
-        return response.cookies
+        return self.do_login({"email": self.MEMBER_MAIL, "password": self.PASSSWORD})
 
 
     def loguear_administrador(self):
-        client = self.app.test_client()
-        data = {"email":self.ADMIN_MAIL, "password": self.PASSSWORD}
-        url = 'http://localhost:%s%s' % (self.test_port, url_for('user.login')) 
-        response = requests.post(url, data=data)    
-        return response.cookies
+        return self.do_login({"email": self.ADMIN_MAIL, "password": self.PASSSWORD})
         
 
     def get_usuario(self):
