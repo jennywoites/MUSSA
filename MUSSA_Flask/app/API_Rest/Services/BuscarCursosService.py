@@ -16,7 +16,7 @@ class BuscarCursos(Resource):
         q_nombre_curso = args["nombre_curso"] if "nombre_curso" in args else None
         q_codigo_materia = args["codigo_materia"] if "codigo_materia" in args else None
         q_carrera = args["id_carrera"] if "id_carrera" in args else None
-        filtrar_cursos = args["filtrar_cursos"] if "filtrar_cursos" in args else True
+        filtrar_cursos = self.obtener_valor_filtrar_cursos(args)
 
         if not self.parametros_son_validos(q_id_curso, q_nombre_curso, q_codigo_materia, q_carrera):
             logging.error('El servicio Buscar Cursos recibió parámetros inválidos')
@@ -82,6 +82,14 @@ class BuscarCursos(Resource):
         logging.info('Buscar Cursos devuelve como resultado: {}'.format(result))
 
         return result
+
+
+    def obtener_valor_filtrar_cursos(self, args):
+        if not "filtrar_cursos" in args:
+            return True
+
+        filtrar = args["filtrar_cursos"].lower()
+        return (filtrar != "false")
 
 
     def calcular_puntaje(self, curso):
@@ -156,6 +164,3 @@ class BuscarCursos(Resource):
             if not letra.isdigit():
                 return False
         return True
-
-
-
