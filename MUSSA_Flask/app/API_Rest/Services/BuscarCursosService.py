@@ -146,7 +146,7 @@ class BuscarCursos(Resource):
             return True
 
         for letra in nombre:
-            if not letra.isdigit() and not letra.isalpha():
+            if not letra.isdigit() and not letra.isalpha() and not letra in ["-", "_", ":", "'"]:
                 return False
         return True
 
@@ -167,7 +167,8 @@ class BuscarCursos(Resource):
             return True
 
         carrera = str(carrera)
-        return self.esta_formado_solo_por_numeros(carrera)
+        return (self.esta_formado_solo_por_numeros(carrera) and
+                len(Carrera.query.filter_by(id=carrera).all()) > 0)
 
 
     def esta_formado_solo_por_numeros(self, cadena):
