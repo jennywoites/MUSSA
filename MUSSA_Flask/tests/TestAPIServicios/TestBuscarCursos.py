@@ -248,6 +248,47 @@ class TestBuscarCursos(TestBase):
     ##                 Funciones Auxiliares                 ##
     ##########################################################
 
+    def se_encuentra_el_curso(self, curso_origen, l_cursos):
+        for curso_servicio in l_cursos:
+            if self.los_cursos_son_iguales(curso_servicio, curso_origen):
+                return True
+
+        return False
+
+
+    def los_cursos_son_iguales(self, curso_servicio, curso_origen):
+        if not (curso_origen["id"] == curso_servicio["id"] and
+                curso_origen["codigo_materia"] == curso_servicio["codigo_materia"] and
+                curso_origen["codigo"] == curso_servicio["codigo_curso"] and
+                curso_origen["docentes"] == curso_servicio["docentes"] and
+                curso_origen["se_dicta_primer_cuatrimestre"] == curso_servicio["se_dicta_primer_cuatri"] and
+                curso_origen["se_dicta_segundo_cuatrimestre"] == curso_servicio["se_dicta_segundo_cuatri"] and
+                self.calcular_puntaje(curso_origen) == curso_servicio["puntaje"] and
+                curso_origen["cuatrimestre"] == curso_servicio["cuatrimestre"]):
+            
+            return False
+
+        for horario in curso_origen["horarios"]:
+            h = {
+                "dia": horario["dia"],
+                "hora_desde": horario["hora_desde_reloj"],
+                "hora_hasta": horario["hora_hasta_reloj"]
+            }
+            if not self.se_encuentra_el_horario(h, curso_servicio["horarios"]):
+                return False
+
+
+        for carrera in curso_origen["carreras"]:
+            c = {
+                "codigo": carrera["codigo"],
+                "nombre": carrera["nombre"]
+            }
+            if not self.se_encuentra_la_carrera(c, curso_servicio["carreras"]):
+                return False
+
+        return True
+
+
     def se_encuentra_el_horario(self, horario, l_horarios):
         for l_horario in l_horarios:
             if (horario["dia"] == l_horario["dia"] and
@@ -319,46 +360,7 @@ class TestBuscarCursos(TestBase):
 
         assert(len(cursos) == 1)
 
-        curso = cursos[0]
-
-        assert(curso["id"] == self.CURSO_7540_A_DOS_CARRERAS["id"])
-        assert(curso["codigo_materia"] == self.CURSO_7540_A_DOS_CARRERAS["codigo_materia"])
-        assert(curso["codigo_curso"] == self.CURSO_7540_A_DOS_CARRERAS["codigo"])
-        assert(curso["docentes"] == self.CURSO_7540_A_DOS_CARRERAS["docentes"])
-        assert(curso["se_dicta_primer_cuatri"] == self.CURSO_7540_A_DOS_CARRERAS["se_dicta_primer_cuatrimestre"])
-        assert(curso["se_dicta_segundo_cuatri"] == self.CURSO_7540_A_DOS_CARRERAS["se_dicta_segundo_cuatrimestre"])
-        assert(curso["puntaje"] == self.calcular_puntaje(self.CURSO_7540_A_DOS_CARRERAS))
-        assert(curso["cuatrimestre"] == self.CURSO_7540_A_DOS_CARRERAS["cuatrimestre"])
-
-        horario1 = {
-            "dia": self.HORARIO_1["dia"],
-            "hora_desde": self.HORARIO_1["hora_desde_reloj"],
-            "hora_hasta": self.HORARIO_1["hora_hasta_reloj"]
-        }
-
-        assert(self.se_encuentra_el_horario(horario1, curso["horarios"]))
-
-        horario2 = {
-            "dia": self.HORARIO_2["dia"],
-            "hora_desde": self.HORARIO_2["hora_desde_reloj"],
-            "hora_hasta": self.HORARIO_2["hora_hasta_reloj"]
-        }
-
-        assert(self.se_encuentra_el_horario(horario2, curso["horarios"]))
-
-        carrera1 = {
-            "codigo": self.CARRERA_1["codigo"],
-            "nombre": self.CARRERA_1["nombre"]
-        }
-
-        assert(self.se_encuentra_la_carrera(carrera1, curso["carreras"]))
-
-        carrera2 = {
-            "codigo": self.CARRERA_2["codigo"],
-            "nombre": self.CARRERA_2["nombre"]
-        }
-
-        assert(self.se_encuentra_la_carrera(carrera2, curso["carreras"]))
+        self.se_encuentra_el_curso(self.CURSO_7540_A_DOS_CARRERAS, cursos)
 
 
     def test_buscar_curso_por_id_valido_que_no_dicta_sin_indicar_filtro_resultados_devuelve_error(self):
@@ -389,41 +391,62 @@ class TestBuscarCursos(TestBase):
 
         assert(len(cursos) == 1)
 
-        curso = cursos[0]
+        self.se_encuentra_el_curso(self.CURSO_8787_NO_SE_DICTA_NINGUN_CUATRIMESTRE, cursos)
 
-        assert(curso["id"] == self.CURSO_8787_NO_SE_DICTA_NINGUN_CUATRIMESTRE["id"])
-        assert(curso["codigo_materia"] == self.CURSO_8787_NO_SE_DICTA_NINGUN_CUATRIMESTRE["codigo_materia"])
-        assert(curso["codigo_curso"] == self.CURSO_8787_NO_SE_DICTA_NINGUN_CUATRIMESTRE["codigo"])
-        assert(curso["docentes"] == self.CURSO_8787_NO_SE_DICTA_NINGUN_CUATRIMESTRE["docentes"])
-        assert(curso["se_dicta_primer_cuatri"] == self.CURSO_8787_NO_SE_DICTA_NINGUN_CUATRIMESTRE["se_dicta_primer_cuatrimestre"])
-        assert(curso["se_dicta_segundo_cuatri"] == self.CURSO_8787_NO_SE_DICTA_NINGUN_CUATRIMESTRE["se_dicta_segundo_cuatrimestre"])
-        assert(curso["puntaje"] == self.calcular_puntaje(self.CURSO_8787_NO_SE_DICTA_NINGUN_CUATRIMESTRE))
-        assert(curso["cuatrimestre"] == self.CURSO_8787_NO_SE_DICTA_NINGUN_CUATRIMESTRE["cuatrimestre"])
 
-        horario4 = {
-            "dia": self.HORARIO_4["dia"],
-            "hora_desde": self.HORARIO_4["hora_desde_reloj"],
-            "hora_hasta": self.HORARIO_4["hora_hasta_reloj"]
-        }
+    def test_buscar_curso_por_id_con_codigo_y_nombre_validos_descarta_los_campos_codigo_y_nombre_pero_los_valida(self):
+        parametros = {}
+        parametros["id_curso"] = self.CURSO_7540_A_DOS_CARRERAS["id"]
+        parametros["nombre_curso"] = "589-sm'p"
+        parametros["codigo_materia"] = "4875"
 
-        assert(self.se_encuentra_el_horario(horario4, curso["horarios"]))
+        client = self.app.test_client()
+        response = client.get(BUSCAR_CURSOS_SERVICE, query_string=parametros)
+        assert(response.status_code == SUCCESS_OK)
 
-        horario5 = {
-            "dia": self.HORARIO_5["dia"],
-            "hora_desde": self.HORARIO_5["hora_desde_reloj"],
-            "hora_hasta": self.HORARIO_5["hora_hasta_reloj"]
-        }
+        cursos = json.loads(response.get_data(as_text=True))["cursos"]
 
-        assert(self.se_encuentra_el_horario(horario5, curso["horarios"]))
+        assert(len(cursos) == 1)
 
-        carrera1 = {
-            "codigo": self.CARRERA_1["codigo"],
-            "nombre": self.CARRERA_1["nombre"]
-        }
+        self.se_encuentra_el_curso(self.CURSO_7540_A_DOS_CARRERAS, cursos)
 
-        assert(self.se_encuentra_la_carrera(carrera1, curso["carreras"]))
 
-        #si se busca por id no se le da importancia ni al nombre ni al codigo
+    def test_buscar_curso_por_id_con_codigo_valido_y_nombre_invalido_descarta_los_campos_codigo_y_nombre_pero_los_valida(self):
+        parametros = {}
+        parametros["id_curso"] = self.CURSO_7540_A_DOS_CARRERAS["id"]
+        parametros["nombre_curso"] = "589-?sm'p"
+        parametros["codigo_materia"] = "4875"
+
+        client = self.app.test_client()
+        response = client.get(BUSCAR_CURSOS_SERVICE, query_string=parametros)
+        assert(response.status_code == CLIENT_ERROR_BAD_REQUEST)
+
+
+    def test_buscar_curso_por_id_con_codigo_invalido_y_nombre_valido_descarta_los_campos_codigo_y_nombre_pero_los_valida(self):
+        parametros = {}
+        parametros["id_curso"] = self.CURSO_7540_A_DOS_CARRERAS["id"]
+        parametros["nombre_curso"] = "589-sm'p"
+        parametros["codigo_materia"] = "487s5"
+
+        client = self.app.test_client()
+        response = client.get(BUSCAR_CURSOS_SERVICE, query_string=parametros)
+        assert(response.status_code == CLIENT_ERROR_BAD_REQUEST)
+
+
+    def test_buscar_curso_por_id_con_codigo_y_nombre_invalidos_descarta_los_campos_codigo_y_nombre_pero_los_valida(self):
+        parametros = {}
+        parametros["id_curso"] = self.CURSO_7540_A_DOS_CARRERAS["id"]
+        parametros["nombre_curso"] = "589-sm'p?"
+        parametros["codigo_materia"] = "487as5"
+
+        client = self.app.test_client()
+        response = client.get(BUSCAR_CURSOS_SERVICE, query_string=parametros)
+        assert(response.status_code == CLIENT_ERROR_BAD_REQUEST)
+
+
+    def test_buscar_curso_por_parte_del_nombre_encuentra_a_todos_los_que_tienen_en_aluna_parte_esos_caracteres_consecutivos(self):
+        parametros = {}
+        pass
         #buscar por nombre
         #buscar por codigo
         #buscar por nombre y codigo
