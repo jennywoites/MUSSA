@@ -1,32 +1,25 @@
-from flask import Flask
-from flask_testing import LiveServerTestCase
-import unittest
-import requests
 import app
 
-from flask_testing import TestCase, LiveServerTestCase
+from flask_testing import TestCase
 from flask import url_for
-from flask_wtf.csrf import generate_csrf
-from app import create_app, db
+from app import db
 
 from app.DAO.UsersDAO import create_users
 from app.DAO.MateriasDAO import create_estados_materia, create_forma_aprobacion_materias
 
 from app.models.user_models import User
-from app.API_Rest.services import *
 
-class TestBase(LiveServerTestCase):
+
+class TestBase(TestCase):
     ADMIN_MAIL = 'admin@example.com'
     MEMBER_MAIL = 'member@example.com'
-    PASSSWORD = "Password1"
+    PASSWORD = "Password1"
 
     def get_test_db_name(self):
         return "sqlite:///tmp/" + self.get_test_name() + ".sql"
 
-
     def get_test_name(self):
         return "test_base"
-
 
     def create_app(self):
         settings = {}
@@ -40,29 +33,22 @@ class TestBase(LiveServerTestCase):
         self.app = app.create_app(extra_config_settings=settings)
         return self.app
 
-
     def do_login(self, data):
-        url = BASE_URL + url_for('user.login')
-        response = requests.post(url, data=data)
-        session = response.cookies.get('session')
-        return {'session': session}
-
+        client = self.app.test_client()
+        client.post(url_for('user.login'), data=data)
+        return client
 
     def loguear_usuario(self):
-        return self.do_login({"email": self.MEMBER_MAIL, "password": self.PASSSWORD})
-
+        return self.do_login({"email": self.MEMBER_MAIL, "password": self.PASSWORD})
 
     def loguear_administrador(self):
-        return self.do_login({"email": self.ADMIN_MAIL, "password": self.PASSSWORD})
-        
+        return self.do_login({"email": self.ADMIN_MAIL, "password": self.PASSWORD})
 
     def get_usuario(self):
         return User.query.filter_by(email=self.MEMBER_MAIL).first()
 
-
     def get_administrador(self):
         return User.query.filter_by(email=self.ADMIN_MAIL).first()
-
 
     def setUp(self):
         db.create_all()
@@ -74,10 +60,8 @@ class TestBase(LiveServerTestCase):
         self.crear_datos_bd()
         db.session.commit()
 
-
     def crear_datos_bd(self):
         raise Exception("Debe implementarse en las clases hijas")
-
 
     def tearDown(self):
         db.session.remove()

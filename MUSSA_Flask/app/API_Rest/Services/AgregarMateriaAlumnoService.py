@@ -43,11 +43,8 @@ class AgregarMateriaAlumno(Resource):
                 
         self.anular_datos_materia(materia)
         
-        result = ({'OK': "Se agrego la materia satisfactoriamente"}, SUCCESS_OK)
         if (q_estado == ESTADO_MATERIA[EN_CURSO]):
-            db.session.commit()
-            logging.info('Agregar Materia Alumno devuelve como resultado: {}'.format(result))
-            return result
+            return self.guardar_y_devolver_success()
 
         q_cuatrimestre_aprobacion = args["cuatrimestre_aprobacion"] if "cuatrimestre_aprobacion" in args else None
         q_anio_aprobacion = args["anio_aprobacion"] if "anio_aprobacion" in args else None
@@ -61,9 +58,7 @@ class AgregarMateriaAlumno(Resource):
         materia.anio_aprobacion_cursada = q_anio_aprobacion
 
         if (q_estado == ESTADO_MATERIA[FINAL_PENDIENTE]):
-            db.session.commit()
-            logging.info('Agregar Materia Alumno devuelve como resultado: {}'.format(result))
-            return result
+            return self.guardar_y_devolver_success()
 
         q_fecha_aprobacion = args["fecha_aprobacion"] if "fecha_aprobacion" in args else None
         q_forma_aprobacion = args["forma_aprobacion"] if "forma_aprobacion" in args else None
@@ -84,12 +79,7 @@ class AgregarMateriaAlumno(Resource):
         materia.calificacion = int(q_calificacion)
         materia.acta_o_resolucion = q_acta_resolucion
 
-        db.session.commit()
-
-        result = ({'OK': "Se agrego la materia satisfactoriamente"}, SUCCESS_OK)
-        logging.info('Agregar Materia Alumno devuelve como resultado: {}'.format(result))
-
-        return result
+        return self.guardar_y_devolver_success()
 
 
     def son_ids_validos(self, id_carrera, id_materia, estado, alumno_id):
@@ -149,3 +139,11 @@ class AgregarMateriaAlumno(Resource):
             return False
 
         return (acta_resolucion != "")
+
+
+    def guardar_y_devolver_success(self):
+        db.session.commit()
+
+        result = ({'OK': "Se agrego la materia satisfactoriamente"}, SUCCESS_OK)
+        logging.info('Agregar Materia Alumno devuelve como resultado: {}'.format(result))
+        return result

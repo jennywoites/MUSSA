@@ -1,6 +1,7 @@
 if __name__ == '__main__':
     import os
     import sys
+
     sys.path.append("../..")
 
 from tests.TestAPIServicios.TestBase import TestBase
@@ -17,8 +18,8 @@ import datetime
 from app.API_Rest.services import *
 from app.API_Rest.codes import *
 
-class TestBuscarCursos(TestBase):
 
+class TestBuscarCursos(TestBase):
     ##########################################################
     ##                   Configuracion                      ##
     ##########################################################
@@ -174,10 +175,8 @@ class TestBuscarCursos(TestBase):
                 self.CURSO_7541_UNA_CARRERA,
                 self.CURSO_8787_NO_SE_DICTA_NINGUN_CUATRIMESTRE]
 
-
     def get_test_name(self):
         return "test_buscar_cursos"
-
 
     def crear_datos_bd(self):
         for carrera in self.get_carreras_bd():
@@ -195,52 +194,47 @@ class TestBuscarCursos(TestBase):
             for c_carrera in curso["carreras"]:
                 self.agregar_carrera_por_curso(curso, c_carrera)
 
-
     def agregar_carrera(self, datos):
         db.session.add(Carrera(
-            codigo = datos["codigo"],
-            nombre = datos["nombre"],
-            duracion_estimada_en_cuatrimestres = datos["duracion_estimada_en_cuatrimestres"],
-            requiere_prueba_suficiencia_de_idioma = datos["requiere_prueba_suficiencia_de_idioma"]
+            codigo=datos["codigo"],
+            nombre=datos["nombre"],
+            duracion_estimada_en_cuatrimestres=datos["duracion_estimada_en_cuatrimestres"],
+            requiere_prueba_suficiencia_de_idioma=datos["requiere_prueba_suficiencia_de_idioma"]
         ))
         db.session.commit()
-
 
     def agregar_curso(self, datos):
         db.session.add(Curso(
-            codigo_materia = datos["codigo_materia"],
-            codigo = datos["codigo"],
-            docentes = datos["docentes"],
-            se_dicta_primer_cuatrimestre = datos["se_dicta_primer_cuatrimestre"],
-            se_dicta_segundo_cuatrimestre = datos["se_dicta_segundo_cuatrimestre"],
-            cantidad_encuestas_completas = datos["cantidad_encuestas_completas"],
-            puntaje_total_encuestas = datos["puntaje_total_encuestas"],
-            fecha_actualizacion = datos["fecha_actualizacion"],
+            codigo_materia=datos["codigo_materia"],
+            codigo=datos["codigo"],
+            docentes=datos["docentes"],
+            se_dicta_primer_cuatrimestre=datos["se_dicta_primer_cuatrimestre"],
+            se_dicta_segundo_cuatrimestre=datos["se_dicta_segundo_cuatrimestre"],
+            cantidad_encuestas_completas=datos["cantidad_encuestas_completas"],
+            puntaje_total_encuestas=datos["puntaje_total_encuestas"],
+            fecha_actualizacion=datos["fecha_actualizacion"],
         ))
         db.session.commit()
-
 
     def agregar_horario(self, datos):
         db.session.add(Horario(
-            dia = datos["dia"],
-            hora_desde = datos["hora_desde"],
-            hora_hasta = datos["hora_hasta"]
+            dia=datos["dia"],
+            hora_desde=datos["hora_desde"],
+            hora_hasta=datos["hora_hasta"]
         ))
         db.session.commit()
-
 
     def agregar_horario_por_curso(self, curso, horario):
         db.session.add(HorarioPorCurso(
-            curso_id = curso["id"],
-            horario_id = horario["id"]
+            curso_id=curso["id"],
+            horario_id=horario["id"]
         ))
         db.session.commit()
 
-
     def agregar_carrera_por_curso(self, curso, carrera):
         db.session.add(CarreraPorCurso(
-            curso_id = curso["id"],
-            carrera_id = carrera["id"]
+            curso_id=curso["id"],
+            carrera_id=carrera["id"]
         ))
         db.session.commit()
 
@@ -255,17 +249,15 @@ class TestBuscarCursos(TestBase):
 
         return False
 
-
     def los_cursos_son_iguales(self, curso_servicio, curso_origen):
         if not (curso_origen["id"] == curso_servicio["id"] and
-                curso_origen["codigo_materia"] == curso_servicio["codigo_materia"] and
-                curso_origen["codigo"] == curso_servicio["codigo_curso"] and
-                curso_origen["docentes"] == curso_servicio["docentes"] and
-                curso_origen["se_dicta_primer_cuatrimestre"] == curso_servicio["se_dicta_primer_cuatri"] and
-                curso_origen["se_dicta_segundo_cuatrimestre"] == curso_servicio["se_dicta_segundo_cuatri"] and
-                self.calcular_puntaje(curso_origen) == curso_servicio["puntaje"] and
-                curso_origen["cuatrimestre"] == curso_servicio["cuatrimestre"]):
-            
+                        curso_origen["codigo_materia"] == curso_servicio["codigo_materia"] and
+                        curso_origen["codigo"] == curso_servicio["codigo_curso"] and
+                        curso_origen["docentes"] == curso_servicio["docentes"] and
+                        curso_origen["se_dicta_primer_cuatrimestre"] == curso_servicio["se_dicta_primer_cuatri"] and
+                        curso_origen["se_dicta_segundo_cuatrimestre"] == curso_servicio["se_dicta_segundo_cuatri"] and
+                        self.calcular_puntaje(curso_origen) == curso_servicio["puntaje"] and
+                        curso_origen["cuatrimestre"] == curso_servicio["cuatrimestre"]):
             return False
 
         for horario in curso_origen["horarios"]:
@@ -277,7 +269,6 @@ class TestBuscarCursos(TestBase):
             if not self.se_encuentra_el_horario(h, curso_servicio["horarios"]):
                 return False
 
-
         for carrera in curso_origen["carreras"]:
             c = {
                 "codigo": carrera["codigo"],
@@ -288,23 +279,20 @@ class TestBuscarCursos(TestBase):
 
         return True
 
-
     def se_encuentra_el_horario(self, horario, l_horarios):
         for l_horario in l_horarios:
             if (horario["dia"] == l_horario["dia"] and
-                horario["hora_desde"] == l_horario["hora_desde"] and
-                horario["hora_hasta"] == l_horario["hora_hasta"]):
+                        horario["hora_desde"] == l_horario["hora_desde"] and
+                        horario["hora_hasta"] == l_horario["hora_hasta"]):
                 return True
         return False
-
 
     def se_encuentra_la_carrera(self, carrera, l_carreras):
         for l_carrera in l_carreras:
             if (carrera["codigo"] == l_carrera["codigo"] and
-                carrera["nombre"] == l_carrera["nombre"]):
+                        carrera["nombre"] == l_carrera["nombre"]):
                 return True
         return False
-
 
     def calcular_puntaje(self, curso):
         puntaje = curso["puntaje_total_encuestas"]
@@ -321,54 +309,50 @@ class TestBuscarCursos(TestBase):
     def test_buscar_cursos_sin_parametros_devuelve_todos_los_cursos_que_se_dictan_algun_cuatrimestre(self):
         client = self.app.test_client()
         response = client.get(BUSCAR_CURSOS_SERVICE)
-        assert(response.status_code == SUCCESS_OK)
+        assert (response.status_code == SUCCESS_OK)
 
         cursos = json.loads(response.get_data(as_text=True))["cursos"]
 
-        assert(len(cursos) == 4)
-
+        assert (len(cursos) == 4)
 
     def test_buscar_cursos_con_parametro_filtrar_true_devuelve_todos_los_cursos_que_se_dictan_algun_cuatrimestre(self):
         parametros = {"filtrar_cursos": True}
         client = self.app.test_client()
         response = client.get(BUSCAR_CURSOS_SERVICE, query_string=parametros)
-        assert(response.status_code == SUCCESS_OK)
+        assert (response.status_code == SUCCESS_OK)
 
         cursos = json.loads(response.get_data(as_text=True))["cursos"]
 
-        assert(len(cursos) == 4)
+        assert (len(cursos) == 4)
 
-
-    def test_buscar_cursos_con_parametro_filtrar_false_devuelve_todos_los_cursos_auqnue_no_se_dicten_en_ningun_cuatrimestre(self):
+    def test_buscar_cursos_con_parametro_filtrar_false_devuelve_todos_los_cursos_auqnue_no_se_dicten_en_ningun_cuatrimestre(
+            self):
         parametros = {"filtrar_cursos": False}
         client = self.app.test_client()
         response = client.get(BUSCAR_CURSOS_SERVICE, query_string=parametros)
-        assert(response.status_code == SUCCESS_OK)
+        assert (response.status_code == SUCCESS_OK)
 
         cursos = json.loads(response.get_data(as_text=True))["cursos"]
 
-        assert(len(cursos) == 5)
-
+        assert (len(cursos) == 5)
 
     def test_buscar_curso_por_id_valido_dictada_ambos_cuatrimestres_devuelve_solo_ese_curso(self):
         parametros = {"id_curso": self.CURSO_7540_A_DOS_CARRERAS["id"]}
         client = self.app.test_client()
         response = client.get(BUSCAR_CURSOS_SERVICE, query_string=parametros)
-        assert(response.status_code == SUCCESS_OK)
+        assert (response.status_code == SUCCESS_OK)
 
         cursos = json.loads(response.get_data(as_text=True))["cursos"]
 
-        assert(len(cursos) == 1)
+        assert (len(cursos) == 1)
 
         self.se_encuentra_el_curso(self.CURSO_7540_A_DOS_CARRERAS, cursos)
-
 
     def test_buscar_curso_por_id_valido_que_no_dicta_sin_indicar_filtro_resultados_devuelve_error(self):
         parametros = {"id_curso": self.CURSO_8787_NO_SE_DICTA_NINGUN_CUATRIMESTRE["id"]}
         client = self.app.test_client()
         response = client.get(BUSCAR_CURSOS_SERVICE, query_string=parametros)
-        assert(response.status_code == CLIENT_ERROR_BAD_REQUEST)
-
+        assert (response.status_code == CLIENT_ERROR_BAD_REQUEST)
 
     def test_buscar_curso_por_id_valido_que_no_dicta_indicando_filtrar_resultados_devuelve_error(self):
         parametros = {}
@@ -376,8 +360,7 @@ class TestBuscarCursos(TestBase):
         parametros["filtrar_cursos"] = True
         client = self.app.test_client()
         response = client.get(BUSCAR_CURSOS_SERVICE, query_string=parametros)
-        assert(response.status_code == CLIENT_ERROR_BAD_REQUEST)
-
+        assert (response.status_code == CLIENT_ERROR_BAD_REQUEST)
 
     def test_buscar_curso_por_id_valido_que_no_dicta_indicando_no_filtrar_resultados_devuelve_el_curso(self):
         parametros = {}
@@ -385,14 +368,13 @@ class TestBuscarCursos(TestBase):
         parametros["filtrar_cursos"] = False
         client = self.app.test_client()
         response = client.get(BUSCAR_CURSOS_SERVICE, query_string=parametros)
-        assert(response.status_code == SUCCESS_OK)
+        assert (response.status_code == SUCCESS_OK)
 
         cursos = json.loads(response.get_data(as_text=True))["cursos"]
 
-        assert(len(cursos) == 1)
+        assert (len(cursos) == 1)
 
         self.se_encuentra_el_curso(self.CURSO_8787_NO_SE_DICTA_NINGUN_CUATRIMESTRE, cursos)
-
 
     def test_buscar_curso_por_id_con_codigo_y_nombre_validos_descarta_los_campos_codigo_y_nombre_pero_los_valida(self):
         parametros = {}
@@ -402,16 +384,16 @@ class TestBuscarCursos(TestBase):
 
         client = self.app.test_client()
         response = client.get(BUSCAR_CURSOS_SERVICE, query_string=parametros)
-        assert(response.status_code == SUCCESS_OK)
+        assert (response.status_code == SUCCESS_OK)
 
         cursos = json.loads(response.get_data(as_text=True))["cursos"]
 
-        assert(len(cursos) == 1)
+        assert (len(cursos) == 1)
 
         self.se_encuentra_el_curso(self.CURSO_7540_A_DOS_CARRERAS, cursos)
 
-
-    def test_buscar_curso_por_id_con_codigo_valido_y_nombre_invalido_descarta_los_campos_codigo_y_nombre_pero_los_valida(self):
+    def test_buscar_curso_por_id_con_codigo_valido_y_nombre_invalido_descarta_los_campos_codigo_y_nombre_pero_los_valida(
+            self):
         parametros = {}
         parametros["id_curso"] = self.CURSO_7540_A_DOS_CARRERAS["id"]
         parametros["nombre_curso"] = "589-?sm'p"
@@ -419,10 +401,10 @@ class TestBuscarCursos(TestBase):
 
         client = self.app.test_client()
         response = client.get(BUSCAR_CURSOS_SERVICE, query_string=parametros)
-        assert(response.status_code == CLIENT_ERROR_BAD_REQUEST)
+        assert (response.status_code == CLIENT_ERROR_BAD_REQUEST)
 
-
-    def test_buscar_curso_por_id_con_codigo_invalido_y_nombre_valido_descarta_los_campos_codigo_y_nombre_pero_los_valida(self):
+    def test_buscar_curso_por_id_con_codigo_invalido_y_nombre_valido_descarta_los_campos_codigo_y_nombre_pero_los_valida(
+            self):
         parametros = {}
         parametros["id_curso"] = self.CURSO_7540_A_DOS_CARRERAS["id"]
         parametros["nombre_curso"] = "589-sm'p"
@@ -430,10 +412,10 @@ class TestBuscarCursos(TestBase):
 
         client = self.app.test_client()
         response = client.get(BUSCAR_CURSOS_SERVICE, query_string=parametros)
-        assert(response.status_code == CLIENT_ERROR_BAD_REQUEST)
+        assert (response.status_code == CLIENT_ERROR_BAD_REQUEST)
 
-
-    def test_buscar_curso_por_id_con_codigo_y_nombre_invalidos_descarta_los_campos_codigo_y_nombre_pero_los_valida(self):
+    def test_buscar_curso_por_id_con_codigo_y_nombre_invalidos_descarta_los_campos_codigo_y_nombre_pero_los_valida(
+            self):
         parametros = {}
         parametros["id_curso"] = self.CURSO_7540_A_DOS_CARRERAS["id"]
         parametros["nombre_curso"] = "589-sm'p?"
@@ -441,39 +423,39 @@ class TestBuscarCursos(TestBase):
 
         client = self.app.test_client()
         response = client.get(BUSCAR_CURSOS_SERVICE, query_string=parametros)
-        assert(response.status_code == CLIENT_ERROR_BAD_REQUEST)
+        assert (response.status_code == CLIENT_ERROR_BAD_REQUEST)
 
-
-    def test_buscar_curso_por_parte_del_nombre_del_medio_encuentra_a_todos_los_que_tienen_en_aluna_parte_esos_caracteres_consecutivos_y_se_dictan_algun_cuatrimestre(self):
+    def test_buscar_curso_por_parte_del_nombre_del_medio_encuentra_a_todos_los_que_tienen_en_aluna_parte_esos_caracteres_consecutivos_y_se_dictan_algun_cuatrimestre(
+            self):
         parametros = {}
         parametros["nombre_curso"] = "-Curso"
 
         client = self.app.test_client()
         response = client.get(BUSCAR_CURSOS_SERVICE, query_string=parametros)
-        assert(response.status_code == SUCCESS_OK)
+        assert (response.status_code == SUCCESS_OK)
 
         cursos = json.loads(response.get_data(as_text=True))["cursos"]
 
-        assert(len(cursos) == 4)
+        assert (len(cursos) == 4)
 
         self.se_encuentra_el_curso(self.CURSO_7540_A_DOS_CARRERAS, cursos)
         self.se_encuentra_el_curso(self.CURSO_7540_B_DOS_CARRERAS, cursos)
         self.se_encuentra_el_curso(self.CURSO_7540_C_UNA_CARRERA, cursos)
         self.se_encuentra_el_curso(self.CURSO_7541_UNA_CARRERA, cursos)
 
-
-    def test_buscar_curso_por_parte_del_nombre_del_medio_y_no_filtrar_cursos_encuentra_a_todos_los_que_tienen_en_aluna_parte_esos_caracteres_consecutivos(self):
+    def test_buscar_curso_por_parte_del_nombre_del_medio_y_no_filtrar_cursos_encuentra_a_todos_los_que_tienen_en_aluna_parte_esos_caracteres_consecutivos(
+            self):
         parametros = {}
         parametros["nombre_curso"] = "-Curso"
         parametros["filtrar_cursos"] = False
 
         client = self.app.test_client()
         response = client.get(BUSCAR_CURSOS_SERVICE, query_string=parametros)
-        assert(response.status_code == SUCCESS_OK)
+        assert (response.status_code == SUCCESS_OK)
 
         cursos = json.loads(response.get_data(as_text=True))["cursos"]
 
-        assert(len(cursos) == 5)
+        assert (len(cursos) == 5)
 
         self.se_encuentra_el_curso(self.CURSO_7540_A_DOS_CARRERAS, cursos)
         self.se_encuentra_el_curso(self.CURSO_7540_B_DOS_CARRERAS, cursos)
@@ -481,23 +463,22 @@ class TestBuscarCursos(TestBase):
         self.se_encuentra_el_curso(self.CURSO_7541_UNA_CARRERA, cursos)
         self.se_encuentra_el_curso(self.CURSO_8787_NO_SE_DICTA_NINGUN_CUATRIMESTRE, cursos)
 
-
-    def test_buscar_curso_por_parte_del_nombre_comienza_con_encuentra_a_todos_los_que_tienen_en_aluna_parte_esos_caracteres_consecutivos(self):
+    def test_buscar_curso_por_parte_del_nombre_comienza_con_encuentra_a_todos_los_que_tienen_en_aluna_parte_esos_caracteres_consecutivos(
+            self):
         parametros = {}
         parametros["nombre_curso"] = "7540-Curso"
 
         client = self.app.test_client()
         response = client.get(BUSCAR_CURSOS_SERVICE, query_string=parametros)
-        assert(response.status_code == SUCCESS_OK)
+        assert (response.status_code == SUCCESS_OK)
 
         cursos = json.loads(response.get_data(as_text=True))["cursos"]
 
-        assert(len(cursos) == 3)
+        assert (len(cursos) == 3)
 
         self.se_encuentra_el_curso(self.CURSO_7540_A_DOS_CARRERAS, cursos)
         self.se_encuentra_el_curso(self.CURSO_7540_B_DOS_CARRERAS, cursos)
         self.se_encuentra_el_curso(self.CURSO_7540_C_UNA_CARRERA, cursos)
-
 
     def test_buscar_por_nombre_invalido_devuelve_error(self):
         parametros = {}
@@ -505,8 +486,7 @@ class TestBuscarCursos(TestBase):
 
         client = self.app.test_client()
         response = client.get(BUSCAR_CURSOS_SERVICE, query_string=parametros)
-        assert(response.status_code == CLIENT_ERROR_BAD_REQUEST)
-
+        assert (response.status_code == CLIENT_ERROR_BAD_REQUEST)
 
     def test_buscar_por_nombre_valido_no_existente_devuelve_lista_vacia(self):
         parametros = {}
@@ -514,12 +494,11 @@ class TestBuscarCursos(TestBase):
 
         client = self.app.test_client()
         response = client.get(BUSCAR_CURSOS_SERVICE, query_string=parametros)
-        assert(response.status_code == SUCCESS_OK)
+        assert (response.status_code == SUCCESS_OK)
 
         cursos = json.loads(response.get_data(as_text=True))["cursos"]
 
-        assert(len(cursos) == 0)
-
+        assert (len(cursos) == 0)
 
     def test_buscar_por_parte_del_codigo_devuelve_todos_los_que_comienzan_con_ese_numero(self):
         parametros = {}
@@ -527,17 +506,16 @@ class TestBuscarCursos(TestBase):
 
         client = self.app.test_client()
         response = client.get(BUSCAR_CURSOS_SERVICE, query_string=parametros)
-        assert(response.status_code == SUCCESS_OK)
+        assert (response.status_code == SUCCESS_OK)
 
         cursos = json.loads(response.get_data(as_text=True))["cursos"]
 
-        assert(len(cursos) == 4)
+        assert (len(cursos) == 4)
 
         self.se_encuentra_el_curso(self.CURSO_7540_A_DOS_CARRERAS, cursos)
         self.se_encuentra_el_curso(self.CURSO_7540_B_DOS_CARRERAS, cursos)
         self.se_encuentra_el_curso(self.CURSO_7540_C_UNA_CARRERA, cursos)
         self.se_encuentra_el_curso(self.CURSO_7541_UNA_CARRERA, cursos)
-
 
     def test_buscar_por_codigo_completo_todos_los_que_tiene_ese_codigo(self):
         parametros = {}
@@ -545,16 +523,15 @@ class TestBuscarCursos(TestBase):
 
         client = self.app.test_client()
         response = client.get(BUSCAR_CURSOS_SERVICE, query_string=parametros)
-        assert(response.status_code == SUCCESS_OK)
+        assert (response.status_code == SUCCESS_OK)
 
         cursos = json.loads(response.get_data(as_text=True))["cursos"]
 
-        assert(len(cursos) == 3)
+        assert (len(cursos) == 3)
 
         self.se_encuentra_el_curso(self.CURSO_7540_A_DOS_CARRERAS, cursos)
         self.se_encuentra_el_curso(self.CURSO_7540_B_DOS_CARRERAS, cursos)
         self.se_encuentra_el_curso(self.CURSO_7540_C_UNA_CARRERA, cursos)
-
 
     def test_buscar_por_codigo_valido_no_existente_devuelve_lista_vacia(self):
         parametros = {}
@@ -562,12 +539,11 @@ class TestBuscarCursos(TestBase):
 
         client = self.app.test_client()
         response = client.get(BUSCAR_CURSOS_SERVICE, query_string=parametros)
-        assert(response.status_code == SUCCESS_OK)
+        assert (response.status_code == SUCCESS_OK)
 
         cursos = json.loads(response.get_data(as_text=True))["cursos"]
 
-        assert(len(cursos) == 0)
-
+        assert (len(cursos) == 0)
 
     def test_buscar_por_codigo_invalido_da_error(self):
         parametros = {}
@@ -575,8 +551,7 @@ class TestBuscarCursos(TestBase):
 
         client = self.app.test_client()
         response = client.get(BUSCAR_CURSOS_SERVICE, query_string=parametros)
-        assert(response.status_code == CLIENT_ERROR_BAD_REQUEST)
-
+        assert (response.status_code == CLIENT_ERROR_BAD_REQUEST)
 
     def test_buscar_por_codigo_completo_y_nombre_todos_los_que_tiene_ese_codigo_y_esa_parte_del_nombre_en_el(self):
         parametros = {}
@@ -585,17 +560,16 @@ class TestBuscarCursos(TestBase):
 
         client = self.app.test_client()
         response = client.get(BUSCAR_CURSOS_SERVICE, query_string=parametros)
-        assert(response.status_code == SUCCESS_OK)
+        assert (response.status_code == SUCCESS_OK)
 
         cursos = json.loads(response.get_data(as_text=True))["cursos"]
 
-        assert(len(cursos) == 4)
+        assert (len(cursos) == 4)
 
         self.se_encuentra_el_curso(self.CURSO_7540_A_DOS_CARRERAS, cursos)
         self.se_encuentra_el_curso(self.CURSO_7540_B_DOS_CARRERAS, cursos)
         self.se_encuentra_el_curso(self.CURSO_7540_C_UNA_CARRERA, cursos)
         self.se_encuentra_el_curso(self.CURSO_7541_UNA_CARRERA, cursos)
-
 
     def test_buscar_todos_los_cursos_cuya_carrera_sea_la_especificada_filtrando_resultados(self):
         parametros = {}
@@ -604,15 +578,14 @@ class TestBuscarCursos(TestBase):
 
         client = self.app.test_client()
         response = client.get(BUSCAR_CURSOS_SERVICE, query_string=parametros)
-        assert(response.status_code == SUCCESS_OK)
+        assert (response.status_code == SUCCESS_OK)
 
         cursos = json.loads(response.get_data(as_text=True))["cursos"]
 
-        assert(len(cursos) == 2)
+        assert (len(cursos) == 2)
 
         self.se_encuentra_el_curso(self.CURSO_7540_A_DOS_CARRERAS, cursos)
         self.se_encuentra_el_curso(self.CURSO_7540_B_DOS_CARRERAS, cursos)
-
 
     def test_buscar_todos_los_cursos_cuya_carrera_sea_la_especificada_sin_filtrar_resultados(self):
         parametros = {}
@@ -621,16 +594,15 @@ class TestBuscarCursos(TestBase):
 
         client = self.app.test_client()
         response = client.get(BUSCAR_CURSOS_SERVICE, query_string=parametros)
-        assert(response.status_code == SUCCESS_OK)
+        assert (response.status_code == SUCCESS_OK)
 
         cursos = json.loads(response.get_data(as_text=True))["cursos"]
 
-        assert(len(cursos) == 3)
+        assert (len(cursos) == 3)
 
         self.se_encuentra_el_curso(self.CURSO_7540_A_DOS_CARRERAS, cursos)
         self.se_encuentra_el_curso(self.CURSO_7540_B_DOS_CARRERAS, cursos)
         self.se_encuentra_el_curso(self.CURSO_8787_NO_SE_DICTA_NINGUN_CUATRIMESTRE, cursos)
-
 
     def test_buscar_todos_los_cursos_cuya_carrera_sea_la_especificada_y_su_codigo_coincida_con_el_buscado(self):
         parametros = {}
@@ -639,17 +611,16 @@ class TestBuscarCursos(TestBase):
 
         client = self.app.test_client()
         response = client.get(BUSCAR_CURSOS_SERVICE, query_string=parametros)
-        assert(response.status_code == SUCCESS_OK)
+        assert (response.status_code == SUCCESS_OK)
 
         cursos = json.loads(response.get_data(as_text=True))["cursos"]
 
-        assert(len(cursos) == 4)
+        assert (len(cursos) == 4)
 
         self.se_encuentra_el_curso(self.CURSO_7540_A_DOS_CARRERAS, cursos)
         self.se_encuentra_el_curso(self.CURSO_7540_B_DOS_CARRERAS, cursos)
         self.se_encuentra_el_curso(self.CURSO_7540_C_UNA_CARRERA, cursos)
         self.se_encuentra_el_curso(self.CURSO_7541_UNA_CARRERA, cursos)
-
 
     def test_buscar_con_carrera_invalida_compuesta_por_carreras_validas(self):
         parametros = {}
@@ -657,8 +628,7 @@ class TestBuscarCursos(TestBase):
 
         client = self.app.test_client()
         response = client.get(BUSCAR_CURSOS_SERVICE, query_string=parametros)
-        assert(response.status_code == CLIENT_ERROR_BAD_REQUEST)
-
+        assert (response.status_code == CLIENT_ERROR_BAD_REQUEST)
 
     def test_buscar_con_carrera_invalida(self):
         parametros = {}
@@ -666,8 +636,7 @@ class TestBuscarCursos(TestBase):
 
         client = self.app.test_client()
         response = client.get(BUSCAR_CURSOS_SERVICE, query_string=parametros)
-        assert(response.status_code == CLIENT_ERROR_BAD_REQUEST)
-
+        assert (response.status_code == CLIENT_ERROR_BAD_REQUEST)
 
     def test_buscar_con_carrera_inexistente(self):
         parametros = {}
@@ -675,9 +644,10 @@ class TestBuscarCursos(TestBase):
 
         client = self.app.test_client()
         response = client.get(BUSCAR_CURSOS_SERVICE, query_string=parametros)
-        assert(response.status_code == CLIENT_ERROR_BAD_REQUEST)
+        assert (response.status_code == CLIENT_ERROR_BAD_REQUEST)
 
 
 if __name__ == '__main__':
     import unittest
+
     unittest.main()
