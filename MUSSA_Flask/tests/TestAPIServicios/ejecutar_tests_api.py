@@ -1,10 +1,11 @@
 import os
 import sys
+
 sys.path.append("../..")
 
 import unittest
 
-#Archivos de test a ejecutar
+# Archivos de test a ejecutar
 
 # - servicios generales -
 from tests.TestAPIServicios.TestBuscarCarreras import TestBuscarCarreras
@@ -18,8 +19,7 @@ from tests.TestAPIServicios.TestBuscarCursos import TestBuscarCursos
 from tests.TestAPIServicios.TestAgregarMateriaAlumno import TestAgregarMateriaAlumno
 
 # - servicios de administradores -
-#from tests.TestAPIServicios.TestModificarCurso import TestModificarCurso
+from tests.TestAPIServicios.TestModificarCurso import TestModificarCurso
 
-
-#Ejecutar todos los tests
+# Ejecutar todos los tests
 unittest.main()
