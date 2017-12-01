@@ -8,6 +8,7 @@ from app.models.carreras_models import Carrera, Materia, TipoMateria
 from app.models.alumno_models import Alumno, EstadoMateria, MateriasAlumno
 from app.DAO.MateriasDAO import *
 from app.API_Rest.services import *
+from app.API_Rest.codes import *
 
 
 class TestAgregarMateriaAlumno(TestBase):
@@ -45,19 +46,47 @@ class TestAgregarMateriaAlumno(TestBase):
         db.session.add(alumno)
         db.session.commit()
 
+        admin_alumno = Alumno(user_id=self.get_administrador().id)
+        db.session.add(admin_alumno)
+        db.session.commit()
+
         estado = EstadoMateria.query.filter_by(estado=ESTADO_MATERIA[PENDIENTE]).first()
 
-        materia_alumno = MateriasAlumno(
+        db.session.add(MateriasAlumno(
             alumno_id=alumno.id,
             materia_id=materia.id,
             carrera_id=carrera.id,
             estado_id=estado.id,
-        )
-        db.session.add(materia_alumno)
+        ))
+
+        db.session.add(MateriasAlumno(
+            alumno_id=admin_alumno.id,
+            materia_id=materia.id,
+            carrera_id=carrera.id,
+            estado_id=estado.id,
+        ))
 
     ##########################################################
     ##                      Tests                           ##
     ##########################################################
+
+    def test_agregar_materia_sin_estar_logueado_da_error(self):
+        client = self.app.test_client()
+        response = client.post(AGREGAR_MATERIA_ALUMNO_SERVICE)
+        assert (response.status_code == REDIRECTION_FOUND)
+
+    def test_agregar_materia_logueado_con_administrador_es_exitosa(self):
+        client = self.loguear_administrador()
+
+        estado = EstadoMateria.query.filter_by(estado=ESTADO_MATERIA[EN_CURSO]).first()
+        parametros = {}
+        parametros["id_carrera"] = Carrera.query.first().id
+        parametros["id_materia"] = Materia.query.first().id
+        parametros["estado"] = estado.estado
+
+        response = client.post(AGREGAR_MATERIA_ALUMNO_SERVICE, data=parametros)
+
+        assert (response.status_code == SUCCESS_OK)
 
     def test_agregar_materia_en_curso_con_parametros_correctos(self):
         client = self.loguear_usuario()
@@ -77,7 +106,7 @@ class TestAgregarMateriaAlumno(TestBase):
 
         response = client.post(AGREGAR_MATERIA_ALUMNO_SERVICE, data=parametros)
 
-        assert (response.status_code == 200)
+        assert (response.status_code == SUCCESS_OK)
 
         materia_alumno = MateriasAlumno.query.first()
 

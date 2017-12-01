@@ -28,7 +28,7 @@ class AgregarMateriaAlumno(Resource):
 
         alumno = Alumno.query.filter_by(user_id=current_user.id).first()
 
-        if (not q_id_carrera or not q_id_materia or not q_estado
+        if (not q_id_carrera or not q_id_materia or not q_estado or not alumno
             or not self.son_ids_validos(q_id_carrera, q_id_materia, q_estado, alumno.id)):
             logging.error('El servicio Agregar Materia Alumno debe recibir el id de carrera, materia y el estado')
             return {'Error': 'No se han enviado uno o más parámetros requeridos o éstos no son válidos (id carrera, id materia, estado)'}, CLIENT_ERROR_BAD_REQUEST
