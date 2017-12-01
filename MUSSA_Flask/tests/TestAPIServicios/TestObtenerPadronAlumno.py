@@ -11,16 +11,16 @@ from app.API_Rest.codes import *
 import json
 
 
-class TestObtenerMateriaAlumno(TestBase):
+class TestObtenerPadronAlumno(TestBase):
     ##########################################################
     ##                   Configuracion                      ##
     ##########################################################
 
     def get_test_name(self):
-        return "test_obtener_materia_alumno"
+        return "test_obtener_padron_alumno"
 
     def crear_datos_bd(self):
-        pass #Los datos extras se crean dependiendo del test
+        pass  # Los datos extras se crean dependiendo del test
 
     ##########################################################
     ##                      Tests                           ##
@@ -74,6 +74,7 @@ class TestObtenerMateriaAlumno(TestBase):
         client = self.loguear_usuario()
         response = client.get(OBTENER_PADRON_ALUMNO_SERVICE, query_string={"parametros": "sdaa"})
         assert (response.status_code == CLIENT_ERROR_BAD_REQUEST)
+
 
 if __name__ == '__main__':
     import unittest

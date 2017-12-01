@@ -7,8 +7,8 @@ from app.models.alumno_models import Alumno
 
 import logging
 
+
 class ObtenerPadronAlumno(Resource):
-    
     @login_required
     def get(self):
         args = request.args
