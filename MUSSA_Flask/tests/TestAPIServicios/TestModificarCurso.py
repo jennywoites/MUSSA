@@ -209,13 +209,11 @@ class TestModificarCurso(TestBase):
         response = client.get(MODIFICAR_CURSO_SERVICE)
         assert (response.status_code == REDIRECTION_FOUND)
 
-
     def test_invocar_al_servicio_logueado_como_usuario(self):
         client = self.loguear_usuario()
         # response = client.post(MODIFICAR_CURSO_SERVICE)
         response = client.get(MODIFICAR_CURSO_SERVICE)
         assert (response.status_code == REDIRECTION_FOUND)
-
 
     def test_modificar_curso_una_carrera_con_todos_parametros_validos_lo_modifica(self):
         parametros = {}

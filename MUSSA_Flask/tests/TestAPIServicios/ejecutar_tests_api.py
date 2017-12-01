@@ -1,9 +1,7 @@
-import os
 import sys
+import unittest
 
 sys.path.append("../..")
-
-import unittest
 
 # Archivos de test a ejecutar
 
@@ -17,6 +15,7 @@ from tests.TestAPIServicios.TestBuscarCursos import TestBuscarCursos
 
 # - servicios de miembros -
 from tests.TestAPIServicios.TestAgregarMateriaAlumno import TestAgregarMateriaAlumno
+from tests.TestAPIServicios.TestObtenerPadronAlumno import TestObtenerPadronAlumno
 
 # - servicios de administradores -
 from tests.TestAPIServicios.TestModificarCurso import TestModificarCurso
