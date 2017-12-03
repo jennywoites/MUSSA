@@ -79,6 +79,11 @@ class AgregarMateriaAlumno(Resource):
         materia.calificacion = int(q_calificacion)
         materia.acta_o_resolucion = q_acta_resolucion
 
+        if (q_estado == ESTADO_MATERIA[DESAPROBADA]):
+            # En caso de que la materia este desaprobada, se puede volver a cursar
+            # por lo que se agrega esta materia como una nueva entrada pendiente
+            self.agregar_materia_pendiente(materia)
+
         return self.guardar_y_devolver_success()
 
 
@@ -147,3 +152,15 @@ class AgregarMateriaAlumno(Resource):
         result = ({'OK': "Se agrego la materia satisfactoriamente"}, SUCCESS_OK)
         logging.info('Agregar Materia Alumno devuelve como resultado: {}'.format(result))
         return result
+
+
+    def agregar_materia_pendiente(self, materia):
+        estado_pendiente = EstadoMateria.query.filter_by(estado=ESTADO_MATERIA[PENDIENTE]).first()
+
+        db.session.add(MateriasAlumno(
+            alumno_id = materia.id_alumno,
+            materia_id = materia.id_materia,
+            estado_id = estado_pendiente.id,
+            carrera_id = materia.id_carrera
+        ))
+        db.session.commit()
