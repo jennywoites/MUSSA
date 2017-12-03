@@ -125,6 +125,71 @@ class TestAgregarMateriaAlumno(TestBase):
         assert (materia_alumno.forma_aprobacion_id is None)
 
 
+    def test_agregar_materia_en_curso_sin_id_de_materia_da_error(self):
+        client = self.loguear_usuario()
+
+        estado = EstadoMateria.query.filter_by(estado=ESTADO_MATERIA[EN_CURSO]).first()
+
+        parametros = {}
+        parametros["id_carrera"] = Carrera.query.first().id
+        parametros["estado"] = estado.estado
+
+        response = client.post(AGREGAR_MATERIA_ALUMNO_SERVICE, data=parametros)
+        assert (response.status_code == CLIENT_ERROR_BAD_REQUEST)
+
+
+    def test_agregar_materia_en_curso_con_id_de_materia_invalido_da_error(self):
+        client = self.loguear_usuario()
+
+        estado = EstadoMateria.query.filter_by(estado=ESTADO_MATERIA[EN_CURSO]).first()
+
+        parametros = {}
+        parametros["id_materia"] = "s56"
+        parametros["id_carrera"] = Carrera.query.first().id
+        parametros["estado"] = estado.estado
+
+        response = client.post(AGREGAR_MATERIA_ALUMNO_SERVICE, data=parametros)
+        assert (response.status_code == CLIENT_ERROR_BAD_REQUEST)
+
+
+    def test_agregar_materia_en_curso_con_id_de_materia_valido_inexistente_da_error(self):
+        client = self.loguear_usuario()
+
+        estado = EstadoMateria.query.filter_by(estado=ESTADO_MATERIA[EN_CURSO]).first()
+
+        parametros = {}
+        parametros["id_materia"] = 56
+        parametros["id_carrera"] = Carrera.query.first().id
+        parametros["estado"] = estado.estado
+
+        response = client.post(AGREGAR_MATERIA_ALUMNO_SERVICE, data=parametros)
+        assert (response.status_code == CLIENT_ERROR_BAD_REQUEST)
+
+
+    def test_agregar_materia_en_curso_sin_id_de_carrera_da_error(self):
+        client = self.loguear_usuario()
+
+        estado = EstadoMateria.query.filter_by(estado=ESTADO_MATERIA[EN_CURSO]).first()
+
+        parametros = {}
+        parametros["id_materia"] = Materia.query.first().id
+        parametros["estado"] = estado.estado
+
+        response = client.post(AGREGAR_MATERIA_ALUMNO_SERVICE, data=parametros)
+        assert (response.status_code == CLIENT_ERROR_BAD_REQUEST)
+
+
+    def test_agregar_materia_sin_estado_da_error(self):
+        client = self.loguear_usuario()
+
+        parametros = {}
+        parametros["id_carrera"] = Carrera.query.first().id
+        parametros["id_materia"] = Materia.query.first().id
+
+        response = client.post(AGREGAR_MATERIA_ALUMNO_SERVICE, data=parametros)
+        assert (response.status_code == CLIENT_ERROR_BAD_REQUEST)
+
+
 if __name__ == '__main__':
     import unittest
 
