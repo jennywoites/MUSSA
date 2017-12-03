@@ -158,9 +158,9 @@ class AgregarMateriaAlumno(Resource):
         estado_pendiente = EstadoMateria.query.filter_by(estado=ESTADO_MATERIA[PENDIENTE]).first()
 
         db.session.add(MateriasAlumno(
-            alumno_id = materia.id_alumno,
-            materia_id = materia.id_materia,
+            alumno_id = materia.alumno_id,
+            materia_id = materia.materia_id,
             estado_id = estado_pendiente.id,
-            carrera_id = materia.id_carrera
+            carrera_id = materia.carrera_id
         ))
         db.session.commit()
