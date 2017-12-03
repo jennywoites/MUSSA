@@ -13,7 +13,7 @@ class ObtenerMateriasCorrelativas(Resource):
 
         q_id = args["id_materia"] if "id_materia" in args else None
 
-        if not q_id or not q_id.isdigit():
+        if not q_id or not self.id_materia_es_valido(q_id):
             logging.error('El servicio Obtener Materias Correlativas recibe el id de la materia')
             return {'Error': 'Este servicio debe recibir el id de la materia'}, CLIENT_ERROR_BAD_REQUEST
 
@@ -35,3 +35,6 @@ class ObtenerMateriasCorrelativas(Resource):
         logging.info('Obtener Materias Correlativas devuelve como resultado: {}'.format(result))
 
         return result
+
+    def id_materia_es_valido(self, q_id):
+        return q_id.isdigit() and len(Materia.query.filter_by(id=q_id).all()) > 0

@@ -84,7 +84,6 @@ def create_app(extra_config_settings={}):
                                register_form=MyRegisterForm,  # using a custom register form with UserProfile fields
                                user_profile_view_function=user_profile_page,
     )
-
     #API REST
     api = Api(app)
     add_resources_api_rest(api)

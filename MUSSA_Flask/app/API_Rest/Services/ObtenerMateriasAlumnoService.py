@@ -12,6 +12,7 @@ from app.DAO.MateriasDAO import *
 
 import logging
 
+import functools
 class ObtenerMateriasAlumno(Resource):
 
     @login_required
@@ -76,6 +77,7 @@ class ObtenerMateriasAlumno(Resource):
                 'forma_aprobacion_materia': forma_aprobacion_materia
             })
 
+        materias_result = sorted(materias_result, key=functools.cmp_to_key(cmp_materias_result))
         result = ({'materias': materias_result}, SUCCESS_OK)
         logging.info('Buscar Materias Alumno devuelve como resultado: {}'.format(result))
 
@@ -91,3 +93,18 @@ class ObtenerMateriasAlumno(Resource):
             ids_estados.append(estado.id)
 
         return ids_estados
+
+def cmp_materias_result(materia1, materia2):
+    codigo1 = convertir_codigo(materia1)
+    codigo2 = convertir_codigo(materia2)
+
+    if codigo1 < codigo2:
+        return -1
+    elif codigo1 > codigo2:
+        return 1
+    return 0
+
+def convertir_codigo(materia):
+    LONGITUD_CODIGO = 4
+    codigo = materia["codigo"]
+    return "0"*(LONGITUD_CODIGO - len(codigo)) + codigo

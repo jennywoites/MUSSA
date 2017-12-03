@@ -1,6 +1,7 @@
 if __name__ == '__main__':
     import os
     import sys
+
     sys.path.append("../..")
 
 from tests.TestAPIServicios.TestBase import TestBase
@@ -13,8 +14,8 @@ import json
 
 from app.API_Rest.services import *
 
-class TestBuscarCarreras(TestBase):
 
+class TestBuscarCarreras(TestBase):
     ##########################################################
     ##                   Configuracion                      ##
     ##########################################################
@@ -22,20 +23,19 @@ class TestBuscarCarreras(TestBase):
     def get_test_name(self):
         return "test_buscar_carreras"
 
-
     def crear_datos_bd(self):
         db.session.add(Carrera(
-            codigo = '9',
-            nombre = 'Licenciatura en Análisis de Sistemas',
-            duracion_estimada_en_cuatrimestres = 9,
-            requiere_prueba_suficiencia_de_idioma = False
+            codigo='9',
+            nombre='Licenciatura en Análisis de Sistemas',
+            duracion_estimada_en_cuatrimestres=9,
+            requiere_prueba_suficiencia_de_idioma=False
         ))
 
         db.session.add(Carrera(
-            codigo = '10',
-            nombre = 'Ingeniería en Informática',
-            duracion_estimada_en_cuatrimestres = 12,
-            requiere_prueba_suficiencia_de_idioma = False
+            codigo='10',
+            nombre='Ingeniería en Informática',
+            duracion_estimada_en_cuatrimestres=12,
+            requiere_prueba_suficiencia_de_idioma=False
         ))
 
     ##########################################################
@@ -45,7 +45,7 @@ class TestBuscarCarreras(TestBase):
     def obtener_carreras(self, carreras):
         licenciatura = None
         ingenieria = None
-        
+
         for carrera in carreras:
             if carrera["codigo"] == '9':
                 licenciatura = carrera
@@ -54,7 +54,6 @@ class TestBuscarCarreras(TestBase):
 
         return ingenieria, licenciatura
 
-
     ##########################################################
     ##                      Tests                           ##
     ##########################################################
@@ -62,29 +61,29 @@ class TestBuscarCarreras(TestBase):
     def test_buscar_carreras_sin_parametros_devuelve_todas_las_carreras(self):
         client = self.app.test_client()
         response = client.get(BUSCAR_CARRERAS_SERVICE)
-        assert(response.status_code==200)
+        assert (response.status_code == 200)
 
         carreras = json.loads(response.get_data(as_text=True))["carreras"]
 
-        assert(len(carreras) == 2)
+        assert (len(carreras) == 2)
 
         ingenieria, licenciatura = self.obtener_carreras(carreras)
 
-        assert(licenciatura is not None)
-        assert(licenciatura["codigo"] == '9')
-        assert(licenciatura["nombre"] == 'Licenciatura en Análisis de Sistemas')
+        assert (licenciatura is not None)
+        assert (licenciatura["codigo"] == '9')
+        assert (licenciatura["nombre"] == 'Licenciatura en Análisis de Sistemas')
 
-        assert(ingenieria is not None)
-        assert(ingenieria["codigo"] == '10')
-        assert(ingenieria["nombre"] == 'Ingeniería en Informática')
-
+        assert (ingenieria is not None)
+        assert (ingenieria["codigo"] == '10')
+        assert (ingenieria["nombre"] == 'Ingeniería en Informática')
 
     def test_buscar_carreras_con_parametros_devuelve_bad_request(self):
         client = self.app.test_client()
         response = client.get(BUSCAR_CARRERAS_SERVICE, query_string={"parametro": "dato"})
-        assert(response.status_code==400)
+        assert (response.status_code == 400)
 
 
 if __name__ == '__main__':
     import unittest
+
     unittest.main()

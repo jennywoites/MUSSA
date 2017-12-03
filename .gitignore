@@ -108,4 +108,7 @@ propuesta.toc
 propuesta.synctex.gz
 
 #Resultados de tests
-tests/TestResolucionPlanDeEstudios/resultados_tests/*
+tests/TestResolucionPlanDeEstudios/resultados_tests
+
+#Archivos temporales
+MUSSA_Flask/app/tmp/

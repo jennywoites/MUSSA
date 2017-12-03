@@ -61,6 +61,8 @@ class ModificarCurso(Resource):
 
 
     def convertir_booleano(self, valor):
+        valor = valor.lower()
+
         if valor == 'true':
             return True
 
@@ -112,7 +114,7 @@ class ModificarCurso(Resource):
         horario_a_agregar = horario_a_agregar[1:-1]
 
         dia, hora_desde, hora_hasta = horario_a_agregar.split(",")
-        dia = dia.split(":")[-1]
+        dia = dia.split(":")[-1].upper()
 
         if not dia in DIAS:
             raise Exception("El nombre del dia no es válido")
@@ -125,7 +127,6 @@ class ModificarCurso(Resource):
 
     def convertir_hora(self, hora):
         label, horas, minutos = hora.split(":")
-        datos = hora.split(":")
         c_hora = int(horas)
         c_hora += 0.5 if int(minutos) == 30 else 0
         return c_hora
@@ -163,7 +164,8 @@ class ModificarCurso(Resource):
     def carreras_son_validas(self, carreras):
         carreras = carreras.split(";")
         for carrera in carreras:
-            if not self.esta_formado_solo_por_numeros(carrera):
+            if (not self.esta_formado_solo_por_numeros(carrera) or
+                    not len((Carrera.query.filter_by(id=carrera).all())) > 0):
                 return False
         return True
 

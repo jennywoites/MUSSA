@@ -16,9 +16,9 @@ class BuscarCursos(Resource):
         q_nombre_curso = args["nombre_curso"] if "nombre_curso" in args else None
         q_codigo_materia = args["codigo_materia"] if "codigo_materia" in args else None
         q_carrera = args["id_carrera"] if "id_carrera" in args else None
-        filtrar_cursos = args["filtrar_cursos"] if "filtrar_cursos" in args else True
+        filtrar_cursos = self.obtener_valor_filtrar_cursos(args)
 
-        if not self.parametros_son_validos(q_id_curso, q_nombre_curso, q_codigo_materia, q_carrera):
+        if not self.parametros_son_validos(q_id_curso, q_nombre_curso, q_codigo_materia, q_carrera, filtrar_cursos):
             logging.error('El servicio Buscar Cursos recibió parámetros inválidos')
             return {'Error': 'Este servicio recibió parámetros inválidos'}, CLIENT_ERROR_BAD_REQUEST
 
@@ -84,6 +84,14 @@ class BuscarCursos(Resource):
         return result
 
 
+    def obtener_valor_filtrar_cursos(self, args):
+        if not "filtrar_cursos" in args:
+            return True
+
+        filtrar = args["filtrar_cursos"].lower()
+        return (filtrar != "false")
+
+
     def calcular_puntaje(self, curso):
         if curso.cantidad_encuestas_completas == 0:
             return 0
@@ -92,9 +100,14 @@ class BuscarCursos(Resource):
 
     def convertir_hora(self, horario):
         l_horario = str(horario).split(".")
+        hora = l_horario[0]
+
+        if (0 <= int(hora) < 10):
+            hora = "0" + hora
+
         if len(l_horario) == 1:
-            return l_horario[0] + ":00"
-        return l_horario[0] + ":30"
+            return hora + ":00"
+        return hora + ":30"
 
 
     def mensaje_cuatrimestre(slef, curso):
@@ -107,19 +120,25 @@ class BuscarCursos(Resource):
         return "Solo el 2º cuatrimestre"
 
 
-    def parametros_son_validos(self, q_id_curso, q_nombre_curso, q_codigo_materia, q_carrera):
-        return (self.id_curso_es_valido(q_id_curso)
+    def parametros_son_validos(self, q_id_curso, q_nombre_curso, q_codigo_materia,
+                                q_carrera, filtrar_cursos):
+        return (self.id_curso_es_valido(q_id_curso, filtrar_cursos)
                 and self.nombre_curso_es_valido(q_nombre_curso)
                 and self.codigo_materia_es_valido(q_codigo_materia)
                 and self.carrera_es_valida(q_carrera))
 
 
-    def id_curso_es_valido(self, id_curso):
+    def id_curso_es_valido(self, id_curso, filtrar_cursos):
         if not id_curso:
             return True
 
         id_curso = str(id_curso)
-        return self.esta_formado_solo_por_numeros(id_curso)
+
+        query = Curso.query.filter_by(id=id_curso)
+        if filtrar_cursos:
+            query = query.filter((Curso.se_dicta_primer_cuatrimestre == True) | (Curso.se_dicta_segundo_cuatrimestre == True))
+
+        return (self.esta_formado_solo_por_numeros(id_curso) and len(query.all()) > 0)
 
 
     def nombre_curso_es_valido(self, nombre):
@@ -127,7 +146,7 @@ class BuscarCursos(Resource):
             return True
 
         for letra in nombre:
-            if not letra.isdigit() and not letra.isalpha():
+            if not letra.isdigit() and not letra.isalpha() and not letra in ["-", "_", ":", "'"]:
                 return False
         return True
 
@@ -148,7 +167,8 @@ class BuscarCursos(Resource):
             return True
 
         carrera = str(carrera)
-        return self.esta_formado_solo_por_numeros(carrera)
+        return (self.esta_formado_solo_por_numeros(carrera) and
+                len(Carrera.query.filter_by(id=carrera).all()) > 0)
 
 
     def esta_formado_solo_por_numeros(self, cadena):
@@ -156,6 +176,3 @@ class BuscarCursos(Resource):
             if not letra.isdigit():
                 return False
         return True
-
-
-

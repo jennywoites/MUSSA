@@ -14,8 +14,8 @@ from datetime import datetime
 
 import logging
 
-class AgregarMateriaAlumno(Resource):
 
+class AgregarMateriaAlumno(Resource):
     @login_required
     def post(self):
         args = request.form
@@ -28,26 +28,30 @@ class AgregarMateriaAlumno(Resource):
 
         alumno = Alumno.query.filter_by(user_id=current_user.id).first()
 
-        if (not q_id_carrera or not q_id_materia or not q_estado
+        if (not q_id_carrera or not q_id_materia or not q_estado or not alumno
             or not self.son_ids_validos(q_id_carrera, q_id_materia, q_estado, alumno.id)):
             logging.error('El servicio Agregar Materia Alumno debe recibir el id de carrera, materia y el estado')
             return {'Error': 'No se han enviado uno o más parámetros requeridos o éstos no son válidos (id carrera, id materia, estado)'}, CLIENT_ERROR_BAD_REQUEST
 
         query_materia = MateriasAlumno.query.filter_by(alumno_id=alumno.id)
         query_materia = query_materia.filter_by(materia_id=q_id_materia)
+
+        # No modificar materias en estado final (aprobada o desaprobada)
+        estado_aprobado = EstadoMateria.query.filter_by(estado=ESTADO_MATERIA[APROBADA]).first()
+        estado_desaprobado = EstadoMateria.query.filter_by(estado=ESTADO_MATERIA[DESAPROBADA]).first()
+        estados_finalizados = [estado_aprobado.id, estado_desaprobado.id]
+        query_materia = query_materia.filter(~MateriasAlumno.estado_id.in_(estados_finalizados))
+
         materia = query_materia.filter_by(carrera_id=q_id_carrera).first()
 
         estado = EstadoMateria.query.filter_by(estado=q_estado).first()
 
         materia.estado_id = estado.id
-                
+
         self.anular_datos_materia(materia)
-        
-        result = ({'OK': "Se agrego la materia satisfactoriamente"}, SUCCESS_OK)
+
         if (q_estado == ESTADO_MATERIA[EN_CURSO]):
-            db.session.commit()
-            logging.info('Agregar Materia Alumno devuelve como resultado: {}'.format(result))
-            return result
+            return self.guardar_y_devolver_success()
 
         q_cuatrimestre_aprobacion = args["cuatrimestre_aprobacion"] if "cuatrimestre_aprobacion" in args else None
         q_anio_aprobacion = args["anio_aprobacion"] if "anio_aprobacion" in args else None
@@ -61,9 +65,7 @@ class AgregarMateriaAlumno(Resource):
         materia.anio_aprobacion_cursada = q_anio_aprobacion
 
         if (q_estado == ESTADO_MATERIA[FINAL_PENDIENTE]):
-            db.session.commit()
-            logging.info('Agregar Materia Alumno devuelve como resultado: {}'.format(result))
-            return result
+            return self.guardar_y_devolver_success()
 
         q_fecha_aprobacion = args["fecha_aprobacion"] if "fecha_aprobacion" in args else None
         q_forma_aprobacion = args["forma_aprobacion"] if "forma_aprobacion" in args else None
@@ -71,7 +73,7 @@ class AgregarMateriaAlumno(Resource):
         q_acta_resolucion = args["acta_resolucion"] if "acta_resolucion" in args else None
 
         if not self.datos_aprobacion_son_validos(q_fecha_aprobacion, q_forma_aprobacion,
-            q_calificacion, q_acta_resolucion, estado.estado):
+                                                 q_calificacion, q_acta_resolucion, estado.estado):
             msj = 'Requiere la fecha y forma de aprobación, la calificación y el acta o resolución'
             logging.error(msj)
             return {'Error': msj}, CLIENT_ERROR_BAD_REQUEST
@@ -84,19 +86,18 @@ class AgregarMateriaAlumno(Resource):
         materia.calificacion = int(q_calificacion)
         materia.acta_o_resolucion = q_acta_resolucion
 
-        db.session.commit()
+        if (q_estado == ESTADO_MATERIA[DESAPROBADA]):
+            # En caso de que la materia este desaprobada, se puede volver a cursar
+            # por lo que se agrega esta materia como una nueva entrada pendiente
+            self.agregar_materia_pendiente(materia)
 
-        result = ({'OK': "Se agrego la materia satisfactoriamente"}, SUCCESS_OK)
-        logging.info('Agregar Materia Alumno devuelve como resultado: {}'.format(result))
-
-        return result
-
+        return self.guardar_y_devolver_success()
 
     def son_ids_validos(self, id_carrera, id_materia, estado, alumno_id):
         if not Carrera.query.filter_by(id=id_carrera).first():
             return False
 
-        if not MateriasAlumno.query.filter_by(id=id_materia).first():
+        if not MateriasAlumno.query.filter_by(materia_id=id_materia).first():
             return False
 
         if not EstadoMateria.query.filter_by(estado=estado).first():
@@ -107,7 +108,6 @@ class AgregarMateriaAlumno(Resource):
         materia = query_materia.filter_by(carrera_id=id_carrera).first()
         return (materia is not None)
 
-
     def anular_datos_materia(self, materia):
         materia.calificacion = None
         materia.fecha_aprobacion = None
@@ -115,7 +115,6 @@ class AgregarMateriaAlumno(Resource):
         materia.anio_aprobacion_cursada = None
         materia.acta_o_resolucion = ''
         materia.forma_aprobacion_id = None
-
 
     def fecha_aprobacion_cursada_es_valida(self, cuatrimestre, anio):
         if (cuatrimestre != '1' and cuatrimestre != '2'):
@@ -126,9 +125,8 @@ class AgregarMateriaAlumno(Resource):
         anios = [str(x) for x in range(hoy, hoy - MAX_TIEMPO, -1)]
         return (anio in anios)
 
-
     def datos_aprobacion_son_validos(self, fecha_aprobacion, forma_aprobacion,
-            calificacion, acta_resolucion, estado):
+                                     calificacion, acta_resolucion, estado):
         try:
             anio, mes, dia = fecha_aprobacion.split("-")
             date(int(anio), int(mes), int(dia))
@@ -149,3 +147,21 @@ class AgregarMateriaAlumno(Resource):
             return False
 
         return (acta_resolucion != "")
+
+    def guardar_y_devolver_success(self):
+        db.session.commit()
+
+        result = ({'OK': "Se agrego la materia satisfactoriamente"}, SUCCESS_OK)
+        logging.info('Agregar Materia Alumno devuelve como resultado: {}'.format(result))
+        return result
+
+    def agregar_materia_pendiente(self, materia):
+        estado_pendiente = EstadoMateria.query.filter_by(estado=ESTADO_MATERIA[PENDIENTE]).first()
+
+        db.session.add(MateriasAlumno(
+            alumno_id=materia.alumno_id,
+            materia_id=materia.materia_id,
+            estado_id=estado_pendiente.id,
+            carrera_id=materia.carrera_id
+        ))
+        db.session.commit()
