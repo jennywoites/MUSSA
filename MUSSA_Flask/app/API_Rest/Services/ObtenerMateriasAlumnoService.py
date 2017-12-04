@@ -20,11 +20,16 @@ class ObtenerMateriasAlumno(Resource):
         args = request.args
         logging.info('Se invoco al servicio Obtener Materias Alumno con los siguientes parametros: {}'.format(args))
 
+        alumno = Alumno.query.filter_by(user_id=current_user.id).first()
+
+        if not self.argumentos_son_validos(args, alumno):
+            result = ({'ERROR': 'Uno o más parámetros son inválidos'}, CLIENT_ERROR_BAD_REQUEST)
+            logging.info('Obtener Materias Alumno devuelve como resultado: {}'.format(result))
+            return result
+
         estados = self.obtener_ids_estados(args)
 
         id_materia_alumno = args["id_materia_alumno"] if "id_materia_alumno" in args else None
-
-        alumno = Alumno.query.filter_by(user_id=current_user.id).first()
 
         query = MateriasAlumno.query.filter_by(alumno_id=alumno.id)
 
@@ -79,9 +84,34 @@ class ObtenerMateriasAlumno(Resource):
 
         materias_result = sorted(materias_result, key=functools.cmp_to_key(cmp_materias_result))
         result = ({'materias': materias_result}, SUCCESS_OK)
-        logging.info('Buscar Materias Alumno devuelve como resultado: {}'.format(result))
+        logging.info('Obtener Materias Alumno devuelve como resultado: {}'.format(result))
 
         return result
+
+    def argumentos_son_validos(self, args, alumno):
+        return self.id_es_valido(args, alumno) and self.estados_son_validos(args)
+
+    def id_es_valido(self, args, alumno):
+        id_materia_alumno = args["id_materia_alumno"] if "id_materia_alumno" in args else None
+        if not id_materia_alumno:
+            return True
+
+        return (id_materia_alumno.isdigit() and
+            len(MateriasAlumno.query.filter_by(alumno_id=alumno.id).filter_by(id=id_materia_alumno).all()) > 0)
+
+
+    def estados_son_validos(self, args):
+        try:
+            estados = args["estados"].split(";") if "estados" in args else []
+            for cod_estado in estados:
+                texto = ESTADO_MATERIA[int(cod_estado)]
+                estado = EstadoMateria.query.filter_by(estado=texto).first()
+                assert(estado is not None)
+        except:
+            return False
+
+        return True
+
 
     def obtener_ids_estados(self, args):
         ids_estados = []
