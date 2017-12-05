@@ -137,6 +137,7 @@ def add_resources_api_rest(api):
     api.add_resource(ObtenerMateriasCorrelativas, '/api/ObtenerMateriasCorrelativas')
     api.add_resource(ObtenerCarrerasDondeSeDictaLaMateria, '/api/ObtenerCarrerasDondeSeDictaLaMateria')
     api.add_resource(BuscarCursos, '/api/BuscarCursos')
+    api.add_resource(ObtenerPreguntasEncuesta, '/api/ObtenerPreguntasEncuesta')
 
     api.add_resource(ObtenerPadronAlumno, '/api/ObtenerPadronAlumno')
     api.add_resource(ModificarPadronAlumno, '/api/ModificarPadronAlumno')

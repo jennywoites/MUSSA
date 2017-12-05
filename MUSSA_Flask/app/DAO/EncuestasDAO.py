@@ -1,4 +1,5 @@
 from app.models.encuestas_models import *
+from app import db
 
 PUNTAJE_1_A_5 = 0
 TEXTO_LIBRE = 1
@@ -16,12 +17,12 @@ TIPOS_ENCUESTAS = {
     CORRELATIVA: "Correlativa"
 }
 
-GRUPO_ENCUESTA_GENERAL = 0,
-GRUPO_ENCUESTA_CONTENIDO = 1,
-GRUPO_ENCUESTA_CLASES = 2,
-GRUPO_ENCUESTA_EXAMENES = 3,
-GRUPO_ENCUESTA_DOCENTES = 4,
-GRUPO_ENCUESTA_CRITICA_CONSTRUCTIVA = 5,
+GRUPO_ENCUESTA_GENERAL = 0
+GRUPO_ENCUESTA_CONTENIDO = 1
+GRUPO_ENCUESTA_CLASES = 2
+GRUPO_ENCUESTA_EXAMENES = 3
+GRUPO_ENCUESTA_DOCENTES = 4
+GRUPO_ENCUESTA_CRITICA_CONSTRUCTIVA = 5
 
 GRUPO_ENCUESTA = {
     GRUPO_ENCUESTA_GENERAL: "Aspectos Generales",
@@ -54,7 +55,7 @@ def create_encuestas():
         find_o_create_tipo_encuesta(cod, TIPOS_ENCUESTAS[cod])
 
     for cod in GRUPO_ENCUESTA:
-        find_o_create_grupo_encuesta(GRUPO_ENCUESTA[cod])
+        find_o_create_grupo_encuesta(cod, GRUPO_ENCUESTA[cod])
 
     for cod in EXCLUIR_CUANDO:
         find_o_categoria_excluir_cuando(EXCLUIR_CUANDO[cod])
@@ -77,11 +78,11 @@ def find_o_create_tipo_encuesta(codigo, descripcion):
     return tipo
 
 
-def find_o_create_grupo_encuesta(grupo):
-    grupo_encuesta = GrupoEncuesta.query.filter_by(grupo=grupo).first()
+def find_o_create_grupo_encuesta(cod, grupo):
+    grupo_encuesta = GrupoEncuesta.query.filter_by(numero_grupo=cod).first()
 
     if not grupo_encuesta:
-        grupo_encuesta = GrupoEncuesta(grupo=grupo)
+        grupo_encuesta = GrupoEncuesta(grupo=grupo, numero_grupo=cod)
         db.session.add(grupo_encuesta)
         db.session.commit()
 
@@ -125,8 +126,8 @@ def crear_preguntas_categoria_general(orden):
     ##########################################################################################
 
     ##########################################################################################
-    pregunta = """¿Se superponen los temas con los de otras materias?
-                Si es así, indicar qué temas y con cuáles asignaturas."""
+    pregunta = "¿Se superponen los temas con los de otras materias?" \
+               "Si es así, indicar qué temas y con cuáles asignaturas."
     encuesta = crear_pregunta_encuesta(pregunta, TEXTO_LIBRE)
     orden = crear_entrada_encuesta_generada(encuesta, grupo, EXCLUIR_NUNCA, orden)
     ##########################################################################################
@@ -136,8 +137,8 @@ def crear_preguntas_categoria_general(orden):
     encuesta = crear_pregunta_encuesta(pregunta, SI_NO)
     orden = crear_entrada_encuesta_generada(encuesta, grupo, EXCLUIR_NUNCA, orden)
 
-    pregunta_rta_no = """¿Qué conocimientos crees que hubiese sido bueno tener antes de
-                        comenzar a cursar la materia?"""
+    pregunta_rta_no = "¿Qué conocimientos crees que hubiese sido bueno tener antes de comenzar" \
+                      " a cursar la materia?"
     encuestas_no = [crear_pregunta_encuesta(pregunta_rta_no, TEXTO_LIBRE)]
     crear_pregunta_encuesta_si_no(encuesta, [], encuestas_no)
     ##########################################################################################
@@ -155,8 +156,9 @@ def crear_preguntas_categoria_general(orden):
     ##########################################################################################
 
     ##########################################################################################
-    pregunta = """¿Cuántas horas dedicabas a estudiar la materia fuera de las horas de clases semanalmente?
-                Incluye horas para realizar trabajos prácticos, guías, estudiar para exámenes."""
+    pregunta = "¿Cuántas horas dedicabas a estudiar la materia fuera de las horas de clases " \
+               "semanalmente? Incluye horas para realizar trabajos prácticos, guías, estudiar " \
+               "para exámenes."
     encuesta = crear_pregunta_encuesta(pregunta, TEXTO_LIBRE)
     orden = crear_entrada_encuesta_generada(encuesta, grupo, EXCLUIR_NUNCA, orden)
     ##########################################################################################
@@ -266,17 +268,17 @@ def crear_preguntas_categoria_clases(orden):
     ##########################################################################################
 
     ##########################################################################################
-    pregunta = """¿Cómo fue la comunicación y coordinación entre los docentes de las clases
-                teóricas y prácticas?"""
+    pregunta = "¿Cómo fue la comunicación y coordinación entre los docentes de las clases " \
+               "teóricas y prácticas?"
     encuesta = crear_pregunta_encuesta(pregunta, PUNTAJE_1_A_5)
     crear_pregunta_encuesta_puntaje(encuesta, "Muy mala", "Excelente")
     orden = crear_entrada_encuesta_generada(encuesta, grupo, EXCLUIR_NUNCA, orden)
     ##########################################################################################
 
     ##########################################################################################
-    pregunta = """¿Qué opinas sobre el material provisto por el curso? ¿Era de fácil acceso?
-                Incluye material entregado en clases, diapositivas, lecturas adicionales,
-                lecturas recomendadas, etc."""
+    pregunta = "¿Qué opinas sobre el material provisto por el curso? ¿Era de fácil acceso? " \
+               "Incluye material entregado en clases, diapositivas, lecturas adicionales, " \
+               "lecturas recomendadas, etc."
     encuesta = crear_pregunta_encuesta(pregunta, TEXTO_LIBRE)
     orden = crear_entrada_encuesta_generada(encuesta, grupo, EXCLUIR_NUNCA, orden)
     ##########################################################################################
@@ -306,7 +308,8 @@ def crear_preguntas_categoria_examenes(orden):
     ##########################################################################################
 
     ##########################################################################################
-    pregunta = """¿Crees que las calificaciones de los exámenes y trabajos prácticos fueron justas?"""
+    pregunta = "¿Crees que las calificaciones de los exámenes y trabajos prácticos fueron " \
+               "justas?"
     encuesta = crear_pregunta_encuesta(pregunta, SI_NO)
     orden = crear_entrada_encuesta_generada(encuesta, grupo, EXCLUIR_NUNCA, orden)
 
@@ -322,7 +325,7 @@ def crear_preguntas_categoria_docentes(orden):
     grupo = GrupoEncuesta.query.filter_by(grupo=GRUPO_ENCUESTA[GRUPO_ENCUESTA_DOCENTES]).first()
 
     ##########################################################################################
-    pregunta = """Si así lo deseas, puedes dejar un comentario sobre los docentes de la materia."""
+    pregunta = "Si así lo deseas, puedes dejar un comentario sobre los docentes de la materia."
     encuesta = crear_pregunta_encuesta(pregunta, DOCENTE)
     orden = crear_entrada_encuesta_generada(encuesta, grupo, EXCLUIR_NUNCA, orden)
     ##########################################################################################
@@ -334,15 +337,15 @@ def crear_preguntas_categoria_critica_constructiva(orden):
     grupo = GrupoEncuesta.query.filter_by(grupo=GRUPO_ENCUESTA[GRUPO_ENCUESTA_CRITICA_CONSTRUCTIVA]).first()
 
     ##########################################################################################
-    pregunta = """Por favor, indicá todas las cosas buenas o positivas que se deberían seguir haciendo
-                en el curso y/o que se están haciendo poco y se deberían hacer más."""
+    pregunta = "Por favor, indicá todas las cosas buenas o positivas que se deberían seguir " \
+               "haciendo en el curso y/o que se están haciendo poco y se deberían hacer más."
     encuesta = crear_pregunta_encuesta(pregunta, TEXTO_LIBRE)
     orden = crear_entrada_encuesta_generada(encuesta, grupo, EXCLUIR_NUNCA, orden)
     ##########################################################################################
 
     ##########################################################################################
-    pregunta = """Por favor, indicá todas las cosas malas o negativas que se deberían cambiar
-                o mejorar."""
+    pregunta = "Por favor, indicá todas las cosas malas o negativas que se deberían cambiar " \
+               "o mejorar."
     encuesta = crear_pregunta_encuesta(pregunta, TEXTO_LIBRE)
     orden = crear_entrada_encuesta_generada(encuesta, grupo, EXCLUIR_NUNCA, orden)
     ##########################################################################################

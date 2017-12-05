@@ -56,6 +56,7 @@ class GrupoEncuesta(db.Model):
     __tablename__ = 'grupo_encuesta'
 
     id = db.Column(db.Integer, primary_key=True)
+    numero_grupo = db.Column(db.Integer(), nullable=False, server_default='')
     grupo = db.Column(db.String(35), nullable=False, server_default='')
 
     def __str__(self):
