@@ -23,7 +23,7 @@ class ObtenerPreguntasEncuesta(Resource):
         if categorias:
             query = query.filter(EncuestaGenerada.grupo_id.in_(categorias))
 
-        encuestas = query.order_by(EncuestaGenerada.orden.desc()).all()
+        encuestas = query.order_by(EncuestaGenerada.orden.asc()).all()
 
         preguntas_result = []
         for encuesta in encuestas:

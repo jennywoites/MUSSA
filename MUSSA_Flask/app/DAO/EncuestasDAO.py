@@ -22,15 +22,13 @@ GRUPO_ENCUESTA_CONTENIDO = 1
 GRUPO_ENCUESTA_CLASES = 2
 GRUPO_ENCUESTA_EXAMENES = 3
 GRUPO_ENCUESTA_DOCENTES = 4
-GRUPO_ENCUESTA_CRITICA_CONSTRUCTIVA = 5
 
 GRUPO_ENCUESTA = {
     GRUPO_ENCUESTA_GENERAL: "Aspectos Generales",
     GRUPO_ENCUESTA_CONTENIDO: "Contenido de la Materia",
     GRUPO_ENCUESTA_CLASES: "Clases",
     GRUPO_ENCUESTA_EXAMENES: "Exámenes",
-    GRUPO_ENCUESTA_DOCENTES: "Docentes",
-    GRUPO_ENCUESTA_CRITICA_CONSTRUCTIVA: "Crítica Constructiva"
+    GRUPO_ENCUESTA_DOCENTES: "Docentes"
 }
 
 EXCLUIR_OBLIGATORIA = 0
@@ -105,8 +103,8 @@ def crear_preguntas_encuesta():
     orden = crear_preguntas_categoria_contenido_de_la_materia(orden)
     orden = crear_preguntas_categoria_clases(orden)
     orden = crear_preguntas_categoria_examenes(orden)
-    orden = crear_preguntas_categoria_docentes(orden)
-    crear_preguntas_categoria_critica_constructiva(orden)
+    crear_preguntas_categoria_docentes(orden)
+
 
 def crear_preguntas_categoria_general(orden):
     grupo = GrupoEncuesta.query.filter_by(grupo=GRUPO_ENCUESTA[GRUPO_ENCUESTA_GENERAL]).first()
@@ -191,6 +189,20 @@ def crear_preguntas_categoria_general(orden):
     pregunta_rta_si = """¿Cuál es el régimen de promoción?"""
     encuestas_si = [crear_pregunta_encuesta(pregunta_rta_si, TEXTO_LIBRE)]
     crear_pregunta_encuesta_si_no(encuesta, encuestas_si, [])
+    ##########################################################################################
+
+    ##########################################################################################
+    pregunta = "Por favor, indicá todas las cosas buenas o positivas que se deberían seguir " \
+               "haciendo en el curso y/o que se están haciendo poco y se deberían hacer más."
+    encuesta = crear_pregunta_encuesta(pregunta, TEXTO_LIBRE)
+    orden = crear_entrada_encuesta_generada(encuesta, grupo, EXCLUIR_NUNCA, orden)
+    ##########################################################################################
+
+    ##########################################################################################
+    pregunta = "Por favor, indicá todas las cosas malas o negativas que se deberían cambiar " \
+               "o mejorar."
+    encuesta = crear_pregunta_encuesta(pregunta, TEXTO_LIBRE)
+    orden = crear_entrada_encuesta_generada(encuesta, grupo, EXCLUIR_NUNCA, orden)
     ##########################################################################################
 
     return orden
@@ -327,26 +339,6 @@ def crear_preguntas_categoria_docentes(orden):
     ##########################################################################################
     pregunta = "Si así lo deseas, puedes dejar un comentario sobre los docentes de la materia."
     encuesta = crear_pregunta_encuesta(pregunta, DOCENTE)
-    orden = crear_entrada_encuesta_generada(encuesta, grupo, EXCLUIR_NUNCA, orden)
-    ##########################################################################################
-
-    return orden
-
-
-def crear_preguntas_categoria_critica_constructiva(orden):
-    grupo = GrupoEncuesta.query.filter_by(grupo=GRUPO_ENCUESTA[GRUPO_ENCUESTA_CRITICA_CONSTRUCTIVA]).first()
-
-    ##########################################################################################
-    pregunta = "Por favor, indicá todas las cosas buenas o positivas que se deberían seguir " \
-               "haciendo en el curso y/o que se están haciendo poco y se deberían hacer más."
-    encuesta = crear_pregunta_encuesta(pregunta, TEXTO_LIBRE)
-    orden = crear_entrada_encuesta_generada(encuesta, grupo, EXCLUIR_NUNCA, orden)
-    ##########################################################################################
-
-    ##########################################################################################
-    pregunta = "Por favor, indicá todas las cosas malas o negativas que se deberían cambiar " \
-               "o mejorar."
-    encuesta = crear_pregunta_encuesta(pregunta, TEXTO_LIBRE)
     orden = crear_entrada_encuesta_generada(encuesta, grupo, EXCLUIR_NUNCA, orden)
     ##########################################################################################
 

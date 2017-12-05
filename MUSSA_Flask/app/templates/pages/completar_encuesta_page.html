@@ -1,0 +1,92 @@
+{% extends "common/page_base.html" %}
+
+{% block content %}
+    <!-- Begin botonera -->
+    <section  class="section botonera" id="botonera">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12 board">
+                <div class="board-inner">
+                    <ul class="nav nav-tabs" id="myTab">
+                        <li class="active">
+                            <a href="#home" aria-controls="home" role="tab" data-toggle="tab" title="General">
+                                <span class="round-tabs one">
+                                    <i class="icon icon-profile-male">1</i>
+                                </span>
+                            </a>
+                        </li>
+
+                        <li>
+                            <a href="#profile" aria-controls="profile" role="tab" data-toggle="tab" title="Sketch">
+                                <span class="round-tabs two">
+                                    <i class="icon icon-pencil">2</i>
+                                </span>
+                            </a>
+                        </li>
+
+                        <li>
+                            <a href="#profile" aria-controls="profile" role="tab" data-toggle="tab" title="Sketch">
+                                <span class="round-tabs two">
+                                    <i class="icon icon-pencil">3</i>
+                                </span>
+                            </a>
+                        </li>
+
+                        <li>
+                            <a href="#profile" aria-controls="profile" role="tab" data-toggle="tab" title="Sketch">
+                                <span class="round-tabs two">
+                                    <i class="icon icon-pencil">4</i>
+                                </span>
+                            </a>
+                        </li>
+
+                        <li>
+                            <a href="#profile" aria-controls="profile" role="tab" data-toggle="tab" title="Sketch">
+                                <span class="round-tabs two">
+                                    <i class="icon icon-pencil">5</i>
+                                </span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    </section>
+    <!-- End botonera -->
+
+<br>
+
+<div class="container">
+
+    {% for pregunta in preguntas %}
+
+        <br>
+
+        <label>{{pregunta["pregunta"]}}</label>
+
+        {% if pregunta["tipo"] == "Puntaje de 1 a 5" %}
+            <p>No implementada</p>
+
+        {% elif pregunta["tipo"] == "Texto Libre" %}
+            <textarea class="form-control" rows="5" id="comment"></textarea>
+
+        {% elif pregunta["tipo"] == "Si o No" %}
+            <p>No implementada</p>
+
+        {% elif pregunta["tipo"] == "Horario" %}
+            <p>No implementada</p>
+
+        {% elif pregunta["tipo"] == "Docente" %}
+            <p>No implementada</p>
+
+        {% elif pregunta["tipo"] == "Correlativa" %}
+            <p>No implementada</p>
+
+        {% endif %}
+
+    {% endfor %}
+
+</div>
+
+{% endblock %}
