@@ -7,6 +7,7 @@ SI_NO = 2
 HORARIO = 3
 DOCENTE = 4
 CORRELATIVA = 5
+ESTRELLAS = 6
 
 TIPOS_ENCUESTAS = {
     PUNTAJE_1_A_5: "Puntaje de 1 a 5",
@@ -14,7 +15,8 @@ TIPOS_ENCUESTAS = {
     SI_NO: "Si o No",
     HORARIO: "Horario",
     DOCENTE: "Docente",
-    CORRELATIVA: "Correlativa"
+    CORRELATIVA: "Correlativa",
+    ESTRELLAS: "Estrellas"
 }
 
 GRUPO_ENCUESTA_GENERAL = 0
@@ -111,8 +113,7 @@ def crear_preguntas_categoria_general(orden):
 
     ##########################################################################################
     pregunta = "¿Qué te pareció el curso en general?"
-    encuesta = crear_pregunta_encuesta(pregunta, PUNTAJE_1_A_5)
-    crear_pregunta_encuesta_puntaje(encuesta, "Muy malo", "Excelente")
+    encuesta = crear_pregunta_encuesta(pregunta, ESTRELLAS)
     orden = crear_entrada_encuesta_generada(encuesta, grupo, EXCLUIR_NUNCA, orden)
     ##########################################################################################
 

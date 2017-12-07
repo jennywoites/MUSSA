@@ -1,59 +1,59 @@
 {% extends "common/page_base.html" %}
 
 {% block content %}
-    <!-- Begin botonera -->
-    <section  class="section botonera" id="botonera">
-    <div class="container">
-        <div class="row">
-            <div class="col-md-12 board">
-                <div class="board-inner">
-                    <ul class="nav nav-tabs" id="myTab">
-                        <li class="active">
-                            <a href="#home" aria-controls="home" role="tab" data-toggle="tab" title="General">
-                                <span class="round-tabs one">
-                                    <i class="icon icon-profile-male">1</i>
-                                </span>
-                            </a>
-                        </li>
 
-                        <li>
-                            <a href="#profile" aria-controls="profile" role="tab" data-toggle="tab" title="Sketch">
-                                <span class="round-tabs two">
-                                    <i class="icon icon-pencil">2</i>
-                                </span>
-                            </a>
-                        </li>
+<script>
 
-                        <li>
-                            <a href="#profile" aria-controls="profile" role="tab" data-toggle="tab" title="Sketch">
-                                <span class="round-tabs two">
-                                    <i class="icon icon-pencil">3</i>
-                                </span>
-                            </a>
-                        </li>
+    $( function () {
+        var paginas = document.getElementById("myTab").children;
+        for (var i=1; i<paginas.length; i++) {
+            link = paginas[i];
+            if ({{paso_activo}} == i-1) {
+                $(link).addClass("active");
+            } else {
+                $(link).removeClass("active");
+            }
+        }
+    });
 
-                        <li>
-                            <a href="#profile" aria-controls="profile" role="tab" data-toggle="tab" title="Sketch">
-                                <span class="round-tabs two">
-                                    <i class="icon icon-pencil">4</i>
-                                </span>
-                            </a>
-                        </li>
+</script>
 
-                        <li>
-                            <a href="#profile" aria-controls="profile" role="tab" data-toggle="tab" title="Sketch">
-                                <span class="round-tabs two">
-                                    <i class="icon icon-pencil">5</i>
-                                </span>
-                            </a>
-                        </li>
-                    </ul>
-                </div>
-            </div>
+<!-- Begin botonera -->
+<div class="row">
+    <div class="col-md-12 board">
+        <div class="board-inner">
+            <ul class="nav nav-tabs" id="myTab">
+                <div class="liner"></div>
+                <li>
+                    <a href="{{ url_for('main.completar_encuesta_general_page') }}" title="General">
+                        <span class="round-tabs">1<i class="icon icon-profile-male"></i></span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ url_for('main.completar_encuesta_contenido_page') }}" title="Contenido">
+                        <span class="round-tabs">2<i class="icon icon-pencil"></i></span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ url_for('main.completar_encuesta_clases_page') }}" title="Clases">
+                        <span class="round-tabs">3<i class="icon icon-layers"></i></span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ url_for('main.completar_encuesta_examenes_page') }}" title="Examenes">
+                        <span class="round-tabs">4<i class="icon icon-aperture"></i></span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ url_for('main.completar_encuesta_docentes_page') }}" title="Docentes">
+                        <span class="round-tabs">5<i class="icon icon-tools-2"></i></span>
+                    </a>
+                </li>
+            </ul>
         </div>
     </div>
-    </section>
-    <!-- End botonera -->
+</div>
+<!-- End botonera -->
 
 <br>
 
@@ -63,10 +63,26 @@
 
         <br>
 
-        <label>{{pregunta["pregunta"]}}</label>
+        <label><span class="glyphicon glyphicon-chevron-right"></span>  {{pregunta["pregunta"]}}</label>
+
+        <br>
+        <br>
 
         {% if pregunta["tipo"] == "Puntaje de 1 a 5" %}
-            <p>No implementada</p>
+
+        <table border="0">
+            <tbody>
+                <tr>
+                    <td>{{pregunta["texto_min"]}}</td>
+                    <td><input type="radio" name="votacion" value="1" style="margin:10px;"></td>
+                    <td><input type="radio" name="votacion" value="2" style="margin:10px;"></td>
+                    <td><input type="radio" name="votacion" value="3" style="margin:10px;"></td>
+                    <td><input type="radio" name="votacion" value="4" style="margin:10px;"></td>
+                    <td><input type="radio" name="votacion" value="5" style="margin:10px;"></td>
+                    <td>{{pregunta["texto_max"]}}</td>
+                </tr>
+            </tbody>
+        </table>
 
         {% elif pregunta["tipo"] == "Texto Libre" %}
             <textarea class="form-control" rows="5" id="comment"></textarea>
@@ -83,7 +99,17 @@
         {% elif pregunta["tipo"] == "Correlativa" %}
             <p>No implementada</p>
 
-        {% endif %}
+        {% elif pregunta["tipo"] == "Estrellas" %}
+        <p>No selecciona el estado :P</p>
+        <div class="ec-stars-wrapper">
+            <a href="#" data-value="1" title="Votar con 1 estrella">&#9733;</a>
+            <a href="#" data-value="2" title="Votar con 2 estrellas">&#9733;</a>
+            <a href="#" data-value="3" title="Votar con 3 estrellas">&#9733;</a>
+            <a href="#" data-value="4" title="Votar con 4 estrellas">&#9733;</a>
+            <a href="#" data-value="5" title="Votar con 5 estrellas">&#9733;</a>
+        </div>
+        <br>
+    {% endif %}
 
     {% endfor %}
 
