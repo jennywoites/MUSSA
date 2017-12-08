@@ -16,6 +16,133 @@
         }
     });
 
+    function setStarsValue(value, id) {
+        var MAX_ESTRELLAS = 5;
+
+        var estrellas_element = document.getElementById(id);
+
+        for(var i=1; i<=value; i++)
+            estrellas_element.children[i-1].style["color"] = "#A348CC";
+
+        for (var i=(value + 1); i <= MAX_ESTRELLAS; i++)
+            estrellas_element.children[i-1].style["color"] = "#7592A7"
+    }
+
+    function mostrarSubpreguntas(es_rta_si, id) {
+        div_si = document.getElementById("div-subpregunta-si-pregunta-id-" + id);
+        div_no = document.getElementById("div-subpregunta-no-pregunta-id-" + id);
+
+        if (div_si)
+            div_si.hidden = !es_rta_si;
+
+        if (div_no)
+            div_no.hidden = es_rta_si;
+    }
+
+
+    function actualizarHoraHasta(idPregunta) {
+            var hora_desde_element = document.getElementById("hora_desde-" + idPregunta);
+            var indice_seleccionado = hora_desde_element.selectedIndex;
+
+            var hora_hasta_element = document.getElementById("hora_hasta-" + idPregunta);
+            for (var i=0; i < hora_hasta_element.length; i++) {
+                var opcion = hora_hasta_element[i];
+                if (i < indice_seleccionado)
+                    opcion.style["display"] = "none";
+                else
+                    opcion.style["display"] = "";
+            }
+
+            hora_hasta_element.selectedIndex = indice_seleccionado;
+     }
+
+        function agregarHorario(idPregunta) {
+            var dia_element = document.getElementById("horario-dia-" + idPregunta)
+            var dia = dia_element[dia_element.selectedIndex].innerHTML;
+
+            var hora_desde_element = document.getElementById("hora_desde-" + idPregunta);
+            var hora_desde = hora_desde_element[hora_desde_element.selectedIndex].innerHTML;
+
+            var hora_hasta_element = document.getElementById("hora_hasta-" + idPregunta);
+            var hora_hasta = hora_hasta_element[hora_hasta_element.selectedIndex].innerHTML;
+
+            if (!horarioParaAgregarEsValido(dia, hora_desde, hora_hasta, idPregunta))
+                return false;
+
+            var horarios_table = document.getElementById("tabla_cursos_guardados-" + idPregunta);
+            var horarios = horarios_table.rows;
+
+            var indice = horarios_table.rows.length;
+            var row = horarios_table.insertRow(indice);
+            var ultimo_id = horarios_table.rows[indice-1].id
+            var numero_id = parseInt(ultimo_id.substr(ultimo_id.indexOf("_")+1)) + 1;
+            if (isNaN(numero_id))
+                numero_id = 0;
+
+            row.id = "horario_" + numero_id;
+            row.insertCell(0).innerHTML = dia;
+            row.insertCell(1).innerHTML = hora_desde;
+            row.insertCell(2).innerHTML = hora_hasta;
+            row.insertCell(3).innerHTML = '<button type="button" class="btn btn-default" onclick="eliminarHorario(' + numero_id + ',' + idPregunta +')"><span class="glyphicon glyphicon-trash"></span></button></td>'
+
+            var div_tabla_horarios = document.getElementById("div-tabla-" + idPregunta);
+            div_tabla_horarios.hidden = false;
+        }
+
+        function eliminarHorario(idHorario, idPregunta) {
+            var tabla = document.getElementById("tabla_cursos_guardados-" + idPregunta);
+
+            var horarios = tabla.rows;
+            horarios["horario_" + idHorario].remove()
+
+            if (tabla.rows.length == 1) { //Siempre una fila es el encabezado
+                var div_tabla_horarios = document.getElementById("div-tabla-" + idPregunta);
+                div_tabla_horarios.hidden = true;
+            }
+        }
+
+        function convertirHorario(horario) {
+            hora = parseInt(horario.substring(0,2))
+            minutos = parseInt(horario.substring(3))
+            if (minutos == 30)
+                hora += 0.5
+            return hora
+        }
+
+        function horarioParaAgregarEsValido(dia, hora_desde, hora_hasta, idPregunta) {
+            var error_label = document.getElementById("error_label-" + idPregunta);
+
+            hora_desde = convertirHorario(hora_desde);
+            hora_hasta = convertirHorario(hora_hasta);
+
+            var horarios = document.getElementById("tabla_cursos_guardados-" + idPregunta).rows;
+            for (var i=0; i<horarios.length; i++) {
+                var horario = horarios[i];
+                var dia_actual = horario.cells[0].innerText;
+
+                if (dia_actual != dia)
+                    continue;
+
+                var hora_desde_actual = convertirHorario(horario.cells[1].innerText);
+                var hora_hasta_actual = convertirHorario(horario.cells[2].innerText);
+
+                //El curso empieza despues de que termina el nuevo
+                if (hora_desde_actual >= hora_hasta)
+                    continue;
+
+                //El curso comienza antes que el nuevo y termina antes que el
+                if (hora_desde_actual < hora_desde && hora_hasta_actual < hora_desde)
+                    continue;
+
+                error_label.style["display"] = "";
+                return false;
+            }
+
+            error_label.style["display"] = "none";
+            return true;
+        }
+
+
 </script>
 
 <!-- Begin botonera -->
@@ -66,11 +193,11 @@
         <label><span class="glyphicon glyphicon-chevron-right"></span>  {{pregunta["pregunta"]}}</label>
 
         <br>
-        <br>
 
         {% if pregunta["tipo"] == "Puntaje de 1 a 5" %}
 
-        <table border="0">
+        <br>
+        <table border="0" id="puntaje1a5-id-{{pregunta['pregunta_encuesta_id']}}" style="background-color: transparent;">
             <tbody>
                 <tr>
                     <td>{{pregunta["texto_min"]}}</td>
@@ -85,13 +212,129 @@
         </table>
 
         {% elif pregunta["tipo"] == "Texto Libre" %}
-            <textarea class="form-control" rows="5" id="comment"></textarea>
+
+            <textarea class="form-control" rows="5" id="textolibre-id-{{pregunta['pregunta_encuesta_id']}}">
+            </textarea>
 
         {% elif pregunta["tipo"] == "Si o No" %}
-            <p>No implementada</p>
+
+            <div class="radio" id="check-si-{{pregunta['pregunta_encuesta_id']}}">
+                <label><input type="radio" name="optradio" onclick="mostrarSubpreguntas(true, '{{pregunta['pregunta_encuesta_id']}}')">Si</label>
+            </div>
+            <div class="radio" id="check-no-{{pregunta['pregunta_encuesta_id']}}">
+                <label><input type="radio" name="optradio" onclick="mostrarSubpreguntas(false, '{{pregunta['pregunta_encuesta_id']}}')">No</label>
+            </div>
+
+            {% for subpregunta in pregunta["rta_si"] %}
+                <div id="div-subpregunta-si-pregunta-id-{{pregunta['pregunta_encuesta_id']}}" hidden="True">
+                    <br>
+
+                    <label><span class="glyphicon glyphicon-chevron-right"></span>  {{subpregunta["pregunta"]}}</label>
+
+                    <br>
+                    <br>
+
+                    {% if subpregunta["tipo"] == "Texto Libre" %}
+
+                        <textarea class="form-control" rows="5" id="subpregunta-si-{{subpregunta['pregunta_encuesta_id']}}">
+                        </textarea>
+
+                    {% endif %}
+                </div>
+            {% endfor %}
+
+            {% for subpregunta in pregunta["rta_no"] %}
+                <div id="div-subpregunta-no-pregunta-id-{{pregunta['pregunta_encuesta_id']}}" hidden="True">
+                    <br>
+
+                    <label><span class="glyphicon glyphicon-chevron-right"></span>  {{subpregunta["pregunta"]}}</label>
+
+                    <br>
+                    <br>
+
+                    {% if subpregunta["tipo"] == "Texto Libre" %}
+
+                        <textarea class="form-control" rows="5" id="comment" id="subpregunta-no-{{subpregunta['pregunta_encuesta_id']}}">
+                        </textarea>
+
+                    {% endif %}
+                </div>
+            {% endfor %}
 
         {% elif pregunta["tipo"] == "Horario" %}
-            <p>No implementada</p>
+            <div>
+                <div class="row">
+                    <div class="col-sm-2">
+                        <div class="form-group">
+
+                            <select class="form-control" id="horario-dia-{{pregunta['pregunta_encuesta_id']}}" name="dia">
+                                {% for dia in dias %}
+                                <option>{{dia}}</option>
+                                {% endfor %}
+                            </select>
+
+                        </div>
+                    </div>
+
+                    <div class="col-xs-1">
+                        <p>De:</p>
+                    </div>
+
+                    <div class="col-sm-2">
+                        <div class="form-group">
+                            <select class="form-control" id="hora_desde-{{pregunta['pregunta_encuesta_id']}}" name="hora_desde" onchange="actualizarHoraHasta('{{pregunta['pregunta_encuesta_id']}}')">
+                                {% for i in range(hora_desde | length) %}
+                                <option id="hora_desde_{{i}}">{{hora_desde[i]}}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="col-xs-1">
+                        <p>A:</p>
+                    </div>
+
+                    <div class="col-sm-2">
+                        <div class="form-group">
+                            <select class="form-control" id="hora_hasta-{{pregunta['pregunta_encuesta_id']}}" name="hora_hasta">
+                                {% for i in range(hora_hasta | length) %}
+                                <option id="hora_hasta_{{i}}">{{hora_hasta[i]}}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="col-sm-2">
+                        <div class="form-group">
+                            <button type="button" class="btn btn-default" onclick="agregarHorario('{{pregunta['pregunta_encuesta_id']}}')">Agregar horario</button>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="alert alert-danger" id="error_label-{{pregunta['pregunta_encuesta_id']}}" style="display:none">
+                    Este horario es incompatible con los que han sido cargados previamente.
+                </div>
+
+            </div>
+
+            <br>
+
+            <div class="form-group" id="div-tabla-{{pregunta['pregunta_encuesta_id']}}" hidden="true">
+                <div class='table-responsive'>
+                    <table class='table' id="tabla_cursos_guardados-{{pregunta['pregunta_encuesta_id']}}">
+                        <tr>
+                            <th>Dia</th>
+                            <th>De</th>
+                            <th>A</th>
+                            <th>Eliminar</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
 
         {% elif pregunta["tipo"] == "Docente" %}
             <p>No implementada</p>
@@ -100,15 +343,15 @@
             <p>No implementada</p>
 
         {% elif pregunta["tipo"] == "Estrellas" %}
-        <p>No selecciona el estado :P</p>
-        <div class="ec-stars-wrapper">
-            <a href="#" data-value="1" title="Votar con 1 estrella">&#9733;</a>
-            <a href="#" data-value="2" title="Votar con 2 estrellas">&#9733;</a>
-            <a href="#" data-value="3" title="Votar con 3 estrellas">&#9733;</a>
-            <a href="#" data-value="4" title="Votar con 4 estrellas">&#9733;</a>
-            <a href="#" data-value="5" title="Votar con 5 estrellas">&#9733;</a>
-        </div>
-        <br>
+
+            <br>
+            <div class="ec-stars-wrapper" id="ec-stars-wrapper-{{pregunta['pregunta_encuesta_id']}}">
+                {% for i in range(1,6) %}
+                    <a href="#" data-value="{{i}}" onclick="setStarsValue({{i}},'ec-stars-wrapper-{{pregunta['pregunta_encuesta_id']}}')">&#9733;</a>
+                {% endfor %}
+            </div>
+            <br>
+
     {% endif %}
 
     {% endfor %}

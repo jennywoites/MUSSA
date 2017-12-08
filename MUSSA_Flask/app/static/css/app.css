@@ -221,3 +221,104 @@ li.active span.round-tabs {
 body {
     background-color: #F3FBFB;
 }
+
+table {
+    background-color: #FFFFFF;
+}
+
+/************ Color boton **************/
+
+.btn-mussa-default {
+  color: #FFFFFF;
+  background-color: #A348CC;
+  border-color: #4F1675;
+}
+
+.btn-mussa-default:hover,
+.btn-mussa-default:focus,
+.btn-mussa-default:active,
+.btn-mussa-default.active,
+.open .dropdown-toggle.btn-mussa-default {
+  color: #FFFFFF;
+  background-color: #49247A;
+  border-color: #4F1675;
+}
+
+.btn-mussa-default:active,
+.btn-mussa-default.active,
+.open .dropdown-toggle.btn-mussa-default {
+  background-image: none;
+}
+
+.btn-mussa-default.disabled,
+.btn-mussa-default[disabled],
+fieldset[disabled] .btn-mussa-default,
+.btn-mussa-default.disabled:hover,
+.btn-mussa-default[disabled]:hover,
+fieldset[disabled] .btn-mussa-default:hover,
+.btn-mussa-default.disabled:focus,
+.btn-mussa-default[disabled]:focus,
+fieldset[disabled] .btn-mussa-default:focus,
+.btn-mussa-default.disabled:active,
+.btn-mussa-default[disabled]:active,
+fieldset[disabled] .btn-mussa-default:active,
+.btn-mussa-default.disabled.active,
+.btn-mussa-default[disabled].active,
+fieldset[disabled] .btn-mussa-default.active {
+  background-color: #A348CC;
+  border-color: #4F1675;
+}
+
+.btn-mussa-default .badge {
+  color: #A348CC;
+  background-color: #FFFFFF;
+}.btn-mussa-default {
+   color: #FFFFFF;
+   background-color: #A348CC;
+   border-color: #B88ED4;
+ }
+
+ .btn-mussa-default:hover,
+ .btn-mussa-default:focus,
+ .btn-mussa-default:active,
+ .btn-mussa-default.active,
+ .open .dropdown-toggle.btn-mussa-default {
+   color: #FFFFFF;
+   background-color: #49247A;
+   border-color: #B88ED4;
+ }
+
+ .btn-mussa-default:active,
+ .btn-mussa-default.active,
+ .open .dropdown-toggle.btn-mussa-default {
+   background-image: none;
+ }
+
+ .btn-mussa-default.disabled,
+ .btn-mussa-default[disabled],
+ fieldset[disabled] .btn-mussa-default,
+ .btn-mussa-default.disabled:hover,
+ .btn-mussa-default[disabled]:hover,
+ fieldset[disabled] .btn-mussa-default:hover,
+ .btn-mussa-default.disabled:focus,
+ .btn-mussa-default[disabled]:focus,
+ fieldset[disabled] .btn-mussa-default:focus,
+ .btn-mussa-default.disabled:active,
+ .btn-mussa-default[disabled]:active,
+ fieldset[disabled] .btn-mussa-default:active,
+ .btn-mussa-default.disabled.active,
+ .btn-mussa-default[disabled].active,
+ fieldset[disabled] .btn-mussa-default.active {
+   background-color: #A348CC;
+   border-color: #B88ED4;
+ }
+
+ .btn-mussa-default .badge {
+   color: #A348CC;
+   background-color: #FFFFFF;
+ }
+
+ /********* SLIDER ********/
+ #ex1Slider .slider-selection {
+ 	background: #BABABA;
+ }

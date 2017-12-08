@@ -40,6 +40,8 @@
             var row = horarios_table.insertRow(indice);
             var ultimo_id = horarios_table.rows[indice-1].id
             var numero_id = parseInt(ultimo_id.substr(ultimo_id.indexOf("_")+1)) + 1;
+            if (isNaN(numero_id))
+                numero_id = 0;
             row.id = "horario_" + numero_id;
             row.insertCell(0).innerHTML = dia;
             row.insertCell(1).innerHTML = hora_desde;
