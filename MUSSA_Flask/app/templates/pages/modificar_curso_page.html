@@ -46,7 +46,7 @@
             row.insertCell(0).innerHTML = dia;
             row.insertCell(1).innerHTML = hora_desde;
             row.insertCell(2).innerHTML = hora_hasta;
-            row.insertCell(3).innerHTML = '<button type="button" class="btn btn-default" onclick="eliminarHorario(' + numero_id +')"><span class="glyphicon glyphicon-trash"></span></button></td>'
+            row.insertCell(3).innerHTML = '<button type="button" class="btn btn-mussa-default" onclick="eliminarHorario(' + numero_id +')"><span class="glyphicon glyphicon-trash"></span></button></td>'
         }
 
         function eliminarHorario(idHorario) {
@@ -212,7 +212,7 @@
             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
 
             <div class="form-group">
-                <label for="archivo">Carreras habilitadas:</label>
+                <label>Carreras habilitadas:</label>
 
                 {% for carrera in carreras %}
                     <div class="checkbox" id="carrera-{{carrera.codigo}}">
@@ -233,7 +233,7 @@
             </div>
 
             <div class="form-group">
-                <label for="archivo">Cuatrimestres en que se dicta la materia:</label>
+                <label>Cuatrimestres en que se dicta la materia:</label>
 
                 <div class="checkbox" id="check_primer_cuatri">
                     {% if curso['se_dicta_primer_cuatri'] %}
@@ -253,12 +253,12 @@
             </div>
 
             <div class="form-group">
-                <label for="archivo">Docentes:</label>
+                <label>Docentes:</label>
                 <input type="text" class="form-control" id="docentes" name="docentes" value="{{curso['docentes']}}">
             </div>
 
                 
-            <label for="archivo">Horarios:</label>
+            <label>Horarios:</label>
 
             <div>
                 <div class="row">
