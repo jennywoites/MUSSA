@@ -95,6 +95,10 @@
             return true;
         }
 
+        function eliminarDocente(idDocente) {
+            debugger;
+        }
+
         //*****************************************************************************
         SERVICE_MODIFICAR_CURSO = '/api/admin/ModificarCurso'
         SUCCESS = 200
@@ -155,6 +159,7 @@
         }
 
         function obtener_docentes() {
+            debugger;
             return document.getElementById('docentes').value;
         }
 
@@ -254,10 +259,41 @@
 
             <div class="form-group">
                 <label>Docentes:</label>
-                <input type="text" class="form-control" id="docentes" name="docentes" value="{{curso['docentes']}}">
+
+                <div class="form-group">
+                    <div class='table-responsive'>
+                        <table class='table table-hover' id="tabla_docentes">
+                            <tr>
+                                <th>Apellido</th>
+                                <th>Nombre</th>
+                                <th>Materias que dicta</th>
+                                <th>Eliminar</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% for docente in docentes_actuales %}
+                                <tr id="{{docente['id_docente']}}">
+                                    <td>{{docente['apellido']}}</td>
+                                    <td>{{docente['nombre']}}</td>
+                                    <td>
+                                        <ul class="list-group">
+                                            {% for codigo in docente["materias_que_dicta"] %}
+                                            <li class="list-group-item" style="border-color: transparent; background-color: transparent;">
+                                                {{codigo}} - {{docente["materias_que_dicta"][codigo]}}
+                                            </li>
+                                            {% endfor %}
+                                        </ul>
+                                    </td>
+                                    <td><button type="button" class="btn btn-default" onclick="eliminarDocente({{docente['id_docente']}})"><span class='glyphicon glyphicon-trash'></span></button></td>
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
 
-                
+
             <label>Horarios:</label>
 
             <div>
@@ -304,7 +340,7 @@
 
                     <div class="col-sm-2">
                         <div class="form-group"> 
-                            <button type="button" class="btn btn-default" onclick="agregarHorario()">Agregar horario</button>
+                            <button type="button" class="btn btn-mussa-default" onclick="agregarHorario()">Agregar horario</button>
                         </div>
                     </div>
 
@@ -320,7 +356,7 @@
 
             <div class="form-group">
                 <div class='table-responsive'>
-                    <table class='table' id="tabla_cursos_guardados">
+                    <table class='table table-hover' id="tabla_cursos_guardados">
                         <tr>
                             <th>Dia</th>
                             <th>De</th>
@@ -331,7 +367,7 @@
                         <tbody>
                         {% for i in range(curso["horarios"] | length) %}
 
-                            <tr id="horario_{{i}}"">
+                            <tr id="horario_{{i}}">
                                 <td>{{curso["horarios"][i]["dia"]}}</td>
                                 <td>{{curso["horarios"][i]["hora_desde"]}}</td>
                                 <td>{{curso["horarios"][i]["hora_hasta"]}}</td>

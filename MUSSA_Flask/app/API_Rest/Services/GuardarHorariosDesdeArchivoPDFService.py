@@ -6,6 +6,7 @@ from flask_user import roles_accepted
 from app import db
 from app.models.carreras_models import Carrera
 from app.models.horarios_models import Curso, Horario, HorarioPorCurso, CarreraPorCurso, HorariosYaCargados
+from app.models.docentes_models import Docente, CursosDocente
 
 import logging
 
@@ -108,14 +109,14 @@ class GuardarHorariosDesdeArchivoPDF(Resource):
         curso = Curso(
             codigo_materia = codigo_materia,
             codigo = nombre_curso,
-            docentes = docentes,
             cantidad_encuestas_completas = 0,
             puntaje_total_encuestas = 0
         )
         db.session.add(curso)
 
         self.crear_horario(curso, horarios_materia)
-            
+        self.asignar_docentes(curso, docentes)
+
         return curso
 
 
@@ -215,3 +216,18 @@ class GuardarHorariosDesdeArchivoPDF(Resource):
 
         db.session.commit()
 
+
+    def asignar_docentes(self, curso, docentes):
+        docentes = docentes.split("-")
+        for apellido_docente in docentes:
+            if apellido_docente.upper() == "A DESIGNAR":
+                continue
+
+            docente = Docente(apellido=apellido_docente)
+            db.session.add(docente)
+            db.session.commit()
+
+            db.session.add(CursosDocente(
+                docente_id=docente.id,
+                curso_id=curso.id
+            ))

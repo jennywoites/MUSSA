@@ -14,4 +14,5 @@ from app.API_Rest.Services.EliminarCarreraAlumnoService import *
 from app.API_Rest.Services.ObtenerMateriasAlumnoService import *
 from app.API_Rest.Services.AgregarMateriaAlumnoService import *
 from app.API_Rest.Services.EliminarMateriaAlumnoService import *
-from app.API_Rest.Services.ObtenerPreguntasEncuesta import *
+from app.API_Rest.Services.ObtenerPreguntasEncuestaService import *
+from app.API_Rest.Services.ObtenerDocentesCursoService import *

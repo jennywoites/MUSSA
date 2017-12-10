@@ -1,10 +1,5 @@
-from flask import redirect, render_template
-from flask import request, url_for
-
 import logging
-
 import requests
-
 from app.API_Rest.services import *
 import json
 
@@ -168,3 +163,12 @@ def invocar_servicio_obtener_preguntas_encuesta(cookie, categorias):
     escribir_resultado_servicio('Obtener preguntas encuesta', carreras_response)
 
     return json.loads(carreras_response.text)["preguntas"]
+
+
+def invocar_obtener_docentes_del_curso(cookie, id_curso):
+    parametros = {}
+    parametros["id_curso"] = id_curso
+
+    docentes_response = requests.get(OBTENER_DOCENTES_CURSO_SERVICE, params=parametros, cookies=cookie)
+    escribir_resultado_servicio('Obtener Docentes del Curso', docentes_response)
+    return json.loads(docentes_response.text)["docentes"]
