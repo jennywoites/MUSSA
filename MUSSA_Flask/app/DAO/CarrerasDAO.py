@@ -78,7 +78,7 @@ def crear_carrera(codigo, titulo, plan):
         plan = plan,
         duracion_estimada_en_cuatrimestres = datos[DURACION],
         requiere_prueba_suficiencia_de_idioma = datos[REQUIERE_SUFICIENCIA_IDIOMA]
-        )
+    )
    
     guardar_cantidad_de_creditos(carrera, datos)
     guardar_orientaciones(carrera, datos)
@@ -107,7 +107,7 @@ def guardar_cantidad_de_creditos(carrera, datos):
         creditos_electivas_con_tesis = datos[CREDITOS_ELECTIVAS_CON_TESIS],
         creditos_tesis = datos[CREDITOS_TESIS],
         creditos_tp_profesional = datos[CREDITOS_TP_PROFESIONAL]
-        )
+    )
 
     if not carrera.creditos:
         carrera.creditos = []
@@ -201,12 +201,14 @@ def crear_materia(linea, dict_correlativas):
     return materia
 
 
-def find_or_create_tipo_materia(tipo):
-    tipo = TipoMateria.query.filter(TipoMateria.descripcion == tipo).first()
+def find_or_create_tipo_materia(tipo_materia):
+    tipo = TipoMateria.query.filter_by(descripcion=tipo_materia).first()
 
     if not tipo:
-        tipo = TipoMateria(descripcion=tipo)
+        tipo = TipoMateria(descripcion=tipo_materia)
         db.session.add(tipo)
+        db.session.commit()
+
     return tipo
 
 

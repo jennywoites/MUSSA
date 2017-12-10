@@ -24,3 +24,301 @@ hr { border-color: #cccccc; margin: 0px; }
     height: 100%;
     width: 100%;
 }
+
+/*************** BOTONERA ENCUESTAS ***************/
+
+.board .nav-tabs {
+	position: relative;
+	margin: 40px auto;
+	margin-bottom: 0;
+	box-sizing: border-box;
+
+}
+
+.board > div.board-inner > .nav-tabs {
+	border: none;
+}
+
+p.narrow{
+	width: 60%;
+	margin: 10px auto;
+}
+
+.liner{
+	height: 2px;
+	background: #dfcde7;
+	position: absolute;
+	width: 80%;
+	margin: 0 auto;
+	left: 0;
+	right: 0;
+	top: 50%;
+	z-index: 1;
+}
+
+.nav-tabs > li.active > a, .nav-tabs > li.active > a:hover, .nav-tabs > li.active > a:focus {
+	color: #C9A2DB;
+	cursor: default;
+	border: 0;
+	border-bottom-color: transparent;
+	outline: 0;
+}
+
+span.round-tabs{
+	width: 70px;
+	height: 70px;
+	line-height: 70px;
+	display: inline-block;
+	border-radius: 100px;
+	background: white;
+	z-index: 2;
+	position: absolute;
+	left: 0;
+	text-align: center;
+	font-size: 25px;
+}
+
+span.round-tabs{
+	border: 2px solid #dfcde7;
+	color: #FFFFFF;
+    background-color: #dfcde7;
+}
+
+li.active span.round-tabs {
+	background: #A348CC !important;
+	border: 2px solid #A348CC;
+	color: #fff;
+}
+
+.nav-tabs > li.active > a span.round-tabs{
+	background: #fafafa;
+}
+.nav-tabs > li {
+	width: 20%;
+}
+
+.nav-tabs > li a{
+	width: 70px;
+	height: 70px;
+	margin: 20px auto;
+	border-radius: 100%;
+	padding: 0;
+}
+
+.nav-tabs > li a:hover{
+	background: transparent;
+}
+
+.tab-pane{
+	position: relative;
+	padding-top: 50px;
+}
+
+.btn-outline-rounded{
+	padding: 10px 40px;
+	margin: 20px 0;
+	border: 2px solid transparent;
+	border-radius: 25px;
+}
+
+/************ Calificar con estrellas **************/
+
+.ec-stars-wrapper {
+	font-size: 0;
+	display: inline-block;
+}
+.ec-stars-wrapper a {
+	text-decoration: none;
+	display: inline-block;
+	font-size: 40px !important;
+	font-size: 2rem;
+	color: #7592A7;
+}
+
+.ec-stars-wrapper:hover a {
+	color: #A348CC;
+}
+
+.ec-stars-wrapper > a:hover ~ a {
+	color: #7592A7;
+}
+
+/******** NAVBAR de color ***********/
+.navbar-default {
+  background-color: #0fbdb7;
+  border-color: #0fbdb7;
+}
+.navbar-default .navbar-brand {
+  color: #fcfeff;
+}
+.navbar-default .navbar-brand:hover,
+.navbar-default .navbar-brand:focus {
+  color: #2f6967;
+}
+.navbar-default .navbar-text {
+  color: #fcfeff;
+}
+.navbar-default .navbar-nav > li > a {
+  color: #fcfeff;
+}
+.navbar-default .navbar-nav > li > a:hover,
+.navbar-default .navbar-nav > li > a:focus {
+  color: #2f6967;
+}
+.navbar-default .navbar-nav > .active > a,
+.navbar-default .navbar-nav > .active > a:hover,
+.navbar-default .navbar-nav > .active > a:focus {
+  color: #2f6967;
+  background-color: #0fbdb7;
+}
+.navbar-default .navbar-nav > .open > a,
+.navbar-default .navbar-nav > .open > a:hover,
+.navbar-default .navbar-nav > .open > a:focus {
+  color: #2f6967;
+  background-color: #0fbdb7;
+}
+.navbar-default .navbar-toggle {
+  border-color: #0fbdb7;
+}
+.navbar-default .navbar-toggle:hover,
+.navbar-default .navbar-toggle:focus {
+  background-color: #0fbdb7;
+}
+.navbar-default .navbar-toggle .icon-bar {
+  background-color: #fcfeff;
+}
+.navbar-default .navbar-collapse,
+.navbar-default .navbar-form {
+  border-color: #fcfeff;
+}
+.navbar-default .navbar-link {
+  color: #fcfeff;
+}
+.navbar-default .navbar-link:hover {
+  color: #2f6967;
+}
+
+@media (max-width: 767px) {
+  .navbar-default .navbar-nav .open .dropdown-menu > li > a {
+    color: #fcfeff;
+  }
+  .navbar-default .navbar-nav .open .dropdown-menu > li > a:hover,
+  .navbar-default .navbar-nav .open .dropdown-menu > li > a:focus {
+    color: #2f6967;
+  }
+  .navbar-default .navbar-nav .open .dropdown-menu > .active > a,
+  .navbar-default .navbar-nav .open .dropdown-menu > .active > a:hover,
+  .navbar-default .navbar-nav .open .dropdown-menu > .active > a:focus {
+    color: #2f6967;
+    background-color: #0fbdb7;
+  }
+}
+
+.navbar {
+    min-height:40px !important;
+}
+
+body {
+    background-color: #F3FBFB;
+}
+
+table {
+    background-color: #FFFFFF;
+}
+
+/************ Color boton **************/
+
+.btn-mussa-default {
+  color: #FFFFFF;
+  background-color: #A348CC;
+  border-color: #4F1675;
+}
+
+.btn-mussa-default:hover,
+.btn-mussa-default:focus,
+.btn-mussa-default:active,
+.btn-mussa-default.active,
+.open .dropdown-toggle.btn-mussa-default {
+  color: #FFFFFF;
+  background-color: #49247A;
+  border-color: #4F1675;
+}
+
+.btn-mussa-default:active,
+.btn-mussa-default.active,
+.open .dropdown-toggle.btn-mussa-default {
+  background-image: none;
+}
+
+.btn-mussa-default.disabled,
+.btn-mussa-default[disabled],
+fieldset[disabled] .btn-mussa-default,
+.btn-mussa-default.disabled:hover,
+.btn-mussa-default[disabled]:hover,
+fieldset[disabled] .btn-mussa-default:hover,
+.btn-mussa-default.disabled:focus,
+.btn-mussa-default[disabled]:focus,
+fieldset[disabled] .btn-mussa-default:focus,
+.btn-mussa-default.disabled:active,
+.btn-mussa-default[disabled]:active,
+fieldset[disabled] .btn-mussa-default:active,
+.btn-mussa-default.disabled.active,
+.btn-mussa-default[disabled].active,
+fieldset[disabled] .btn-mussa-default.active {
+  background-color: #A348CC;
+  border-color: #4F1675;
+}
+
+.btn-mussa-default .badge {
+  color: #A348CC;
+  background-color: #FFFFFF;
+}.btn-mussa-default {
+   color: #FFFFFF;
+   background-color: #A348CC;
+   border-color: #B88ED4;
+ }
+
+ .btn-mussa-default:hover,
+ .btn-mussa-default:focus,
+ .btn-mussa-default:active,
+ .btn-mussa-default.active,
+ .open .dropdown-toggle.btn-mussa-default {
+   color: #FFFFFF;
+   background-color: #49247A;
+   border-color: #B88ED4;
+ }
+
+ .btn-mussa-default:active,
+ .btn-mussa-default.active,
+ .open .dropdown-toggle.btn-mussa-default {
+   background-image: none;
+ }
+
+ .btn-mussa-default.disabled,
+ .btn-mussa-default[disabled],
+ fieldset[disabled] .btn-mussa-default,
+ .btn-mussa-default.disabled:hover,
+ .btn-mussa-default[disabled]:hover,
+ fieldset[disabled] .btn-mussa-default:hover,
+ .btn-mussa-default.disabled:focus,
+ .btn-mussa-default[disabled]:focus,
+ fieldset[disabled] .btn-mussa-default:focus,
+ .btn-mussa-default.disabled:active,
+ .btn-mussa-default[disabled]:active,
+ fieldset[disabled] .btn-mussa-default:active,
+ .btn-mussa-default.disabled.active,
+ .btn-mussa-default[disabled].active,
+ fieldset[disabled] .btn-mussa-default.active {
+   background-color: #A348CC;
+   border-color: #B88ED4;
+ }
+
+ .btn-mussa-default .badge {
+   color: #A348CC;
+   background-color: #FFFFFF;
+ }
+
+ /********* SLIDER ********/
+ #ex1Slider .slider-selection {
+ 	background: #BABABA;
+ }
