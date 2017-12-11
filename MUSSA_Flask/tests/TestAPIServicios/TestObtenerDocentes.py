@@ -18,7 +18,7 @@ from app.API_Rest.services import *
 from app.API_Rest.codes import *
 
 
-class TestObtenerDocentesCurso(TestBase):
+class TestObtenerDocentes(TestBase):
     ##########################################################
     ##                   Configuracion                      ##
     ##########################################################
@@ -89,7 +89,7 @@ class TestObtenerDocentesCurso(TestBase):
         return [self.DOCENTE_CON_NOMBRE, self.DOCENTE_SIN_NOMBRE]
 
     def get_test_name(self):
-        return "test_obtener_docentes_curso"
+        return "test_obtener_docentes"
 
     def crear_datos_bd(self):
         for carrera in self.get_carreras_bd():
@@ -213,25 +213,16 @@ class TestObtenerDocentesCurso(TestBase):
     ##                      Tests                           ##
     ##########################################################
 
-    def test_obtener_los_docentes_del_curso_con_id_curso_invalido_da_error(self):
+    def test_obtener_los_docentes_con_parametros_da_error(self):
         client = self.app.test_client()
         parametros = {}
-        parametros["id_curso"] = "a45d5"
-        response = client.get(OBTENER_DOCENTES_CURSO_SERVICE, query_string=parametros)
+        parametros["nombre_param"] = "a45d5"
+        response = client.get(OBTENER_DOCENTES_SERVICE, query_string=parametros)
         assert (response.status_code == CLIENT_ERROR_BAD_REQUEST)
 
-    def test_obtener_los_docentes_del_curso_con_id_curso_valido_inexistente_da_error(self):
+    def test_obtener_los_docentes_devuelve_todos_los_docentes(self):
         client = self.app.test_client()
-        parametros = {}
-        parametros["id_curso"] = 56
-        response = client.get(OBTENER_DOCENTES_CURSO_SERVICE, query_string=parametros)
-        assert (response.status_code == CLIENT_ERROR_BAD_REQUEST)
-
-    def test_obtener_los_docentes_del_curso_con_id_curso_valido_devuelve_los_docentes(self):
-        client = self.app.test_client()
-        parametros = {}
-        parametros["id_curso"] = 1
-        response = client.get(OBTENER_DOCENTES_CURSO_SERVICE, query_string=parametros)
+        response = client.get(OBTENER_DOCENTES_SERVICE)
         assert (response.status_code == SUCCESS_OK)
 
         docentes = json.loads(response.get_data(as_text=True))["docentes"]

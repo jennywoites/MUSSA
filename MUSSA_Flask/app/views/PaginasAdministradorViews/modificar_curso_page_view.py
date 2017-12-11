@@ -15,6 +15,7 @@ def modificar_curso_page(idCurso):
     cookies = request.cookies
     curso = invocar_buscar_cursos(cookies, id_curso=idCurso).pop()
     docentes_actuales = invocar_obtener_docentes_del_curso(cookies, idCurso)
+    docentes = invocar_obtener_todos_los_docentes(cookies)
     carreras = invocar_servicio_buscar_carreras(cookies)
 
     carreras_curso = []
@@ -39,6 +40,7 @@ def modificar_curso_page(idCurso):
 
     return render_template('pages/modificar_curso_page.html',
                            curso=curso,
+                           docentes = docentes,
                            docentes_actuales=docentes_actuales,
                            carreras=carreras_curso,
                            dias=DIAS,

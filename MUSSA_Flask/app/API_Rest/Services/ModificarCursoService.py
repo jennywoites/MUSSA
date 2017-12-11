@@ -3,7 +3,8 @@ from app.API_Rest.codes import *
 from flask import request
 
 from app.models.horarios_models import Horario, Curso, CarreraPorCurso, HorarioPorCurso
-from app.models.carreras_models import Carrera, Materia
+from app.models.carreras_models import Carrera
+from app.models.docentes_models import Docente, CursosDocente
 
 import logging
 from flask_user import roles_accepted
@@ -36,7 +37,6 @@ class ModificarCurso(Resource):
             logging.error('El servicio Modificar Curso recibió un id de curso inválido')
             return {'Error': 'El id no es válido'}, CLIENT_ERROR_BAD_REQUEST            
 
-
         if not self.argumentos_son_validos(q_carreras, q_docentes, q_horarios):
             logging.error('El servicio Modificar Curso recibió uno o más argumentos inválidos')
             return {'Error': 'Uno o más argumentos no son válidos'}, CLIENT_ERROR_BAD_REQUEST        
@@ -46,6 +46,7 @@ class ModificarCurso(Resource):
 
         self.eliminar_horarios_viejos(q_id_curso)
         self.eliminar_carreras_asociadas_viejas(q_id_curso)
+        self.eliminar_docentes_actuales(q_id_curso)
 
         curso.se_dicta_primer_cuatrimestre = q_primer_cuatrimestre
         curso.se_dicta_segundo_cuatrimestre = q_segundo_cuatrimestre
@@ -56,6 +57,7 @@ class ModificarCurso(Resource):
 
         self.agregar_horarios(q_id_curso, q_horarios)
         self.agregar_carreras(q_id_curso, q_carreras)
+        self.agregar_docentes(q_id_curso, q_docentes)
 
         db.session.commit()
 
@@ -92,6 +94,9 @@ class ModificarCurso(Resource):
         CarreraPorCurso.query.filter_by(curso_id=id_curso).delete()
         db.session.commit()
 
+    def eliminar_docentes_actuales(self, id_curso):
+        CursosDocente.query.filter_by(curso_id=id_curso).delete()
+        db.session.commit()
 
     def agregar_horarios(self, id_curso, horarios):
         horarios = horarios.split(";")
@@ -123,6 +128,16 @@ class ModificarCurso(Resource):
         hora_hasta = self.convertir_hora(hora_hasta)
 
         return dia, hora_desde, hora_hasta
+
+
+    def agregar_docentes(self, id_curso, docentes):
+        ids_docentes = docentes.split(";")
+        for id_docente in ids_docentes:
+            db.session.add(CursosDocente(
+                curso_id=id_curso,
+                docente_id=id_docente
+            ))
+        db.session.commit()
 
 
     def convertir_hora(self, hora):
@@ -171,7 +186,12 @@ class ModificarCurso(Resource):
 
 
     def docentes_son_validos(self, docentes):
-        #Verificar cuando los datos de docentes pueden no ser validos
+        ids_docentes = docentes.split(";")
+        for id_docente in ids_docentes:
+            if (not id_docente.isdigit() or
+                    not Docente.query.filter_by(id=id_docente).first()):
+                return False
+
         return True
 
 

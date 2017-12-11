@@ -9,23 +9,20 @@ from app.models.horarios_models import Curso
 import logging
 
 
-class ObtenerDocentesCurso(Resource):
+class ObtenerDocentes(Resource):
     def get(self):
         args = request.args
-        logging.info('Se invoco al servicio Obtener Docentes del Curso con los siguientes parametros: {}'.format(args))
+        logging.info('Se invoco al servicio Obtener Docentes con los siguientes parametros: {}'.format(args))
 
-        id_curso = args["id_curso"] if "id_curso" in args else None
-
-        if not id_curso or not self.es_valido(id_curso):
-            logging.error('El servicio Obtener Docentes del curso debe recibir el id del curso')
-            return {'Error': 'Este servicio debe recibir el id del curso'}, CLIENT_ERROR_BAD_REQUEST
+        if args:
+            logging.error('El servicio Obtener Docentes no recibe parámetros')
+            return {'Error': 'Este servicio no recibe parámetros'}, CLIENT_ERROR_BAD_REQUEST
 
         docentes_result = []
 
-        docentes_del_curso = CursosDocente.query.filter_by(curso_id=id_curso).all()
-        for doc in docentes_del_curso:
+        docentes = Docente.query.order_by(Docente.apellido.asc()).order_by(Docente.nombre.asc()).all()
+        for docente in docentes:
             materias = {}
-            docente = Docente.query.filter_by(id=doc.docente_id).first()
 
             cursos_del_docente = CursosDocente.query.filter_by(docente_id=docente.id).all()
             for c in cursos_del_docente:
@@ -43,9 +40,6 @@ class ObtenerDocentesCurso(Resource):
             })
 
         result = ({'docentes': docentes_result}, SUCCESS_OK)
-        logging.info('Obtener Docentes del Curso devuelve como resultado: {}'.format(result))
+        logging.info('Obtener Docentes devuelve como resultado: {}'.format(result))
 
         return result
-
-    def es_valido(self, id_curso):
-        return id_curso.isdigit() and len(Curso.query.filter_by(id=id_curso).all()) > 0

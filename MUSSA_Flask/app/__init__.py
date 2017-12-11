@@ -147,6 +147,7 @@ def add_resources_publicos(api):
     api.add_resource(BuscarCursos, '/api/BuscarCursos')
     api.add_resource(ObtenerPreguntasEncuesta, '/api/ObtenerPreguntasEncuesta')
     api.add_resource(ObtenerDocentesCurso, '/api/ObtenerDocentesCurso')
+    api.add_resource(ObtenerDocentes, '/api/ObtenerDocentes')
 
 
 def add_resources_usuarios(api):
