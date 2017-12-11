@@ -4,6 +4,29 @@
 
     <script>
 
+        $(function(){
+            var tabla = document.getElementById("tabla_docentes");
+
+            var docentes_actuales = {{docentes_actuales | safe}};
+            var ids = []
+            for (var i=0; i<docentes_actuales.length; i++) {
+                var id = docentes_actuales[i]["id_docente"];
+                ids.push(id.toString());
+            }
+
+            var selector_docentes = document.getElementById("selector_docentes");
+            for (var j=1; j<tabla.rows.length; j++) {
+                var docente_actual = tabla.rows[j];
+                if (ids.indexOf(docente_actual.id) == -1) {
+                    docente_actual.hidden = true;
+                    selector_docentes.options[j-1].hidden = false;
+                } else {
+                    docente_actual.hidden = false;
+                    selector_docentes.options[j-1].hidden = true;
+                }
+            }
+        });
+
         function actualizarHoraHasta() {
             var hora_desde_element = document.getElementById("hora_desde");
             var indice_seleccionado = hora_desde_element.selectedIndex;
@@ -95,6 +118,27 @@
             return true;
         }
 
+        function agregarDocente() {
+            var tabla = document.getElementById("tabla_docentes");
+            var selector_docentes = document.getElementById("selector_docentes");
+            var index = selector_docentes.selectedIndex;
+            var docente_actual = tabla.rows[index + 1];
+            docente_actual.hidden = false;
+
+            selector_docentes.options[index].hidden = true;
+            selector_docentes.selectedIndex = 0;
+        }
+
+        function eliminarDocente(indexTabla) {
+            var tabla = document.getElementById("tabla_docentes");
+            var selector_docentes = document.getElementById("selector_docentes");
+
+            var docente_actual = tabla.rows[indexTabla];
+            docente_actual.hidden = true;
+
+            selector_docentes.options[indexTabla -1].hidden = false;
+        }
+
         //*****************************************************************************
         SERVICE_MODIFICAR_CURSO = '/api/admin/ModificarCurso'
         SUCCESS = 200
@@ -155,7 +199,26 @@
         }
 
         function obtener_docentes() {
-            return document.getElementById('docentes').value;
+            var ids = "";
+            var tabla = document.getElementById("tabla_docentes");
+            for (var j=1; j<tabla.rows.length; j++) {
+                var docente_actual = tabla.rows[j];
+                if (!docente_actual.hidden) {
+                    ids += docente_actual.id + ";";
+                }
+            }
+            return ids.substring(0,ids.length-1);
+        }
+
+        function no_hay_docentes_habilitados() {
+            var tabla = document.getElementById("tabla_docentes");
+            for (var j=1; j<tabla.rows.length; j++) {
+                var docente_actual = tabla.rows[j];
+                if (!docente_actual.hidden) {
+                    return false;
+                }
+            }
+            return true;
         }
 
         function se_cursa_primer_cuatrimestre() {
@@ -190,6 +253,13 @@
                  return false;
             } else {
                  document.getElementById("error_label_carrera_habilitada").style["display"] = "none";
+            }
+
+            if (no_hay_docentes_habilitados()) {
+                 document.getElementById("error_label_docentes_habilitados").style["display"] = "";
+                 return false;
+            } else {
+                 document.getElementById("error_label_docentes_habilitados").style["display"] = "none";
             }
 
             do_request('GET', SERVICE_MODIFICAR_CURSO, param, function(state, result) {
@@ -254,10 +324,63 @@
 
             <div class="form-group">
                 <label>Docentes:</label>
-                <input type="text" class="form-control" id="docentes" name="docentes" value="{{curso['docentes']}}">
+
+                <div>
+                    <div class="row">
+                        <div class="col-sm-2">
+                            <div class="form-group">
+                                <select class="form-control" id="selector_docentes" name="selector_docentes">
+                                    {% for docente in docentes %}
+                                    <option id="option-{{docente['id_docente']}}">{{docente['nombre_completo']}}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="col-sm-2">
+                            <div class="form-group">
+                                <button type="button" class="btn btn-mussa-default" onclick="agregarDocente()">Agregar docente</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="alert alert-danger" id="error_label_docentes_habilitados" style="display:none">
+                    Debe seleccionar al menos un docente para que dicte la materia
+                </div>
+
+                <div class="form-group">
+                    <div class='table-responsive'>
+                        <table class='table table-hover' id="tabla_docentes">
+                            <tr>
+                                <th>Apellido, Nombre</th>
+                                <th>Materias que dicta</th>
+                                <th>Eliminar</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% for i in range(docentes | length) %}
+                                <tr id="{{docentes[i]['id_docente']}}" hidden="true">
+                                    <td>{{docentes[i]['nombre_completo']}}</td>
+                                    <td>
+                                        <ul class="list-group">
+                                            {% for codigo in docentes[i]["materias_que_dicta"] %}
+                                            <li class="list-group-item" style="border-color: transparent; background-color: transparent;">
+                                                {{codigo}} - {{docentes[i]["materias_que_dicta"][codigo]}}
+                                            </li>
+                                            {% endfor %}
+                                        </ul>
+                                    </td>
+                                    <td><button type="button" class="btn btn-default" onclick="eliminarDocente({{i+1}})"><span class='glyphicon glyphicon-trash'></span></button></td>
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
 
-                
+
             <label>Horarios:</label>
 
             <div>
@@ -304,7 +427,7 @@
 
                     <div class="col-sm-2">
                         <div class="form-group"> 
-                            <button type="button" class="btn btn-default" onclick="agregarHorario()">Agregar horario</button>
+                            <button type="button" class="btn btn-mussa-default" onclick="agregarHorario()">Agregar horario</button>
                         </div>
                     </div>
 
@@ -320,7 +443,7 @@
 
             <div class="form-group">
                 <div class='table-responsive'>
-                    <table class='table' id="tabla_cursos_guardados">
+                    <table class='table table-hover' id="tabla_cursos_guardados">
                         <tr>
                             <th>Dia</th>
                             <th>De</th>
@@ -331,7 +454,7 @@
                         <tbody>
                         {% for i in range(curso["horarios"] | length) %}
 
-                            <tr id="horario_{{i}}"">
+                            <tr id="horario_{{i}}">
                                 <td>{{curso["horarios"][i]["dia"]}}</td>
                                 <td>{{curso["horarios"][i]["hora_desde"]}}</td>
                                 <td>{{curso["horarios"][i]["hora_hasta"]}}</td>
@@ -353,14 +476,14 @@
                     </div>
 
                     <div class="col-sm-3">
-                        <button type="button" class="btn btn-success" onclick="guardarHorario()">
+                        <button type="button" class="btn btn-mussa-default" onclick="guardarHorario()">
                             Guardar
                         </button>
                     </div>
 
                     <div class="col-sm-4">
                         <a href="{{ url_for('main.administrar_horarios_page') }}">
-                            <input type="button" class="btn btn-danger" value="Descartar"/>
+                            <input type="button" class="btn btn-mussa-default" value="Descartar"/>
                         </a>
                     </div>
                 </div>

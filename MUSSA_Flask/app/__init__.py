@@ -26,7 +26,9 @@ migrate = Migrate()
 from app.API_Rest.server import *
 
 import logging
-logging.basicConfig(filename='MUSSA.log',level=logging.DEBUG)
+
+logging.basicConfig(filename='MUSSA.log', level=logging.DEBUG)
+
 
 def create_app(extra_config_settings={}):
     """Create a Flask applicaction.
@@ -83,8 +85,8 @@ def create_app(extra_config_settings={}):
     user_manager = UserManager(db_adapter, app,  # Init Flask-User and bind to app
                                register_form=MyRegisterForm,  # using a custom register form with UserProfile fields
                                user_profile_view_function=user_profile_page,
-    )
-    #API REST
+                               )
+    # API REST
     api = Api(app)
     add_resources_api_rest(api)
 
@@ -125,28 +127,40 @@ def init_email_error_handler(app):
     mail_handler.setLevel(logging.ERROR)
     app.logger.addHandler(mail_handler)
 
-    app.logger.basicConfig(filename='example.log',level=logging.DEBUG)
+    app.logger.basicConfig(filename='example.log', level=logging.DEBUG)
 
     # Log errors using: app.logger.error('Some error message')
 
 
 def add_resources_api_rest(api):
+    add_resources_publicos(api)
+    add_resources_usuarios(api)
+    add_resources_administrador(api)
+
+
+def add_resources_publicos(api):
     api.add_resource(BuscarCarreras, '/api/BuscarCarreras')
-    api.add_resource(BuscarMaterias, '/api/BuscarMaterias') 
-    api.add_resource(ObtenerMateria, '/api/ObtenerMateria')  
+    api.add_resource(BuscarMaterias, '/api/BuscarMaterias')
+    api.add_resource(ObtenerMateria, '/api/ObtenerMateria')
     api.add_resource(ObtenerMateriasCorrelativas, '/api/ObtenerMateriasCorrelativas')
     api.add_resource(ObtenerCarrerasDondeSeDictaLaMateria, '/api/ObtenerCarrerasDondeSeDictaLaMateria')
     api.add_resource(BuscarCursos, '/api/BuscarCursos')
     api.add_resource(ObtenerPreguntasEncuesta, '/api/ObtenerPreguntasEncuesta')
+    api.add_resource(ObtenerDocentesCurso, '/api/ObtenerDocentesCurso')
+    api.add_resource(ObtenerDocentes, '/api/ObtenerDocentes')
 
+
+def add_resources_usuarios(api):
     api.add_resource(ObtenerPadronAlumno, '/api/ObtenerPadronAlumno')
     api.add_resource(ModificarPadronAlumno, '/api/ModificarPadronAlumno')
     api.add_resource(AgregarCarreraAlumno, '/api/AgregarCarreraAlumno')
     api.add_resource(ObtenerCarrerasAlumno, '/api/ObtenerCarrerasAlumno')
-    api.add_resource(EliminarCarreraAlumno, '/api/EliminarCarreraAlumno')    
+    api.add_resource(EliminarCarreraAlumno, '/api/EliminarCarreraAlumno')
     api.add_resource(ObtenerMateriasAlumno, '/api/ObtenerMateriasAlumno')
     api.add_resource(AgregarMateriaAlumno, '/api/AgregarMateriaAlumno')
     api.add_resource(EliminarMateriaAlumno, '/api/EliminarMateriaAlumno')
 
+
+def add_resources_administrador(api):
     api.add_resource(GuardarHorariosDesdeArchivoPDF, '/api/admin/GuardarHorariosDesdeArchivoPDF')
-    api.add_resource(ModificarCurso, '/api/admin/ModificarCurso') 
+    api.add_resource(ModificarCurso, '/api/admin/ModificarCurso')

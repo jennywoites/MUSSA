@@ -12,6 +12,8 @@ from tests.TestAPIServicios.TestObtenerMateria import TestObtenerMateria
 from tests.TestAPIServicios.TestObtenerCarrerasDondeSeDictaLaMateria import TestObtenerCarrerasDondeSeDictaLaMateria
 from tests.TestAPIServicios.TestObtenerMateriasCorrelativas import TestObtenerMateriasCorrelativas
 from tests.TestAPIServicios.TestBuscarCursos import TestBuscarCursos
+from tests.TestAPIServicios.TestObtenerDocentesCurso import TestObtenerDocentesCurso
+from tests.TestAPIServicios.TestObtenerDocentes import TestObtenerDocentes
 
 # - servicios de miembros -
 from tests.TestAPIServicios.TestAgregarMateriaAlumno import TestAgregarMateriaAlumno

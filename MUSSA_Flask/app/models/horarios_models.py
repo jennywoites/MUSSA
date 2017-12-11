@@ -7,7 +7,6 @@ class Curso(db.Model):
 
     codigo_materia = db.Column(db.String(4), nullable=False, server_default='')
     codigo = db.Column(db.String(15), nullable=False, server_default='')
-    docentes = db.Column(db.String(250), nullable=True, server_default='')
     se_dicta_primer_cuatrimestre = db.Column(db.Boolean(), nullable=False, server_default='0')
     se_dicta_segundo_cuatrimestre = db.Column(db.Boolean(), nullable=False, server_default='0')
     cantidad_encuestas_completas = db.Column(db.Integer, nullable=False, server_default='0')

@@ -4,6 +4,7 @@ from flask import request
 
 from app.models.horarios_models import Horario, Curso, CarreraPorCurso, HorarioPorCurso
 from app.models.carreras_models import Carrera, Materia
+from app.models.docentes_models import Docente, CursosDocente
 
 import logging
 
@@ -63,6 +64,12 @@ class BuscarCursos(Resource):
                     'hora_hasta': self.convertir_hora(horario_db.hora_hasta) 
                 })
 
+            docentes = ""
+            docentes_del_curso = CursosDocente.query.filter_by(curso_id=curso.id).all()
+            for doc in docentes_del_curso:
+                docentes += Docente.query.filter_by(id=doc.docente_id).first().obtener_nombre_completo() + "-"
+            docentes = docentes[:-1]
+
             cursos_result.append({
                 'id': curso.id,
                 'codigo_curso': curso.codigo,
@@ -72,7 +79,7 @@ class BuscarCursos(Resource):
                 'cuatrimestre': self.mensaje_cuatrimestre(curso),
                 'carreras': carreras_response,
                 'horarios': horarios_response,
-                'docentes': curso.docentes,
+                'docentes': docentes,
                 'puntaje': self.calcular_puntaje(curso)
             })
 

@@ -1,16 +1,14 @@
 if __name__ == '__main__':
-    import os
     import sys
 
     sys.path.append("../..")
 
 from tests.TestAPIServicios.TestBase import TestBase
 
-import app
 from app import db
 from app.models.horarios_models import Curso, Horario, HorarioPorCurso, CarreraPorCurso
 from app.models.carreras_models import Carrera
-
+from app.models.docentes_models import Docente, CursosDocente
 import json
 
 import datetime
@@ -93,11 +91,62 @@ class TestBuscarCursos(TestBase):
     def get_horarios_bd(self):
         return [self.HORARIO_1, self.HORARIO_2, self.HORARIO_3, self.HORARIO_4, self.HORARIO_5]
 
+    DOCENTE_1 = {
+        "id": 1,
+        "nombre_completo": "Woites, Jennifer",
+        "nombre": "Jennifer",
+        "apellido": "Woites"
+    }
+
+    DOCENTE_2 = {
+        "id": 2,
+        "nombre_completo": "Riesgo, Daniela",
+        "nombre": "Daniela",
+        "apellido": "Riesgo"
+    }
+
+    DOCENTE_3 = {
+        "id": 3,
+        "nombre_completo": "Wachenchauzer",
+        "nombre": "",
+        "apellido": "Wachenchauzer"
+    }
+
+    DOCENTE_4 = {
+        "id": 4,
+        "nombre_completo": "Soto, Daniela",
+        "nombre": "Daniela",
+        "apellido": "Soto"
+    }
+
+    DOCENTE_5 = {
+        "id": 5,
+        "nombre_completo": "Wainer, Ariel",
+        "nombre": "Ariel",
+        "apellido": "Wainer"
+    }
+
+    DOCENTE_6 = {
+        "id": 6,
+        "nombre_completo": "Essaya, Diego",
+        "nombre": "Diego",
+        "apellido": "Essaya"
+    }
+
+    def get_docentes(self):
+        return [self.DOCENTE_1,
+                self.DOCENTE_2,
+                self.DOCENTE_3,
+                self.DOCENTE_4,
+                self.DOCENTE_5,
+                self.DOCENTE_6]
+
+
     CURSO_7540_A_DOS_CARRERAS = {
         "id": 1,
         "codigo_materia": "7540",
         "codigo": "7540-CursoA",
-        "docentes": "Doc1",
+        "docentes": [DOCENTE_1, DOCENTE_2],
         "se_dicta_primer_cuatrimestre": True,
         "se_dicta_segundo_cuatrimestre": True,
         "cuatrimestre": "Ambos cuatrimestres",
@@ -112,7 +161,7 @@ class TestBuscarCursos(TestBase):
         "id": 2,
         "codigo_materia": "7540",
         "codigo": "7540-CursoB",
-        "docentes": "Doc2",
+        "docentes": [DOCENTE_3],
         "se_dicta_primer_cuatrimestre": True,
         "se_dicta_segundo_cuatrimestre": False,
         "cuatrimestre": "Solo el 1º cuatrimestre",
@@ -127,7 +176,7 @@ class TestBuscarCursos(TestBase):
         "id": 3,
         "codigo_materia": "7540",
         "codigo": "7540-CursoC",
-        "docentes": "Doc2",
+        "docentes": [DOCENTE_4],
         "se_dicta_primer_cuatrimestre": False,
         "se_dicta_segundo_cuatrimestre": True,
         "cuatrimestre": "Solo el 2º cuatrimestre",
@@ -142,7 +191,7 @@ class TestBuscarCursos(TestBase):
         "id": 4,
         "codigo_materia": "7541",
         "codigo": "7541-CursoA",
-        "docentes": "Doc2",
+        "docentes": [DOCENTE_5, DOCENTE_1],
         "se_dicta_primer_cuatrimestre": True,
         "se_dicta_segundo_cuatrimestre": False,
         "cuatrimestre": "Solo el 1º cuatrimestre",
@@ -157,7 +206,7 @@ class TestBuscarCursos(TestBase):
         "id": 5,
         "codigo_materia": "8787",
         "codigo": "8787-CursoA",
-        "docentes": "Doc2",
+        "docentes": [DOCENTE_6],
         "se_dicta_primer_cuatrimestre": False,
         "se_dicta_segundo_cuatrimestre": False,
         "cuatrimestre": "No se dicta actualmente",
@@ -182,6 +231,9 @@ class TestBuscarCursos(TestBase):
         for carrera in self.get_carreras_bd():
             self.agregar_carrera(carrera)
 
+        for docente in self.get_docentes():
+            self.agregar_docente(docente)
+
         for horario in self.get_horarios_bd():
             self.agregar_horario(horario)
 
@@ -194,6 +246,13 @@ class TestBuscarCursos(TestBase):
             for c_carrera in curso["carreras"]:
                 self.agregar_carrera_por_curso(curso, c_carrera)
 
+    def agregar_docente(self, docente):
+        db.session.add(Docente(
+            apellido=docente["apellido"],
+            nombre=docente["nombre"]
+        ))
+        db.session.commit()
+
     def agregar_carrera(self, datos):
         db.session.add(Carrera(
             codigo=datos["codigo"],
@@ -204,16 +263,23 @@ class TestBuscarCursos(TestBase):
         db.session.commit()
 
     def agregar_curso(self, datos):
-        db.session.add(Curso(
+        curso = Curso(
             codigo_materia=datos["codigo_materia"],
             codigo=datos["codigo"],
-            docentes=datos["docentes"],
             se_dicta_primer_cuatrimestre=datos["se_dicta_primer_cuatrimestre"],
             se_dicta_segundo_cuatrimestre=datos["se_dicta_segundo_cuatrimestre"],
             cantidad_encuestas_completas=datos["cantidad_encuestas_completas"],
             puntaje_total_encuestas=datos["puntaje_total_encuestas"],
             fecha_actualizacion=datos["fecha_actualizacion"],
-        ))
+        )
+        db.session.add(curso)
+        db.session.commit()
+
+        for docente in datos["docentes"]:
+            db.session.add(CursosDocente(
+                curso_id=curso.id,
+                docente_id=docente["id"]
+            ))
         db.session.commit()
 
     def agregar_horario(self, datos):
@@ -253,7 +319,7 @@ class TestBuscarCursos(TestBase):
         if not (curso_origen["id"] == curso_servicio["id"] and
                         curso_origen["codigo_materia"] == curso_servicio["codigo_materia"] and
                         curso_origen["codigo"] == curso_servicio["codigo_curso"] and
-                        curso_origen["docentes"] == curso_servicio["docentes"] and
+                        self.los_docentes_coinciden(curso_origen, curso_servicio) and
                         curso_origen["se_dicta_primer_cuatrimestre"] == curso_servicio["se_dicta_primer_cuatri"] and
                         curso_origen["se_dicta_segundo_cuatrimestre"] == curso_servicio["se_dicta_segundo_cuatri"] and
                         self.calcular_puntaje(curso_origen) == curso_servicio["puntaje"] and
@@ -277,6 +343,20 @@ class TestBuscarCursos(TestBase):
             if not self.se_encuentra_la_carrera(c, curso_servicio["carreras"]):
                 return False
 
+        return True
+
+    def los_docentes_coinciden(self, curso_origen, curso_servicio):
+        nombres = []
+        for docente in curso_origen["docentes"]:
+            nombres.append(docente["nombre_completo"])
+
+        nombres_servicio = curso_servicio["docentes"].split("-")
+        if not len(nombres) == len(nombres_servicio):
+            return False
+
+        for nombre in nombres_servicio:
+            if nombre not in nombres:
+                return False
         return True
 
     def se_encuentra_el_horario(self, horario, l_horarios):

@@ -93,7 +93,7 @@
                                 <td>
                                     <ul class="list-group">
                                         {% for horario in curso["horarios"] %}
-                                            <li class="list-group-item">
+                                            <li class="list-group-item" style="border-color: transparent; background-color: transparent;">
                                                 {{horario["dia"]}} de {{horario["hora_desde"]}} a {{horario["hora_hasta"]}}
                                             </li>
                                         {% endfor %}

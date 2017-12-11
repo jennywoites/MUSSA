@@ -8,6 +8,7 @@ from tests.TestAPIServicios.TestBase import TestBase
 from app import db
 from app.models.horarios_models import Curso, Horario, HorarioPorCurso, CarreraPorCurso
 from app.models.carreras_models import Carrera
+from app.models.docentes_models import Docente, CursosDocente
 
 import datetime
 
@@ -88,11 +89,25 @@ class TestModificarCurso(TestBase):
     def get_horarios_bd(self):
         return [self.HORARIO_1, self.HORARIO_2]
 
+    DOCENTE_1 = {
+        "id": "1",
+        "nombre": "Doc1",
+        "apellido": "Apellido1"
+    }
+
+    DOCENTE_2 = {
+        "id": "2",
+        "nombre": "Doc1",
+        "apellido": "Apellido1"
+    }
+
+    def get_docentes(self):
+        return [self.DOCENTE_1, self.DOCENTE_2]
+
     CURSO = {
         "id": 1,
         "codigo_materia": "7540",
         "codigo": "7540-CursoA",
-        "docentes": "Doc1",
         "se_dicta_primer_cuatrimestre": True,
         "se_dicta_segundo_cuatrimestre": True,
         "cuatrimestre": "Ambos cuatrimestres",
@@ -114,12 +129,29 @@ class TestModificarCurso(TestBase):
             self.agregar_horario(horario)
 
         self.agregar_curso(self.CURSO)
+        self.agregar_docentes(self.get_docentes())
+        self.agregar_docente_al_curso(self.CURSO, self.DOCENTE_1)
 
         for c_horario in self.CURSO["horarios"]:
             self.agregar_horario_por_curso(self.CURSO, c_horario)
 
         for c_carrera in self.CURSO["carreras"]:
             self.agregar_carrera_por_curso(self.CURSO, c_carrera)
+
+    def agregar_docentes(self, docentes):
+        for docente in docentes:
+            db.session.add(Docente(
+                apellido=docente["apellido"],
+                nombre=docente["nombre"]
+            ))
+        db.session.commit()
+
+    def agregar_docente_al_curso(self, curso, docente):
+        db.session.add(CursosDocente(
+            curso_id=curso["id"],
+            docente_id=docente["id"]
+        ))
+        db.session.commit()
 
     def agregar_carrera(self, datos):
         db.session.add(Carrera(
@@ -134,7 +166,6 @@ class TestModificarCurso(TestBase):
         db.session.add(Curso(
             codigo_materia=datos["codigo_materia"],
             codigo=datos["codigo"],
-            docentes=datos["docentes"],
             se_dicta_primer_cuatrimestre=datos["se_dicta_primer_cuatrimestre"],
             se_dicta_segundo_cuatrimestre=datos["se_dicta_segundo_cuatrimestre"],
             cantidad_encuestas_completas=datos["cantidad_encuestas_completas"],
@@ -171,8 +202,11 @@ class TestModificarCurso(TestBase):
             carreras += str(c["id"]) + ";"
         return carreras[:-1]
 
-    def obtener_docentes_formateados(self, curso):
-        return curso["docentes"]
+    def obtener_docentes_formateados(self, docentes):
+        doc_formateado = ""
+        for docente in docentes:
+            doc_formateado += str(docente["id"]) + ";"
+        return doc_formateado[:-1]
 
     def obtener_horarios_formateados(self, horarios):
         f_horarios = ""
@@ -221,7 +255,7 @@ class TestModificarCurso(TestBase):
         parametros["carreras"] = self.obtener_carreras_formateadas([self.CARRERA_1])
         parametros["primer_cuatrimestre"] = self.CURSO["se_dicta_primer_cuatrimestre"]
         parametros["segundo_cuatrimestre"] = self.CURSO["se_dicta_segundo_cuatrimestre"]
-        parametros["docentes"] = self.obtener_docentes_formateados(self.CURSO)
+        parametros["docentes"] = self.obtener_docentes_formateados([self.DOCENTE_1])
         parametros["horarios"] = self.obtener_horarios_formateados(self.CURSO["horarios"])
 
         client = self.loguear_administrador()
@@ -239,7 +273,10 @@ class TestModificarCurso(TestBase):
 
         assert (curso.se_dicta_primer_cuatrimestre == self.CURSO["se_dicta_primer_cuatrimestre"])
         assert (curso.se_dicta_segundo_cuatrimestre == self.CURSO["se_dicta_segundo_cuatrimestre"])
-        assert (curso.docentes == self.CURSO["docentes"])
+
+        query = CursosDocente.query.filter_by(curso_id=self.CURSO["id"])
+        cursos = query.filter_by(docente_id=self.DOCENTE_1["id"]).all()
+        assert (len(cursos) == 1)
 
         horarios = HorarioPorCurso.query.filter_by(curso_id=self.CURSO["id"]).all()
         assert (len(horarios) == 2)
@@ -252,7 +289,7 @@ class TestModificarCurso(TestBase):
         parametros["carreras"] = "1:2"
         parametros["primer_cuatrimestre"] = self.CURSO["se_dicta_primer_cuatrimestre"]
         parametros["segundo_cuatrimestre"] = self.CURSO["se_dicta_segundo_cuatrimestre"]
-        parametros["docentes"] = self.obtener_docentes_formateados(self.CURSO)
+        parametros["docentes"] = self.obtener_docentes_formateados([self.DOCENTE_1])
         parametros["horarios"] = self.obtener_horarios_formateados(self.CURSO["horarios"])
 
         client = self.loguear_administrador()
@@ -266,7 +303,7 @@ class TestModificarCurso(TestBase):
         parametros["carreras"] = "4;5"
         parametros["primer_cuatrimestre"] = self.CURSO["se_dicta_primer_cuatrimestre"]
         parametros["segundo_cuatrimestre"] = self.CURSO["se_dicta_segundo_cuatrimestre"]
-        parametros["docentes"] = self.obtener_docentes_formateados(self.CURSO)
+        parametros["docentes"] = self.obtener_docentes_formateados([self.DOCENTE_1])
         parametros["horarios"] = self.obtener_horarios_formateados(self.CURSO["horarios"])
 
         client = self.loguear_administrador()
@@ -279,7 +316,7 @@ class TestModificarCurso(TestBase):
         parametros["id_curso"] = self.CURSO["id"]
         parametros["primer_cuatrimestre"] = self.CURSO["se_dicta_primer_cuatrimestre"]
         parametros["segundo_cuatrimestre"] = self.CURSO["se_dicta_segundo_cuatrimestre"]
-        parametros["docentes"] = self.obtener_docentes_formateados(self.CURSO)
+        parametros["docentes"] = self.obtener_docentes_formateados([self.DOCENTE_1])
         parametros["horarios"] = self.obtener_horarios_formateados(self.CURSO["horarios"])
 
         client = self.loguear_administrador()
@@ -293,7 +330,7 @@ class TestModificarCurso(TestBase):
         parametros["carreras"] = ""
         parametros["primer_cuatrimestre"] = self.CURSO["se_dicta_primer_cuatrimestre"]
         parametros["segundo_cuatrimestre"] = self.CURSO["se_dicta_segundo_cuatrimestre"]
-        parametros["docentes"] = self.obtener_docentes_formateados(self.CURSO)
+        parametros["docentes"] = self.obtener_docentes_formateados([self.DOCENTE_1])
         parametros["horarios"] = self.obtener_horarios_formateados(self.CURSO["horarios"])
 
         client = self.loguear_administrador()
@@ -307,7 +344,7 @@ class TestModificarCurso(TestBase):
         parametros["carreras"] = "dasop99;902"
         parametros["primer_cuatrimestre"] = self.CURSO["se_dicta_primer_cuatrimestre"]
         parametros["segundo_cuatrimestre"] = self.CURSO["se_dicta_segundo_cuatrimestre"]
-        parametros["docentes"] = self.obtener_docentes_formateados(self.CURSO)
+        parametros["docentes"] = self.obtener_docentes_formateados([self.DOCENTE_1])
         parametros["horarios"] = self.obtener_horarios_formateados(self.CURSO["horarios"])
 
         client = self.loguear_administrador()
@@ -321,7 +358,7 @@ class TestModificarCurso(TestBase):
         parametros["carreras"] = self.obtener_carreras_formateadas([self.CARRERA_1, self.CARRERA_3])
         parametros["primer_cuatrimestre"] = self.CURSO["se_dicta_primer_cuatrimestre"]
         parametros["segundo_cuatrimestre"] = self.CURSO["se_dicta_segundo_cuatrimestre"]
-        parametros["docentes"] = self.obtener_docentes_formateados(self.CURSO)
+        parametros["docentes"] = self.obtener_docentes_formateados([self.DOCENTE_1])
         parametros["horarios"] = self.obtener_horarios_formateados(self.CURSO["horarios"])
 
         client = self.loguear_administrador()
@@ -340,7 +377,10 @@ class TestModificarCurso(TestBase):
 
         assert (curso.se_dicta_primer_cuatrimestre == self.CURSO["se_dicta_primer_cuatrimestre"])
         assert (curso.se_dicta_segundo_cuatrimestre == self.CURSO["se_dicta_segundo_cuatrimestre"])
-        assert (curso.docentes == self.CURSO["docentes"])
+
+        query = CursosDocente.query.filter_by(curso_id=self.CURSO["id"])
+        cursos = query.filter_by(docente_id=self.DOCENTE_1["id"]).all()
+        assert (len(cursos) == 1)
 
         horarios = HorarioPorCurso.query.filter_by(curso_id=self.CURSO["id"]).all()
         assert (len(horarios) == 2)
@@ -353,7 +393,7 @@ class TestModificarCurso(TestBase):
         parametros["carreras"] = self.obtener_carreras_formateadas(self.CURSO["carreras"])
         parametros["primer_cuatrimestre"] = True
         parametros["segundo_cuatrimestre"] = False
-        parametros["docentes"] = self.obtener_docentes_formateados(self.CURSO)
+        parametros["docentes"] = self.obtener_docentes_formateados([self.DOCENTE_1])
         parametros["horarios"] = self.obtener_horarios_formateados(self.CURSO["horarios"])
 
         client = self.loguear_administrador()
@@ -372,7 +412,10 @@ class TestModificarCurso(TestBase):
 
         assert (curso.se_dicta_primer_cuatrimestre == True)
         assert (curso.se_dicta_segundo_cuatrimestre == False)
-        assert (curso.docentes == self.CURSO["docentes"])
+
+        query = CursosDocente.query.filter_by(curso_id=self.CURSO["id"])
+        cursos = query.filter_by(docente_id=self.DOCENTE_1["id"]).all()
+        assert (len(cursos) == 1)
 
         horarios = HorarioPorCurso.query.filter_by(curso_id=self.CURSO["id"]).all()
         assert (len(horarios) == 2)
@@ -385,7 +428,7 @@ class TestModificarCurso(TestBase):
         parametros["carreras"] = self.obtener_carreras_formateadas(self.CURSO["carreras"])
         parametros["primer_cuatrimestre"] = False
         parametros["segundo_cuatrimestre"] = True
-        parametros["docentes"] = self.obtener_docentes_formateados(self.CURSO)
+        parametros["docentes"] = self.obtener_docentes_formateados([self.DOCENTE_1])
         parametros["horarios"] = self.obtener_horarios_formateados(self.CURSO["horarios"])
 
         client = self.loguear_administrador()
@@ -404,7 +447,10 @@ class TestModificarCurso(TestBase):
 
         assert (curso.se_dicta_primer_cuatrimestre == False)
         assert (curso.se_dicta_segundo_cuatrimestre == True)
-        assert (curso.docentes == self.CURSO["docentes"])
+
+        query = CursosDocente.query.filter_by(curso_id=self.CURSO["id"])
+        cursos = query.filter_by(docente_id=self.DOCENTE_1["id"]).all()
+        assert (len(cursos) == 1)
 
         horarios = HorarioPorCurso.query.filter_by(curso_id=self.CURSO["id"]).all()
         assert (len(horarios) == 2)
@@ -417,7 +463,7 @@ class TestModificarCurso(TestBase):
         parametros["carreras"] = self.obtener_carreras_formateadas(self.CURSO["carreras"])
         parametros["primer_cuatrimestre"] = True
         parametros["segundo_cuatrimestre"] = True
-        parametros["docentes"] = self.obtener_docentes_formateados(self.CURSO)
+        parametros["docentes"] = self.obtener_docentes_formateados([self.DOCENTE_1])
         parametros["horarios"] = self.obtener_horarios_formateados(self.CURSO["horarios"])
 
         client = self.loguear_administrador()
@@ -436,7 +482,10 @@ class TestModificarCurso(TestBase):
 
         assert (curso.se_dicta_primer_cuatrimestre == True)
         assert (curso.se_dicta_segundo_cuatrimestre == True)
-        assert (curso.docentes == self.CURSO["docentes"])
+
+        query = CursosDocente.query.filter_by(curso_id=self.CURSO["id"])
+        cursos = query.filter_by(docente_id=self.DOCENTE_1["id"]).all()
+        assert (len(cursos) == 1)
 
         horarios = HorarioPorCurso.query.filter_by(curso_id=self.CURSO["id"]).all()
         assert (len(horarios) == 2)
@@ -449,7 +498,7 @@ class TestModificarCurso(TestBase):
         parametros["carreras"] = self.obtener_carreras_formateadas(self.CURSO["carreras"])
         parametros["primer_cuatrimestre"] = False
         parametros["segundo_cuatrimestre"] = False
-        parametros["docentes"] = self.obtener_docentes_formateados(self.CURSO)
+        parametros["docentes"] = self.obtener_docentes_formateados([self.DOCENTE_1])
         parametros["horarios"] = self.obtener_horarios_formateados(self.CURSO["horarios"])
 
         client = self.loguear_administrador()
@@ -468,7 +517,10 @@ class TestModificarCurso(TestBase):
 
         assert (curso.se_dicta_primer_cuatrimestre == False)
         assert (curso.se_dicta_segundo_cuatrimestre == False)
-        assert (curso.docentes == self.CURSO["docentes"])
+
+        query = CursosDocente.query.filter_by(curso_id=self.CURSO["id"])
+        cursos = query.filter_by(docente_id=self.DOCENTE_1["id"]).all()
+        assert (len(cursos) == 1)
 
         horarios = HorarioPorCurso.query.filter_by(curso_id=self.CURSO["id"]).all()
         assert (len(horarios) == 2)
@@ -481,7 +533,7 @@ class TestModificarCurso(TestBase):
         parametros["carreras"] = self.obtener_carreras_formateadas(self.CURSO["carreras"])
         parametros["primer_cuatrimestre"] = "Pepe"
         parametros["segundo_cuatrimestre"] = False
-        parametros["docentes"] = self.obtener_docentes_formateados(self.CURSO)
+        parametros["docentes"] = self.obtener_docentes_formateados([self.DOCENTE_1])
         parametros["horarios"] = self.obtener_horarios_formateados(self.CURSO["horarios"])
 
         client = self.loguear_administrador()
@@ -494,7 +546,7 @@ class TestModificarCurso(TestBase):
         parametros["id_curso"] = self.CURSO["id"]
         parametros["carreras"] = self.obtener_carreras_formateadas(self.CURSO["carreras"])
         parametros["segundo_cuatrimestre"] = False
-        parametros["docentes"] = self.obtener_docentes_formateados(self.CURSO)
+        parametros["docentes"] = self.obtener_docentes_formateados([self.DOCENTE_1])
         parametros["horarios"] = self.obtener_horarios_formateados(self.CURSO["horarios"])
 
         client = self.loguear_administrador()
@@ -507,7 +559,7 @@ class TestModificarCurso(TestBase):
         parametros["id_curso"] = self.CURSO["id"]
         parametros["carreras"] = self.obtener_carreras_formateadas(self.CURSO["carreras"])
         parametros["primer_cuatrimestre"] = True
-        parametros["docentes"] = self.obtener_docentes_formateados(self.CURSO)
+        parametros["docentes"] = self.obtener_docentes_formateados([self.DOCENTE_1])
         parametros["horarios"] = self.obtener_horarios_formateados(self.CURSO["horarios"])
 
         client = self.loguear_administrador()
@@ -521,7 +573,7 @@ class TestModificarCurso(TestBase):
         parametros["carreras"] = self.obtener_carreras_formateadas(self.CURSO["carreras"])
         parametros["primer_cuatrimestre"] = True
         parametros["segundo_cuatrimestre"] = "90asdj"
-        parametros["docentes"] = self.obtener_docentes_formateados(self.CURSO)
+        parametros["docentes"] = self.obtener_docentes_formateados([self.DOCENTE_1])
         parametros["horarios"] = self.obtener_horarios_formateados(self.CURSO["horarios"])
 
         client = self.loguear_administrador()
@@ -535,7 +587,7 @@ class TestModificarCurso(TestBase):
         parametros["carreras"] = self.obtener_carreras_formateadas(self.CURSO["carreras"])
         parametros["primer_cuatrimestre"] = True
         parametros["segundo_cuatrimestre"] = False
-        parametros["docentes"] = self.obtener_docentes_formateados(self.CURSO)
+        parametros["docentes"] = self.obtener_docentes_formateados([self.DOCENTE_1])
         parametros["horarios"] = self.obtener_horarios_formateados(self.CURSO["horarios"])
 
         client = self.loguear_administrador()
@@ -554,7 +606,10 @@ class TestModificarCurso(TestBase):
 
         assert (curso.se_dicta_primer_cuatrimestre == True)
         assert (curso.se_dicta_segundo_cuatrimestre == False)
-        assert (curso.docentes == self.CURSO["docentes"])
+
+        query = CursosDocente.query.filter_by(curso_id=self.CURSO["id"])
+        cursos = query.filter_by(docente_id=self.DOCENTE_1["id"]).all()
+        assert (len(cursos) == 1)
 
         horarios = HorarioPorCurso.query.filter_by(curso_id=self.CURSO["id"]).all()
         assert (len(horarios) == 2)
@@ -567,7 +622,7 @@ class TestModificarCurso(TestBase):
         parametros["carreras"] = self.obtener_carreras_formateadas(self.CURSO["carreras"])
         parametros["primer_cuatrimestre"] = False
         parametros["segundo_cuatrimestre"] = True
-        parametros["docentes"] = self.obtener_docentes_formateados(self.CURSO)
+        parametros["docentes"] = self.obtener_docentes_formateados([self.DOCENTE_1])
         parametros["horarios"] = self.obtener_horarios_formateados(self.CURSO["horarios"])
 
         client = self.loguear_administrador()
@@ -586,7 +641,10 @@ class TestModificarCurso(TestBase):
 
         assert (curso.se_dicta_primer_cuatrimestre == False)
         assert (curso.se_dicta_segundo_cuatrimestre == True)
-        assert (curso.docentes == self.CURSO["docentes"])
+
+        query = CursosDocente.query.filter_by(curso_id=self.CURSO["id"])
+        cursos = query.filter_by(docente_id=self.DOCENTE_1["id"]).all()
+        assert (len(cursos) == 1)
 
         horarios = HorarioPorCurso.query.filter_by(curso_id=self.CURSO["id"]).all()
         assert (len(horarios) == 2)
@@ -599,7 +657,7 @@ class TestModificarCurso(TestBase):
         parametros["carreras"] = self.obtener_carreras_formateadas(self.CURSO["carreras"])
         parametros["primer_cuatrimestre"] = True
         parametros["segundo_cuatrimestre"] = True
-        parametros["docentes"] = self.obtener_docentes_formateados(self.CURSO)
+        parametros["docentes"] = self.obtener_docentes_formateados([self.DOCENTE_1])
         parametros["horarios"] = self.obtener_horarios_formateados(self.CURSO["horarios"])
 
         client = self.loguear_administrador()
@@ -618,7 +676,10 @@ class TestModificarCurso(TestBase):
 
         assert (curso.se_dicta_primer_cuatrimestre == True)
         assert (curso.se_dicta_segundo_cuatrimestre == True)
-        assert (curso.docentes == self.CURSO["docentes"])
+
+        query = CursosDocente.query.filter_by(curso_id=self.CURSO["id"])
+        cursos = query.filter_by(docente_id=self.DOCENTE_1["id"]).all()
+        assert (len(cursos) == 1)
 
         horarios = HorarioPorCurso.query.filter_by(curso_id=self.CURSO["id"]).all()
         assert (len(horarios) == 2)
@@ -631,7 +692,7 @@ class TestModificarCurso(TestBase):
         parametros["carreras"] = self.obtener_carreras_formateadas(self.CURSO["carreras"])
         parametros["primer_cuatrimestre"] = False
         parametros["segundo_cuatrimestre"] = False
-        parametros["docentes"] = self.obtener_docentes_formateados(self.CURSO)
+        parametros["docentes"] = self.obtener_docentes_formateados([self.DOCENTE_1])
         parametros["horarios"] = self.obtener_horarios_formateados(self.CURSO["horarios"])
 
         client = self.loguear_administrador()
@@ -650,7 +711,10 @@ class TestModificarCurso(TestBase):
 
         assert (curso.se_dicta_primer_cuatrimestre == False)
         assert (curso.se_dicta_segundo_cuatrimestre == False)
-        assert (curso.docentes == self.CURSO["docentes"])
+
+        query = CursosDocente.query.filter_by(curso_id=self.CURSO["id"])
+        cursos = query.filter_by(docente_id=self.DOCENTE_1["id"]).all()
+        assert (len(cursos) == 1)
 
         horarios = HorarioPorCurso.query.filter_by(curso_id=self.CURSO["id"]).all()
         assert (len(horarios) == 2)
@@ -663,7 +727,7 @@ class TestModificarCurso(TestBase):
         parametros["carreras"] = self.obtener_carreras_formateadas(self.CURSO["carreras"])
         parametros["primer_cuatrimestre"] = 'true'
         parametros["segundo_cuatrimestre"] = 'false'
-        parametros["docentes"] = self.obtener_docentes_formateados(self.CURSO)
+        parametros["docentes"] = self.obtener_docentes_formateados([self.DOCENTE_1])
         parametros["horarios"] = self.obtener_horarios_formateados(self.CURSO["horarios"])
 
         client = self.loguear_administrador()
@@ -682,7 +746,10 @@ class TestModificarCurso(TestBase):
 
         assert (curso.se_dicta_primer_cuatrimestre == True)
         assert (curso.se_dicta_segundo_cuatrimestre == False)
-        assert (curso.docentes == self.CURSO["docentes"])
+
+        query = CursosDocente.query.filter_by(curso_id=self.CURSO["id"])
+        cursos = query.filter_by(docente_id=self.DOCENTE_1["id"]).all()
+        assert (len(cursos) == 1)
 
         horarios = HorarioPorCurso.query.filter_by(curso_id=self.CURSO["id"]).all()
         assert (len(horarios) == 2)
@@ -695,7 +762,7 @@ class TestModificarCurso(TestBase):
         parametros["carreras"] = self.obtener_carreras_formateadas(self.CURSO["carreras"])
         parametros["primer_cuatrimestre"] = 'false'
         parametros["segundo_cuatrimestre"] = 'true'
-        parametros["docentes"] = self.obtener_docentes_formateados(self.CURSO)
+        parametros["docentes"] = self.obtener_docentes_formateados([self.DOCENTE_1])
         parametros["horarios"] = self.obtener_horarios_formateados(self.CURSO["horarios"])
 
         client = self.loguear_administrador()
@@ -714,7 +781,10 @@ class TestModificarCurso(TestBase):
 
         assert (curso.se_dicta_primer_cuatrimestre == False)
         assert (curso.se_dicta_segundo_cuatrimestre == True)
-        assert (curso.docentes == self.CURSO["docentes"])
+
+        query = CursosDocente.query.filter_by(curso_id=self.CURSO["id"])
+        cursos = query.filter_by(docente_id=self.DOCENTE_1["id"]).all()
+        assert (len(cursos) == 1)
 
         horarios = HorarioPorCurso.query.filter_by(curso_id=self.CURSO["id"]).all()
         assert (len(horarios) == 2)
@@ -727,7 +797,7 @@ class TestModificarCurso(TestBase):
         parametros["carreras"] = self.obtener_carreras_formateadas(self.CURSO["carreras"])
         parametros["primer_cuatrimestre"] = 'true'
         parametros["segundo_cuatrimestre"] = 'true'
-        parametros["docentes"] = self.obtener_docentes_formateados(self.CURSO)
+        parametros["docentes"] = self.obtener_docentes_formateados([self.DOCENTE_1])
         parametros["horarios"] = self.obtener_horarios_formateados(self.CURSO["horarios"])
 
         client = self.loguear_administrador()
@@ -746,7 +816,10 @@ class TestModificarCurso(TestBase):
 
         assert (curso.se_dicta_primer_cuatrimestre == True)
         assert (curso.se_dicta_segundo_cuatrimestre == True)
-        assert (curso.docentes == self.CURSO["docentes"])
+
+        query = CursosDocente.query.filter_by(curso_id=self.CURSO["id"])
+        cursos = query.filter_by(docente_id=self.DOCENTE_1["id"]).all()
+        assert (len(cursos) == 1)
 
         horarios = HorarioPorCurso.query.filter_by(curso_id=self.CURSO["id"]).all()
         assert (len(horarios) == 2)
@@ -759,7 +832,7 @@ class TestModificarCurso(TestBase):
         parametros["carreras"] = self.obtener_carreras_formateadas(self.CURSO["carreras"])
         parametros["primer_cuatrimestre"] = 'false'
         parametros["segundo_cuatrimestre"] = 'false'
-        parametros["docentes"] = self.obtener_docentes_formateados(self.CURSO)
+        parametros["docentes"] = self.obtener_docentes_formateados([self.DOCENTE_1])
         parametros["horarios"] = self.obtener_horarios_formateados(self.CURSO["horarios"])
 
         client = self.loguear_administrador()
@@ -778,7 +851,10 @@ class TestModificarCurso(TestBase):
 
         assert (curso.se_dicta_primer_cuatrimestre == False)
         assert (curso.se_dicta_segundo_cuatrimestre == False)
-        assert (curso.docentes == self.CURSO["docentes"])
+
+        query = CursosDocente.query.filter_by(curso_id=self.CURSO["id"])
+        cursos = query.filter_by(docente_id=self.DOCENTE_1["id"]).all()
+        assert (len(cursos) == 1)
 
         horarios = HorarioPorCurso.query.filter_by(curso_id=self.CURSO["id"]).all()
         assert (len(horarios) == 2)
@@ -786,14 +862,12 @@ class TestModificarCurso(TestBase):
             assert (self.se_encuentra_el_horario(horario, horarios))
 
     def test_modificar_curso_docentes_lo_modifica(self):
-        NUEVOS_DOCENTES = "Docentes1,docentes3 - docentes& Mryy"
-
         parametros = {}
         parametros["id_curso"] = self.CURSO["id"]
         parametros["carreras"] = self.obtener_carreras_formateadas(self.CURSO["carreras"])
         parametros["primer_cuatrimestre"] = self.CURSO["se_dicta_primer_cuatrimestre"]
         parametros["segundo_cuatrimestre"] = self.CURSO["se_dicta_segundo_cuatrimestre"]
-        parametros["docentes"] = NUEVOS_DOCENTES
+        parametros["docentes"] = self.obtener_docentes_formateados([self.DOCENTE_2])
         parametros["horarios"] = self.obtener_horarios_formateados(self.CURSO["horarios"])
 
         client = self.loguear_administrador()
@@ -812,12 +886,19 @@ class TestModificarCurso(TestBase):
 
         assert (curso.se_dicta_primer_cuatrimestre == self.CURSO["se_dicta_primer_cuatrimestre"])
         assert (curso.se_dicta_segundo_cuatrimestre == self.CURSO["se_dicta_segundo_cuatrimestre"])
-        assert (curso.docentes == NUEVOS_DOCENTES)
 
         horarios = HorarioPorCurso.query.filter_by(curso_id=self.CURSO["id"]).all()
         assert (len(horarios) == 2)
         for horario in self.CURSO["horarios"]:
             assert (self.se_encuentra_el_horario(horario, horarios))
+
+        query = CursosDocente.query.filter_by(curso_id=self.CURSO["id"])
+        cursos = query.filter_by(docente_id=self.DOCENTE_2["id"]).all()
+        assert (len(cursos) == 1)
+
+        query = CursosDocente.query.filter_by(curso_id=self.CURSO["id"])
+        cursos = query.filter_by(docente_id=self.DOCENTE_1["id"]).all()
+        assert (len(cursos) == 0)
 
     def test_modificar_curso_no_enviar_docentes_da_error(self):
         parametros = {}
@@ -832,13 +913,55 @@ class TestModificarCurso(TestBase):
         response = client.get(MODIFICAR_CURSO_SERVICE, query_string=parametros)
         assert (response.status_code == CLIENT_ERROR_BAD_REQUEST)
 
+    def test_modificar_curso_enviar_docentes_con_ids_inexistentes_da_error(self):
+        parametros = {}
+        parametros["id_curso"] = self.CURSO["id"]
+        parametros["carreras"] = self.obtener_carreras_formateadas(self.CURSO["carreras"])
+        parametros["primer_cuatrimestre"] = 'false'
+        parametros["segundo_cuatrimestre"] = 'false'
+        parametros["horarios"] = self.obtener_horarios_formateados(self.CURSO["horarios"])
+        parametros["docentes"] = "58;69"
+
+        client = self.loguear_administrador()
+        # response = client.post(MODIFICAR_CURSO_SERVICE, data=parametros)
+        response = client.get(MODIFICAR_CURSO_SERVICE, query_string=parametros)
+        assert (response.status_code == CLIENT_ERROR_BAD_REQUEST)
+
+    def test_modificar_curso_enviar_docentes_con_ids_invalidos_da_error(self):
+        parametros = {}
+        parametros["id_curso"] = self.CURSO["id"]
+        parametros["carreras"] = self.obtener_carreras_formateadas(self.CURSO["carreras"])
+        parametros["primer_cuatrimestre"] = 'false'
+        parametros["segundo_cuatrimestre"] = 'false'
+        parametros["horarios"] = self.obtener_horarios_formateados(self.CURSO["horarios"])
+        parametros["docentes"] = "58a;7s"
+
+        client = self.loguear_administrador()
+        # response = client.post(MODIFICAR_CURSO_SERVICE, data=parametros)
+        response = client.get(MODIFICAR_CURSO_SERVICE, query_string=parametros)
+        assert (response.status_code == CLIENT_ERROR_BAD_REQUEST)
+
+    def test_modificar_curso_enviar_docentes_con_ids_validos_y_separador_invalido_da_error(self):
+        parametros = {}
+        parametros["id_curso"] = self.CURSO["id"]
+        parametros["carreras"] = self.obtener_carreras_formateadas(self.CURSO["carreras"])
+        parametros["primer_cuatrimestre"] = 'false'
+        parametros["segundo_cuatrimestre"] = 'false'
+        parametros["horarios"] = self.obtener_horarios_formateados(self.CURSO["horarios"])
+        parametros["docentes"] = "1-2"
+
+        client = self.loguear_administrador()
+        # response = client.post(MODIFICAR_CURSO_SERVICE, data=parametros)
+        response = client.get(MODIFICAR_CURSO_SERVICE, query_string=parametros)
+        assert (response.status_code == CLIENT_ERROR_BAD_REQUEST)
+
     def test_modificar_horarios_validos_agregar_un_horario_nuevo_lo_modifica(self):
         parametros = {}
         parametros["id_curso"] = self.CURSO["id"]
         parametros["carreras"] = self.obtener_carreras_formateadas(self.CURSO["carreras"])
         parametros["primer_cuatrimestre"] = self.CURSO["se_dicta_primer_cuatrimestre"]
         parametros["segundo_cuatrimestre"] = self.CURSO["se_dicta_segundo_cuatrimestre"]
-        parametros["docentes"] = self.CURSO["docentes"]
+        parametros["docentes"] = self.obtener_docentes_formateados([self.DOCENTE_1])
         parametros["horarios"] = self.obtener_horarios_formateados(self.CURSO["horarios"] + [self.HORARIO_3])
 
         client = self.loguear_administrador()
@@ -857,7 +980,10 @@ class TestModificarCurso(TestBase):
 
         assert (curso.se_dicta_primer_cuatrimestre == self.CURSO["se_dicta_primer_cuatrimestre"])
         assert (curso.se_dicta_segundo_cuatrimestre == self.CURSO["se_dicta_segundo_cuatrimestre"])
-        assert (curso.docentes == self.CURSO["docentes"])
+
+        query = CursosDocente.query.filter_by(curso_id=self.CURSO["id"])
+        cursos = query.filter_by(docente_id=self.DOCENTE_1["id"]).all()
+        assert (len(cursos) == 1)
 
         horarios = HorarioPorCurso.query.filter_by(curso_id=self.CURSO["id"]).all()
         assert (len(horarios) == 3)
@@ -870,7 +996,7 @@ class TestModificarCurso(TestBase):
         parametros["carreras"] = self.obtener_carreras_formateadas(self.CURSO["carreras"])
         parametros["primer_cuatrimestre"] = self.CURSO["se_dicta_primer_cuatrimestre"]
         parametros["segundo_cuatrimestre"] = self.CURSO["se_dicta_segundo_cuatrimestre"]
-        parametros["docentes"] = self.CURSO["docentes"]
+        parametros["docentes"] = self.obtener_docentes_formateados([self.DOCENTE_1])
         parametros["horarios"] = self.obtener_horarios_formateados([self.HORARIO_3, self.HORARIO_4])
 
         client = self.loguear_administrador()
@@ -889,7 +1015,10 @@ class TestModificarCurso(TestBase):
 
         assert (curso.se_dicta_primer_cuatrimestre == self.CURSO["se_dicta_primer_cuatrimestre"])
         assert (curso.se_dicta_segundo_cuatrimestre == self.CURSO["se_dicta_segundo_cuatrimestre"])
-        assert (curso.docentes == self.CURSO["docentes"])
+
+        query = CursosDocente.query.filter_by(curso_id=self.CURSO["id"])
+        cursos = query.filter_by(docente_id=self.DOCENTE_1["id"]).all()
+        assert (len(cursos) == 1)
 
         horarios = HorarioPorCurso.query.filter_by(curso_id=self.CURSO["id"]).all()
         assert (len(horarios) == 2)
@@ -902,7 +1031,7 @@ class TestModificarCurso(TestBase):
         parametros["carreras"] = self.obtener_carreras_formateadas(self.CURSO["carreras"])
         parametros["primer_cuatrimestre"] = self.CURSO["se_dicta_primer_cuatrimestre"]
         parametros["segundo_cuatrimestre"] = self.CURSO["se_dicta_segundo_cuatrimestre"]
-        parametros["docentes"] = self.CURSO["docentes"]
+        parametros["docentes"] = self.obtener_docentes_formateados([self.DOCENTE_1])
         parametros["horarios"] = "sd54fs5"
 
         client = self.loguear_administrador()
@@ -916,7 +1045,7 @@ class TestModificarCurso(TestBase):
         parametros["carreras"] = self.obtener_carreras_formateadas(self.CURSO["carreras"])
         parametros["primer_cuatrimestre"] = self.CURSO["se_dicta_primer_cuatrimestre"]
         parametros["segundo_cuatrimestre"] = self.CURSO["se_dicta_segundo_cuatrimestre"]
-        parametros["docentes"] = self.CURSO["docentes"]
+        parametros["docentes"] = self.obtener_docentes_formateados([self.DOCENTE_1])
 
         client = self.loguear_administrador()
         # response = client.post(MODIFICAR_CURSO_SERVICE, data=parametros)
@@ -928,7 +1057,7 @@ class TestModificarCurso(TestBase):
         parametros["carreras"] = self.obtener_carreras_formateadas(self.CURSO["carreras"])
         parametros["primer_cuatrimestre"] = self.CURSO["se_dicta_primer_cuatrimestre"]
         parametros["segundo_cuatrimestre"] = self.CURSO["se_dicta_segundo_cuatrimestre"]
-        parametros["docentes"] = self.CURSO["docentes"]
+        parametros["docentes"] = self.obtener_docentes_formateados([self.DOCENTE_1])
         parametros["horarios"] = self.obtener_horarios_formateados(self.CURSO["horarios"])
 
         client = self.loguear_administrador()
@@ -942,7 +1071,7 @@ class TestModificarCurso(TestBase):
         parametros["carreras"] = self.obtener_carreras_formateadas(self.CURSO["carreras"])
         parametros["primer_cuatrimestre"] = self.CURSO["se_dicta_primer_cuatrimestre"]
         parametros["segundo_cuatrimestre"] = self.CURSO["se_dicta_segundo_cuatrimestre"]
-        parametros["docentes"] = self.CURSO["docentes"]
+        parametros["docentes"] = self.obtener_docentes_formateados([self.DOCENTE_1])
         parametros["horarios"] = self.obtener_horarios_formateados(self.CURSO["horarios"])
 
         client = self.loguear_administrador()
@@ -956,7 +1085,7 @@ class TestModificarCurso(TestBase):
         parametros["carreras"] = self.obtener_carreras_formateadas(self.CURSO["carreras"])
         parametros["primer_cuatrimestre"] = self.CURSO["se_dicta_primer_cuatrimestre"]
         parametros["segundo_cuatrimestre"] = self.CURSO["se_dicta_segundo_cuatrimestre"]
-        parametros["docentes"] = self.CURSO["docentes"]
+        parametros["docentes"] = self.obtener_docentes_formateados([self.DOCENTE_1])
         parametros["horarios"] = self.obtener_horarios_formateados(self.CURSO["horarios"])
 
         client = self.loguear_administrador()

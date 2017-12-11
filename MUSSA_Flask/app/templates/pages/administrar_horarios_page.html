@@ -58,7 +58,7 @@
             </div>
         </div>        
 
-        <input type="submit" class="btn btn-default"/>
+        <input type="submit" class="btn btn-mussa-default"/>
     </form>
 
     {% if cursos | length == 0 %}
@@ -102,7 +102,7 @@
                             <td>
                                 <ul class="list-group">
                                     {% for carrera in curso["carreras"] %}
-                                        <li class="list-group-item">
+                                        <li class="list-group-item" style="border-color: transparent; background-color: transparent;">
                                             {{carrera["codigo"]}} - {{carrera["nombre"]}}
                                         </li>
                                     {% endfor %}
@@ -111,7 +111,7 @@
                             <td>
                                 <ul class="list-group">
                                     {% for horario in curso["horarios"] %}
-                                        <li class="list-group-item">
+                                        <li class="list-group-item" style="border-color: transparent; background-color: transparent;">
                                             {{horario["dia"]}} de {{horario["hora_desde"]}} a {{horario["hora_hasta"]}}
                                         </li>
                                     {% endfor %}
