@@ -5,7 +5,9 @@ from flask import request
 from flask_user import current_user, login_required
 
 from app.models.alumno_models import Alumno, MateriasAlumno
+from app.models.horarios_models import Curso
 from app.models.carreras_models import Carrera, Materia
+from app.models.docentes_models import CursosDocente, Docente
 from app.DAO.MateriasDAO import *
 
 import logging
@@ -66,6 +68,15 @@ class ObtenerMateriasAlumno(Resource):
                 query = FormaAprobacionMateria.query.filter_by(id=materia_alumno.forma_aprobacion_id)
                 forma_aprobacion_materia = query.first().forma
 
+            curso = "Sin designar"
+            if materia_alumno.curso_id:
+                curso_elegido = Curso.query.filter_by(id=materia_alumno.curso_id).first()
+                docentes = ""
+                for curso_docente in CursosDocente.query.filter_by(curso_id=curso_elegido.id).all():
+                    docente = Docente.query.filter_by(id=curso_docente.docente_id).first()
+                    docentes += docente.obtener_nombre_completo() + "-"
+                curso = "{}: {}".format(curso_elegido.codigo, docentes[:-1])
+
             materias_result.append({
                 'id': materia_alumno.id,
                 'id_materia': materia_carrera.id,
@@ -74,6 +85,7 @@ class ObtenerMateriasAlumno(Resource):
                 'id_carrera': carrera.id,
                 'id_curso': materia_alumno.curso_id if materia_alumno.curso_id else '-1',
                 'carrera': carrera.nombre + " (" + carrera.plan + ")",
+                'curso': curso,
                 'estado': estado,
                 'aprobacion_cursada': aprobacion_cursada,
                 'calificacion': calificacion,
