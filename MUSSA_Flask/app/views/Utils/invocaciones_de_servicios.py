@@ -191,3 +191,12 @@ def invocar_obtener_encuestas_alumno(cookie, finalizadas):
     encuestas_response = requests.get(OBTENER_ENCUESTAS_ALUMNO_SERVICE, params=parametros, cookies=cookie)
     escribir_resultado_servicio('Obtener Encuestas Alumno', encuestas_response)
     return json.loads(encuestas_response.text)["encuestas"]
+
+def invocar_servicio_buscar_materias(cookie, carrera):
+    parametros = {}
+    parametros["carreras"] = carrera
+
+    materias_response = requests.get(BUSCAR_MATERIAS_SERVICE, params=parametros, cookies=cookie)
+    escribir_resultado_servicio('Buscar Materias', materias_response)
+
+    return json.loads(materias_response.text)["materias"]

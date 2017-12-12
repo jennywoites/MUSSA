@@ -40,6 +40,10 @@ def completar_encuesta_docentes_page(idEncuestaAlumno):
 def completar_encuesta(idEncuestaAlumno, cookie, num_categoria):
     preguntas = invocar_servicio_obtener_preguntas_encuesta(cookie, [num_categoria])
 
+    #Obtener la carrera
+    posibles_correlativas = invocar_servicio_buscar_materias(cookie, "10")
+    # filtrar la materia actual ya que no es correlativa
+
     HORA_MIN = 7
     HORA_MAX = 23
     horarios = []
@@ -48,10 +52,20 @@ def completar_encuesta(idEncuestaAlumno, cookie, num_categoria):
         minutos = "00" if hora == i else "30"
         horarios.append("{}:{}".format(get_numero_dos_digitos(hora), minutos))
 
+    titulos = [
+        {'url': 'main.completar_encuesta_general_page', 'titulo': 'General'},
+        {'url': 'main.completar_encuesta_contenido_page', 'titulo': 'Contenido'},
+        {'url': 'main.completar_encuesta_clases_page', 'titulo': 'Clases'},
+        {'url': 'main.completar_encuesta_examenes_page', 'titulo': 'Exámenes'},
+        {'url': 'main.completar_encuesta_docentes_page', 'titulo': 'Docentes'}
+    ]
+
     return render_template('pages/completar_encuesta_page.html',
-                           idEncuestaAlumno = idEncuestaAlumno,
+                           titulos= titulos,
+                           idEncuestaAlumno=idEncuestaAlumno,
                            paso_activo=num_categoria,
                            preguntas=preguntas,
                            dias=DIAS,
                            hora_desde=horarios[:-1],
-                           hora_hasta=horarios[1:])
+                           hora_hasta=horarios[1:],
+                           posibles_correlativas=posibles_correlativas)
