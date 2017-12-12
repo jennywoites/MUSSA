@@ -5,6 +5,8 @@
     <script>
 
         $( function () {
+            actualizar_valor_curso('{{materia["id_curso"]}}');
+
             actualizar_valor_seleccionado('estado', '{{materia["estado"]}}');
 
             mostrar_ocultar_datos_materia_aprobada();
@@ -56,6 +58,18 @@
                 if (opcion.innerText == valor)
                     opcion.selected = true
             }            
+        }
+
+        function actualizar_valor_curso(idCurso) {
+            var selector_curso = document.getElementById("curso");
+            for (var i=1; i<selector_curso.length; i++) {
+                var opcion = selector_curso[i];
+                if (opcion.value == idCurso) {
+                    selector_curso.selectedIndex = i;
+                    break;
+                }
+            }
+            mostrar_ocultar_texto_sin_curso();
         }
 
         function validar_guardar() {
@@ -121,6 +135,13 @@
             final_element.hidden = (valor_seleccionado == "Cursando actualmente" || valor_seleccionado == "Final Pendiente");
         }
 
+        function mostrar_ocultar_texto_sin_curso() {
+            var selector_curso = document.getElementById("curso");
+
+            var texto_sin_curso = document.getElementById("texto_sin_curso");
+            texto_sin_curso.hidden = (selector_curso.selectedIndex > 0);
+        }
+
     </script>
 
     <div class="container">
@@ -144,7 +165,22 @@
                 <label>{{materia["codigo"]}} - {{materia["nombre"]}}</label>
             </div>
 
-            
+
+            <div class="form-group">
+                <label>Curso:</label>
+                <p id="texto_sin_curso" style="font-style: italic; color: purple;">
+                    Si selecciona la opción "Sin curso determinado" no podrá llenar encuestas posteriormente.
+                    Solo seleccione esta opción cuando no le interese tener el registro de esta información, poder completar encuestas del curso o simplemente no haya ningún curso disponible en este momento (por ejemplo, es una materia del CBC o ya el curso no se dicta)
+                </p>
+                <select class="form-control" id="curso" name="curso" onchange="mostrar_ocultar_texto_sin_curso()">
+                    <option id="curso_opcion_0" value="-1">Sin curso determinado</option>
+                    {% for curso in cursos %}
+                    <option id="curso_cod_materia_{{curso['codigo_materia']}}_carreras_{{curso['carreras']}}" value="{{curso['id']}}">{{curso['codigo_curso']}}: {{curso['docentes']}}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+
             <div class="form-group">
                 <label>Estado:</label>
 
@@ -180,7 +216,7 @@
                 <div id="estado_con_final_aprobado_o_desaprobado" hidden="true">
     
                     <div class="form-group">
-                        <label for="archivo">Calificación:</label>
+                        <label>Calificación:</label>
                         <select class="form-control" id="calificacion" name="calificacion">
                             {% for i in range(2,11) %}
                                 <option>{{i}}</option>
@@ -189,13 +225,13 @@
                     </div>
 
                     <div class="form-group">
-                        <label for="archivo">Fecha:</label>
+                        <label>Fecha:</label>
                         <input id="fecha_aprobacion" name="fecha_aprobacion" type="date">
                     </div>
 
 
                     <div class="form-group">
-                        <label for="archivo">Acta o Resolución:</label>
+                        <label>Acta o Resolución:</label>
                         <input type="text" class="form-control" id="acta_resolucion" name="acta_resolucion">
                     </div>
 
@@ -219,12 +255,12 @@
                 </div>
 
                 <div class="col-sm-3">
-                    <button type="submit" class="btn btn-success" onclick="return validar_guardar();">Guardar</button>
+                    <button type="submit" class="btn btn-mussa-default" onclick="return validar_guardar();">Guardar</button>
                 </div>
 
                 <div class="col-sm-4">
                     <a href="{{ url_for('main.datos_academicos_page') }}">
-                        <input type="button" class="btn btn-danger" value="Cancelar"/>
+                        <input type="button" class="btn btn-mussa-default" value="Cancelar"/>
                     </a>
                 </div>
             </div>

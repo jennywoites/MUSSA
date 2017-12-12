@@ -5,7 +5,7 @@ if __name__ == '__main__':
 
 from tests.TestAPIServicios.TestBase import TestBase
 from app.models.carreras_models import Carrera, Materia, TipoMateria
-from app.models.alumno_models import Alumno, EstadoMateria, MateriasAlumno
+from app.models.alumno_models import Alumno, MateriasAlumno
 from app.DAO.MateriasDAO import *
 from app.API_Rest.services import *
 from app.API_Rest.codes import *
@@ -82,6 +82,7 @@ class TestAgregarMateriaAlumno(TestBase):
         parametros = {}
         parametros["id_carrera"] = Carrera.query.first().id
         parametros["id_materia"] = Materia.query.first().id
+        parametros["id_curso"] = -1
         parametros["estado"] = estado.estado
 
         response = client.post(AGREGAR_MATERIA_ALUMNO_SERVICE, data=parametros)
@@ -102,6 +103,7 @@ class TestAgregarMateriaAlumno(TestBase):
         parametros = {}
         parametros["id_carrera"] = Carrera.query.first().id
         parametros["id_materia"] = Materia.query.first().id
+        parametros["id_curso"] = -1
         parametros["estado"] = estado.estado
 
         response = client.post(AGREGAR_MATERIA_ALUMNO_SERVICE, data=parametros)
@@ -133,6 +135,7 @@ class TestAgregarMateriaAlumno(TestBase):
         parametros = {}
         parametros["id_carrera"] = Carrera.query.first().id
         parametros["estado"] = estado.estado
+        parametros["id_curso"] = -1
 
         response = client.post(AGREGAR_MATERIA_ALUMNO_SERVICE, data=parametros)
         assert (response.status_code == CLIENT_ERROR_BAD_REQUEST)
@@ -146,6 +149,7 @@ class TestAgregarMateriaAlumno(TestBase):
         parametros = {}
         parametros["id_materia"] = "s56"
         parametros["id_carrera"] = Carrera.query.first().id
+        parametros["id_curso"] = -1
         parametros["estado"] = estado.estado
 
         response = client.post(AGREGAR_MATERIA_ALUMNO_SERVICE, data=parametros)
@@ -160,6 +164,7 @@ class TestAgregarMateriaAlumno(TestBase):
         parametros = {}
         parametros["id_materia"] = 56
         parametros["id_carrera"] = Carrera.query.first().id
+        parametros["id_curso"] = -1
         parametros["estado"] = estado.estado
 
         response = client.post(AGREGAR_MATERIA_ALUMNO_SERVICE, data=parametros)
@@ -173,6 +178,7 @@ class TestAgregarMateriaAlumno(TestBase):
 
         parametros = {}
         parametros["id_materia"] = Materia.query.first().id
+        parametros["id_curso"] = -1
         parametros["estado"] = estado.estado
 
         response = client.post(AGREGAR_MATERIA_ALUMNO_SERVICE, data=parametros)
@@ -184,6 +190,7 @@ class TestAgregarMateriaAlumno(TestBase):
 
         parametros = {}
         parametros["id_carrera"] = Carrera.query.first().id
+        parametros["id_curso"] = -1
         parametros["id_materia"] = Materia.query.first().id
 
         response = client.post(AGREGAR_MATERIA_ALUMNO_SERVICE, data=parametros)

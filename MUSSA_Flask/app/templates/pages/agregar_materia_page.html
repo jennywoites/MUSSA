@@ -79,10 +79,24 @@
             //Deshabilita la opcion de seleccionar una carrera
             carrera_element[0].style["display"] = "none";
 
-            //Habilitar selector de materias y estado
+            //Habilitar selector de materias
             var materia_element = document.getElementById("materia");
             materia_element.disabled = false;
+            materia_element.selectedIndex = 0;
             materia_element[0].disabled = true;
+
+            // Deshabilitar selector de curso
+            var texto_sin_curso = document.getElementById("texto_sin_curso");
+            texto_sin_curso.hidden = true;
+            var selector_curso = document.getElementById("curso");
+            selector_curso.disabled = true;
+            selector_curso.selectedIndex = 0;
+
+            // Deshabilitar selector de estado
+            var estado_element = document.getElementById("estado");
+            estado_element.disabled = true;
+            estado_element.selectedIndex = 0;
+            mostrar_ocultar_datos_materia_aprobada();
 
             //Filtrar las materias que sean de la carrera
             for (var i=0; i<materia_element.length; i++) {
@@ -94,12 +108,43 @@
             }
         }
 
-        function habilitar_estado() {            
+        function habilitar_curso_y_estado() {
             var materia_element = document.getElementById("materia");
             materia_element[0].style["display"] = "none";
 
+            var texto_sin_curso = document.getElementById("texto_sin_curso");
+            texto_sin_curso.hidden = false;
+
+            var selector_curso = document.getElementById("curso");
+            selector_curso.disabled = false;
+            selector_curso.selectedIndex = 0;
+
+            //Filtrar los cursos que sean de la materia
+            for (var i=1; i<selector_curso.length; i++) {
+                var opcion = selector_curso[i];
+                var datos = opcion.id;
+                var cod_materia = datos.substring('curso_cod_materia_'.length,datos.indexOf('_carreras_'));
+
+                var carreras = datos.substring(datos.indexOf('_carreras_') + '_carreras_'.length);
+                var materia = materia_element[materia_element.selectedIndex];
+                var codigo = materia.innerText.substring(0, materia.innerText.indexOf(" - "));
+
+                if (carreras.indexOf(materia.id) == -1 || codigo != cod_materia) {
+                    opcion.style["display"] = "none";
+                } else {
+                    opcion.style["display"] = "";
+                }
+            }
+
             var estado_element = document.getElementById("estado");
             estado_element.disabled = false;
+        }
+
+        function mostrar_ocultar_texto_sin_curso() {
+            var selector_curso = document.getElementById("curso");
+
+            var texto_sin_curso = document.getElementById("texto_sin_curso");
+            texto_sin_curso.hidden = (selector_curso.selectedIndex > 0);
         }
 
         function mostrar_ocultar_datos_materia_aprobada() {
@@ -140,7 +185,7 @@
             <div class="form-group">
                 <label>Materia:</label>
 
-                <select class="form-control" id="materia" name="materia" onchange="habilitar_estado()" disabled>
+                <select class="form-control" id="materia" name="materia" onchange="habilitar_curso_y_estado()" disabled>
                     <option id="opcion_0">Seleccione una materia</option>
                     {% for materia in materias %}
                         <option id="carrera_{{materia['id_carrera']}}" value="{{materia['id_materia']}}">{{materia["codigo"]}} - {{materia["nombre"]}}</option>
@@ -148,7 +193,20 @@
                 </select>
             </div>
 
-            
+            <div class="form-group">
+                <label>Curso:</label>
+                <p id="texto_sin_curso" style="font-style: italic; color: purple;" hidden="true">
+                    Si selecciona la opción "Sin curso determinado" no podrá llenar encuestas posteriormente.
+                    Solo seleccione esta opción cuando no le interese tener el registro de esta información, poder completar encuestas del curso o simplemente no haya ningún curso disponible en este momento (por ejemplo, es una materia del CBC o ya el curso no se dicta)
+                </p>
+                <select class="form-control" id="curso" name="curso" onchange="mostrar_ocultar_texto_sin_curso()" disabled>
+                    <option id="curso_opcion_0" value="-1">Sin curso determinado</option>
+                    {% for curso in cursos %}
+                    <option id="curso_cod_materia_{{curso['codigo_materia']}}_carreras_{{curso['carreras']}}" value="{{curso['id']}}">{{curso['codigo_curso']}}: {{curso['docentes']}}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
             <div class="form-group">
                 <label>Estado:</label>
 
@@ -184,7 +242,7 @@
                 <div id="estado_con_final_aprobado_o_desaprobado" hidden="true">
     
                     <div class="form-group">
-                        <label for="archivo">Calificación:</label>
+                        <label>Calificación:</label>
                         <select class="form-control" id="calificacion" name="calificacion">
                             {% for i in range(2,11) %}
                                 <option>{{i}}</option>
@@ -193,13 +251,13 @@
                     </div>
 
                     <div class="form-group">
-                        <label for="archivo">Fecha:</label>
+                        <label>Fecha:</label>
                         <input id="fecha_aprobacion" name="fecha_aprobacion" type="date">
                     </div>
 
 
                     <div class="form-group">
-                        <label for="archivo">Acta o Resolución:</label>
+                        <label >Acta o Resolución:</label>
                         <input type="text" class="form-control" id="acta_resolucion" name="acta_resolucion">
                     </div>
 
@@ -223,12 +281,12 @@
                 </div>
 
                 <div class="col-sm-3">
-                    <button type="submit" class="btn btn-success" onclick="return validar_guardar();">Guardar</button>
+                    <button type="submit" class="btn btn-mussa-default" onclick="return validar_guardar();">Guardar</button>
                 </div>
 
                 <div class="col-sm-4">
                     <a href="{{ url_for('main.datos_academicos_page') }}">
-                        <input type="button" class="btn btn-danger" value="Cancelar"/>
+                        <input type="button" class="btn btn-mussa-default" value="Cancelar"/>
                     </a>
                 </div>
             </div>

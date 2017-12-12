@@ -71,11 +71,15 @@ def invocar_buscar_cursos(cookie, codigo_materia='', nombre_curso='', id_curso='
     return json.loads(cursos_response.text)["cursos"]
 
 
-def invocar_servicio_obtener_curso(cookie, codigo_materia, id_carrera):
+def invocar_servicio_obtener_curso(cookie, codigo_materia='', id_carrera=''):
     parametros = {}
-    parametros["codigo_materia"] = codigo_materia
-    parametros["id_carrera"] = id_carrera
     parametros["filtrar_cursos"] = True
+
+    if codigo_materia:
+        parametros["codigo_materia"] = codigo_materia
+
+    if id_carrera:
+        parametros["id_carrera"] = id_carrera
 
     cursos_response = requests.get(BUSCAR_CURSOS_SERVICE, params=parametros, cookies=cookie)
     escribir_resultado_servicio('Buscar Cursos', cursos_response)

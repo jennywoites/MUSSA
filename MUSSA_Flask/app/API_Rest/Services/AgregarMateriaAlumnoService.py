@@ -1,12 +1,12 @@
 from flask_restful import Resource
 from app.API_Rest.codes import *
 from flask import request
-
 from flask_user import current_user, login_required
 
-from app.models.alumno_models import Alumno, MateriasAlumno, EstadoMateria, FormaAprobacionMateria
-from app.models.carreras_models import Carrera, Materia
 from app import db
+from app.models.alumno_models import Alumno, MateriasAlumno
+from app.models.carreras_models import Carrera
+from app.models.horarios_models import Curso
 
 from app.DAO.MateriasDAO import *
 from datetime import date
@@ -24,14 +24,15 @@ class AgregarMateriaAlumno(Resource):
 
         q_id_carrera = args["id_carrera"] if "id_carrera" in args else None
         q_id_materia = args["id_materia"] if "id_materia" in args else None
+        q_id_curso = args["id_curso"] if "id_curso" in args else None
         q_estado = args["estado"] if "estado" in args else None
 
         alumno = Alumno.query.filter_by(user_id=current_user.id).first()
 
-        if (not q_id_carrera or not q_id_materia or not q_estado or not alumno
-            or not self.son_ids_validos(q_id_carrera, q_id_materia, q_estado, alumno.id)):
-            logging.error('El servicio Agregar Materia Alumno debe recibir el id de carrera, materia y el estado')
-            return {'Error': 'No se han enviado uno o más parámetros requeridos o éstos no son válidos (id carrera, id materia, estado)'}, CLIENT_ERROR_BAD_REQUEST
+        if (not q_id_carrera or not q_id_materia or not q_estado or not alumno or not q_id_curso
+            or not self.son_ids_validos(q_id_carrera, q_id_materia, q_id_curso, q_estado, alumno.id)):
+            logging.error('El servicio Agregar Materia Alumno debe recibir el id de carrera, materia, curso y el estado')
+            return {'Error': 'No se han enviado uno o más parámetros requeridos o éstos no son válidos (id carrera, id materia, id_curso, estado)'}, CLIENT_ERROR_BAD_REQUEST
 
         query_materia = MateriasAlumno.query.filter_by(alumno_id=alumno.id)
         query_materia = query_materia.filter_by(materia_id=q_id_materia)
@@ -49,6 +50,9 @@ class AgregarMateriaAlumno(Resource):
         materia.estado_id = estado.id
 
         self.anular_datos_materia(materia)
+
+        if (q_id_curso != "-1"): #Si es -1 significa que no hay un curso designado
+            materia.curso_id = int(q_id_curso)
 
         if (q_estado == ESTADO_MATERIA[EN_CURSO]):
             return self.guardar_y_devolver_success()
@@ -93,11 +97,15 @@ class AgregarMateriaAlumno(Resource):
 
         return self.guardar_y_devolver_success()
 
-    def son_ids_validos(self, id_carrera, id_materia, estado, alumno_id):
-        if not Carrera.query.filter_by(id=id_carrera).first():
+    def son_ids_validos(self, id_carrera, id_materia, id_curso, estado, alumno_id):
+        if not id_carrera.isdigit() or not Carrera.query.filter_by(id=id_carrera).first():
             return False
 
-        if not MateriasAlumno.query.filter_by(materia_id=id_materia).first():
+        if not id_materia.isdigit() or not MateriasAlumno.query.filter_by(materia_id=id_materia).first():
+            return False
+
+        if ((id_curso != "-1" and not id_curso.isdigit()) or
+                (id_curso != "-1" and not Curso.query.filter_by(id=id_curso).first())):
             return False
 
         if not EstadoMateria.query.filter_by(estado=estado).first():
@@ -110,6 +118,7 @@ class AgregarMateriaAlumno(Resource):
 
     def anular_datos_materia(self, materia):
         materia.calificacion = None
+        materia.curso_id = None
         materia.fecha_aprobacion = None
         materia.cuatrimestre_aprobacion_cursada = None
         materia.anio_aprobacion_cursada = None

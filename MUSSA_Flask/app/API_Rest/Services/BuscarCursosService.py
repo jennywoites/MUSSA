@@ -47,6 +47,7 @@ class BuscarCursos(Resource):
             for carrera in carrerasPorCurso:
                 carrera_db = Carrera.query.filter_by(id=carrera.carrera_id).first()
                 carreras_response.append({
+                    'id_carrera': carrera_db.id,
                     'codigo': carrera_db.codigo,
                     'nombre': carrera_db.nombre
                 })
@@ -163,7 +164,7 @@ class BuscarCursos(Resource):
             return True
 
         codigo = str(codigo)
-        if len(codigo) < 2 or len(codigo) > 4:
+        if len(codigo) < 1 or len(codigo) > 4:
             return False
 
         return self.esta_formado_solo_por_numeros(codigo)
