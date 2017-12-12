@@ -47,6 +47,7 @@ class BuscarCursos(Resource):
             for carrera in carrerasPorCurso:
                 carrera_db = Carrera.query.filter_by(id=carrera.carrera_id).first()
                 carreras_response.append({
+                    'id_carrera': carrera_db.id,
                     'codigo': carrera_db.codigo,
                     'nombre': carrera_db.nombre
                 })

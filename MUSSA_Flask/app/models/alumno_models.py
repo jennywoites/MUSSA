@@ -31,6 +31,7 @@ class MateriasAlumno(db.Model):
 
     alumno_id = db.Column(db.Integer(), db.ForeignKey('alumno.id'))
     materia_id = db.Column(db.Integer(), db.ForeignKey('materia.id'))
+    curso_id = db.Column(db.Integer(), db.ForeignKey('curso.id'))
     carrera_id = db.Column(db.Integer(), db.ForeignKey('carrera.id'))
 
     estado_id = db.Column(db.Integer(), db.ForeignKey('estado_materia.id'))
@@ -44,6 +45,10 @@ class MateriasAlumno(db.Model):
     def __str__(self):
         string = "Alumno: {}".format(self.alumno_id)
         string += " - Materia: {}".format(self.materia_id)
+
+        curso = self.curso_id if self.curso_id else "Sin designar"
+        string += " - Curso: {}".format(curso)
+
         string += " - Carrera: {}".format(self.carrera_id)
         string += " - Estado: {}".format(self.estado_id)
 

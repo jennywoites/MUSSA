@@ -1,12 +1,11 @@
 from flask import redirect, render_template
 from flask import request, url_for, flash
-from flask_user import current_user, login_required, roles_accepted
+from flask_user import login_required
 
 from app.views.base_view import main_blueprint
 
 from app.views.Utils.invocaciones_de_servicios import *
 
-from flask_babel import gettext
 from app.DAO.MateriasDAO import *
 
 from datetime import datetime

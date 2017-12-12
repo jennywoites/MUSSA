@@ -1,12 +1,11 @@
 from flask import redirect, render_template
 from flask import request, url_for, flash
-from flask_user import current_user, login_required, roles_accepted
+from flask_user import login_required
 
 from app.views.base_view import main_blueprint
 
 from app.views.Utils.invocaciones_de_servicios import *
 
-from flask_babel import gettext
 from app.DAO.MateriasDAO import *
 
 from datetime import datetime
@@ -19,6 +18,8 @@ def agregar_materia_page():
     mis_carreras = invocar_obtener_carreras_alumno(cookie)
 
     materias = invocar_obtener_materias_alumno(cookie, [PENDIENTE])
+
+    cursos = invocar_servicio_obtener_curso(cookie)
 
     estados = []
     for estado in [EN_CURSO, FINAL_PENDIENTE, APROBADA, DESAPROBADA]:
@@ -35,6 +36,7 @@ def agregar_materia_page():
     return render_template('pages/agregar_materia_page.html',
         carreras = mis_carreras,
         materias = materias,
+        cursos = cursos,
         estados = estados,
         formas_aprobacion = formas_aprobacion,
         anios = anios)
@@ -46,6 +48,7 @@ def agregar_materia_page_save():
     parametros = {
         'id_carrera': request.form['carrera'],
         'id_materia': request.form['materia'],
+        'id_curso': request.form['curso'],
         'estado': request.form['estado'],
         'cuatrimestre_aprobacion': request.form['cuatrimestre_aprobacion'],
         'anio_aprobacion': request.form['anio_aprobacion'],
