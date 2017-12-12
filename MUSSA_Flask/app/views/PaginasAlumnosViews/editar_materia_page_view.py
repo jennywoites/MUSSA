@@ -15,6 +15,13 @@ from datetime import datetime
 def editar_materia_page(idMateria):
     materia = invocar_obtener_materia_alumno(request.cookies, idMateria)[0]
 
+    cursos = invocar_servicio_obtener_curso(request.cookies, materia["codigo"], materia["id_carrera"])
+    for i in range(len(cursos)):
+        texto = ""
+        for carrera in cursos[i]["carreras"]:
+            texto += "carrera_" + str(carrera["id_carrera"]) + ";"
+        cursos[i]["carreras"] = texto[:-1]
+
     estados = []
     for estado in [EN_CURSO, FINAL_PENDIENTE, APROBADA, DESAPROBADA]:
         estados.append(ESTADO_MATERIA[estado])
@@ -29,6 +36,7 @@ def editar_materia_page(idMateria):
 
     return render_template('pages/editar_materia_page.html',
         materia = materia,
+        cursos = cursos,
         estados = estados,
         formas_aprobacion = formas_aprobacion,
         anios = anios)
@@ -42,6 +50,7 @@ def editar_materia_page_save(idMateria):
     parametros = {
         'id_carrera': materia["id_carrera"],
         'id_materia': materia["id_materia"],
+        'id_curso': request.form['curso'],
         'estado': request.form['estado'],
         'cuatrimestre_aprobacion': request.form['cuatrimestre_aprobacion'],
         'anio_aprobacion': request.form['anio_aprobacion'],

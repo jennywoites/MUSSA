@@ -10,6 +10,7 @@ from app.DAO.MateriasDAO import *
 
 from datetime import datetime
 
+
 @main_blueprint.route('/datos_academicos/agregar_materia', methods=['GET'])
 @login_required
 def agregar_materia_page():
@@ -39,12 +40,12 @@ def agregar_materia_page():
     anios = [x for x in range(hoy, hoy - MAX_TIEMPO, -1)]
 
     return render_template('pages/agregar_materia_page.html',
-        carreras = mis_carreras,
-        materias = materias,
-        cursos = cursos,
-        estados = estados,
-        formas_aprobacion = formas_aprobacion,
-        anios = anios)
+                           carreras=mis_carreras,
+                           materias=materias,
+                           cursos=cursos,
+                           estados=estados,
+                           formas_aprobacion=formas_aprobacion,
+                           anios=anios)
 
 
 @main_blueprint.route('/datos_academicos/agregar_materia_save', methods=['POST'])
@@ -67,8 +68,7 @@ def agregar_materia_page_save():
 
     if 'OK' in response:
         flash("Se agregó la materia satisfactoriamente", 'success')
-    else:   
+    else:
         flash(response["Error"], 'error')
 
     return redirect(url_for("main.datos_academicos_page"))
-

@@ -164,7 +164,7 @@ class BuscarCursos(Resource):
             return True
 
         codigo = str(codigo)
-        if len(codigo) < 2 or len(codigo) > 4:
+        if len(codigo) < 1 or len(codigo) > 4:
             return False
 
         return self.esta_formado_solo_por_numeros(codigo)

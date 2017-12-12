@@ -4,17 +4,16 @@ from flask import request
 
 from flask_user import current_user, login_required
 
-from app.models.alumno_models import Alumno, MateriasAlumno, EstadoMateria, FormaAprobacionMateria
+from app.models.alumno_models import Alumno, MateriasAlumno
 from app.models.carreras_models import Carrera, Materia
-from app import db
-
 from app.DAO.MateriasDAO import *
 
 import logging
 
 import functools
-class ObtenerMateriasAlumno(Resource):
 
+
+class ObtenerMateriasAlumno(Resource):
     @login_required
     def get(self):
         args = request.args
@@ -46,18 +45,18 @@ class ObtenerMateriasAlumno(Resource):
             materia_carrera = Materia.query.filter_by(id=materia_alumno.materia_id).first()
             carrera = Carrera.query.filter_by(id=materia_alumno.carrera_id).first()
             estado = EstadoMateria.query.filter_by(id=materia_alumno.estado_id).first().estado
-            
+
             calificacion = materia_alumno.calificacion if materia_alumno.calificacion else "-"
 
             fecha_aprobacion = "-"
             if materia_alumno.fecha_aprobacion:
-                anio, mes, dia = str(materia_alumno.fecha_aprobacion ).split(" ")[0].split("-")
+                anio, mes, dia = str(materia_alumno.fecha_aprobacion).split(" ")[0].split("-")
                 fecha_aprobacion = "{}/{}/{}".format(dia, mes, anio)
 
             aprobacion_cursada = "-"
             if (materia_alumno.cuatrimestre_aprobacion_cursada and
-                materia_alumno.anio_aprobacion_cursada):
-                aprobacion_cursada = materia_alumno.cuatrimestre_aprobacion_cursada  + "C / "
+                    materia_alumno.anio_aprobacion_cursada):
+                aprobacion_cursada = materia_alumno.cuatrimestre_aprobacion_cursada + "C / "
                 aprobacion_cursada += materia_alumno.anio_aprobacion_cursada
 
             acta_o_resolucion = materia_alumno.acta_o_resolucion if materia_alumno.acta_o_resolucion else "-"
@@ -73,6 +72,7 @@ class ObtenerMateriasAlumno(Resource):
                 'codigo': materia_carrera.codigo,
                 'nombre': materia_carrera.nombre,
                 'id_carrera': carrera.id,
+                'id_curso': materia_alumno.curso_id if materia_alumno.curso_id else '-1',
                 'carrera': carrera.nombre + " (" + carrera.plan + ")",
                 'estado': estado,
                 'aprobacion_cursada': aprobacion_cursada,
@@ -97,8 +97,7 @@ class ObtenerMateriasAlumno(Resource):
             return True
 
         return (id_materia_alumno.isdigit() and
-            len(MateriasAlumno.query.filter_by(alumno_id=alumno.id).filter_by(id=id_materia_alumno).all()) > 0)
-
+                len(MateriasAlumno.query.filter_by(alumno_id=alumno.id).filter_by(id=id_materia_alumno).all()) > 0)
 
     def estados_son_validos(self, args):
         try:
@@ -106,12 +105,11 @@ class ObtenerMateriasAlumno(Resource):
             for cod_estado in estados:
                 texto = ESTADO_MATERIA[int(cod_estado)]
                 estado = EstadoMateria.query.filter_by(estado=texto).first()
-                assert(estado is not None)
+                assert (estado is not None)
         except:
             return False
 
         return True
-
 
     def obtener_ids_estados(self, args):
         ids_estados = []
@@ -124,6 +122,7 @@ class ObtenerMateriasAlumno(Resource):
 
         return ids_estados
 
+
 def cmp_materias_result(materia1, materia2):
     codigo1 = convertir_codigo(materia1)
     codigo2 = convertir_codigo(materia2)
@@ -134,7 +133,8 @@ def cmp_materias_result(materia1, materia2):
         return 1
     return 0
 
+
 def convertir_codigo(materia):
     LONGITUD_CODIGO = 4
     codigo = materia["codigo"]
-    return "0"*(LONGITUD_CODIGO - len(codigo)) + codigo
+    return "0" * (LONGITUD_CODIGO - len(codigo)) + codigo
