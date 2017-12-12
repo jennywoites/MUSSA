@@ -86,6 +86,8 @@
             materia_element[0].disabled = true;
 
             // Deshabilitar selector de curso
+            var texto_sin_curso = document.getElementById("texto_sin_curso");
+            texto_sin_curso.hidden = true;
             var selector_curso = document.getElementById("curso");
             selector_curso.disabled = true;
             selector_curso.selectedIndex = 0;
@@ -110,6 +112,9 @@
             var materia_element = document.getElementById("materia");
             materia_element[0].style["display"] = "none";
 
+            var texto_sin_curso = document.getElementById("texto_sin_curso");
+            texto_sin_curso.hidden = false;
+
             var selector_curso = document.getElementById("curso");
             selector_curso.disabled = false;
             selector_curso.selectedIndex = 0;
@@ -121,17 +126,10 @@
                 var cod_materia = datos.substring('curso_cod_materia_'.length,datos.indexOf('_carreras_'));
 
                 var carreras = datos.substring(datos.indexOf('_carreras_') + '_carreras_'.length);
-                var ids_carreras = [];
-                while( carreras.indexOf('id_carrera') != -1) {
-                    var index = carreras.indexOf('id_carrera');
-                    carreras = carreras.substring(index+"id_carrera': ".length);
-                    var cod = carreras.substring(0,carreras.indexOf("}"));
-                    ids_carreras.push("carrera_" + cod);
-                }
-
                 var materia = materia_element[materia_element.selectedIndex];
                 var codigo = materia.innerText.substring(0, materia.innerText.indexOf(" - "));
-                if (ids_carreras.indexOf(materia.id) == -1 || codigo != cod_materia) {
+
+                if (carreras.indexOf(materia.id) == -1 || codigo != cod_materia) {
                     opcion.style["display"] = "none";
                 } else {
                     opcion.style["display"] = "";
@@ -142,6 +140,12 @@
             estado_element.disabled = false;
         }
 
+        function mostrar_ocultar_texto_sin_curso() {
+            var selector_curso = document.getElementById("curso");
+
+            var texto_sin_curso = document.getElementById("texto_sin_curso");
+            texto_sin_curso.hidden = (selector_curso.selectedIndex > 0);
+        }
 
         function mostrar_ocultar_datos_materia_aprobada() {
             var estado_element = document.getElementById("estado");
@@ -191,9 +195,11 @@
 
             <div class="form-group">
                 <label>Curso:</label>
-
-                <select class="form-control" id="curso" name="curso" disabled>
-                    <p>Info</p>
+                <p id="texto_sin_curso" style="font-style: italic; color: purple;" hidden="true">
+                    Si selecciona la opción "Sin curso determinado" no podrá llenar encuestas posteriormente.
+                    Solo seleccione esta opción cuando no le interese tener el registro de esta información, poder completar encuestas del curso o simplemente no haya ningún curso disponible en este momento (por ejemplo, es una materia del CBC o ya el curso no se dicta)
+                </p>
+                <select class="form-control" id="curso" name="curso" onchange="mostrar_ocultar_texto_sin_curso()" disabled>
                     <option id="curso_opcion_0" value="-1">Sin curso determinado</option>
                     {% for curso in cursos %}
                     <option id="curso_cod_materia_{{curso['codigo_materia']}}_carreras_{{curso['carreras']}}" value="{{curso['id']}}">{{curso['codigo_curso']}}: {{curso['docentes']}}</option>

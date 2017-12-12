@@ -20,6 +20,11 @@ def agregar_materia_page():
     materias = invocar_obtener_materias_alumno(cookie, [PENDIENTE])
 
     cursos = invocar_servicio_obtener_curso(cookie)
+    for i in range(len(cursos)):
+        texto = ""
+        for carrera in cursos[i]["carreras"]:
+            texto += "carrera_" + str(carrera["id_carrera"]) + ";"
+        cursos[i]["carreras"] = texto[:-1]
 
     estados = []
     for estado in [EN_CURSO, FINAL_PENDIENTE, APROBADA, DESAPROBADA]:
