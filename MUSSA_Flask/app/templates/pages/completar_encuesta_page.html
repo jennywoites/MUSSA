@@ -152,27 +152,27 @@
             <ul class="nav nav-tabs" id="myTab">
                 <div class="liner"></div>
                 <li>
-                    <a href="{{ url_for('main.completar_encuesta_general_page') }}" title="General">
+                    <a href="{{ url_for('main.completar_encuesta_general_page', idEncuestaAlumno=idEncuestaAlumno) }}" title="General">
                         <span class="round-tabs">1<i class="icon icon-profile-male"></i></span>
                     </a>
                 </li>
                 <li>
-                    <a href="{{ url_for('main.completar_encuesta_contenido_page') }}" title="Contenido">
+                    <a href="{{ url_for('main.completar_encuesta_contenido_page', idEncuestaAlumno=idEncuestaAlumno) }}" title="Contenido">
                         <span class="round-tabs">2<i class="icon icon-pencil"></i></span>
                     </a>
                 </li>
                 <li>
-                    <a href="{{ url_for('main.completar_encuesta_clases_page') }}" title="Clases">
+                    <a href="{{ url_for('main.completar_encuesta_clases_page', idEncuestaAlumno=idEncuestaAlumno) }}" title="Clases">
                         <span class="round-tabs">3<i class="icon icon-layers"></i></span>
                     </a>
                 </li>
                 <li>
-                    <a href="{{ url_for('main.completar_encuesta_examenes_page') }}" title="Examenes">
+                    <a href="{{ url_for('main.completar_encuesta_examenes_page', idEncuestaAlumno=idEncuestaAlumno) }}" title="Examenes">
                         <span class="round-tabs">4<i class="icon icon-aperture"></i></span>
                     </a>
                 </li>
                 <li>
-                    <a href="{{ url_for('main.completar_encuesta_docentes_page') }}" title="Docentes">
+                    <a href="{{ url_for('main.completar_encuesta_docentes_page', idEncuestaAlumno=idEncuestaAlumno) }}" title="Docentes">
                         <span class="round-tabs">5<i class="icon icon-tools-2"></i></span>
                     </a>
                 </li>

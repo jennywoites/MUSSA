@@ -1,21 +1,18 @@
 from flask import redirect, render_template
 from flask import request, url_for
 from flask_user import current_user, login_required, roles_accepted
-
-from app import db
 from app.models.user_models import UserProfileForm
-from app.models.carreras_models import Carrera
-
 from app.views.base_view import main_blueprint
 
 from app.views.PaginasAlumnosViews.datos_academicos_page_view import datos_academicos_page
 from app.views.PaginasAlumnosViews.agregar_materia_page_view import agregar_materia_page
 from app.views.PaginasAlumnosViews.editar_materia_page_view import editar_materia_page
-from app.views.PaginasAlumnosViews.completar_encuestas_view import  *
+from app.views.PaginasAlumnosViews.completar_encuestas_view import *
+from app.views.PaginasAlumnosViews.historial_encuestas_page_view import historial_encuestas_page
 
-# The User page is accessible to authenticated users (users that have logged in)
+
 @main_blueprint.route('/member')
-@login_required  # Limits access to authenticated users
+@login_required
 def member_page():
     return render_template('pages/home_page.html')
 

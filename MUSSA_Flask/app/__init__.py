@@ -159,6 +159,7 @@ def add_resources_usuarios(api):
     api.add_resource(ObtenerMateriasAlumno, '/api/ObtenerMateriasAlumno')
     api.add_resource(AgregarMateriaAlumno, '/api/AgregarMateriaAlumno')
     api.add_resource(EliminarMateriaAlumno, '/api/EliminarMateriaAlumno')
+    api.add_resource(ObtenerEncuestasAlumno, '/api/ObtenerEncuestasAlumno')
 
 
 def add_resources_administrador(api):

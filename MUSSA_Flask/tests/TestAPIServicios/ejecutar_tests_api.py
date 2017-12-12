@@ -20,6 +20,7 @@ from tests.TestAPIServicios.TestAgregarMateriaAlumno import TestAgregarMateriaAl
 from tests.TestAPIServicios.TestObtenerPadronAlumno import TestObtenerPadronAlumno
 from tests.TestAPIServicios.TestModificarPadronAlumno import TestModificarPadronAlumno
 from tests.TestAPIServicios.TestObtenerMateriasAlumno import TestObtenerMateriasAlumno
+from tests.TestAPIServicios.TestObtenerEncuestasAlumno import TestObtenerEncuestasAlumno
 
 # - servicios de administradores -
 from tests.TestAPIServicios.TestModificarCurso import TestModificarCurso
