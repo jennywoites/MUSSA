@@ -77,9 +77,9 @@ class TestObtenerEncuestasAlumno(TestBase):
     ENCUESTA = {
         "alumno_id": 1,
         "materia_alumno_id": MATERIA_FINAL_DESAPROBADA["id"],
-        "carrera": "Una carrera",
-        "materia": "Una materia",
-        "curso": "Un curso",
+        "carrera": "9 - Licenciatura",
+        "materia": "6122 - Una materia",
+        "curso": "25: Apellido-Apellido2",
         "cuatrimestre_aprobacion_cursada": "1",
         "anio_aprobacion_cursada": "2017",
         "fecha_aprobacion": "1C / 2017",
@@ -180,7 +180,7 @@ class TestObtenerEncuestasAlumno(TestBase):
         encuestas = json.loads(response.get_data(as_text=True))["encuestas"]
         assert (len(encuestas) == 0)
 
-    def test_obtener_encuestas_alumno_sin_encuestas(self):
+    def test_obtener_encuestas_alumno_con_encuesta(self):
         db.session.add(EncuestaAlumno(
             alumno_id=self.ENCUESTA["alumno_id"],
             materia_alumno_id=self.ENCUESTA["materia_alumno_id"],
