@@ -46,6 +46,9 @@ class ObtenerPreguntasEncuesta(Resource):
         if datos["tipo_num"] == SI_NO:
             self.generar_datos_encuesta_si_no(pregunta, datos)
 
+        if datos["tipo_num"] == NUMERO:
+            self.generar_datos_encuesta_numerica(pregunta, datos)
+
     def categorias_son_validas(self, args):
         try:
             self.obtener_categorias(args)
@@ -89,6 +92,12 @@ class ObtenerPreguntasEncuesta(Resource):
 
         datos["texto_min"] = e_puntaje.texto_min
         datos["texto_max"] = e_puntaje.texto_max
+
+    def generar_datos_encuesta_numerica(self, pregunta, datos):
+        e_numerica = PreguntaEncuestaNumero.query.filter_by(encuesta_id=pregunta.id).first()
+
+        datos["numero_min"] = e_numerica.numero_min
+        datos["numero_max"] = e_numerica.numero_max
 
     def generar_datos_encuesta_si_no(self, pregunta, datos):
         encuestas_si_no = PreguntaEncuestaSiNo.query.filter_by(encuesta_id=pregunta.id).all()

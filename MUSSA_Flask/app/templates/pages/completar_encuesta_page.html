@@ -291,7 +291,8 @@
                 <div class="liner"></div>
                 {% for i in range(titulos | length) %}
                     <li>
-                        <a href="{{ url_for(titulos[i]['url'], idEncuestaAlumno=idEncuestaAlumno) }}" title="{{titulos[i]['titulo']}}">
+                        <a href="{{ url_for(titulos[i]['url'], idEncuestaAlumno=idEncuestaAlumno) }}"
+                           title="{{titulos[i]['titulo']}}">
                             <span class="round-tabs">{{i+1}}<i class="icon icon-profile-male"></i></span>
                         </a>
                     </li>
@@ -305,6 +306,12 @@
 <br>
 
 <div class="container">
+
+    <div>
+        <h2>{{encuesta["materia"]}} / Curso {{encuesta["curso"]}}</h2>
+
+        <h3>Sección {{paso_activo+1}}: {{titulos[paso_activo]["titulo"]}}</h3>
+    </div>
 
     {% for pregunta in preguntas %}
 
@@ -380,6 +387,8 @@
             {% endfor %}
 
         {% elif pregunta["tipo"] == "Horario" %}
+
+            <br>
             <div>
                 <div class="row">
                     <div class="col-sm-2">
@@ -496,6 +505,8 @@
 
         {% elif pregunta["tipo"] == "Correlativa" %}
 
+            <br>
+
             <div class="row">
                 <div class="col-sm-7">
                     <div class="form-group">
@@ -537,7 +548,19 @@
             </div>
             <br>
 
-    {% endif %}
+        {% elif pregunta["tipo"] == "Numero" %}
+
+            <br>
+
+            <div class="row">
+                <div class="col-sm-2">
+                    <input type="number" class="form-control" name="numero_{{pregunta['pregunta_encuesta_id']}}" id="numero_{{pregunta['pregunta_encuesta_id']}}" value="{{pregunta['numero_min']}}" min="{{pregunta['numero_min']}}" max="{{pregunta['numero_max']}}" step="1">
+                </div>
+            </div>
+
+            <br>
+
+        {% endif %}
 
     {% endfor %}
 

@@ -19,7 +19,8 @@ def completar_encuesta_contenido_page(idEncuestaAlumno):
     return completar_encuesta(idEncuestaAlumno, request.cookies, GRUPO_ENCUESTA_CONTENIDO)
 
 
-@main_blueprint.route('/encuestas/completar_encuesta/clases/<int:idEncuestaAlumno>', methods=['GET'])
+@main_blueprint.route(
+    '/encuestas/completar_encuesta/clases/<int:idEncuestaAlumno>', methods=['GET'])
 @login_required
 def completar_encuesta_clases_page(idEncuestaAlumno):
     return completar_encuesta(idEncuestaAlumno, request.cookies, GRUPO_ENCUESTA_CLASES)
@@ -39,13 +40,12 @@ def completar_encuesta_docentes_page(idEncuestaAlumno):
 
 def completar_encuesta(idEncuestaAlumno, cookie, num_categoria):
     preguntas = invocar_servicio_obtener_preguntas_encuesta(cookie, [num_categoria])
+    encuesta = invocar_obtener_encuesta_alumno(cookie, idEncuestaAlumno)
 
-    #Obtener la carrera
-    posibles_correlativas = invocar_servicio_buscar_materias(cookie, "10")
+    posibles_correlativas = invocar_servicio_buscar_materias(cookie, encuesta["codigo_carrera"])
     # filtrar la materia actual ya que no es correlativa
 
-    #Obtener el id del curso
-    docentes = invocar_obtener_docentes_del_curso(cookie, "3")
+    docentes = invocar_obtener_docentes_del_curso(cookie, encuesta["id_curso"])
 
     HORA_MIN = 7
     HORA_MAX = 23
@@ -66,6 +66,7 @@ def completar_encuesta(idEncuestaAlumno, cookie, num_categoria):
     return render_template('pages/completar_encuesta_page.html',
                            titulos= titulos,
                            idEncuestaAlumno=idEncuestaAlumno,
+                           encuesta = encuesta,
                            paso_activo=num_categoria,
                            preguntas=preguntas,
                            dias=DIAS,
