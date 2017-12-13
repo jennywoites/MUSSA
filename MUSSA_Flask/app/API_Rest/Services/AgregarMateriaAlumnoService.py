@@ -4,9 +4,12 @@ from flask import request
 from flask_user import current_user, login_required
 
 from app import db
+
 from app.models.alumno_models import Alumno, MateriasAlumno
-from app.models.carreras_models import Carrera
+from app.models.carreras_models import Carrera, Materia
 from app.models.horarios_models import Curso
+from app.models.docentes_models import CursosDocente, Docente
+from app.models.respuestas_encuesta_models import EncuestaAlumno
 
 from app.DAO.MateriasDAO import *
 from datetime import date
@@ -31,8 +34,10 @@ class AgregarMateriaAlumno(Resource):
 
         if (not q_id_carrera or not q_id_materia or not q_estado or not alumno or not q_id_curso
             or not self.son_ids_validos(q_id_carrera, q_id_materia, q_id_curso, q_estado, alumno.id)):
-            logging.error('El servicio Agregar Materia Alumno debe recibir el id de carrera, materia, curso y el estado')
-            return {'Error': 'No se han enviado uno o más parámetros requeridos o éstos no son válidos (id carrera, id materia, id_curso, estado)'}, CLIENT_ERROR_BAD_REQUEST
+            logging.error(
+                'El servicio Agregar Materia Alumno debe recibir el id de carrera, materia, curso y el estado')
+            return {
+                       'Error': 'No se han enviado uno o más parámetros requeridos o éstos no son válidos (id carrera, id materia, id_curso, estado)'}, CLIENT_ERROR_BAD_REQUEST
 
         query_materia = MateriasAlumno.query.filter_by(alumno_id=alumno.id)
         query_materia = query_materia.filter_by(materia_id=q_id_materia)
@@ -51,7 +56,7 @@ class AgregarMateriaAlumno(Resource):
 
         self.anular_datos_materia(materia)
 
-        if (q_id_curso != "-1"): #Si es -1 significa que no hay un curso designado
+        if (q_id_curso != "-1"):  # Si es -1 significa que no hay un curso designado
             materia.curso_id = int(q_id_curso)
 
         if (q_estado == ESTADO_MATERIA[EN_CURSO]):
@@ -67,6 +72,9 @@ class AgregarMateriaAlumno(Resource):
 
         materia.cuatrimestre_aprobacion_cursada = q_cuatrimestre_aprobacion
         materia.anio_aprobacion_cursada = q_anio_aprobacion
+
+        if materia.curso_id: #Solo se generan encuestas si la materia tiene un curso seleccionado
+            self.crear_o_actualizar_encuesta(materia)
 
         if (q_estado == ESTADO_MATERIA[FINAL_PENDIENTE]):
             return self.guardar_y_devolver_success()
@@ -174,3 +182,44 @@ class AgregarMateriaAlumno(Resource):
             carrera_id=materia.carrera_id
         ))
         db.session.commit()
+
+    def crear_o_actualizar_encuesta(self, materia_alumno):
+        encuesta = EncuestaAlumno.query.filter_by(materia_alumno_id=materia_alumno.id).first()
+
+        if encuesta and encuesta.finalizada:  # No modificar encuestas finalizadas
+            return
+
+        if not encuesta:
+            encuesta = self.crear_encuesta(materia_alumno)
+
+        curso = Curso.query.filter_by(id=materia_alumno.curso_id).first()
+        docentes = ""
+        for cdoc in CursosDocente.query.filter_by(curso_id=materia_alumno.curso_id).all():
+            docente = Docente.query.filter_by(id=cdoc.docente_id).first()
+            docentes += docente.obtener_nombre_completo() + "-"
+        encuesta.curso = "{}: {}".format(curso.codigo, docentes[:-1])
+
+        encuesta.cuatrimestre_aprobacion_cursada = materia_alumno.cuatrimestre_aprobacion_cursada
+        encuesta.anio_aprobacion_cursada = materia_alumno.anio_aprobacion_cursada
+        encuesta.finalizada = False
+        db.session.commit()
+
+    def crear_encuesta(self, materia_alumno):
+        carrera = Carrera.query.filter_by(id=materia_alumno.carrera_id).first()
+        materia = Materia.query.filter_by(id=materia_alumno.materia_id).first()
+
+        encuesta = EncuestaAlumno(
+            alumno_id=materia_alumno.alumno_id,
+            materia_alumno_id=materia_alumno.id,
+            carrera="{} - {} (Plan {})".format(carrera.codigo, carrera.nombre, carrera.plan),
+            materia="{} - {}".format(materia.codigo, materia.nombre),
+            curso = "",
+            cuatrimestre_aprobacion_cursada = materia_alumno.cuatrimestre_aprobacion_cursada,
+            anio_aprobacion_cursada = materia_alumno.anio_aprobacion_cursada,
+            finalizada = False
+        )
+        db.session.add(encuesta)
+        db.session.commit()
+
+        return encuesta
+

@@ -1,5 +1,6 @@
 from app import db
 
+
 class TipoEncuesta(db.Model):
     __tablename__ = 'tipo_encuesta'
 
@@ -35,6 +36,19 @@ class PreguntaEncuestaPuntaje(db.Model):
 
     def __str__(self):
         return "{} - Min: {} - Max: {}".format(self.encuesta_id, self.texto_min, self.texto_max)
+
+
+class PreguntaEncuestaNumero(db.Model):
+    __tablename__ = 'pregunta_encuesta_numero'
+
+    id = db.Column(db.Integer, primary_key=True)
+
+    encuesta_id = db.Column(db.Integer(), db.ForeignKey('pregunta_encuesta.id'), nullable=False)
+    numero_min = db.Column(db.Integer(), nullable=False, server_default='')
+    numero_max = db.Column(db.Integer(), nullable=False, server_default='')
+
+    def __str__(self):
+        return "{} - Min: {} - Max: {}".format(self.encuesta_id, self.numero_min, self.numero_max)
 
 
 class PreguntaEncuestaSiNo(db.Model):

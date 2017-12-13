@@ -6,7 +6,7 @@ ADMIN = "admin/"
 
 BASE_URL = HTTP + IP + PUERTO + BASE_API
 
-#No requiere autenticacion
+# No requiere autenticacion
 BUSCAR_CARRERAS_SERVICE = BASE_URL + "BuscarCarreras"
 BUSCAR_MATERIAS_SERVICE = BASE_URL + "BuscarMaterias"
 OBTENER_MATERIA_SERVICE = BASE_URL + "ObtenerMateria"
@@ -17,7 +17,7 @@ OBTENER_PREGUNTAS_ENCUESTA_SERVICE = BASE_URL + "ObtenerPreguntasEncuesta"
 OBTENER_DOCENTES_CURSO_SERVICE = BASE_URL + "ObtenerDocentesCurso"
 OBTENER_DOCENTES_SERVICE = BASE_URL + "ObtenerDocentes"
 
-#Requiere estar logueado
+# Requiere estar logueado
 OBTENER_PADRON_ALUMNO_SERVICE = BASE_URL + "ObtenerPadronAlumno"
 MODIFICAR_PADRON_ALUMNO_SERVICE = BASE_URL + "ModificarPadronAlumno"
 AGREGAR_CARRERA_ALUMNO_SERVICE = BASE_URL + "AgregarCarreraAlumno"
@@ -26,7 +26,8 @@ ELIMINAR_CARRERA_ALUMNO_SERVICE = BASE_URL + "EliminarCarreraAlumno"
 OBTENER_MATERIAS_ALUMNO_SERVICE = BASE_URL + "ObtenerMateriasAlumno"
 AGREGAR_MATERIA_ALUMNO_SERVICE = BASE_URL + "AgregarMateriaAlumno"
 ELIMINAR_MATERIA_ALUMNO_SERVICE = BASE_URL + "EliminarMateriaAlumno"
+OBTENER_ENCUESTAS_ALUMNO_SERVICE = BASE_URL + "ObtenerEncuestasAlumno"
 
-#Requiere ser administrador
+# Requiere ser administrador
 GUARDAR_HORARIOS_DESDE_ARCHIVO_PDF_SERVICE = BASE_URL + ADMIN + "GuardarHorariosDesdeArchivoPDF"
 MODIFICAR_CURSO_SERVICE = BASE_URL + ADMIN + "ModificarCurso"

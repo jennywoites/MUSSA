@@ -8,6 +8,7 @@ HORARIO = 3
 DOCENTE = 4
 CORRELATIVA = 5
 ESTRELLAS = 6
+NUMERO = 7
 
 TIPOS_ENCUESTAS = {
     PUNTAJE_1_A_5: "Puntaje de 1 a 5",
@@ -16,7 +17,8 @@ TIPOS_ENCUESTAS = {
     HORARIO: "Horario",
     DOCENTE: "Docente",
     CORRELATIVA: "Correlativa",
-    ESTRELLAS: "Estrellas"
+    ESTRELLAS: "Estrellas",
+    NUMERO: "Numero"
 }
 
 GRUPO_ENCUESTA_GENERAL = 0
@@ -158,7 +160,9 @@ def crear_preguntas_categoria_general(orden):
     pregunta = "¿Cuántas horas dedicabas a estudiar la materia fuera de las horas de clases " \
                "semanalmente? Incluye horas para realizar trabajos prácticos, guías, estudiar " \
                "para exámenes."
-    encuesta = crear_pregunta_encuesta(pregunta, TEXTO_LIBRE)
+    MAX_HORAS_SEMANA = 24 * 7  # 24hs x 7 dias
+    encuesta = crear_pregunta_encuesta(pregunta, NUMERO)
+    crear_pregunta_encuesta_numerica(encuesta, 0, MAX_HORAS_SEMANA)
     orden = crear_entrada_encuesta_generada(encuesta, grupo, EXCLUIR_NUNCA, orden)
     ##########################################################################################
 
@@ -378,6 +382,15 @@ def crear_pregunta_encuesta_puntaje(encuesta, texto_min, texto_max):
         encuesta_id=encuesta.id,
         texto_min=texto_min,
         texto_max=texto_max
+    ))
+    db.session.commit()
+
+
+def crear_pregunta_encuesta_numerica(encuesta, numero_min, numero_max):
+    db.session.add(PreguntaEncuestaNumero(
+        encuesta_id=encuesta.id,
+        numero_min=numero_min,
+        numero_max=numero_max
     ))
     db.session.commit()
 

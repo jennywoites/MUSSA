@@ -142,49 +142,176 @@
             return true;
         }
 
+        function agregar_correlativa(idEncuesta) {
+            var selector = document.getElementById("selector_posibles_correlativas_" + idEncuesta);
+            var materia = selector[selector.selectedIndex];
+
+            if (materia.hidden)
+                return;
+
+            var correlativas_table = document.getElementById("tabla_correlativas_" + idEncuesta);
+            var correlativas = correlativas_table.rows;
+
+            var indice = correlativas.length;
+            var row = correlativas_table.insertRow(indice);
+            var ultimo_id = correlativas[indice-1].id
+            var numero_id = parseInt(ultimo_id.substr(ultimo_id.indexOf("_")+1)) + 1;
+            if (isNaN(numero_id))
+                numero_id = 0;
+
+            row.id = "materia_" + numero_id + "_" + idEncuesta;
+            row.insertCell(0).innerHTML = materia.innerHTML;
+            var materiaId = materia.id;
+            row.insertCell(1).innerHTML = '<button type="button" class="btn btn-default" onclick="eliminar_correlativa(' + numero_id + ',' + idEncuesta + "," + materiaId + ')"><span class="glyphicon glyphicon-trash"></span></button></td>'
+
+            var div_tabla_correlativas = document.getElementById("div_tabla_correlativas_" + idEncuesta);
+            div_tabla_correlativas.hidden = false;
+
+            materia.hidden = true;
+        }
+
+        function eliminar_correlativa(idOpcion, idEncuesta, materia) {
+            var tabla = document.getElementById("tabla_correlativas_" + idEncuesta);
+
+            var correlativas = tabla.rows;
+            correlativas["materia_" + idOpcion + "_" + idEncuesta].remove()
+
+            if (tabla.rows.length == 1) { //Siempre una fila es el encabezado
+                var div_tabla_correlativas = document.getElementById("div_tabla_correlativas_" + idEncuesta);
+                div_tabla_correlativas.hidden = true;
+            }
+
+            materia.hidden = false;
+        }
+
+        function agregarComentarioDocente(idPregunta) {
+            var texto_comentario_element = document.getElementById("texto-docentes-" + idPregunta);
+            var error_element = document.getElementById("error_label-docentes-" + idPregunta);
+
+            if (eliminarPuntuacionesYEspacios(texto_comentario_element.value) == "") {
+                error_element.style["display"] = "";
+                return;
+            } else {
+                error_element.style["display"] = "none";
+            }
+
+            var selector_docente = document.getElementById("selector_docentes_" + idPregunta);
+            var docente = selector_docente[selector_docente.selectedIndex];
+
+            var tabla_docentes = document.getElementById("tabla_docentes-" + idPregunta);
+
+            var filas = tabla_docentes.rows;
+            var indice = filas.length;
+            var row = tabla_docentes.insertRow(indice);
+            var ultimo_id = filas[indice-1].id
+            var numero_id = parseInt(ultimo_id.substr(ultimo_id.indexOf("_")+1)) + 1;
+            if (isNaN(numero_id))
+                numero_id = 0;
+
+            row.id = "entradaTablaDocente_" + numero_id + "_" + idPregunta;
+            row.insertCell(0).innerHTML = docente.innerText;
+            row.insertCell(1).innerHTML = texto_comentario_element.value;
+
+            var docenteId = docente.id;
+
+            var botones = '<button type="button" class="btn btn-default" onclick="editarDocente(' + numero_id + ',' + idPregunta + "," + docenteId + ')" style="margin-right: 5px;"><span class="glyphicon glyphicon-pencil"></span></button></td>';
+            botones += '<button type="button" class="btn btn-default" onclick="eliminarDocente(' + numero_id + ',' + idPregunta + "," + docenteId + ')" style="margin-right: 5px;"><span class="glyphicon glyphicon-trash"></span></button></td>';
+            row.insertCell(2).innerHTML = botones;
+
+            var div_tabla_docentes = document.getElementById("div-tabla-docentes-" + idPregunta);
+            div_tabla_docentes.hidden = false;
+
+            docente.hidden = true;
+            mostrarOcultarSelectorDocentes(idPregunta);
+
+            texto_comentario_element.value = "";
+        }
+
+        function mostrarOcultarSelectorDocentes(idPregunta) {
+            var selector_docente = document.getElementById("selector_docentes_" + idPregunta);
+            var quedanDocentes = false;
+            for (var i=0; i<selector_docente.options.length; i++) {
+                if (!selector_docente.options[i].hidden) {
+                    selector_docente.selectedIndex = i;
+                    quedanDocentes = true;
+                    break;
+                }
+            }
+
+            var div_agregar_docentes = document.getElementById("div_agregar_docentes_" + idPregunta);
+            div_agregar_docentes.hidden = !quedanDocentes;
+        }
+
+        function editarDocente(numeroId, idPregunta, docenteId) {
+            var tabla = document.getElementById("tabla_docentes-" + idPregunta);
+            var fila_actual = tabla.rows["entradaTablaDocente_" + numeroId + "_" + idPregunta];
+            var comentario = fila_actual.cells[1].innerText;
+
+            eliminarDocente(numeroId, idPregunta, docenteId);
+
+            var texto_comentario_element = document.getElementById("texto-docentes-" + idPregunta);
+            texto_comentario_element.value = comentario;
+
+            docenteId.selected = true;
+        }
+
+        function eliminarDocente(numeroId, idPregunta, docenteId) {
+            var tabla = document.getElementById("tabla_docentes-" + idPregunta);
+
+            var filas = tabla.rows;
+            filas["entradaTablaDocente_" + numeroId + "_" + idPregunta].remove()
+
+            if (tabla.rows.length == 1) { //Siempre una fila es el encabezado
+                var div_tabla_docentes = document.getElementById("div-tabla-docentes-" + idPregunta);
+                div_tabla_docentes.hidden = true;
+            }
+
+            docenteId.hidden = false;
+            mostrarOcultarSelectorDocentes(idPregunta);
+        }
+
+        function eliminarPuntuacionesYEspacios(texto) {
+            var nuevo_texto = ""
+            for(var i=0; i<texto.length; i++) {
+                var caracter = texto[i];
+                if (";.- *+-?¿/&$%!,{}[]\n".indexOf(caracter) == -1) {
+                    nuevo_texto += caracter;
+                }
+            }
+            return nuevo_texto;
+        }
 
 </script>
 
-<!-- Begin botonera -->
+<!--- Begin Botonera -->
 <div class="row">
     <div class="col-md-12 board">
         <div class="board-inner">
             <ul class="nav nav-tabs" id="myTab">
                 <div class="liner"></div>
-                <li>
-                    <a href="{{ url_for('main.completar_encuesta_general_page') }}" title="General">
-                        <span class="round-tabs">1<i class="icon icon-profile-male"></i></span>
-                    </a>
-                </li>
-                <li>
-                    <a href="{{ url_for('main.completar_encuesta_contenido_page') }}" title="Contenido">
-                        <span class="round-tabs">2<i class="icon icon-pencil"></i></span>
-                    </a>
-                </li>
-                <li>
-                    <a href="{{ url_for('main.completar_encuesta_clases_page') }}" title="Clases">
-                        <span class="round-tabs">3<i class="icon icon-layers"></i></span>
-                    </a>
-                </li>
-                <li>
-                    <a href="{{ url_for('main.completar_encuesta_examenes_page') }}" title="Examenes">
-                        <span class="round-tabs">4<i class="icon icon-aperture"></i></span>
-                    </a>
-                </li>
-                <li>
-                    <a href="{{ url_for('main.completar_encuesta_docentes_page') }}" title="Docentes">
-                        <span class="round-tabs">5<i class="icon icon-tools-2"></i></span>
-                    </a>
-                </li>
+                {% for i in range(titulos | length) %}
+                    <li>
+                        <a href="{{ url_for(titulos[i]['url'], idEncuestaAlumno=idEncuestaAlumno) }}"
+                           title="{{titulos[i]['titulo']}}">
+                            <span class="round-tabs">{{i+1}}<i class="icon icon-profile-male"></i></span>
+                        </a>
+                    </li>
+                {% endfor %}
             </ul>
         </div>
     </div>
 </div>
-<!-- End botonera -->
+<!--- End Botonera -->
 
 <br>
 
 <div class="container">
+
+    <div>
+        <h2>{{encuesta["materia"]}} / Curso {{encuesta["curso"]}}</h2>
+
+        <h3>Sección {{paso_activo+1}}: {{titulos[paso_activo]["titulo"]}}</h3>
+    </div>
 
     {% for pregunta in preguntas %}
 
@@ -201,11 +328,9 @@
             <tbody>
                 <tr>
                     <td>{{pregunta["texto_min"]}}</td>
-                    <td><input type="radio" name="votacion" value="1" style="margin:10px;"></td>
-                    <td><input type="radio" name="votacion" value="2" style="margin:10px;"></td>
-                    <td><input type="radio" name="votacion" value="3" style="margin:10px;"></td>
-                    <td><input type="radio" name="votacion" value="4" style="margin:10px;"></td>
-                    <td><input type="radio" name="votacion" value="5" style="margin:10px;"></td>
+                    {% for i in range(1,6) %}
+                        <td><input type="radio" name="votacion" value="{{i}}" style="margin:10px;"></td>
+                    {% endfor %}
                     <td>{{pregunta["texto_max"]}}</td>
                 </tr>
             </tbody>
@@ -262,6 +387,8 @@
             {% endfor %}
 
         {% elif pregunta["tipo"] == "Horario" %}
+
+            <br>
             <div>
                 <div class="row">
                     <div class="col-sm-2">
@@ -337,10 +464,79 @@
             </div>
 
         {% elif pregunta["tipo"] == "Docente" %}
-            <p>No implementada</p>
+
+            <div id="div_agregar_docentes_{{pregunta['pregunta_encuesta_id']}}">
+
+                <div class="form-group">
+                    <select class="form-control" id="selector_docentes_{{pregunta['pregunta_encuesta_id']}}" name="selector_posibles_correlativas_{{pregunta['pregunta_encuesta_id']}}">
+                        {% for docente in docentes %}
+                            <option id="docente_{{docente['id_docente']}}_{{pregunta['pregunta_encuesta_id']}}" value="{{docente['id_docente']}}">{{docente["nombre_completo"]}}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <textarea class="form-control" rows="5" id="texto-docentes-{{pregunta['pregunta_encuesta_id']}}"></textarea>
+
+                <br>
+
+                <div class="alert alert-danger" id="error_label-docentes-{{pregunta['pregunta_encuesta_id']}}" style="display:none">
+                    El texto del comentario a agregar no puede estar vacío
+                </div>
+
+                <button type="button" class="btn btn-mussa-default" onclick="agregarComentarioDocente('{{pregunta['pregunta_encuesta_id']}}')">Agregar Comentario</button>
+
+            </div>
+
+            <br>
+            <div class="form-group" id="div-tabla-docentes-{{pregunta['pregunta_encuesta_id']}}" hidden="true">
+                <div class='table-responsive'>
+                    <table class='table table-hover' id="tabla_docentes-{{pregunta['pregunta_encuesta_id']}}">
+                        <tr>
+                            <th>Docente</th>
+                            <th>Comentarios</th>
+                            <th>Acciones</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
 
         {% elif pregunta["tipo"] == "Correlativa" %}
-            <p>No implementada</p>
+
+            <br>
+
+            <div class="row">
+                <div class="col-sm-7">
+                    <div class="form-group">
+                        <select class="form-control" id="selector_posibles_correlativas_{{pregunta['pregunta_encuesta_id']}}" name="selector_posibles_correlativas_{{pregunta['pregunta_encuesta_id']}}">
+                            {% for correlativa in posibles_correlativas %}
+                                <option id="materia_opcion_{{correlativa['id']}}_{{pregunta['pregunta_encuesta_id']}}" value="{{correlativa['id']}}">{{correlativa["codigo"]}} - {{correlativa["nombre"]}}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                <div class="col-sm-2">
+                    <button class="btn btn-mussa-default" onclick="agregar_correlativa('{{pregunta['pregunta_encuesta_id']}}')">Agregar</button>
+                </div>
+            </div>
+
+            <br>
+
+            <div class="form-group" id="div_tabla_correlativas_{{pregunta['pregunta_encuesta_id']}}" hidden="true">
+                <div class='table-responsive'>
+                    <table class='table table-hover' id="tabla_correlativas_{{pregunta['pregunta_encuesta_id']}}">
+                        <tr>
+                            <th>Materia</th>
+                            <th>Eliminar</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
 
         {% elif pregunta["tipo"] == "Estrellas" %}
 
@@ -352,7 +548,19 @@
             </div>
             <br>
 
-    {% endif %}
+        {% elif pregunta["tipo"] == "Numero" %}
+
+            <br>
+
+            <div class="row">
+                <div class="col-sm-2">
+                    <input type="number" class="form-control" name="numero_{{pregunta['pregunta_encuesta_id']}}" id="numero_{{pregunta['pregunta_encuesta_id']}}" value="{{pregunta['numero_min']}}" min="{{pregunta['numero_min']}}" max="{{pregunta['numero_max']}}" step="1">
+                </div>
+            </div>
+
+            <br>
+
+        {% endif %}
 
     {% endfor %}
 

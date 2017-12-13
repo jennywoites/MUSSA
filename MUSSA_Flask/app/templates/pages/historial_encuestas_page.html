@@ -1,0 +1,81 @@
+{% extends "common/page_base.html" %}
+
+{% block content %}
+
+<div class="container">
+
+    <h2>{%trans%}Mis Encuestas{%endtrans%}</h2>
+
+    <br>
+
+    {% if (pendientes | length == 0) and (finalizadas | length == 0) %}
+        <p style="font-style: italic; color: purple; font-size: large;">
+            Aún no tienes ninguna materia aprobada, desaprobada o con final pendiente y curso asignado.
+            Cuando tengas alguna materia en este estado, en esta sección podrás completar las encuestas
+            correspondientes.
+        </p>
+    {% else %}
+
+        {% if (pendientes | length > 0) %}
+            <h3>Pendientes</h3>
+
+            <div class='table-responsive'>
+                <table class='table table-hover'>
+                    <tr>
+                        <th>Materia</th>
+                        <th>Curso</th>
+                        <th>Carrera</th>
+                        <th>Aprobación de Cursada</th>
+                        <th>Editar</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for encuesta in pendientes %}
+                        <tr>
+                            <td>{{encuesta["materia"]}}</td>
+                            <td>{{encuesta["curso"]}}</td>
+                            <td>{{encuesta["carrera"]}}</td>
+                            <td>{{encuesta["fecha_aprobacion"]}}</td>
+                            <td>
+                                <button type="button" class="btn btn-link" onclick="window.location.href='{{ url_for('main.completar_encuesta_general_page', idEncuestaAlumno=encuesta['id'])}}'"><span class='glyphicon glyphicon-pencil'></span></button>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% endif %}
+
+        {% if (finalizadas | length > 0) %}
+            <br>
+
+            <h3>Finalizadas</h3>
+
+            <div class='table-responsive'>
+                <table class='table table-hover'>
+                    <tr>
+                        <th>Materia</th>
+                        <th>Curso</th>
+                        <th>Carrera</th>
+                        <th>Aprobación de Cursada</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for encuesta in finalizadas %}
+                    <tr>
+                        <td>{{encuesta["materia"]}}</td>
+                        <td>{{encuesta["curso"]}}</td>
+                        <td>{{encuesta["carrera"]}}</td>
+                        <td>{{encuesta["fecha_aprobacion"]}}</td>
+                    </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% endif %}
+
+    {% endif %}
+
+</div>
+
+{% endblock %}

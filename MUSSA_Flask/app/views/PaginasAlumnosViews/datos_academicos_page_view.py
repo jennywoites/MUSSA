@@ -1,6 +1,6 @@
 from flask import redirect, render_template
 from flask import request, url_for, flash
-from flask_user import current_user, login_required, roles_accepted
+from flask_user import login_required
 
 from app.views.base_view import main_blueprint
 
