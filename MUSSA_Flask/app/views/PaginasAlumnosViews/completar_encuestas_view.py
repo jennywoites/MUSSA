@@ -44,6 +44,9 @@ def completar_encuesta(idEncuestaAlumno, cookie, num_categoria):
     posibles_correlativas = invocar_servicio_buscar_materias(cookie, "10")
     # filtrar la materia actual ya que no es correlativa
 
+    #Obtener el id del curso
+    docentes = invocar_obtener_docentes_del_curso(cookie, "3")
+
     HORA_MIN = 7
     HORA_MAX = 23
     horarios = []
@@ -68,4 +71,5 @@ def completar_encuesta(idEncuestaAlumno, cookie, num_categoria):
                            dias=DIAS,
                            hora_desde=horarios[:-1],
                            hora_hasta=horarios[1:],
-                           posibles_correlativas=posibles_correlativas)
+                           posibles_correlativas=posibles_correlativas,
+                           docentes=docentes)
