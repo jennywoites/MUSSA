@@ -55,6 +55,9 @@ def completar_encuesta(idEncuestaAlumno, cookie, num_categoria):
         minutos = "00" if hora == i else "30"
         horarios.append("{}:{}".format(get_numero_dos_digitos(hora), minutos))
 
+    # Obtener temáticas de la base de datos
+    tematicas = [{"id": 1, "tema": "TEMA1"}, {"id": 2, "tema": "TEMA2"}]
+
     titulos = [
         {'url': 'main.completar_encuesta_general_page', 'titulo': 'General'},
         {'url': 'main.completar_encuesta_contenido_page', 'titulo': 'Contenido'},
@@ -64,13 +67,14 @@ def completar_encuesta(idEncuestaAlumno, cookie, num_categoria):
     ]
 
     return render_template('pages/completar_encuesta_page.html',
-                           titulos= titulos,
+                           titulos=titulos,
                            idEncuestaAlumno=idEncuestaAlumno,
-                           encuesta = encuesta,
+                           encuesta=encuesta,
                            paso_activo=num_categoria,
                            preguntas=preguntas,
                            dias=DIAS,
                            hora_desde=horarios[:-1],
                            hora_hasta=horarios[1:],
                            posibles_correlativas=posibles_correlativas,
-                           docentes=docentes)
+                           docentes=docentes,
+                           tematicas=tematicas)

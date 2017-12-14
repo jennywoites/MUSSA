@@ -281,6 +281,124 @@
             return nuevo_texto;
         }
 
+        function selector_tematica_change(idPregunta) {
+            var selector = document.getElementById("selector_tematica_" + idPregunta);
+            var div_texto_nueva_tematica =  document.getElementById("div_texto_nueva_tematica_" + idPregunta);
+            if (selector[selector.selectedIndex].id == ("nueva_tematica_" + idPregunta)) {
+                div_texto_nueva_tematica.hidden = false;
+            } else {
+                div_texto_nueva_tematica.hidden = true;
+            }
+        }
+
+        function agregar_tematica(idPregunta) {
+            var selector = document.getElementById("selector_tematica_" + idPregunta);
+            var opcionElegida = selector[selector.selectedIndex];
+
+            // Se vuelve a seleccionar la opcion Nueva Tematica
+            selector.selectedIndex = 0;
+            selector_tematica_change(idPregunta);
+
+            var idTema = "";
+            var texto = "";
+            if (opcionElegida.id == ("nueva_tematica_" + idPregunta)) {
+                idTema = -1;
+
+                var texto_nueva_tematica = document.getElementById("texto_nueva_tematica_" + idPregunta);
+                texto = getCleanedString(texto_nueva_tematica.value);
+                texto_nueva_tematica.value = "";
+
+                var error_element = document.getElementById("error_label_tematica_" + idPregunta);
+                if (eliminarPuntuacionesYEspacios(texto) == "") {
+                    error_element.style["display"] = "";
+                    return;
+                } else {
+                    error_element.style["display"] = "none";
+                }
+
+                for(var j=0; j<selector.options.length; j++) {
+                    var opcion = selector.options[j];
+                    if (opcion.innerText == texto && !opcion.hidden) {
+                        opcion.hidden = true;
+                        agregarTematica(opcion.innerText, opcion.value, opcion, idPregunta);
+                        return;
+                    }
+                }
+
+                var etiquetas_ya_elegidas = $("[id*=texto_id_etiqueta_]");
+                for (var i=0; i<etiquetas_ya_elegidas.length; i++) {
+                    if (etiquetas_ya_elegidas[i].value == texto)
+                        return;
+                }
+
+            } else {
+                idTema = opcionElegida.value;
+                texto = opcionElegida.innerText;
+                opcionElegida.hidden = true;
+            }
+
+            agregarTematica(texto, idTema, opcionElegida, idPregunta);
+        }
+
+        function mostrarOcultarSeleccionMasTematicas(idPregunta) {
+            var MAX_TEMATICAS = 10;
+            var div_seguir_eligiendo = document.getElementById("div_permitir_agregar_mas_etiquetas_" + idPregunta);
+            var etiquetas_ya_elegidas = $("[id*=texto_id_etiqueta_]");
+            div_seguir_eligiendo.hidden = (etiquetas_ya_elegidas.length >= MAX_TEMATICAS);
+        }
+
+        function agregarTematica(texto, idTema, opcionElegida, idPregunta) {
+            var tematicas_elegidas = document.getElementById("tematicas_elegidas_" + idPregunta);
+
+            var nueva_etiqueta = crearEtiquetaTematica(texto, idTema, opcionElegida.id, idPregunta);
+            tematicas_elegidas.innerHTML += nueva_etiqueta;
+
+            tematicas_elegidas.hidden = false;
+            mostrarOcultarSeleccionMasTematicas(idPregunta);
+        }
+
+        function getCleanedString(cadena){
+           var specialChars = "!@#$^&%*()+=-[]\/{}|:<>?,.";
+
+           for (var i = 0; i < specialChars.length; i++) {
+               cadena= cadena.replace(new RegExp("\\" + specialChars[i], 'gi'), '');
+           }
+
+           cadena = cadena.toUpperCase();
+
+           cadena = cadena.replace(/Á/gi,"A");
+           cadena = cadena.replace(/É/gi,"E");
+           cadena = cadena.replace(/Í/gi,"I");
+           cadena = cadena.replace(/Ó/gi,"O");
+           cadena = cadena.replace(/Ú/gi,"U");
+           return cadena;
+        }
+
+        function crearEtiquetaTematica(texto, idEtiqueta, opcion, idPregunta) {
+            etiqueta = "";
+            etiqueta += "<div class='col-lg-3' id='div_etiqueta_" + idEtiqueta + "_" + idPregunta + "' style='margin-bottom:5px;'>";
+            etiqueta += "<div class='input-group'>";
+            etiqueta += "<input type='text' class='form-control' style='background-color: #e8d2f2;' id='texto_id_etiqueta_" + idEtiqueta + "' value='" + texto + "' disabled/>";
+            etiqueta += "<span class='input-group-btn'>";
+            etiqueta += "<button class='btn btn-mussa-default' type='button'"
+            etiqueta += "onclick='eliminarTematica(" + idEtiqueta + "," + opcion + "," + idPregunta + ")'>";
+            etiqueta += "<span class='glyphicon glyphicon-trash'></span>";
+            etiqueta += "</button>";
+            etiqueta += "</span>";
+            etiqueta += "</div>";
+            etiqueta += "</div>";
+            return etiqueta;
+        }
+
+        function eliminarTematica(idEtiqueta, opcion, idPregunta) {
+            var tematicas_elegidas = document.getElementById("tematicas_elegidas_" + idPregunta);
+            var etiqueta_a_eliminar = document.getElementById("div_etiqueta_" + idEtiqueta + "_" + idPregunta);
+            tematicas_elegidas.removeChild(etiqueta_a_eliminar);
+            if (opcion.id != ("nueva_tematica_" + idPregunta))
+                opcion.hidden = false;
+            mostrarOcultarSeleccionMasTematicas(idPregunta);
+        }
+
 </script>
 
 <!--- Begin Botonera -->
@@ -581,7 +699,32 @@
 
             <br>
 
-            <p>No implementada</p>
+            <div id="div_permitir_agregar_mas_etiquetas_{{pregunta['pregunta_encuesta_id']}}">
+                <div class="row">
+                    <div class="col-sm-3">
+                        <div class="form-group">
+                            <select class="form-control" id="selector_tematica_{{pregunta['pregunta_encuesta_id']}}" name="selector_tematica_{{pregunta['pregunta_encuesta_id']}}" onchange="selector_tematica_change('{{pregunta['pregunta_encuesta_id']}}')">
+                                <option id="nueva_tematica_{{pregunta['pregunta_encuesta_id']}}" value="-1">Nueva Temática</option>
+                                {% for tematica in tematicas %}
+                                    <option id="tematica_opcion_{{tematica['id']}}_{{pregunta['pregunta_encuesta_id']}}" value="{{tematica['id']}}">{{tematica["tema"]}}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-sm-3" id="div_texto_nueva_tematica_{{pregunta['pregunta_encuesta_id']}}">
+                        <input type="text" class="form-control" id="texto_nueva_tematica_{{pregunta['pregunta_encuesta_id']}}"/>
+                    </div>
+                    <div class="col-sm-2">
+                        <button class="btn btn-mussa-default" onclick="agregar_tematica('{{pregunta['pregunta_encuesta_id']}}')">Agregar</button>
+                    </div>
+                </div>
+
+                <div class="alert alert-danger" id="error_label_tematica_{{pregunta['pregunta_encuesta_id']}}" style="display:none">
+                    El texto de la temática no puede estar vacío
+                </div>
+            </div>
+
+            <div class="row" id="tematicas_elegidas_{{pregunta['pregunta_encuesta_id']}}" hidden="true"></div>
 
             <br>
 
