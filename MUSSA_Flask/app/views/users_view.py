@@ -20,8 +20,9 @@ def member_page():
 @main_blueprint.route('/pages/profile', methods=['GET', 'POST'])
 @login_required
 def user_profile_page():
-    # Initialize form
-    form = UserProfileForm(request.form, current_user)
+    form = UserProfileForm()
+    form.first_name.data = current_user.first_name
+    form.last_name.data = current_user.last_name
 
     # Process valid POST
     if request.method == 'POST' and form.validate():

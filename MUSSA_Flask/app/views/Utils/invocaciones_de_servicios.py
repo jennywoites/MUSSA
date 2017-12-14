@@ -210,3 +210,8 @@ def invocar_servicio_buscar_materias(cookie, carrera):
     escribir_resultado_servicio('Buscar Materias', materias_response)
 
     return json.loads(materias_response.text)["materias"]
+
+def invocar_obtener_tematicas_materias(cookie):
+    tematicas_response = requests.get(OBTENER_TEMATICAS_MATERIAS, cookies=cookie)
+    escribir_resultado_servicio('Obtener Temáticas Materias', tematicas_response)
+    return json.loads(tematicas_response.text)["tematicas"]
