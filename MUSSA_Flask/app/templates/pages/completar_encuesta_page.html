@@ -560,6 +560,31 @@
 
             <br>
 
+        {% elif pregunta["tipo"] == "Tags / Palabras Clave" %}
+
+            <br>
+
+            <div class="row">
+                {% for i in range(1,4) %}
+                    <div class="col-sm-3">
+                        <div class="form-group has-feedback">
+                            <input type="text" class="form-control" id="palabra-{{i}}-{{pregunta['pregunta_encuesta_id']}}"/>
+                            <i class="glyphicon glyphicon-tag form-control-feedback"></i>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+
+            <br>
+
+        {% elif pregunta["tipo"] == "Temática de la Materia" %}
+
+            <br>
+
+            <p>No implementada</p>
+
+            <br>
+
         {% endif %}
 
     {% endfor %}

@@ -9,6 +9,8 @@ DOCENTE = 4
 CORRELATIVA = 5
 ESTRELLAS = 6
 NUMERO = 7
+TAG = 8
+TEMATICA = 9
 
 TIPOS_ENCUESTAS = {
     PUNTAJE_1_A_5: "Puntaje de 1 a 5",
@@ -18,7 +20,9 @@ TIPOS_ENCUESTAS = {
     DOCENTE: "Docente",
     CORRELATIVA: "Correlativa",
     ESTRELLAS: "Estrellas",
-    NUMERO: "Numero"
+    NUMERO: "Numero",
+    TAG: "Tags / Palabras Clave",
+    TEMATICA: "Temática de la Materia"
 }
 
 GRUPO_ENCUESTA_GENERAL = 0
@@ -127,7 +131,7 @@ def crear_preguntas_categoria_general(orden):
     ##########################################################################################
 
     ##########################################################################################
-    pregunta = "¿Se superponen los temas con los de otras materias?" \
+    pregunta = "¿Se superponen los temas con los de otras materias? " \
                "Si es así, indicar qué temas y con cuáles asignaturas."
     encuesta = crear_pregunta_encuesta(pregunta, TEXTO_LIBRE)
     orden = crear_entrada_encuesta_generada(encuesta, grupo, EXCLUIR_NUNCA, orden)
@@ -147,6 +151,12 @@ def crear_preguntas_categoria_general(orden):
     ##########################################################################################
     pregunta = """¿Cuáles crees que deberían ser las materias correlativas de esta materia?"""
     encuesta = crear_pregunta_encuesta(pregunta, CORRELATIVA)
+    orden = crear_entrada_encuesta_generada(encuesta, grupo, EXCLUIR_NUNCA, orden)
+    ##########################################################################################
+
+    ##########################################################################################
+    pregunta = """¿Cuál es la temática de la materia?"""
+    encuesta = crear_pregunta_encuesta(pregunta, TEMATICA)
     orden = crear_entrada_encuesta_generada(encuesta, grupo, EXCLUIR_NUNCA, orden)
     ##########################################################################################
 
@@ -194,6 +204,13 @@ def crear_preguntas_categoria_general(orden):
     pregunta_rta_si = """¿Cuál es el régimen de promoción?"""
     encuestas_si = [crear_pregunta_encuesta(pregunta_rta_si, TEXTO_LIBRE)]
     crear_pregunta_encuesta_si_no(encuesta, encuestas_si, [])
+    ##########################################################################################
+
+    ##########################################################################################
+    pregunta = "Escribí hasta tres palabras clave con las cuales podrías relacionar la materia " \
+               "para facilitar búsquedas futuras (TAGS)"
+    encuesta = crear_pregunta_encuesta(pregunta, TAG)
+    orden = crear_entrada_encuesta_generada(encuesta, grupo, EXCLUIR_NUNCA, orden)
     ##########################################################################################
 
     ##########################################################################################
