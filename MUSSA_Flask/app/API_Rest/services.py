@@ -16,6 +16,7 @@ BUSCAR_CURSOS_SERVICE = BASE_URL + "BuscarCursos"
 OBTENER_PREGUNTAS_ENCUESTA_SERVICE = BASE_URL + "ObtenerPreguntasEncuesta"
 OBTENER_DOCENTES_CURSO_SERVICE = BASE_URL + "ObtenerDocentesCurso"
 OBTENER_DOCENTES_SERVICE = BASE_URL + "ObtenerDocentes"
+OBTENER_TEMATICAS_MATERIAS = BASE_URL + "ObtenerTematicasMaterias"
 
 # Requiere estar logueado
 OBTENER_PADRON_ALUMNO_SERVICE = BASE_URL + "ObtenerPadronAlumno"

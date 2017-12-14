@@ -5,6 +5,7 @@ from app.DAO.UsersDAO import create_users
 from app.DAO.CarrerasDAO import create_carreras
 from app.DAO.MateriasDAO import create_estados_materia, create_forma_aprobacion_materias
 from app.DAO.EncuestasDAO import create_encuestas
+from app.DAO.PalabrasClaveDAO import create_tematicas
 
 class InitDbCommand(Command):
     """ Initialize the database."""
@@ -23,3 +24,4 @@ def init_db():
     create_estados_materia()
     create_forma_aprobacion_materias()
     create_encuestas()
+    create_tematicas()
