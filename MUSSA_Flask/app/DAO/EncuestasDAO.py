@@ -53,6 +53,11 @@ EXCLUIR_CUANDO = {
     EXCLUIR_NUNCA: "Nunca"
 }
 
+# Estados paso encuesta
+PASO_ENCUESTA_NO_INICIADO = 0
+PASO_ENCUESTA_EN_CURSO = 1
+PASO_ENCUESTA_FINALIZADO = 2
+
 
 def create_encuestas():
     db.create_all()
