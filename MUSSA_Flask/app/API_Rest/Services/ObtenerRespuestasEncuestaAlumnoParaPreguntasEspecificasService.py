@@ -38,7 +38,7 @@ class ObtenerRespuestasEncuestaAlumnoParaPreguntasEspecificas(Resource):
 
         query = RespuestaEncuestaAlumno.query.filter_by(encuesta_alumno_id=id_encuesta)
 
-        ids_preguntas = args["ids_preguntas"].split(";") if "ids_preguntas" and args["ids_preguntas"] in args else None
+        ids_preguntas = args["ids_preguntas"].split(";") if "ids_preguntas" in args and args["ids_preguntas"] else None
         if ids_preguntas:
             query = query.filter(RespuestaEncuestaAlumno.pregunta_encuesta_id.in_(ids_preguntas))
 
