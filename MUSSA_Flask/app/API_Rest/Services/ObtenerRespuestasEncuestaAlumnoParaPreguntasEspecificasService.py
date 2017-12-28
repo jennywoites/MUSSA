@@ -31,29 +31,36 @@ class ObtenerRespuestasEncuestaAlumnoParaPreguntasEspecificas(Resource):
             return {'Error': 'Este servicio recibió un id de encuesta invalido o no perteneciente'
                              'al alumno'}, CLIENT_ERROR_BAD_REQUEST
 
-        ids_preguntas = args["ids_preguntas"] if "ids_preguntas" in args else []
-
-        if not self.ids_preguntas_son_validas(ids_preguntas):
+        if not self.ids_preguntas_son_validas(args):
             logging.error('El servicio Obtener Respuestas Encuesta Alumno'
                           'para preguntas específicas recibió uno o más ids de preguntas inválidos')
             return {'Error': 'Este servicio recibió uno o más ids de preguntas inválidos'}, CLIENT_ERROR_BAD_REQUEST
 
         query = RespuestaEncuestaAlumno.query.filter_by(encuesta_alumno_id=id_encuesta)
-        query = query.filter(RespuestaEncuestaAlumno.pregunta_encuesta_id.in_(ids_preguntas))
-        query = query.order_by(RespuestaEncuestaAlumno.pregunta_encuesta_id.orden.asc())
-        respuestas_encuesta = query.order_by(RespuestaEncuestaAlumno.id.orden.asc()).all()
+
+        ids_preguntas = args["ids_preguntas"].split(";") if "ids_preguntas" in args else None
+        if ids_preguntas:
+            query = query.filter(RespuestaEncuestaAlumno.pregunta_encuesta_id.in_(ids_preguntas))
+
+        query = query.order_by(RespuestaEncuestaAlumno.pregunta_encuesta_id.asc())
+        respuestas_encuesta = query.order_by(RespuestaEncuestaAlumno.id.asc()).all()
 
         preguntas_result = {}
         for respuesta_encuesta in respuestas_encuesta:
             datos = self.generar_respuesta_pregunta(respuesta_encuesta)
-            preguntas_result[respuesta_encuesta.pregunta_encuesta_id] = datos
+            if datos:
+                preguntas_result[respuesta_encuesta.pregunta_encuesta_id] = datos
 
         result = ({'respuestas_encuestas': preguntas_result}, SUCCESS_OK)
         logging.info('Obtener Respuestas Encuesta Alumno para preguntas específicas: {}'.format(result))
 
         return result
 
-    def ids_preguntas_son_validas(self, ids_preguntas):
+    def ids_preguntas_son_validas(self, args):
+        if not "ids_preguntas" in args:
+            return True
+
+        ids_preguntas = args["ids_preguntas"].split(";")
         for id_pregunta in ids_preguntas:
             if not id_pregunta.isdigit() or not PreguntaEncuesta.query.filter_by(id=id_pregunta).first():
                 return False
@@ -99,15 +106,15 @@ class ObtenerRespuestasEncuestaAlumnoParaPreguntasEspecificas(Resource):
 
     def generar_respuesta_puntaje(self, respuesta_encuesta):
         rta = RespuestaEncuestaPuntaje.query.filter_by(rta_encuesta_alumno_id=respuesta_encuesta.id).first()
-        return {"puntaje": rta.puntaje}
+        return {"puntaje": rta.puntaje} if rta else None
 
     def generar_respuesta_texto_libre(self, respuesta_encuesta):
         rta = RespuestaEncuestaTexto.query.filter_by(rta_encuesta_alumno_id=respuesta_encuesta.id).first()
-        return {"texto": rta.texto}
+        return {"texto": rta.texto} if rta else None
 
     def generar_respuesta_si_no(self, respuesta_encuesta):
         rta = RespuestaEncuestaSiNo.query.filter_by(rta_encuesta_alumno_id=respuesta_encuesta.id).first()
-        return {"respuesta": rta.respuesta}
+        return {"respuesta": rta.respuesta} if rta else None
 
     def generar_respuesta_horario(self, respuesta_encuesta):
         rtas = RespuestaEncuestaHorario.query.filter_by(rta_encuesta_alumno_id=respuesta_encuesta.id).all()
@@ -120,7 +127,7 @@ class ObtenerRespuestasEncuestaAlumnoParaPreguntasEspecificas(Resource):
                 "hora_hasta": horario.hora_hasta
             })
 
-        return {"horarios": horarios}
+        return {"horarios": horarios} if rtas else None
 
     def generar_respuesta_docente(self, respuesta_encuesta):
         rtas = RespuestaEncuestaDocente.query.filter_by(rta_encuesta_alumno_id=respuesta_encuesta.id).all()
@@ -135,7 +142,7 @@ class ObtenerRespuestasEncuestaAlumnoParaPreguntasEspecificas(Resource):
                 "comentario": rta.comentario
             })
 
-        return {"comentarios_docentes": comentarios_docentes}
+        return {"comentarios_docentes": comentarios_docentes} if rtas else None
 
     def generar_respuesta_correlativas(self, respuesta_encuesta):
         rtas = RespuestaEncuestaCorrelativa.query.filter_by(rta_encuesta_alumno_id=respuesta_encuesta.id).all()
@@ -148,15 +155,15 @@ class ObtenerRespuestasEncuestaAlumnoParaPreguntasEspecificas(Resource):
                 "nombre": materia.nombre
             })
 
-        return {"materias_correlativas": materias_correlativas}
+        return {"materias_correlativas": materias_correlativas} if rtas else None
 
     def generar_respuesta_estrellas(self, respuesta_encuesta):
         rta = RespuestaEncuestaEstrellas.query.filter_by(rta_encuesta_alumno_id=respuesta_encuesta.id).first()
-        return {"estrellas": rta.estrellas}
+        return {"estrellas": rta.estrellas} if rta else None
 
     def generar_respuesta_numero(self, respuesta_encuesta):
         rta = RespuestaEncuestaNumero.query.filter_by(rta_encuesta_alumno_id=respuesta_encuesta.id).first()
-        return {"numero": rta.numero}
+        return {"numero": rta.numero} if rta else None
 
     def generar_respuesta_tags(self, respuesta_encuesta):
         rtas = RespuestaEncuestaTags.query.filter_by(rta_encuesta_alumno_id=respuesta_encuesta.id).all()
@@ -168,7 +175,7 @@ class ObtenerRespuestasEncuestaAlumnoParaPreguntasEspecificas(Resource):
                 "palabra_clave": tag.palabra
             })
 
-        return {"palabras_clave": palabras_clave}
+        return {"palabras_clave": palabras_clave} if rtas else None
 
     def generar_respuesta_tematicas(self, respuesta_encuesta):
         rtas = RespuestaEncuestaTematica.query.filter_by(rta_encuesta_alumno_id=respuesta_encuesta.id).all()
@@ -180,4 +187,4 @@ class ObtenerRespuestasEncuestaAlumnoParaPreguntasEspecificas(Resource):
                 "tematica": tematica.tematica
             })
 
-        return {"tematicas": tematicas}
+        return {"tematicas": tematicas} if rtas else None

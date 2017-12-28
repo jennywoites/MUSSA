@@ -19,3 +19,4 @@ from app.API_Rest.Services.ObtenerDocentesCursoService import *
 from app.API_Rest.Services.ObtenerDocentesService import *
 from app.API_Rest.Services.ObtenerEncuestasAlumnoService import *
 from app.API_Rest.Services.ObtenerTematicasMateriasService import *
+from app.API_Rest.Services.ObtenerRespuestasEncuestaAlumnoParaPreguntasEspecificasService import *
