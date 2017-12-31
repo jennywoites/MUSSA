@@ -66,6 +66,11 @@ class GuardarRespuestasEncuestaAlumno(Resource):
         numero_paso = GrupoEncuesta.query.filter_by(id=categoria).first().numero_grupo
 
         finalizado = len(preguntas_categoria_actual) == 0
+
+        #Aunque no hayan respuestas docentes el paso queda finalizado
+        if numero_paso == GRUPO_ENCUESTA_DOCENTES:
+            finalizado = True
+
         estados_pasos.actualizar_estado_paso(numero_paso, finalizado)
 
     def obtener_preguntas_encuestas(self, categoria):

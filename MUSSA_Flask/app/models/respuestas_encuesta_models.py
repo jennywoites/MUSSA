@@ -66,13 +66,13 @@ class EstadoPasosEncuestaAlumno(db.Model):
     def actualizar_estado_paso(self, numero_paso, finalizado):
         estado = PASO_ENCUESTA_FINALIZADO if finalizado else PASO_ENCUESTA_EN_CURSO
 
-        if numero_paso == 1:
+        if numero_paso == 0:
             self.estadoPaso1 = estado
-        elif numero_paso == 2:
+        elif numero_paso == 1:
             self.estadoPaso2 = estado
-        elif numero_paso == 3:
+        elif numero_paso == 2:
             self.estadoPaso3 = estado
-        elif numero_paso == 4:
+        elif numero_paso == 3:
             self.estadoPaso4 = estado
         else:
             self.estadoPaso5 = estado

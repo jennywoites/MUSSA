@@ -498,13 +498,14 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
 
         assert (len(preguntas) == len(respuestas))
 
-    def test_guardar_respuestas_parciales_en_catgoria_general_guarda_correctamente(self):
-        paso_actual = GRUPO_ENCUESTA_DOCENTES
+    def test_guardar_respuestas_parciales_en_categoria_general_guarda_correctamente(self):
+        paso_actual = GRUPO_ENCUESTA_GENERAL
 
         client = self.loguear_usuario()
 
         response = client.get(OBTENER_PREGUNTAS_ENCUESTA_SERVICE, query_string={"categorias": paso_actual})
         preguntas = json.loads(response.get_data(as_text=True))["preguntas"]
+        preguntas = [preguntas[0], preguntas[3],preguntas[8],preguntas[10], preguntas[12], preguntas[13]]
 
         encuesta = EncuestaAlumno.query.first()
 
@@ -519,12 +520,184 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
 
         assert (len(preguntas) == len(respuestas))
 
+    def test_guardar_respuestas_de_una_categoria_en_otra_incorrecta_da_error(self):
+        paso_actual = GRUPO_ENCUESTA_GENERAL
+
+        client = self.loguear_usuario()
+
+        response = client.get(OBTENER_PREGUNTAS_ENCUESTA_SERVICE, query_string={"categorias": paso_actual})
+        preguntas = json.loads(response.get_data(as_text=True))["preguntas"]
+        preguntas = [preguntas[0], preguntas[3],preguntas[8],preguntas[10], preguntas[12], preguntas[13]]
+
+        encuesta = EncuestaAlumno.query.first()
+
+        parametros = {}
+        parametros["id_encuesta"] = encuesta.id
+        parametros["categoria"] = GRUPO_ENCUESTA_EXAMENES
+        parametros["respuestas"] = self.crear_respuestas_alumno(preguntas, self.get_datos_respuestas_default())
+        response = client.get(GUARDAR_RESPUESTAS_ENCUESTA_ALUMNO_SERVICE, query_string=parametros)
+        assert (response.status_code == CLIENT_ERROR_BAD_REQUEST)
+
+    def test_guardar_respuestas_completas_en_categoria_contenido_guarda_correctamente_y_el_paso_queda_finalizado(self):
+        paso_actual = GRUPO_ENCUESTA_CONTENIDO
+
+        client = self.loguear_usuario()
+
+        response = client.get(OBTENER_PREGUNTAS_ENCUESTA_SERVICE, query_string={"categorias": paso_actual})
+        preguntas = json.loads(response.get_data(as_text=True))["preguntas"]
+
+        encuesta = EncuestaAlumno.query.first()
+
+        estados_pasos = EstadoPasosEncuestaAlumno.query.filter_by(encuesta_alumno_id=encuesta.id).first()
+
+        assert(estados_pasos.estadoPaso1 == PASO_ENCUESTA_NO_INICIADO) #GRUPO_ENCUESTA_GENERAL
+        assert(estados_pasos.estadoPaso2 == PASO_ENCUESTA_NO_INICIADO) #GRUPO_ENCUESTA_CONTENIDO
+        assert(estados_pasos.estadoPaso3 == PASO_ENCUESTA_NO_INICIADO) #GRUPO_ENCUESTA_CLASES
+        assert(estados_pasos.estadoPaso4 == PASO_ENCUESTA_NO_INICIADO) #GRUPO_ENCUESTA_EXAMENES
+        assert(estados_pasos.estadoPaso5 == PASO_ENCUESTA_NO_INICIADO) #GRUPO_ENCUESTA_DOCENTES
+
+        parametros = {}
+        parametros["id_encuesta"] = encuesta.id
+        parametros["categoria"] = paso_actual
+        parametros["respuestas"] = self.crear_respuestas_alumno(preguntas, self.get_datos_respuestas_default())
+        response = client.get(GUARDAR_RESPUESTAS_ENCUESTA_ALUMNO_SERVICE, query_string=parametros)
+        assert (response.status_code == SUCCESS_OK)
+
+        respuestas = self.obtener_respuestas_guardadas_alumno(preguntas, encuesta, client)
+
+        assert (len(preguntas) == len(respuestas))
+
+        estados_pasos = EstadoPasosEncuestaAlumno.query.filter_by(encuesta_alumno_id=encuesta.id).first()
+
+        assert(estados_pasos.estadoPaso1 == PASO_ENCUESTA_NO_INICIADO) #GRUPO_ENCUESTA_GENERAL
+        assert(estados_pasos.estadoPaso2 == PASO_ENCUESTA_FINALIZADO) #GRUPO_ENCUESTA_CONTENIDO
+        assert(estados_pasos.estadoPaso3 == PASO_ENCUESTA_NO_INICIADO) #GRUPO_ENCUESTA_CLASES
+        assert(estados_pasos.estadoPaso4 == PASO_ENCUESTA_NO_INICIADO) #GRUPO_ENCUESTA_EXAMENES
+        assert(estados_pasos.estadoPaso5 == PASO_ENCUESTA_NO_INICIADO) #GRUPO_ENCUESTA_DOCENTES
+
+    def test_guardar_respuestas_parciales_en_categoria_contenido_guarda_correctamente_y_el_paso_queda_en_curso(self):
+        paso_actual = GRUPO_ENCUESTA_CONTENIDO
+
+        client = self.loguear_usuario()
+
+        response = client.get(OBTENER_PREGUNTAS_ENCUESTA_SERVICE, query_string={"categorias": paso_actual})
+        preguntas = json.loads(response.get_data(as_text=True))["preguntas"]
+        preguntas = [preguntas[0], preguntas[3],preguntas[6]]
+
+        encuesta = EncuestaAlumno.query.first()
+
+        estados_pasos = EstadoPasosEncuestaAlumno.query.filter_by(encuesta_alumno_id=encuesta.id).first()
+
+        assert(estados_pasos.estadoPaso1 == PASO_ENCUESTA_NO_INICIADO) #GRUPO_ENCUESTA_GENERAL
+        assert(estados_pasos.estadoPaso2 == PASO_ENCUESTA_NO_INICIADO) #GRUPO_ENCUESTA_CONTENIDO
+        assert(estados_pasos.estadoPaso3 == PASO_ENCUESTA_NO_INICIADO) #GRUPO_ENCUESTA_CLASES
+        assert(estados_pasos.estadoPaso4 == PASO_ENCUESTA_NO_INICIADO) #GRUPO_ENCUESTA_EXAMENES
+        assert(estados_pasos.estadoPaso5 == PASO_ENCUESTA_NO_INICIADO) #GRUPO_ENCUESTA_DOCENTES
+
+        parametros = {}
+        parametros["id_encuesta"] = encuesta.id
+        parametros["categoria"] = paso_actual
+        parametros["respuestas"] = self.crear_respuestas_alumno(preguntas, self.get_datos_respuestas_default())
+        response = client.get(GUARDAR_RESPUESTAS_ENCUESTA_ALUMNO_SERVICE, query_string=parametros)
+        assert (response.status_code == SUCCESS_OK)
+
+        respuestas = self.obtener_respuestas_guardadas_alumno(preguntas, encuesta, client)
+
+        assert (len(preguntas) == len(respuestas))
+
+        estados_pasos = EstadoPasosEncuestaAlumno.query.filter_by(encuesta_alumno_id=encuesta.id).first()
+
+        assert(estados_pasos.estadoPaso1 == PASO_ENCUESTA_NO_INICIADO) #GRUPO_ENCUESTA_GENERAL
+        assert(estados_pasos.estadoPaso2 == PASO_ENCUESTA_EN_CURSO) #GRUPO_ENCUESTA_CONTENIDO
+        assert(estados_pasos.estadoPaso3 == PASO_ENCUESTA_NO_INICIADO) #GRUPO_ENCUESTA_CLASES
+        assert(estados_pasos.estadoPaso4 == PASO_ENCUESTA_NO_INICIADO) #GRUPO_ENCUESTA_EXAMENES
+        assert(estados_pasos.estadoPaso5 == PASO_ENCUESTA_NO_INICIADO) #GRUPO_ENCUESTA_DOCENTES
+
+    def test_guardar_respuestas_completas_en_categoria_docentes_guarda_correctamente_y_el_paso_queda_finalizado(self):
+        paso_actual = GRUPO_ENCUESTA_DOCENTES
+
+        client = self.loguear_usuario()
+
+        response = client.get(OBTENER_PREGUNTAS_ENCUESTA_SERVICE, query_string={"categorias": paso_actual})
+        preguntas = json.loads(response.get_data(as_text=True))["preguntas"]
+
+        encuesta = EncuestaAlumno.query.first()
+
+        estados_pasos = EstadoPasosEncuestaAlumno.query.filter_by(encuesta_alumno_id=encuesta.id).first()
+
+        assert(estados_pasos.estadoPaso1 == PASO_ENCUESTA_NO_INICIADO) #GRUPO_ENCUESTA_GENERAL
+        assert(estados_pasos.estadoPaso2 == PASO_ENCUESTA_NO_INICIADO) #GRUPO_ENCUESTA_CONTENIDO
+        assert(estados_pasos.estadoPaso3 == PASO_ENCUESTA_NO_INICIADO) #GRUPO_ENCUESTA_CLASES
+        assert(estados_pasos.estadoPaso4 == PASO_ENCUESTA_NO_INICIADO) #GRUPO_ENCUESTA_EXAMENES
+        assert(estados_pasos.estadoPaso5 == PASO_ENCUESTA_NO_INICIADO) #GRUPO_ENCUESTA_DOCENTES
+
+        parametros = {}
+        parametros["id_encuesta"] = encuesta.id
+        parametros["categoria"] = paso_actual
+        parametros["respuestas"] = self.crear_respuestas_alumno(preguntas, {
+            DOCENTE: {
+                "docentes": [{
+                    "id_docente": 1,
+                    "comentario": "Este es un comentario de hasta 250 caracteres para un docente"
+                }]
+            }
+        })
+        response = client.get(GUARDAR_RESPUESTAS_ENCUESTA_ALUMNO_SERVICE, query_string=parametros)
+        assert (response.status_code == SUCCESS_OK)
+
+        respuestas = self.obtener_respuestas_guardadas_alumno(preguntas, encuesta, client)
+
+        assert (len(preguntas) == len(respuestas))
+
+        estados_pasos = EstadoPasosEncuestaAlumno.query.filter_by(encuesta_alumno_id=encuesta.id).first()
+
+        assert(estados_pasos.estadoPaso1 == PASO_ENCUESTA_NO_INICIADO) #GRUPO_ENCUESTA_GENERAL
+        assert(estados_pasos.estadoPaso2 == PASO_ENCUESTA_NO_INICIADO) #GRUPO_ENCUESTA_CONTENIDO
+        assert(estados_pasos.estadoPaso3 == PASO_ENCUESTA_NO_INICIADO) #GRUPO_ENCUESTA_CLASES
+        assert(estados_pasos.estadoPaso4 == PASO_ENCUESTA_NO_INICIADO) #GRUPO_ENCUESTA_EXAMENES
+        assert(estados_pasos.estadoPaso5 == PASO_ENCUESTA_FINALIZADO) #GRUPO_ENCUESTA_DOCENTES
+
+    def test_guardar_respuestas_en_categoria_docentes_sin_datos_de_respuesta_deja_el_paso_finalizado(self):
+        paso_actual = GRUPO_ENCUESTA_DOCENTES
+
+        client = self.loguear_usuario()
+
+        response = client.get(OBTENER_PREGUNTAS_ENCUESTA_SERVICE, query_string={"categorias": paso_actual})
+        preguntas = json.loads(response.get_data(as_text=True))["preguntas"]
+
+        encuesta = EncuestaAlumno.query.first()
+
+        estados_pasos = EstadoPasosEncuestaAlumno.query.filter_by(encuesta_alumno_id=encuesta.id).first()
+
+        assert(estados_pasos.estadoPaso1 == PASO_ENCUESTA_NO_INICIADO) #GRUPO_ENCUESTA_GENERAL
+        assert(estados_pasos.estadoPaso2 == PASO_ENCUESTA_NO_INICIADO) #GRUPO_ENCUESTA_CONTENIDO
+        assert(estados_pasos.estadoPaso3 == PASO_ENCUESTA_NO_INICIADO) #GRUPO_ENCUESTA_CLASES
+        assert(estados_pasos.estadoPaso4 == PASO_ENCUESTA_NO_INICIADO) #GRUPO_ENCUESTA_EXAMENES
+        assert(estados_pasos.estadoPaso5 == PASO_ENCUESTA_NO_INICIADO) #GRUPO_ENCUESTA_DOCENTES
+
+        parametros = {}
+        parametros["id_encuesta"] = encuesta.id
+        parametros["categoria"] = paso_actual
+        parametros["respuestas"] = self.crear_respuestas_alumno(preguntas, {})
+        response = client.get(GUARDAR_RESPUESTAS_ENCUESTA_ALUMNO_SERVICE, query_string=parametros)
+        assert (response.status_code == SUCCESS_OK)
+
+        respuestas = self.obtener_respuestas_guardadas_alumno(preguntas, encuesta, client)
+
+        assert (len(respuestas) == 0)
+
+        estados_pasos = EstadoPasosEncuestaAlumno.query.filter_by(encuesta_alumno_id=encuesta.id).first()
+
+        assert(estados_pasos.estadoPaso1 == PASO_ENCUESTA_NO_INICIADO) #GRUPO_ENCUESTA_GENERAL
+        assert(estados_pasos.estadoPaso2 == PASO_ENCUESTA_NO_INICIADO) #GRUPO_ENCUESTA_CONTENIDO
+        assert(estados_pasos.estadoPaso3 == PASO_ENCUESTA_NO_INICIADO) #GRUPO_ENCUESTA_CLASES
+        assert(estados_pasos.estadoPaso4 == PASO_ENCUESTA_NO_INICIADO) #GRUPO_ENCUESTA_EXAMENES
+        assert(estados_pasos.estadoPaso5 == PASO_ENCUESTA_FINALIZADO) #GRUPO_ENCUESTA_DOCENTES
+
     #Test con:
         # Datos invalidos / incompletos / incorrectos
-        # Guardado parcial de preguntas de una pantalla
-        # Guardar preguntas pantalla incorrecta
         # Guardar respuestas que fueron guardadas previamente las sobreescribe
-        # Completar paso encuesta se marca como finalizado el paso
+        # Preguntas con si/no que agregan en si pero la respuesta fue no se marcan como finalizado, idem invertido, idem pero no finalizado
         # Completar paso encuesta se marca como finalizado el paso,
         #   enviar nuevas respuestas no finalizadas se borran las anteriores y el paso queda como no finalizado
 
