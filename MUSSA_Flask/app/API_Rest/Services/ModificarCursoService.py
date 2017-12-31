@@ -125,7 +125,7 @@ class ModificarCurso(Resource):
 
         return dia, hora_desde, hora_hasta
 
-    def convertir_hora(hora):
+    def convertir_hora(self, hora):
         label, horas, minutos = hora.split(":")
         return convertir_horario(horas, minutos)
 

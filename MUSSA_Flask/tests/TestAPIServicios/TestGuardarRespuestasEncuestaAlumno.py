@@ -498,6 +498,27 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
 
         assert (len(preguntas) == len(respuestas))
 
+    def test_guardar_respuestas_parciales_en_catgoria_general_guarda_correctamente(self):
+        paso_actual = GRUPO_ENCUESTA_DOCENTES
+
+        client = self.loguear_usuario()
+
+        response = client.get(OBTENER_PREGUNTAS_ENCUESTA_SERVICE, query_string={"categorias": paso_actual})
+        preguntas = json.loads(response.get_data(as_text=True))["preguntas"]
+
+        encuesta = EncuestaAlumno.query.first()
+
+        parametros = {}
+        parametros["id_encuesta"] = encuesta.id
+        parametros["categoria"] = paso_actual
+        parametros["respuestas"] = self.crear_respuestas_alumno(preguntas, self.get_datos_respuestas_default())
+        response = client.get(GUARDAR_RESPUESTAS_ENCUESTA_ALUMNO_SERVICE, query_string=parametros)
+        assert (response.status_code == SUCCESS_OK)
+
+        respuestas = self.obtener_respuestas_guardadas_alumno(preguntas, encuesta, client)
+
+        assert (len(preguntas) == len(respuestas))
+
     #Test con:
         # Datos invalidos / incompletos / incorrectos
         # Guardado parcial de preguntas de una pantalla
