@@ -163,6 +163,7 @@ def add_resources_usuarios(api):
     api.add_resource(ObtenerEncuestasAlumno, '/api/ObtenerEncuestasAlumno')
     api.add_resource(ObtenerRespuestasEncuestaAlumnoParaPreguntasEspecificas,
                      '/api/ObtenerRespuestasEncuestaAlumnoParaPreguntasEspecificas')
+    api.add_resource(GuardarRespuestasEncuestaAlumno, '/api/GuardarRespuestasEncuestaAlumno')
 
 
 def add_resources_administrador(api):

@@ -163,10 +163,10 @@ def invocar_servicio_obtener_preguntas_encuesta(cookie, categorias):
         l_categorias += str(categoria) + ";"
     parametros["categorias"] = l_categorias[:-1]
 
-    carreras_response = requests.get(OBTENER_PREGUNTAS_ENCUESTA_SERVICE, params=parametros, cookies=cookie)
-    escribir_resultado_servicio('Obtener preguntas encuesta', carreras_response)
+    preguntas_response = requests.get(OBTENER_PREGUNTAS_ENCUESTA_SERVICE, params=parametros, cookies=cookie)
+    escribir_resultado_servicio('Obtener preguntas encuesta', preguntas_response)
 
-    return json.loads(carreras_response.text)["preguntas"]
+    return json.loads(preguntas_response.text)["preguntas"]
 
 
 def invocar_obtener_docentes_del_curso(cookie, id_curso):

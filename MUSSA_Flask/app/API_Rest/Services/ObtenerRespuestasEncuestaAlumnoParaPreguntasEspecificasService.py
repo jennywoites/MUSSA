@@ -74,35 +74,20 @@ class ObtenerRespuestasEncuestaAlumnoParaPreguntasEspecificas(Resource):
     def generar_respuesta_pregunta(self, respuesta_encuesta):
         tipo_encuesta = TipoEncuesta.query.filter_by(id=respuesta_encuesta.tipo_id).first().tipo
 
-        if tipo_encuesta == PUNTAJE_1_A_5:
-            return self.generar_respuesta_puntaje(respuesta_encuesta)
+        acciones = {
+            PUNTAJE_1_A_5: self.generar_respuesta_puntaje,
+            TEXTO_LIBRE: self.generar_respuesta_texto_libre,
+            SI_NO: self.generar_respuesta_si_no,
+            HORARIO: self.generar_respuesta_horario,
+            DOCENTE: self.generar_respuesta_docente,
+            CORRELATIVA: self.generar_respuesta_correlativas,
+            ESTRELLAS: self.generar_respuesta_estrellas,
+            NUMERO: self.generar_respuesta_numero,
+            TAG: self.generar_respuesta_tags,
+            TEMATICA: self.generar_respuesta_tematicas,
+        }
 
-        if tipo_encuesta == TEXTO_LIBRE:
-            return self.generar_respuesta_texto_libre(respuesta_encuesta)
-
-        if tipo_encuesta == SI_NO:
-            return self.generar_respuesta_si_no(respuesta_encuesta)
-
-        if tipo_encuesta == HORARIO:
-            return self.generar_respuesta_horario(respuesta_encuesta)
-
-        if tipo_encuesta == DOCENTE:
-            return self.generar_respuesta_docente(respuesta_encuesta)
-
-        if tipo_encuesta == CORRELATIVA:
-            return self.generar_respuesta_correlativas(respuesta_encuesta)
-
-        if tipo_encuesta == ESTRELLAS:
-            return self.generar_respuesta_estrellas(respuesta_encuesta)
-
-        if tipo_encuesta == NUMERO:
-            return self.generar_respuesta_numero(respuesta_encuesta)
-
-        if tipo_encuesta == TAG:
-            return self.generar_respuesta_tags(respuesta_encuesta)
-
-        # if tipo_encuesta == TEMATICA:
-        return self.generar_respuesta_tematicas(respuesta_encuesta)
+        return acciones[tipo_encuesta](respuesta_encuesta)
 
     def generar_respuesta_puntaje(self, respuesta_encuesta):
         rta = RespuestaEncuestaPuntaje.query.filter_by(rta_encuesta_alumno_id=respuesta_encuesta.id).first()

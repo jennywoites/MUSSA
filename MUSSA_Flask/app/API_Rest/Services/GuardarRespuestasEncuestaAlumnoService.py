@@ -2,16 +2,18 @@ from flask_restful import Resource
 from app.API_Rest.codes import *
 from flask import request
 from flask_user import current_user, login_required
-
+from app import db
 from app.models.respuestas_encuesta_models import *
 from app.models.alumno_models import Alumno
 from app.models.docentes_models import Docente
 from app.models.carreras_models import Materia
 from app.models.horarios_models import Horario
 from app.models.palabras_clave_models import PalabraClave, TematicaMateria
+from app.utils import DIAS, convertir_horario
 from app.DAO.EncuestasDAO import *
 
 import logging
+import json
 
 
 class GuardarRespuestasEncuestaAlumno(Resource):
@@ -38,14 +40,20 @@ class GuardarRespuestasEncuestaAlumno(Resource):
         categoria = self.obtener_categoria(args)
         preguntas_categoria_actual = self.obtener_preguntas_encuestas(categoria)
 
-        respuestas = self.convertir_respuestas(args)
+        try:
+            respuestas = json.loads(args["respuestas"])
+        except:
+            logging.error('El servicio Guardar Respuestas Encuesta Alumno recibió respuestas '
+                          'inválidas o éstas no han sido enviadas')
+            return {'Error': 'Este servicio recibió respuestas inválidas'
+                             ' o éstas no han sido enviadas'}, CLIENT_ERROR_BAD_REQUEST
 
         for respuesta in respuestas:
             es_valida, msj = self.respuesta_es_valida(respuesta, preguntas_categoria_actual)
             if not es_valida:
                 return {'Error': msj}, CLIENT_ERROR_BAD_REQUEST
 
-        self.guardar_respuestas(respuestas)
+        self.guardar_respuestas(respuestas, id_encuesta)
 
         self.actualizar_estado_paso_actual(id_encuesta, preguntas_categoria_actual, categoria)
 
@@ -70,12 +78,6 @@ class GuardarRespuestasEncuestaAlumno(Resource):
 
         return preguntas_categoria_actual
 
-    def convertir_respuestas(self, args):
-        # TODO
-        print(args)
-        pass
-        # convertir el diccionario correspondiente
-
     def respuesta_es_valida(self, respuesta, preguntas_categoria_actual):
         idPregunta = respuesta["idPregunta"]
 
@@ -91,7 +93,7 @@ class GuardarRespuestasEncuestaAlumno(Resource):
                           'respuesta de encuesta inválida')
             return False, 'Este servicio recibió un respuesta de encuesta inválida'
 
-        return True
+        return True, 'OK'
 
     def validar_respuesta(self, preguntas_categoria_actual, pregunta, tipo_encuesta, respuesta):
         acciones = {
@@ -133,10 +135,10 @@ class GuardarRespuestasEncuestaAlumno(Resource):
 
         for pregunta_si_no in PreguntaEncuestaSiNo.query.filter_by(encuesta_id=pregunta.id).all():
             id_nueva_pregunta = None
-            if respuesta and pregunta_si_no.rta_si:
-                id_nueva_pregunta = pregunta_si_no.rta_si
-            elif not respuesta and pregunta_si_no.rta_no:
-                id_nueva_pregunta = pregunta_si_no.rta_no
+            if respuesta and pregunta_si_no.encuesta_id_si:
+                id_nueva_pregunta = pregunta_si_no.encuesta_id_si
+            elif not respuesta and pregunta_si_no.encuesta_id_no:
+                id_nueva_pregunta = pregunta_si_no.encuesta_id_no
 
             if id_nueva_pregunta:
                 nueva_pregunta = PreguntaEncuesta.query.filter_by(id=id_nueva_pregunta).first()
@@ -145,11 +147,16 @@ class GuardarRespuestasEncuestaAlumno(Resource):
     def validar_respuesta_horario(self, preguntas_categoria_actual, pregunta, respuesta):
         horarios = respuesta["horarios"]
         for horario in horarios:
-            dia = horario["dia"]
-            hora_desde = horario["hora_desde"]
-            hora_hasta = horario["hora_hasta"]
-            # TODO
-            raise NotImplementedError("Ver como validar el horario")
+            dia = horario["dia"].upper()
+            if not dia in DIAS:
+                raise Exception("El nombre del dia no es válido")
+
+            self.convertir_hora(horario["hora_desde"])
+            self.convertir_hora(horario["hora_hasta"])
+
+    def convertir_hora(self, horario):
+        horas, minutos = horario.split(":")
+        convertir_horario(horas, minutos)
 
     def validar_respuesta_docente(self, preguntas_categoria_actual, pregunta, respuesta):
         docentes = respuesta["docentes"]
@@ -165,7 +172,7 @@ class GuardarRespuestasEncuestaAlumno(Resource):
     def validar_respuesta_correlativas(self, preguntas_categoria_actual, pregunta, respuesta):
         correlativas = respuesta["correlativas"]
         for id_materia_correlativa in correlativas:
-            assert (id_materia_correlativa.isdigit())
+            assert (str(id_materia_correlativa).isdigit())
             if not Materia.query.filter_by(id=id_materia_correlativa).first():
                 raise ValueError("La materia con id {} que se desea indicar como "
                                  "correlativa no existe".format(id_materia_correlativa))
@@ -231,5 +238,173 @@ class GuardarRespuestasEncuestaAlumno(Resource):
             return False
         return True
 
-    def guardar_respuestas(self, respuestas):
-        raise NotImplementedError("Implementar guardar respuestas")
+    def guardar_respuestas(self, respuestas, id_encuesta):
+        for respuesta in respuestas:
+            tipo = TipoEncuesta.query.filter_by(tipo=respuesta["tipo_encuesta"]).first()
+            respuesta_encuesta = RespuestaEncuestaAlumno(
+                encuesta_alumno_id=id_encuesta,
+                pregunta_encuesta_id=respuesta["idPregunta"],
+                tipo_id=tipo.id
+            )
+            db.session.add(respuesta_encuesta)
+            db.session.commit()
+
+            self.crear_respuesta(respuesta_encuesta, respuesta, respuesta["tipo_encuesta"])
+            db.session.commit()
+
+    def crear_respuesta(self, respuesta_encuesta, datos_respuesta, tipo_encuesta):
+        acciones = {
+            PUNTAJE_1_A_5: self.generar_respuesta_puntaje,
+            TEXTO_LIBRE: self.generar_respuesta_texto_libre,
+            SI_NO: self.generar_respuesta_si_no,
+            HORARIO: self.generar_respuesta_horario,
+            DOCENTE: self.generar_respuesta_docente,
+            CORRELATIVA: self.generar_respuesta_correlativas,
+            ESTRELLAS: self.generar_respuesta_estrellas,
+            NUMERO: self.generar_respuesta_numero,
+            TAG: self.generar_respuesta_tags,
+            TEMATICA: self.generar_respuesta_tematicas,
+        }
+
+        acciones[tipo_encuesta](respuesta_encuesta, datos_respuesta)
+
+    def generar_respuesta_puntaje(self, respuesta_encuesta, datos_respuesta):
+        respuesta = RespuestaEncuestaPuntaje.query.filter_by(rta_encuesta_alumno_id=respuesta_encuesta.id).first()
+        if not respuesta:
+            respuesta = RespuestaEncuestaPuntaje(
+                rta_encuesta_alumno_id=respuesta_encuesta.id,
+                puntaje=datos_respuesta["puntaje"]
+            )
+            db.session.add(respuesta)
+        respuesta.puntaje = datos_respuesta["puntaje"]
+        db.session.commit()
+
+    def generar_respuesta_texto_libre(self, respuesta_encuesta, datos_respuesta):
+        respuesta = RespuestaEncuestaTexto.query.filter_by(rta_encuesta_alumno_id=respuesta_encuesta.id).first()
+        if not respuesta:
+            respuesta = RespuestaEncuestaTexto(
+                rta_encuesta_alumno_id=respuesta_encuesta.id,
+                texto=datos_respuesta["texto"]
+            )
+            db.session.add(respuesta)
+        respuesta.texto = datos_respuesta["texto"]
+        db.session.commit()
+
+    def generar_respuesta_si_no(self, respuesta_encuesta, datos_respuesta):
+        respuesta = RespuestaEncuestaSiNo.query.filter_by(rta_encuesta_alumno_id=respuesta_encuesta.id).first()
+        if not respuesta:
+            respuesta = RespuestaEncuestaSiNo(
+                rta_encuesta_alumno_id=respuesta_encuesta.id,
+                respuesta=datos_respuesta["respuesta"]
+            )
+            db.session.add(respuesta)
+        respuesta.respuesta = datos_respuesta["respuesta"]
+        db.session.commit()
+
+    def generar_respuesta_horario(self, respuesta_encuesta, datos_respuesta):
+        self.eliminar_horarios_anteriores(respuesta_encuesta)
+
+        for datos_horario in datos_respuesta["horarios"]:
+            horario = Horario(
+                dia=datos_horario["dia"].upper(),
+                hora_desde=self.convertir_hora(datos_horario["hora_desde"]),
+                hora_hasta=self.convertir_hora(datos_horario["hora_hasta"])
+            )
+            db.session.add(horario)
+            db.session.commit()
+
+            db.session.add(RespuestaEncuestaHorario(
+                rta_encuesta_alumno_id=respuesta_encuesta.id,
+                horario_id=horario.id
+            ))
+
+    def eliminar_horarios_anteriores(self, respuesta_encuesta):
+        ids_horarios_viejos = []
+        horarios_viejos = RespuestaEncuestaHorario.query.filter_by(rta_encuesta_alumno_id=respuesta_encuesta.id).all()
+        for horario_viejo in horarios_viejos:
+            ids_horarios_viejos.append(horario_viejo.horario_id)
+
+        if len(ids_horarios_viejos):
+            Horario.query.filter(Horario.id.in_(ids_horarios_viejos)).delete()
+            RespuestaEncuestaHorario.query.filter_by(rta_encuesta_alumno_id=respuesta_encuesta.id).delete()
+            db.session.commit()
+
+    def generar_respuesta_docente(self, respuesta_encuesta, datos_respuesta):
+        RespuestaEncuestaDocente.query.filter_by(rta_encuesta_alumno_id=respuesta_encuesta.id).delete()
+        db.session.commit()
+
+        for datos_docente in datos_respuesta["docentes"]:
+            db.session.add(RespuestaEncuestaDocente(
+                rta_encuesta_alumno_id=respuesta_encuesta.id,
+                docente_id=datos_docente["id_docente"],
+                comentario=datos_docente["comentario"]
+            ))
+
+    def generar_respuesta_correlativas(self, respuesta_encuesta, datos_respuesta):
+        RespuestaEncuestaCorrelativa.query.filter_by(rta_encuesta_alumno_id=respuesta_encuesta.id).delete()
+        db.session.commit()
+
+        for correlativa in datos_respuesta["correlativas"]:
+            db.session.add(RespuestaEncuestaCorrelativa(
+                rta_encuesta_alumno_id=respuesta_encuesta.id,
+                materia_correlativa_id=correlativa
+            ))
+            db.session.commit()
+
+    def generar_respuesta_estrellas(self, respuesta_encuesta, datos_respuesta):
+        respuesta = RespuestaEncuestaEstrellas.query.filter_by(rta_encuesta_alumno_id=respuesta_encuesta.id).first()
+        if not respuesta:
+            respuesta = RespuestaEncuestaEstrellas(
+                rta_encuesta_alumno_id=respuesta_encuesta.id,
+                estrellas=datos_respuesta["estrellas"]
+            )
+            db.session.add(respuesta)
+        respuesta.estrellas = datos_respuesta["estrellas"]
+        db.session.commit()
+
+    def generar_respuesta_numero(self, respuesta_encuesta, datos_respuesta):
+        respuesta = RespuestaEncuestaNumero.query.filter_by(rta_encuesta_alumno_id=respuesta_encuesta.id).first()
+        if not respuesta:
+            respuesta = RespuestaEncuestaNumero(
+                rta_encuesta_alumno_id=respuesta_encuesta.id,
+                numero=datos_respuesta["numero"]
+            )
+            db.session.add(respuesta)
+        respuesta.numero = datos_respuesta["numero"]
+        db.session.commit()
+
+    def generar_respuesta_tags(self, respuesta_encuesta, datos_respuesta):
+        RespuestaEncuestaTags.query.filter_by(rta_encuesta_alumno_id=respuesta_encuesta.id).delete()
+        db.session.commit()
+
+        for palabra_clave in datos_respuesta["palabras_clave"]:
+
+            palabra = PalabraClave.query.filter_by(palabra=palabra_clave).first()
+            if not palabra:
+                palabra = PalabraClave(palabra=palabra_clave)
+                db.session.add(palabra)
+                db.session.commit()
+
+            db.session.add(RespuestaEncuestaTags(
+                rta_encuesta_alumno_id=respuesta_encuesta.id,
+                palabra_clave_id=palabra.id
+            ))
+            db.session.commit()
+
+    def generar_respuesta_tematicas(self, respuesta_encuesta, datos_respuesta):
+        RespuestaEncuestaTematica.query.filter_by(rta_encuesta_alumno_id=respuesta_encuesta.id).delete()
+        db.session.commit()
+
+        for nombre_tematica in datos_respuesta["tematicas"]:
+
+            tematica = TematicaMateria.query.filter_by(tematica=nombre_tematica).first()
+            if not tematica:
+                tematica = TematicaMateria(tematica=nombre_tematica)
+                db.session.add(tematica)
+                db.session.commit()
+
+            db.session.add(RespuestaEncuestaTematica(
+                rta_encuesta_alumno_id=respuesta_encuesta.id,
+                tematica_id=tematica.id
+            ))
+            db.session.commit()

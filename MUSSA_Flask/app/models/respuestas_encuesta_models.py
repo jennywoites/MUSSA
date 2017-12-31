@@ -1,5 +1,5 @@
 from app import db
-
+from app.DAO.EncuestasDAO import *
 
 class EncuestaAlumno(db.Model):
     __tablename__ = 'encuesta_alumno'
@@ -56,6 +56,28 @@ class EstadoPasosEncuestaAlumno(db.Model):
     estadoPaso4 = db.Column(db.Integer(), nullable=False, server_default='')
     estadoPaso5 = db.Column(db.Integer(), nullable=False, server_default='')
 
+    def inicializar_pasos(self):
+        self.estadoPaso1 = PASO_ENCUESTA_NO_INICIADO
+        self.estadoPaso2 = PASO_ENCUESTA_NO_INICIADO
+        self.estadoPaso3 = PASO_ENCUESTA_NO_INICIADO
+        self.estadoPaso4 = PASO_ENCUESTA_NO_INICIADO
+        self.estadoPaso5 = PASO_ENCUESTA_NO_INICIADO
+
+    def actualizar_estado_paso(self, numero_paso, finalizado):
+        estado = PASO_ENCUESTA_FINALIZADO if finalizado else PASO_ENCUESTA_EN_CURSO
+
+        if numero_paso == 1:
+            self.estadoPaso1 = estado
+        elif numero_paso == 2:
+            self.estadoPaso2 = estado
+        elif numero_paso == 3:
+            self.estadoPaso3 = estado
+        elif numero_paso == 4:
+            self.estadoPaso4 = estado
+        else:
+            self.estadoPaso5 = estado
+
+        db.session.commit()
 
 class RespuestaEncuestaPuntaje(db.Model):
     __tablename__ = 'rta_encuesta_puntaje'
