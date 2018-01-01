@@ -214,6 +214,9 @@ class GuardarRespuestasEncuestaAlumno(Resource):
     MAX_PUNTAJE = 5
 
     def validar_respuesta_puntaje(self, preguntas_categoria_actual, pregunta, respuesta):
+        if not str(respuesta["puntaje"]).isdigit():
+            raise ValueError("El puntaje debe ser un entero")
+
         puntaje = int(respuesta["puntaje"])
         if puntaje < self.MIN_PUNTAJE or puntaje > self.MAX_PUNTAJE:
             raise ValueError("El puntaje no esta entre los valores {} - {}".format(self.MIN_PUNTAJE, self.MAX_PUNTAJE))
@@ -275,13 +278,24 @@ class GuardarRespuestasEncuestaAlumno(Resource):
     MAX_ESTRELLAS = 5
 
     def validar_respuesta_estrellas(self, preguntas_categoria_actual, pregunta, respuesta):
+        if not str(respuesta["estrellas"]).isdigit():
+            raise ValueError("Las estrellas deben ser un número entero")
+
         estrellas = int(respuesta["estrellas"])
         if estrellas < self.MIN_ESTRELLAS or estrellas > self.MAX_ESTRELLAS:
             raise ValueError("La cantidad de estrellas no está entre "
                              "los valores {} - {}".format(self.MIN_ESTRELLAS, self.MAX_ESTRELLAS))
 
+    MIN_NUMERO = 0
+    MAX_NUMERO = 168
     def validar_respuesta_numero(self, preguntas_categoria_actual, pregunta, respuesta):
+        if not str(respuesta["numero"]).isdigit():
+            raise ValueError("El número debe ser un entero")
+
         numero = int(respuesta["numero"])
+        if numero < self.MIN_NUMERO or numero > self.MAX_NUMERO:
+            raise ValueError("El número no está entre los "
+                             "valores {} - {}".format(self.MIN_NUMERO, self.MAX_NUMERO))
 
     MAX_CARACTERES_PALABRA_CLAVE_TAG = 30
     MAX_CANTIDAD_PALABRAS_CLAVE = 3
