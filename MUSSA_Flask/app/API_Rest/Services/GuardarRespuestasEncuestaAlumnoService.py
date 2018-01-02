@@ -276,7 +276,7 @@ class GuardarRespuestasEncuestaAlumno(Resource):
 
     def convertir_hora(self, horario):
         horas, minutos = horario.split(":")
-        convertir_horario(horas, minutos)
+        return convertir_horario(horas, minutos)
 
     def validar_respuesta_docente(self, respuesta, ids_respuestas_invalidas):
         docentes = respuesta["docentes"]

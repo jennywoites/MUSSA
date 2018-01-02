@@ -404,6 +404,14 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
         for subpregunta in l_subpreguntas:
             preguntas.append(subpregunta)
 
+    def se_encuentra_el_horario(self, horario, l_horarios):
+        for h  in l_horarios:
+            if (h["dia"] == horario["dia"].upper() and
+                    h["hora_desde"] == horario["hora_desde"] and
+                    h["hora_hasta"] == horario["hora_hasta"]):
+                return True
+        return False
+
     ##########################################################
     ##                      Tests                           ##
     ##########################################################
@@ -2222,10 +2230,163 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
         response = client.get(GUARDAR_RESPUESTAS_ENCUESTA_ALUMNO_SERVICE, query_string=parametros)
         assert (response.status_code == SUCCESS_OK)
 
+    def test_guardar_respuesta_de_tipo_horarios_ya_guardada_la_sobreescribe(self):
+        paso_actual = GRUPO_ENCUESTA_GENERAL
+
+        client = self.loguear_usuario()
+
+        response = client.get(OBTENER_PREGUNTAS_ENCUESTA_SERVICE, query_string={"categorias": paso_actual})
+        preguntas = json.loads(response.get_data(as_text=True))["preguntas"]
+        preguntas = [preguntas[6]]
+
+        encuesta = EncuestaAlumno.query.first()
+
+        parametros = {}
+        parametros["id_encuesta"] = encuesta.id
+        parametros["categoria"] = paso_actual
+
+        horarios_iniciales = [{
+              "dia": "Lunes",
+              "hora_desde": "7.5",
+              "hora_desde_reloj": "07:30",
+              "hora_hasta": "11",
+              "hora_hasta_reloj": "11:00"
+          },
+          {
+              "dia": "Martes",
+              "hora_desde": "12",
+              "hora_desde_reloj": "12:00",
+              "hora_hasta": "15",
+              "hora_hasta_reloj": "15:00"
+          }]
+
+        parametros["respuestas"] = self.crear_respuestas_alumno(preguntas, {
+            HORARIO: {
+                "horarios": horarios_iniciales
+            }
+        })
+        response = client.get(GUARDAR_RESPUESTAS_ENCUESTA_ALUMNO_SERVICE, query_string=parametros)
+        assert (response.status_code == SUCCESS_OK)
+
+        respuestas = self.obtener_respuestas_guardadas_alumno(preguntas, encuesta, client)
+
+        assert(len(respuestas) == 1)
+        rta_horarios_iniciales = respuestas['8']["horarios"]
+        assert(len(rta_horarios_iniciales) == 2)
+
+        assert(self.se_encuentra_el_horario(horarios_iniciales[0], rta_horarios_iniciales))
+        assert(self.se_encuentra_el_horario(horarios_iniciales[1], rta_horarios_iniciales))
+
+        horarios_nuevos = [{
+            "dia": "Miercoles",
+            "hora_desde": "8.5",
+            "hora_desde_reloj": "08:30",
+            "hora_hasta": "11",
+            "hora_hasta_reloj": "11:00"
+        }]
+        parametros["respuestas"] = self.crear_respuestas_alumno(preguntas, {
+            HORARIO: {
+                "horarios": horarios_nuevos
+            }
+        })
+        response = client.get(GUARDAR_RESPUESTAS_ENCUESTA_ALUMNO_SERVICE, query_string=parametros)
+        assert (response.status_code == SUCCESS_OK)
+
+        respuestas = self.obtener_respuestas_guardadas_alumno(preguntas, encuesta, client)
+
+        assert(len(respuestas) == 1)
+        rta_horarios_nuevos = respuestas['8']["horarios"]
+        assert(len(rta_horarios_nuevos) == 1)
+
+        assert(self.se_encuentra_el_horario(horarios_nuevos[0], rta_horarios_nuevos))
+
+    def test_guardar_respuesta_de_tipo_horarios_con_dia_invalido_da_error(self):
+        paso_actual = GRUPO_ENCUESTA_GENERAL
+
+        client = self.loguear_usuario()
+
+        response = client.get(OBTENER_PREGUNTAS_ENCUESTA_SERVICE, query_string={"categorias": paso_actual})
+        preguntas = json.loads(response.get_data(as_text=True))["preguntas"]
+        preguntas = [preguntas[6]]
+
+        encuesta = EncuestaAlumno.query.first()
+
+        parametros = {}
+        parametros["id_encuesta"] = encuesta.id
+        parametros["categoria"] = paso_actual
+        parametros["respuestas"] = self.crear_respuestas_alumno(preguntas, {
+            HORARIO: {
+                "horarios": [{
+                    "dia": "sakjasf",
+                    "hora_desde": "8.5",
+                    "hora_desde_reloj": "08:30",
+                    "hora_hasta": "11",
+                    "hora_hasta_reloj": "11:00"
+                }]
+            }
+        })
+        response = client.get(GUARDAR_RESPUESTAS_ENCUESTA_ALUMNO_SERVICE, query_string=parametros)
+        assert (response.status_code == CLIENT_ERROR_BAD_REQUEST)
+
+    def test_guardar_respuesta_de_tipo_horarios_con_hora_desde_invalida_da_error(self):
+        paso_actual = GRUPO_ENCUESTA_GENERAL
+
+        client = self.loguear_usuario()
+
+        response = client.get(OBTENER_PREGUNTAS_ENCUESTA_SERVICE, query_string={"categorias": paso_actual})
+        preguntas = json.loads(response.get_data(as_text=True))["preguntas"]
+        preguntas = [preguntas[6]]
+
+        encuesta = EncuestaAlumno.query.first()
+
+        parametros = {}
+        parametros["id_encuesta"] = encuesta.id
+        parametros["categoria"] = paso_actual
+        parametros["respuestas"] = self.crear_respuestas_alumno(preguntas, {
+            HORARIO: {
+                "horarios": [{
+                    "dia": "Miercoles",
+                    "hora_desde": "85",
+                    "hora_desde_reloj": "85",
+                    "hora_hasta": "11",
+                    "hora_hasta_reloj": "11:00"
+                }]
+            }
+        })
+        response = client.get(GUARDAR_RESPUESTAS_ENCUESTA_ALUMNO_SERVICE, query_string=parametros)
+        assert (response.status_code == CLIENT_ERROR_BAD_REQUEST)
+
+    def test_guardar_respuesta_de_tipo_horarios_con_hora_hasta_invalida_da_error(self):
+        paso_actual = GRUPO_ENCUESTA_GENERAL
+
+        client = self.loguear_usuario()
+
+        response = client.get(OBTENER_PREGUNTAS_ENCUESTA_SERVICE, query_string={"categorias": paso_actual})
+        preguntas = json.loads(response.get_data(as_text=True))["preguntas"]
+        preguntas = [preguntas[6]]
+
+        encuesta = EncuestaAlumno.query.first()
+
+        parametros = {}
+        parametros["id_encuesta"] = encuesta.id
+        parametros["categoria"] = paso_actual
+        parametros["respuestas"] = self.crear_respuestas_alumno(preguntas, {
+            HORARIO: {
+                "horarios": [{
+                    "dia": "Miercoles",
+                    "hora_desde": "8.5",
+                    "hora_desde_reloj": "08:30",
+                    "hora_hasta": "111",
+                    "hora_hasta_reloj": "111"
+                }]
+            }
+        })
+        response = client.get(GUARDAR_RESPUESTAS_ENCUESTA_ALUMNO_SERVICE, query_string=parametros)
+        assert (response.status_code == CLIENT_ERROR_BAD_REQUEST)
+
         #Test con:
         # Datos invalidos / incompletos / incorrectos
         #  + Guardar respuestas que fueron guardadas previamente las sobreescribe
-            #HORARIO = 3
             #DOCENTE = 4
             #CORRELATIVA = 5
             #TAG = 8
