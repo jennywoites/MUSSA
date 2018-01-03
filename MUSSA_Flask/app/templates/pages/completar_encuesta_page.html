@@ -14,7 +14,92 @@
                 $(link).removeClass("active");
             }
         }
+
+        agregarAccionesBotonesAnteriorYSiguiente();
     });
+
+    function agregarAccionesBotonesAnteriorYSiguiente() {
+        var btn_anterior = document.getElementById('boton_anterior');
+        var btn_siguiente = document.getElementById('boton_siguiente');
+
+        var paginas_anterior_siguiente = {{ anterior_siguiente[paso_activo] | safe }};
+
+        if (paginas_anterior_siguiente[0]) { //Anterior
+            btn_anterior.innerHTML = getBotonFlecha('left', paginas_anterior_siguiente[0]);
+        } else {
+            btn_anterior.hidden = true;
+        }
+
+        if (paginas_anterior_siguiente[1]) { //Siguiente
+            btn_siguiente.innerHTML = getBotonFlecha('right', paginas_anterior_siguiente[1]);
+        } else {
+            btn_siguiente.hidden = true;
+        }
+    }
+
+    function getBotonFlecha(lado, url) {
+        var boton = "<button type='button' class='btn btn-default' ";
+        boton += "style='background-color: transparent;border-color: transparent;font-size: 30px;color: #9634c1;' ";
+        boton += "onclick=validarYGuardarRespuestas('" + url + "');>";
+        boton += "<span class='glyphicon glyphicon-arrow-" + lado + "'></span></button>";
+        return boton;
+    }
+
+    function validarYGuardarRespuestas(nextUrl) {
+        var preguntas = {{preguntas | safe}};
+
+        var hay_preguntas_invalidas = false;
+        for (var i=0; i<preguntas.length; i++) {
+            var pregunta = preguntas[i];
+            if (!preguntaEsValida(pregunta))
+                hay_preguntas_invalidas = true;
+        }
+
+        var div_error = document.getElementById('div_error_preguntas');
+        div_error.hidden = !hay_preguntas_invalidas;
+
+        if (hay_preguntas_invalidas)
+            return false;
+
+        debugger;
+        //sino guardar. Si guardo ok redirigir a la url
+        // sino guardo ok, mostrar error y quedarse en la pagina actual
+    }
+
+    function preguntaEsValida(pregunta) {
+        switch(pregunta["tipo"]) {
+            case "Puntaje de 1 a 5":
+                return validarPreguntaPuntaje1a5(pregunta);
+            case "Texto Libre":
+                return validarPreguntaTexto(pregunta);
+            default:
+                console.log(pregunta);
+                return true;
+        }
+    }
+
+    function validarPreguntaPuntaje1a5(pregunta) {
+        var table = document.getElementById("puntaje1a5-id-" + pregunta['pregunta_encuesta_id']);
+        var cantidad_seleccionadas = 0;
+        for (var i=1; i<6; i++) {
+            if (table.rows[0].cells[i].children.votacion.checked)
+                cantidad_seleccionadas += 1;
+        }
+
+        var es_valida = (cantidad_seleccionadas == 1);
+        var div_error = document.getElementById("div_error_puntaje1a5-id-" + pregunta['pregunta_encuesta_id']);
+        div_error.hidden = es_valida;
+
+        return es_valida;
+    }
+
+    function validarPreguntaTexto(pregunta) {
+        var input_texto = document.getElementById('textolibre-id-' + pregunta['pregunta_encuesta_id']).value;
+        var texto = getCleanedString(input_texto).replace(/\s/g, "");
+
+        var div_error = document.getElementById('div_error_textolibre-id-' + pregunta['pregunta_encuesta_id']);
+        div_error.hidden = (texto != "");
+    }
 
     function setStarsValue(value, id) {
         var MAX_ESTRELLAS = 5;
@@ -39,365 +124,364 @@
             div_no.hidden = es_rta_si;
     }
 
-
     function actualizarHoraHasta(idPregunta) {
-            var hora_desde_element = document.getElementById("hora_desde-" + idPregunta);
-            var indice_seleccionado = hora_desde_element.selectedIndex;
+        var hora_desde_element = document.getElementById("hora_desde-" + idPregunta);
+        var indice_seleccionado = hora_desde_element.selectedIndex;
 
-            var hora_hasta_element = document.getElementById("hora_hasta-" + idPregunta);
-            for (var i=0; i < hora_hasta_element.length; i++) {
-                var opcion = hora_hasta_element[i];
-                if (i < indice_seleccionado)
-                    opcion.style["display"] = "none";
-                else
-                    opcion.style["display"] = "";
-            }
+        var hora_hasta_element = document.getElementById("hora_hasta-" + idPregunta);
+        for (var i=0; i < hora_hasta_element.length; i++) {
+            var opcion = hora_hasta_element[i];
+            if (i < indice_seleccionado)
+                opcion.style["display"] = "none";
+            else
+                opcion.style["display"] = "";
+        }
 
-            hora_hasta_element.selectedIndex = indice_seleccionado;
+        hora_hasta_element.selectedIndex = indice_seleccionado;
      }
 
-        function agregarHorario(idPregunta) {
-            var dia_element = document.getElementById("horario-dia-" + idPregunta)
-            var dia = dia_element[dia_element.selectedIndex].innerHTML;
+    function agregarHorario(idPregunta) {
+        var dia_element = document.getElementById("horario-dia-" + idPregunta)
+        var dia = dia_element[dia_element.selectedIndex].innerHTML;
 
-            var hora_desde_element = document.getElementById("hora_desde-" + idPregunta);
-            var hora_desde = hora_desde_element[hora_desde_element.selectedIndex].innerHTML;
+        var hora_desde_element = document.getElementById("hora_desde-" + idPregunta);
+        var hora_desde = hora_desde_element[hora_desde_element.selectedIndex].innerHTML;
 
-            var hora_hasta_element = document.getElementById("hora_hasta-" + idPregunta);
-            var hora_hasta = hora_hasta_element[hora_hasta_element.selectedIndex].innerHTML;
+        var hora_hasta_element = document.getElementById("hora_hasta-" + idPregunta);
+        var hora_hasta = hora_hasta_element[hora_hasta_element.selectedIndex].innerHTML;
 
-            if (!horarioParaAgregarEsValido(dia, hora_desde, hora_hasta, idPregunta))
-                return false;
+        if (!horarioParaAgregarEsValido(dia, hora_desde, hora_hasta, idPregunta))
+            return false;
 
-            var horarios_table = document.getElementById("tabla_cursos_guardados-" + idPregunta);
-            var horarios = horarios_table.rows;
+        var horarios_table = document.getElementById("tabla_cursos_guardados-" + idPregunta);
+        var horarios = horarios_table.rows;
 
-            var indice = horarios_table.rows.length;
-            var row = horarios_table.insertRow(indice);
-            var ultimo_id = horarios_table.rows[indice-1].id
-            var numero_id = parseInt(ultimo_id.substr(ultimo_id.indexOf("_")+1)) + 1;
-            if (isNaN(numero_id))
-                numero_id = 0;
+        var indice = horarios_table.rows.length;
+        var row = horarios_table.insertRow(indice);
+        var ultimo_id = horarios_table.rows[indice-1].id
+        var numero_id = parseInt(ultimo_id.substr(ultimo_id.indexOf("_")+1)) + 1;
+        if (isNaN(numero_id))
+            numero_id = 0;
 
-            row.id = "horario_" + numero_id;
-            row.insertCell(0).innerHTML = dia;
-            row.insertCell(1).innerHTML = hora_desde;
-            row.insertCell(2).innerHTML = hora_hasta;
-            row.insertCell(3).innerHTML = '<button type="button" class="btn btn-default" onclick="eliminarHorario(' + numero_id + ',' + idPregunta +')"><span class="glyphicon glyphicon-trash"></span></button></td>'
+        row.id = "horario_" + numero_id;
+        row.insertCell(0).innerHTML = dia;
+        row.insertCell(1).innerHTML = hora_desde;
+        row.insertCell(2).innerHTML = hora_hasta;
+        row.insertCell(3).innerHTML = '<button type="button" class="btn btn-default" onclick="eliminarHorario(' + numero_id + ',' + idPregunta +')"><span class="glyphicon glyphicon-trash"></span></button></td>'
 
+        var div_tabla_horarios = document.getElementById("div-tabla-" + idPregunta);
+        div_tabla_horarios.hidden = false;
+    }
+
+    function eliminarHorario(idHorario, idPregunta) {
+        var tabla = document.getElementById("tabla_cursos_guardados-" + idPregunta);
+
+        var horarios = tabla.rows;
+        horarios["horario_" + idHorario].remove()
+
+        if (tabla.rows.length == 1) { //Siempre una fila es el encabezado
             var div_tabla_horarios = document.getElementById("div-tabla-" + idPregunta);
-            div_tabla_horarios.hidden = false;
+            div_tabla_horarios.hidden = true;
+        }
+    }
+
+    function convertirHorario(horario) {
+        hora = parseInt(horario.substring(0,2))
+        minutos = parseInt(horario.substring(3))
+        if (minutos == 30)
+            hora += 0.5
+        return hora
+    }
+
+    function horarioParaAgregarEsValido(dia, hora_desde, hora_hasta, idPregunta) {
+        var error_label = document.getElementById("error_label-" + idPregunta);
+
+        hora_desde = convertirHorario(hora_desde);
+        hora_hasta = convertirHorario(hora_hasta);
+
+        var horarios = document.getElementById("tabla_cursos_guardados-" + idPregunta).rows;
+        for (var i=0; i<horarios.length; i++) {
+            var horario = horarios[i];
+            var dia_actual = horario.cells[0].innerText;
+
+            if (dia_actual != dia)
+                continue;
+
+            var hora_desde_actual = convertirHorario(horario.cells[1].innerText);
+            var hora_hasta_actual = convertirHorario(horario.cells[2].innerText);
+
+            //El curso empieza despues de que termina el nuevo
+            if (hora_desde_actual >= hora_hasta)
+                continue;
+
+            //El curso comienza antes que el nuevo y termina antes que el
+            if (hora_desde_actual < hora_desde && hora_hasta_actual < hora_desde)
+                continue;
+
+            error_label.style["display"] = "";
+            return false;
         }
 
-        function eliminarHorario(idHorario, idPregunta) {
-            var tabla = document.getElementById("tabla_cursos_guardados-" + idPregunta);
+        error_label.style["display"] = "none";
+        return true;
+    }
 
-            var horarios = tabla.rows;
-            horarios["horario_" + idHorario].remove()
+    function agregar_correlativa(idEncuesta) {
+        var selector = document.getElementById("selector_posibles_correlativas_" + idEncuesta);
+        var materia = selector[selector.selectedIndex];
 
-            if (tabla.rows.length == 1) { //Siempre una fila es el encabezado
-                var div_tabla_horarios = document.getElementById("div-tabla-" + idPregunta);
-                div_tabla_horarios.hidden = true;
-            }
-        }
+        if (materia.hidden)
+            return;
 
-        function convertirHorario(horario) {
-            hora = parseInt(horario.substring(0,2))
-            minutos = parseInt(horario.substring(3))
-            if (minutos == 30)
-                hora += 0.5
-            return hora
-        }
+        var correlativas_table = document.getElementById("tabla_correlativas_" + idEncuesta);
+        var correlativas = correlativas_table.rows;
 
-        function horarioParaAgregarEsValido(dia, hora_desde, hora_hasta, idPregunta) {
-            var error_label = document.getElementById("error_label-" + idPregunta);
+        var indice = correlativas.length;
+        var row = correlativas_table.insertRow(indice);
+        var ultimo_id = correlativas[indice-1].id
+        var numero_id = parseInt(ultimo_id.substr(ultimo_id.indexOf("_")+1)) + 1;
+        if (isNaN(numero_id))
+            numero_id = 0;
 
-            hora_desde = convertirHorario(hora_desde);
-            hora_hasta = convertirHorario(hora_hasta);
+        row.id = "materia_" + numero_id + "_" + idEncuesta;
+        row.insertCell(0).innerHTML = materia.innerHTML;
+        var materiaId = materia.id;
+        row.insertCell(1).innerHTML = '<button type="button" class="btn btn-default" onclick="eliminar_correlativa(' + numero_id + ',' + idEncuesta + "," + materiaId + ')"><span class="glyphicon glyphicon-trash"></span></button></td>'
 
-            var horarios = document.getElementById("tabla_cursos_guardados-" + idPregunta).rows;
-            for (var i=0; i<horarios.length; i++) {
-                var horario = horarios[i];
-                var dia_actual = horario.cells[0].innerText;
+        var div_tabla_correlativas = document.getElementById("div_tabla_correlativas_" + idEncuesta);
+        div_tabla_correlativas.hidden = false;
 
-                if (dia_actual != dia)
-                    continue;
+        materia.hidden = true;
+    }
 
-                var hora_desde_actual = convertirHorario(horario.cells[1].innerText);
-                var hora_hasta_actual = convertirHorario(horario.cells[2].innerText);
+    function eliminar_correlativa(idOpcion, idEncuesta, materia) {
+        var tabla = document.getElementById("tabla_correlativas_" + idEncuesta);
 
-                //El curso empieza despues de que termina el nuevo
-                if (hora_desde_actual >= hora_hasta)
-                    continue;
+        var correlativas = tabla.rows;
+        correlativas["materia_" + idOpcion + "_" + idEncuesta].remove()
 
-                //El curso comienza antes que el nuevo y termina antes que el
-                if (hora_desde_actual < hora_desde && hora_hasta_actual < hora_desde)
-                    continue;
-
-                error_label.style["display"] = "";
-                return false;
-            }
-
-            error_label.style["display"] = "none";
-            return true;
-        }
-
-        function agregar_correlativa(idEncuesta) {
-            var selector = document.getElementById("selector_posibles_correlativas_" + idEncuesta);
-            var materia = selector[selector.selectedIndex];
-
-            if (materia.hidden)
-                return;
-
-            var correlativas_table = document.getElementById("tabla_correlativas_" + idEncuesta);
-            var correlativas = correlativas_table.rows;
-
-            var indice = correlativas.length;
-            var row = correlativas_table.insertRow(indice);
-            var ultimo_id = correlativas[indice-1].id
-            var numero_id = parseInt(ultimo_id.substr(ultimo_id.indexOf("_")+1)) + 1;
-            if (isNaN(numero_id))
-                numero_id = 0;
-
-            row.id = "materia_" + numero_id + "_" + idEncuesta;
-            row.insertCell(0).innerHTML = materia.innerHTML;
-            var materiaId = materia.id;
-            row.insertCell(1).innerHTML = '<button type="button" class="btn btn-default" onclick="eliminar_correlativa(' + numero_id + ',' + idEncuesta + "," + materiaId + ')"><span class="glyphicon glyphicon-trash"></span></button></td>'
-
+        if (tabla.rows.length == 1) { //Siempre una fila es el encabezado
             var div_tabla_correlativas = document.getElementById("div_tabla_correlativas_" + idEncuesta);
-            div_tabla_correlativas.hidden = false;
-
-            materia.hidden = true;
+            div_tabla_correlativas.hidden = true;
         }
 
-        function eliminar_correlativa(idOpcion, idEncuesta, materia) {
-            var tabla = document.getElementById("tabla_correlativas_" + idEncuesta);
+        materia.hidden = false;
+    }
 
-            var correlativas = tabla.rows;
-            correlativas["materia_" + idOpcion + "_" + idEncuesta].remove()
+    function agregarComentarioDocente(idPregunta) {
+        var texto_comentario_element = document.getElementById("texto-docentes-" + idPregunta);
+        var error_element = document.getElementById("error_label-docentes-" + idPregunta);
 
-            if (tabla.rows.length == 1) { //Siempre una fila es el encabezado
-                var div_tabla_correlativas = document.getElementById("div_tabla_correlativas_" + idEncuesta);
-                div_tabla_correlativas.hidden = true;
+        if (eliminarPuntuacionesYEspacios(texto_comentario_element.value) == "") {
+            error_element.style["display"] = "";
+            return;
+        } else {
+            error_element.style["display"] = "none";
+        }
+
+        var selector_docente = document.getElementById("selector_docentes_" + idPregunta);
+        var docente = selector_docente[selector_docente.selectedIndex];
+
+        var tabla_docentes = document.getElementById("tabla_docentes-" + idPregunta);
+
+        var filas = tabla_docentes.rows;
+        var indice = filas.length;
+        var row = tabla_docentes.insertRow(indice);
+        var ultimo_id = filas[indice-1].id
+        var numero_id = parseInt(ultimo_id.substr(ultimo_id.indexOf("_")+1)) + 1;
+        if (isNaN(numero_id))
+            numero_id = 0;
+
+        row.id = "entradaTablaDocente_" + numero_id + "_" + idPregunta;
+        row.insertCell(0).innerHTML = docente.innerText;
+        row.insertCell(1).innerHTML = texto_comentario_element.value;
+
+        var docenteId = docente.id;
+
+        var botones = '<button type="button" class="btn btn-default" onclick="editarDocente(' + numero_id + ',' + idPregunta + "," + docenteId + ')" style="margin-right: 5px;"><span class="glyphicon glyphicon-pencil"></span></button></td>';
+        botones += '<button type="button" class="btn btn-default" onclick="eliminarDocente(' + numero_id + ',' + idPregunta + "," + docenteId + ')" style="margin-right: 5px;"><span class="glyphicon glyphicon-trash"></span></button></td>';
+        row.insertCell(2).innerHTML = botones;
+
+        var div_tabla_docentes = document.getElementById("div-tabla-docentes-" + idPregunta);
+        div_tabla_docentes.hidden = false;
+
+        docente.hidden = true;
+        mostrarOcultarSelectorDocentes(idPregunta);
+
+        texto_comentario_element.value = "";
+    }
+
+    function mostrarOcultarSelectorDocentes(idPregunta) {
+        var selector_docente = document.getElementById("selector_docentes_" + idPregunta);
+        var quedanDocentes = false;
+        for (var i=0; i<selector_docente.options.length; i++) {
+            if (!selector_docente.options[i].hidden) {
+                selector_docente.selectedIndex = i;
+                quedanDocentes = true;
+                break;
             }
-
-            materia.hidden = false;
         }
 
-        function agregarComentarioDocente(idPregunta) {
-            var texto_comentario_element = document.getElementById("texto-docentes-" + idPregunta);
-            var error_element = document.getElementById("error_label-docentes-" + idPregunta);
+        var div_agregar_docentes = document.getElementById("div_agregar_docentes_" + idPregunta);
+        div_agregar_docentes.hidden = !quedanDocentes;
+    }
 
-            if (eliminarPuntuacionesYEspacios(texto_comentario_element.value) == "") {
+    function editarDocente(numeroId, idPregunta, docenteId) {
+        var tabla = document.getElementById("tabla_docentes-" + idPregunta);
+        var fila_actual = tabla.rows["entradaTablaDocente_" + numeroId + "_" + idPregunta];
+        var comentario = fila_actual.cells[1].innerText;
+
+        eliminarDocente(numeroId, idPregunta, docenteId);
+
+        var texto_comentario_element = document.getElementById("texto-docentes-" + idPregunta);
+        texto_comentario_element.value = comentario;
+
+        docenteId.selected = true;
+    }
+
+    function eliminarDocente(numeroId, idPregunta, docenteId) {
+        var tabla = document.getElementById("tabla_docentes-" + idPregunta);
+
+        var filas = tabla.rows;
+        filas["entradaTablaDocente_" + numeroId + "_" + idPregunta].remove()
+
+        if (tabla.rows.length == 1) { //Siempre una fila es el encabezado
+            var div_tabla_docentes = document.getElementById("div-tabla-docentes-" + idPregunta);
+            div_tabla_docentes.hidden = true;
+        }
+
+        docenteId.hidden = false;
+        mostrarOcultarSelectorDocentes(idPregunta);
+    }
+
+    function eliminarPuntuacionesYEspacios(texto) {
+        var nuevo_texto = ""
+        for(var i=0; i<texto.length; i++) {
+            var caracter = texto[i];
+            if (";.- *+-?¿/&$%!,{}[]\n".indexOf(caracter) == -1) {
+                nuevo_texto += caracter;
+            }
+        }
+        return nuevo_texto;
+    }
+
+    function selector_tematica_change(idPregunta) {
+        var selector = document.getElementById("selector_tematica_" + idPregunta);
+        var div_texto_nueva_tematica =  document.getElementById("div_texto_nueva_tematica_" + idPregunta);
+        if (selector[selector.selectedIndex].id == ("nueva_tematica_" + idPregunta)) {
+            div_texto_nueva_tematica.hidden = false;
+        } else {
+            div_texto_nueva_tematica.hidden = true;
+        }
+    }
+
+    function agregar_tematica(idPregunta) {
+        var selector = document.getElementById("selector_tematica_" + idPregunta);
+        var opcionElegida = selector[selector.selectedIndex];
+
+        // Se vuelve a seleccionar la opcion Nueva Tematica
+        selector.selectedIndex = 0;
+        selector_tematica_change(idPregunta);
+
+        var idTema = "";
+        var texto = "";
+        if (opcionElegida.id == ("nueva_tematica_" + idPregunta)) {
+            idTema = -1;
+
+            var texto_nueva_tematica = document.getElementById("texto_nueva_tematica_" + idPregunta);
+            texto = getCleanedString(texto_nueva_tematica.value);
+            texto_nueva_tematica.value = "";
+
+            var error_element = document.getElementById("error_label_tematica_" + idPregunta);
+            if (eliminarPuntuacionesYEspacios(texto) == "") {
                 error_element.style["display"] = "";
                 return;
             } else {
                 error_element.style["display"] = "none";
             }
 
-            var selector_docente = document.getElementById("selector_docentes_" + idPregunta);
-            var docente = selector_docente[selector_docente.selectedIndex];
-
-            var tabla_docentes = document.getElementById("tabla_docentes-" + idPregunta);
-
-            var filas = tabla_docentes.rows;
-            var indice = filas.length;
-            var row = tabla_docentes.insertRow(indice);
-            var ultimo_id = filas[indice-1].id
-            var numero_id = parseInt(ultimo_id.substr(ultimo_id.indexOf("_")+1)) + 1;
-            if (isNaN(numero_id))
-                numero_id = 0;
-
-            row.id = "entradaTablaDocente_" + numero_id + "_" + idPregunta;
-            row.insertCell(0).innerHTML = docente.innerText;
-            row.insertCell(1).innerHTML = texto_comentario_element.value;
-
-            var docenteId = docente.id;
-
-            var botones = '<button type="button" class="btn btn-default" onclick="editarDocente(' + numero_id + ',' + idPregunta + "," + docenteId + ')" style="margin-right: 5px;"><span class="glyphicon glyphicon-pencil"></span></button></td>';
-            botones += '<button type="button" class="btn btn-default" onclick="eliminarDocente(' + numero_id + ',' + idPregunta + "," + docenteId + ')" style="margin-right: 5px;"><span class="glyphicon glyphicon-trash"></span></button></td>';
-            row.insertCell(2).innerHTML = botones;
-
-            var div_tabla_docentes = document.getElementById("div-tabla-docentes-" + idPregunta);
-            div_tabla_docentes.hidden = false;
-
-            docente.hidden = true;
-            mostrarOcultarSelectorDocentes(idPregunta);
-
-            texto_comentario_element.value = "";
-        }
-
-        function mostrarOcultarSelectorDocentes(idPregunta) {
-            var selector_docente = document.getElementById("selector_docentes_" + idPregunta);
-            var quedanDocentes = false;
-            for (var i=0; i<selector_docente.options.length; i++) {
-                if (!selector_docente.options[i].hidden) {
-                    selector_docente.selectedIndex = i;
-                    quedanDocentes = true;
-                    break;
-                }
-            }
-
-            var div_agregar_docentes = document.getElementById("div_agregar_docentes_" + idPregunta);
-            div_agregar_docentes.hidden = !quedanDocentes;
-        }
-
-        function editarDocente(numeroId, idPregunta, docenteId) {
-            var tabla = document.getElementById("tabla_docentes-" + idPregunta);
-            var fila_actual = tabla.rows["entradaTablaDocente_" + numeroId + "_" + idPregunta];
-            var comentario = fila_actual.cells[1].innerText;
-
-            eliminarDocente(numeroId, idPregunta, docenteId);
-
-            var texto_comentario_element = document.getElementById("texto-docentes-" + idPregunta);
-            texto_comentario_element.value = comentario;
-
-            docenteId.selected = true;
-        }
-
-        function eliminarDocente(numeroId, idPregunta, docenteId) {
-            var tabla = document.getElementById("tabla_docentes-" + idPregunta);
-
-            var filas = tabla.rows;
-            filas["entradaTablaDocente_" + numeroId + "_" + idPregunta].remove()
-
-            if (tabla.rows.length == 1) { //Siempre una fila es el encabezado
-                var div_tabla_docentes = document.getElementById("div-tabla-docentes-" + idPregunta);
-                div_tabla_docentes.hidden = true;
-            }
-
-            docenteId.hidden = false;
-            mostrarOcultarSelectorDocentes(idPregunta);
-        }
-
-        function eliminarPuntuacionesYEspacios(texto) {
-            var nuevo_texto = ""
-            for(var i=0; i<texto.length; i++) {
-                var caracter = texto[i];
-                if (";.- *+-?¿/&$%!,{}[]\n".indexOf(caracter) == -1) {
-                    nuevo_texto += caracter;
-                }
-            }
-            return nuevo_texto;
-        }
-
-        function selector_tematica_change(idPregunta) {
-            var selector = document.getElementById("selector_tematica_" + idPregunta);
-            var div_texto_nueva_tematica =  document.getElementById("div_texto_nueva_tematica_" + idPregunta);
-            if (selector[selector.selectedIndex].id == ("nueva_tematica_" + idPregunta)) {
-                div_texto_nueva_tematica.hidden = false;
-            } else {
-                div_texto_nueva_tematica.hidden = true;
-            }
-        }
-
-        function agregar_tematica(idPregunta) {
-            var selector = document.getElementById("selector_tematica_" + idPregunta);
-            var opcionElegida = selector[selector.selectedIndex];
-
-            // Se vuelve a seleccionar la opcion Nueva Tematica
-            selector.selectedIndex = 0;
-            selector_tematica_change(idPregunta);
-
-            var idTema = "";
-            var texto = "";
-            if (opcionElegida.id == ("nueva_tematica_" + idPregunta)) {
-                idTema = -1;
-
-                var texto_nueva_tematica = document.getElementById("texto_nueva_tematica_" + idPregunta);
-                texto = getCleanedString(texto_nueva_tematica.value);
-                texto_nueva_tematica.value = "";
-
-                var error_element = document.getElementById("error_label_tematica_" + idPregunta);
-                if (eliminarPuntuacionesYEspacios(texto) == "") {
-                    error_element.style["display"] = "";
+            for(var j=0; j<selector.options.length; j++) {
+                var opcion = selector.options[j];
+                if (opcion.innerText == texto && !opcion.hidden) {
+                    opcion.hidden = true;
+                    agregarTematica(opcion.innerText, opcion.value, opcion, idPregunta);
                     return;
-                } else {
-                    error_element.style["display"] = "none";
                 }
-
-                for(var j=0; j<selector.options.length; j++) {
-                    var opcion = selector.options[j];
-                    if (opcion.innerText == texto && !opcion.hidden) {
-                        opcion.hidden = true;
-                        agregarTematica(opcion.innerText, opcion.value, opcion, idPregunta);
-                        return;
-                    }
-                }
-
-                var etiquetas_ya_elegidas = $("[id*=texto_id_etiqueta_]");
-                for (var i=0; i<etiquetas_ya_elegidas.length; i++) {
-                    if (etiquetas_ya_elegidas[i].value == texto)
-                        return;
-                }
-
-            } else {
-                idTema = opcionElegida.value;
-                texto = opcionElegida.innerText;
-                opcionElegida.hidden = true;
             }
 
-            agregarTematica(texto, idTema, opcionElegida, idPregunta);
-        }
-
-        function mostrarOcultarSeleccionMasTematicas(idPregunta) {
-            var MAX_TEMATICAS = 10;
-            var div_seguir_eligiendo = document.getElementById("div_permitir_agregar_mas_etiquetas_" + idPregunta);
             var etiquetas_ya_elegidas = $("[id*=texto_id_etiqueta_]");
-            div_seguir_eligiendo.hidden = (etiquetas_ya_elegidas.length >= MAX_TEMATICAS);
+            for (var i=0; i<etiquetas_ya_elegidas.length; i++) {
+                if (etiquetas_ya_elegidas[i].value == texto)
+                    return;
+            }
+
+        } else {
+            idTema = opcionElegida.value;
+            texto = opcionElegida.innerText;
+            opcionElegida.hidden = true;
         }
 
-        function agregarTematica(texto, idTema, opcionElegida, idPregunta) {
-            var tematicas_elegidas = document.getElementById("tematicas_elegidas_" + idPregunta);
+        agregarTematica(texto, idTema, opcionElegida, idPregunta);
+    }
 
-            var nueva_etiqueta = crearEtiquetaTematica(texto, idTema, opcionElegida.id, idPregunta);
-            tematicas_elegidas.innerHTML += nueva_etiqueta;
+    function mostrarOcultarSeleccionMasTematicas(idPregunta) {
+        var MAX_TEMATICAS = 10;
+        var div_seguir_eligiendo = document.getElementById("div_permitir_agregar_mas_etiquetas_" + idPregunta);
+        var etiquetas_ya_elegidas = $("[id*=texto_id_etiqueta_]");
+        div_seguir_eligiendo.hidden = (etiquetas_ya_elegidas.length >= MAX_TEMATICAS);
+    }
 
-            tematicas_elegidas.hidden = false;
-            mostrarOcultarSeleccionMasTematicas(idPregunta);
-        }
+    function agregarTematica(texto, idTema, opcionElegida, idPregunta) {
+        var tematicas_elegidas = document.getElementById("tematicas_elegidas_" + idPregunta);
 
-        function getCleanedString(cadena){
-           var specialChars = "!@#$^&%*()+=-[]\/{}|:<>?,.";
+        var nueva_etiqueta = crearEtiquetaTematica(texto, idTema, opcionElegida.id, idPregunta);
+        tematicas_elegidas.innerHTML += nueva_etiqueta;
 
-           for (var i = 0; i < specialChars.length; i++) {
-               cadena= cadena.replace(new RegExp("\\" + specialChars[i], 'gi'), '');
-           }
+        tematicas_elegidas.hidden = false;
+        mostrarOcultarSeleccionMasTematicas(idPregunta);
+    }
 
-           cadena = cadena.toUpperCase();
+    function getCleanedString(cadena){
+       var specialChars = "!@#$^&%*()+=-[]\/{}|:<>?,.;";
 
-           cadena = cadena.replace(/Á/gi,"A");
-           cadena = cadena.replace(/É/gi,"E");
-           cadena = cadena.replace(/Í/gi,"I");
-           cadena = cadena.replace(/Ó/gi,"O");
-           cadena = cadena.replace(/Ú/gi,"U");
-           return cadena;
-        }
+       for (var i = 0; i < specialChars.length; i++) {
+           cadena= cadena.replace(new RegExp("\\" + specialChars[i], 'gi'), '');
+       }
 
-        function crearEtiquetaTematica(texto, idEtiqueta, opcion, idPregunta) {
-            etiqueta = "";
-            etiqueta += "<div class='col-lg-3' id='div_etiqueta_" + idEtiqueta + "_" + idPregunta + "' style='margin-bottom:5px;'>";
-            etiqueta += "<div class='input-group'>";
-            etiqueta += "<input type='text' class='form-control' style='background-color: #e8d2f2;' id='texto_id_etiqueta_" + idEtiqueta + "' value='" + texto + "' disabled/>";
-            etiqueta += "<span class='input-group-btn'>";
-            etiqueta += "<button class='btn btn-mussa-default' type='button'"
-            etiqueta += "onclick='eliminarTematica(" + idEtiqueta + "," + opcion + "," + idPregunta + ")'>";
-            etiqueta += "<span class='glyphicon glyphicon-trash'></span>";
-            etiqueta += "</button>";
-            etiqueta += "</span>";
-            etiqueta += "</div>";
-            etiqueta += "</div>";
-            return etiqueta;
-        }
+       cadena = cadena.toUpperCase();
 
-        function eliminarTematica(idEtiqueta, opcion, idPregunta) {
-            var tematicas_elegidas = document.getElementById("tematicas_elegidas_" + idPregunta);
-            var etiqueta_a_eliminar = document.getElementById("div_etiqueta_" + idEtiqueta + "_" + idPregunta);
-            tematicas_elegidas.removeChild(etiqueta_a_eliminar);
-            if (opcion.id != ("nueva_tematica_" + idPregunta))
-                opcion.hidden = false;
-            mostrarOcultarSeleccionMasTematicas(idPregunta);
-        }
+       cadena = cadena.replace(/Á/gi,"A");
+       cadena = cadena.replace(/É/gi,"E");
+       cadena = cadena.replace(/Í/gi,"I");
+       cadena = cadena.replace(/Ó/gi,"O");
+       cadena = cadena.replace(/Ú/gi,"U");
+       return cadena;
+    }
+
+    function crearEtiquetaTematica(texto, idEtiqueta, opcion, idPregunta) {
+        etiqueta = "";
+        etiqueta += "<div class='col-lg-3' id='div_etiqueta_" + idEtiqueta + "_" + idPregunta + "' style='margin-bottom:5px;'>";
+        etiqueta += "<div class='input-group'>";
+        etiqueta += "<input type='text' class='form-control' style='background-color: #e8d2f2;' id='texto_id_etiqueta_" + idEtiqueta + "' value='" + texto + "' disabled/>";
+        etiqueta += "<span class='input-group-btn'>";
+        etiqueta += "<button class='btn btn-mussa-default' type='button'"
+        etiqueta += "onclick='eliminarTematica(" + idEtiqueta + "," + opcion + "," + idPregunta + ")'>";
+        etiqueta += "<span class='glyphicon glyphicon-trash'></span>";
+        etiqueta += "</button>";
+        etiqueta += "</span>";
+        etiqueta += "</div>";
+        etiqueta += "</div>";
+        return etiqueta;
+    }
+
+    function eliminarTematica(idEtiqueta, opcion, idPregunta) {
+        var tematicas_elegidas = document.getElementById("tematicas_elegidas_" + idPregunta);
+        var etiqueta_a_eliminar = document.getElementById("div_etiqueta_" + idEtiqueta + "_" + idPregunta);
+        tematicas_elegidas.removeChild(etiqueta_a_eliminar);
+        if (opcion.id != ("nueva_tematica_" + idPregunta))
+            opcion.hidden = false;
+        mostrarOcultarSeleccionMasTematicas(idPregunta);
+    }
 
 </script>
 
@@ -422,6 +506,10 @@
 <!--- End Botonera -->
 
 <br>
+<div id="div_error_preguntas" hidden="true">
+    <br>
+    <div class="alert alert-danger">Una o más preguntas contienen errores o no han sido contestadas. Por favor, modifícalas antes de continuar con el siguiente paso.</div>
+</div>
 
 <div class="container">
 
@@ -441,23 +529,32 @@
 
         {% if pregunta["tipo"] == "Puntaje de 1 a 5" %}
 
-        <br>
-        <table border="0" id="puntaje1a5-id-{{pregunta['pregunta_encuesta_id']}}" style="background-color: transparent;">
-            <tbody>
-                <tr>
-                    <td>{{pregunta["texto_min"]}}</td>
-                    {% for i in range(1,6) %}
-                        <td><input type="radio" name="votacion" value="{{i}}" style="margin:10px;"></td>
-                    {% endfor %}
-                    <td>{{pregunta["texto_max"]}}</td>
-                </tr>
-            </tbody>
-        </table>
+            <br>
+            <table border="0" id="puntaje1a5-id-{{pregunta['pregunta_encuesta_id']}}" style="background-color: transparent;">
+                <tbody>
+                    <tr>
+                        <td>{{pregunta["texto_min"]}}</td>
+                        {% for i in range(1,6) %}
+                            <td><input type="radio" name="votacion" value="{{i}}" style="margin:10px;"></td>
+                        {% endfor %}
+                        <td>{{pregunta["texto_max"]}}</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div id="div_error_puntaje1a5-id-{{pregunta['pregunta_encuesta_id']}}" hidden="true">
+                <br>
+                <div class="alert alert-danger">Selecciona un puntaje</div>
+            </div>
 
         {% elif pregunta["tipo"] == "Texto Libre" %}
 
-            <textarea class="form-control" rows="5" id="textolibre-id-{{pregunta['pregunta_encuesta_id']}}">
-            </textarea>
+            <textarea class="form-control" rows="5" id="textolibre-id-{{pregunta['pregunta_encuesta_id']}}"></textarea>
+
+            <div id="div_error_textolibre-id-{{pregunta['pregunta_encuesta_id']}}" hidden="true">
+                <br>
+                <div class="alert alert-danger">El texto no puede estar vacío</div>
+            </div>
 
         {% elif pregunta["tipo"] == "Si o No" %}
 
@@ -479,10 +576,10 @@
 
                     {% if subpregunta["tipo"] == "Texto Libre" %}
 
-                        <textarea class="form-control" rows="5" id="subpregunta-si-{{subpregunta['pregunta_encuesta_id']}}">
-                        </textarea>
+                        <textarea class="form-control" rows="5" id="subpregunta-si-{{subpregunta['pregunta_encuesta_id']}}"></textarea>
 
                     {% endif %}
+
                 </div>
             {% endfor %}
 
@@ -497,8 +594,7 @@
 
                     {% if subpregunta["tipo"] == "Texto Libre" %}
 
-                        <textarea class="form-control" rows="5" id="comment" id="subpregunta-no-{{subpregunta['pregunta_encuesta_id']}}">
-                        </textarea>
+                        <textarea class="form-control" rows="5" id="comment" id="subpregunta-no-{{subpregunta['pregunta_encuesta_id']}}"></textarea>
 
                     {% endif %}
                 </div>
@@ -731,6 +827,18 @@
         {% endif %}
 
     {% endfor %}
+
+    <br>
+
+    <div>
+        <div class = "pull-left" id="boton_anterior">
+            <button type="button" class="btn btn-default" style="background-color: transparent;border-color: transparent;font-size: 30px;color: #9634c1;"><span class='glyphicon glyphicon-arrow-left'></span></button>
+        </div>
+
+        <div class = "pull-right" id="boton_siguiente">
+            <button type="button" class="btn btn-default" style="background-color: transparent;border-color: transparent;font-size: 30px;color: #9634c1;"><span class='glyphicon glyphicon-arrow-right'></span></button>
+        </div>
+    </div>
 
 </div>
 

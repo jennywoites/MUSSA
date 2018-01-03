@@ -68,6 +68,14 @@ def completar_encuesta(idEncuestaAlumno, cookie, num_categoria):
         {'url': 'main.completar_encuesta_docentes_page', 'titulo': 'Docentes'}
     ]
 
+    anterior_siguiente = {
+        GRUPO_ENCUESTA_GENERAL: ['', 'main.completar_encuesta_contenido_page'],
+        GRUPO_ENCUESTA_CONTENIDO: ['main.completar_encuesta_general_page', 'main.completar_encuesta_clases_page'],
+        GRUPO_ENCUESTA_CLASES: ['main.completar_encuesta_contenido_page', 'main.completar_encuesta_examenes_page'],
+        GRUPO_ENCUESTA_EXAMENES: ['main.completar_encuesta_clases_page', 'main.completar_encuesta_docentes_page'],
+        GRUPO_ENCUESTA_DOCENTES: ['main.completar_encuesta_examenes_page', '']
+    }
+
     return render_template('pages/completar_encuesta_page.html',
                            titulos=titulos,
                            idEncuestaAlumno=idEncuestaAlumno,
@@ -79,4 +87,5 @@ def completar_encuesta(idEncuestaAlumno, cookie, num_categoria):
                            hora_hasta=horarios[1:],
                            posibles_correlativas=posibles_correlativas,
                            docentes=docentes,
-                           tematicas=tematicas)
+                           tematicas=tematicas,
+                           anterior_siguiente=anterior_siguiente)
