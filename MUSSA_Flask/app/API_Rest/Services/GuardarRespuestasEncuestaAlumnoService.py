@@ -17,8 +17,8 @@ import json
 
 class GuardarRespuestasEncuestaAlumno(Resource):
     @login_required
-    def get(self):
-        args = request.args
+    def post(self):
+        args = request.form
         logging.info('Se invoco al servicio Guardar Respuestas Encuesta Alumno con los siguientes '
                      'parametros: {}'.format(args))
 
@@ -29,7 +29,7 @@ class GuardarRespuestasEncuestaAlumno(Resource):
         if not id_encuesta or not self.id_encuesta_es_valido(id_encuesta, alumno):
             logging.error('El servicio Guardar Respuestas Encuesta Alumno recibió un id de encuesta '
                           'inválido, no perteneciente al alumno o de una encuesta ya finalizada')
-            return {'Error': 'Este servicio recibió un id de inválido, no perteneciente al alumno o de'
+            return {'Error': 'Este servicio recibió un id de encuesta inválido, no perteneciente al alumno o de '
                              'una encuesta ya finalizada'}, CLIENT_ERROR_BAD_REQUEST
 
         if not self.categoria_es_valida(args):

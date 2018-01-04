@@ -24,67 +24,312 @@
 
         var paginas_anterior_siguiente = {{ anterior_siguiente[paso_activo] | safe }};
 
-        if (paginas_anterior_siguiente[0]) { //Anterior
-            btn_anterior.innerHTML = getBotonFlecha('left', paginas_anterior_siguiente[0]);
-        } else {
-            btn_anterior.hidden = true;
-        }
+        agregarAccionesBoton(paginas_anterior_siguiente[0], btn_anterior, 'left');
+        agregarAccionesBoton(paginas_anterior_siguiente[1], btn_siguiente, 'right');
+    }
 
-        if (paginas_anterior_siguiente[1]) { //Siguiente
-            btn_siguiente.innerHTML = getBotonFlecha('right', paginas_anterior_siguiente[1]);
+    function agregarAccionesBoton(url, boton, direccion_flecha) {
+        if (url) {
+            boton.innerHTML = getBotonFlecha(direccion_flecha, url);
         } else {
-            btn_siguiente.hidden = true;
+            boton.hidden = true;
         }
     }
 
     function getBotonFlecha(lado, url) {
         var boton = "<button type='button' class='btn btn-default' ";
         boton += "style='background-color: transparent;border-color: transparent;font-size: 30px;color: #9634c1;' ";
-        boton += "onclick=validarYGuardarRespuestas('" + url + "');>";
+        boton += "onclick=validarRespuestasParcialesYGuardarRespuestas('" + url + "');>";
         boton += "<span class='glyphicon glyphicon-arrow-" + lado + "'></span></button>";
         return boton;
     }
 
-    function validarYGuardarRespuestas(nextUrl) {
+    SERVICE_GUARDAR_RESPUESTAS_ENCUESTAS_ALUMNO = '/api/GuardarRespuestasEncuestaAlumno'
+    SUCCESS = 200
+
+    function do_request(method, page, parametros, onSucces, onError) {
+        var method = method || "GET";
+
+        xmlhttp = new XMLHttpRequest();
+
+        xmlhttp.onreadystatechange = function() {
+            if (this.status == 0 || this.readyState != 4)
+                return;
+
+            if ( this.status != SUCCESS ) {
+                onError(this.status, this.responseText);
+            }
+            else {
+                json_result = (this.responseText == "") ? {} : JSON.parse(this.responseText)
+                onSucces(this.status, json_result);
+            }
+        }
+
+        var encoded_params = jQuery.param(parametros)
+        var url = (method == 'GET') ? (page + '?' + encoded_params) : page;
+
+        var async = true;
+        xmlhttp.open(method, url, async);
+
+        xmlhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+        xmlhttp.withCredentials = true;
+
+        if (method == 'POST') {
+            xmlhttp.setRequestHeader("X-CSRFToken", "{{ csrf_token() }}");
+            xmlhttp.send(encoded_params);
+        } else {
+            xmlhttp.send();
+        }
+    }
+
+    function validarRespuestasParcialesYGuardarRespuestas(nextUrl) {
         var preguntas = {{preguntas | safe}};
 
-        var hay_preguntas_invalidas = false;
-        for (var i=0; i<preguntas.length; i++) {
-            var pregunta = preguntas[i];
-            if (!preguntaEsValida(pregunta))
-                hay_preguntas_invalidas = true;
-        }
+        var respuestas = [];
+        var hay_preguntas_invalidas = validarPreguntasYGenerarDatosDeRespuestas(preguntas, respuestas);
 
         var div_error = document.getElementById('div_error_preguntas');
         div_error.hidden = !hay_preguntas_invalidas;
 
-        if (hay_preguntas_invalidas)
+        if (hay_preguntas_invalidas) {
+            $('html, body').animate({scrollTop:0}, 'slow');
             return false;
+        }
 
-        debugger;
-        //sino guardar. Si guardo ok redirigir a la url
-        // sino guardo ok, mostrar error y quedarse en la pagina actual
+        if ($.isEmptyObject(respuestas)) {
+            window.location.replace(nextUrl);
+            return true;
+        }
+
+        var param = {};
+        param["respuestas"] = JSON.stringify(respuestas);
+        param["id_encuesta"] = {{idEncuestaAlumno}};
+        param["categoria"] = {{paso_activo}};
+
+        var error_al_guardar = document.getElementById("div_error_guardado");
+        error_al_guardar.hidden = true;
+        do_request('POST', SERVICE_GUARDAR_RESPUESTAS_ENCUESTAS_ALUMNO, param, function(state, result) {
+            debugger;
+            window.location.replace(nextUrl);
+        }, function(state, result) {
+            $('html, body').animate({scrollTop:0}, 'slow');
+            error_al_guardar.hidden = false;
+        })
     }
 
-    function preguntaEsValida(pregunta) {
+    function validarPreguntasYGenerarDatosDeRespuestas(preguntas, respuestas) {
+        var esGuardadoParcial = true;
+        var hay_preguntas_invalidas = false;
+        for (var i=0; i<preguntas.length; i++) {
+            var pregunta = preguntas[i];
+            if (!preguntaEsValida(pregunta, esGuardadoParcial))
+                hay_preguntas_invalidas = true;
+            else {
+                var respuesta = generarDatosRespuesta(pregunta);
+                if (!$.isEmptyObject(respuesta))
+                    respuestas.push(respuesta)
+            }
+        }
+        return hay_preguntas_invalidas;
+    }
+
+    function generarDatosRespuesta(pregunta) {
+        switch(pregunta["tipo"]) {
+            case "Texto Libre":
+                return generarRespuestaTextoLibre(pregunta);
+            case "Puntaje de 1 a 5":
+                return generarRespuestaPuntaje(pregunta);
+            case "Numero":
+                return generarRespuestaNumero(pregunta);
+            case "Horario":
+                return generarRespuestaHorario(pregunta);
+            case "Docente":
+                return generarRespuestaDocentes(pregunta);
+            default:
+                return {};
+        }
+    }
+
+    function generarEstructuraRespuestaBase(pregunta) {
+        var datos = {}
+        datos["idPregunta"] = pregunta["pregunta_id"];
+        datos["tipo_encuesta"] = pregunta["tipo_num"];
+        return datos;
+    }
+
+    function generarRespuestaTextoLibre(pregunta) {
+        var texto = document.getElementById('textolibre-id-' + pregunta['pregunta_encuesta_id']).value;
+        if (texto == "")
+            return {};
+
+        var datos = generarEstructuraRespuestaBase(pregunta)
+        datos["texto"] = texto;
+        return datos;
+    }
+
+    function generarRespuestaPuntaje(pregunta) {
+        var table = document.getElementById("puntaje1a5-id-" + pregunta['pregunta_encuesta_id']);
+        var puntaje = -1;
+        for (var i=1; i<6; i++) {
+            if (table.rows[0].cells[i].children[0].checked)
+                puntaje = i;
+        }
+
+        if (puntaje < 0)
+            return {}
+
+        var datos = generarEstructuraRespuestaBase(pregunta)
+        datos["puntaje"] = puntaje;
+        return datos;
+    }
+
+    function generarRespuestaNumero(pregunta) {
+        var numero = document.getElementById('numero_' + pregunta['pregunta_encuesta_id']).value;
+        if (numero == "")
+            return {}
+
+        var datos = generarEstructuraRespuestaBase(pregunta)
+        datos["numero"] = parseInt(numero);
+        return datos;
+    }
+
+    function generarRespuestaHorario(pregunta) {
+        var horarios = [];
+        var tablaHorarios = document.getElementById('tabla_cursos_guardados-' + pregunta['pregunta_encuesta_id']);
+        for (var i=1; i<tablaHorarios.rows.length; i++) {
+            var datos_horario = tablaHorarios.rows[i].cells;
+            horarios.push({
+                "dia": datos_horario[0].innerText,
+                "hora_desde": datos_horario[1].innerText,
+                "hora_hasta": datos_horario[2].innerText
+            });
+        }
+
+        if (horarios.length == 0)
+            return {}
+
+        var datos = generarEstructuraRespuestaBase(pregunta)
+        datos["horarios"] = horarios;
+        return datos;
+    }
+
+    function generarRespuestaDocentes(pregunta) {
+        var comentarios_docentes = [];
+        var tablaDocentes = document.getElementById('tabla_docentes-' + pregunta['pregunta_encuesta_id']);
+        for (var i=1; i<tablaDocentes.rows.length; i++) {
+            var datos_docente = tablaDocentes.rows[i].cells;
+            var comentario = datos_docente[2].innerText;
+            if (textoEsValido(comentario)) {
+                comentarios_docentes.push({
+                    "id_docente": datos_docente[0].innerText,
+                    "comentario": comentario
+                });
+            }
+        }
+
+        if (comentarios_docentes.length == 0)
+            return {};
+
+        var datos = generarEstructuraRespuestaBase(pregunta)
+        datos["docentes"] = comentarios_docentes;
+        return datos;
+    }
+
+    function preguntaEsValida(pregunta, esGuardadoParcial) {
         switch(pregunta["tipo"]) {
             case "Puntaje de 1 a 5":
-                return validarPreguntaPuntaje1a5(pregunta);
+                return validarPreguntaPuntaje1a5(pregunta, esGuardadoParcial);
             case "Texto Libre":
-                return validarPreguntaTexto(pregunta);
+                return validarPreguntaTexto(pregunta, esGuardadoParcial);
+            case "Numero":
+                return validarPreguntaNumero(pregunta, esGuardadoParcial);
+            case "Horario":
+                return validarPreguntaHorario(pregunta, esGuardadoParcial);
+            case "Docente":
+                return validarPreguntaDocentes(pregunta, esGuardadoParcial);
             default:
                 console.log(pregunta);
+                debugger;
                 return true;
         }
     }
 
-    function validarPreguntaPuntaje1a5(pregunta) {
+    function validarPreguntaNumero(pregunta, esParcial) {
+        var num_actual = document.getElementById('numero_' + pregunta['pregunta_encuesta_id']).value;
+
+        var es_valida = (num_actual == "") ? esParcial : esNumeroValido(num_actual);
+
+        var div_error = document.getElementById('div_error_numero_' + pregunta['pregunta_encuesta_id'])
+        div_error.hidden = es_valida;
+
+        return es_valida;
+    }
+
+    function esNumeroValido(num_actual) {
+        var MAX_NUM = 7*24; //7 dias * 24 horas
+        num_actual = parseInt(num_actual);
+        return (0 <= num_actual) && (num_actual <= MAX_NUM);
+    }
+
+    function validarPreguntaHorario(pregunta, esParcial) {
+        var horarios = 0;
+        var tablaHorarios = document.getElementById('tabla_cursos_guardados-' + pregunta['pregunta_encuesta_id']);
+        for (var i=1; i<tablaHorarios.rows.length; i++) {
+            var datos_horario = tablaHorarios.rows[i].cells;
+            if (horarioEsValido(datos_horario))
+                horarios += 1;
+        }
+
+        // Si es guardado parcial puede no haber horarios cargados
+        if (esParcial && horarios == 0 && tablaHorarios.rows.length == 1)
+            return true;
+
+        var es_valido = (horarios > 0)
+        var div_error = document.getElementById('div_error_horario-id-' + pregunta['pregunta_encuesta_id']);
+        div_error.hidden = es_valido;
+        return es_valido
+    }
+
+    function horarioEsValido(datos_horario) {
+        var dia = datos_horario[0].innerText;
+        var hora_desde = datos_horario[1].innerText;
+        var hora_hasta = datos_horario[2].innerText;
+        return (diaEsValido(dia) && horaRelojEsValida(hora_desde) && horaRelojEsValida(hora_hasta));
+    }
+
+    function horaRelojEsValida(hora_reloj) {
+        var datos = hora_reloj.split(":");
+        if (! datos.length == 2)
+            return false;
+
+        var horas = parseInt(datos[0]);
+        MIN_HORAS = 7;
+        MAX_HORAS = 23;
+        if (horas < MIN_HORAS || horas > MAX_HORAS)
+            return false;
+
+        CERO_MINUTOS = 0;
+        MEDIA_HORA = 30;
+        var minutos = parseInt(datos[1]);
+        return (minutos == CERO_MINUTOS || minutos == MEDIA_HORA);
+    }
+
+    function diaEsValido(dia) {
+        var DIAS = ["LUNES", "MARTES", "MIERCOLES", "JUEVES", "VIERNES", "SABADO"];
+        dia = dia.toUpperCase();
+        return (DIAS.indexOf(dia) != -1);
+    }
+
+    function validarPreguntaPuntaje1a5(pregunta, esParcial) {
         var table = document.getElementById("puntaje1a5-id-" + pregunta['pregunta_encuesta_id']);
         var cantidad_seleccionadas = 0;
         for (var i=1; i<6; i++) {
-            if (table.rows[0].cells[i].children.votacion.checked)
+            if (table.rows[0].cells[i].children[0].checked)
                 cantidad_seleccionadas += 1;
         }
+
+        if (esParcial && cantidad_seleccionadas == 0)
+            return true;
 
         var es_valida = (cantidad_seleccionadas == 1);
         var div_error = document.getElementById("div_error_puntaje1a5-id-" + pregunta['pregunta_encuesta_id']);
@@ -93,12 +338,41 @@
         return es_valida;
     }
 
-    function validarPreguntaTexto(pregunta) {
+    function validarPreguntaTexto(pregunta, esParcial) {
         var input_texto = document.getElementById('textolibre-id-' + pregunta['pregunta_encuesta_id']).value;
-        var texto = getCleanedString(input_texto).replace(/\s/g, "");
+
+        if (esParcial && input_texto == "")
+            return true;
+
+        var es_valida = textoEsValido(input_texto);
 
         var div_error = document.getElementById('div_error_textolibre-id-' + pregunta['pregunta_encuesta_id']);
-        div_error.hidden = (texto != "");
+        div_error.hidden = es_valida;
+
+        return es_valida;
+    }
+
+    function textoEsValido(input_texto) {
+        var texto = getCleanedString(input_texto).replace(/\s/g, "");
+        return (texto != "");
+    }
+
+    function validarPreguntaDocentes(pregunta, esParcial) {
+        var docentes = 0;
+        var tablaDocentes = document.getElementById('tabla_docentes-' + pregunta['pregunta_encuesta_id']);
+        for (var i=1; i<tablaDocentes.rows.length; i++) {
+            var datos_docente = tablaDocentes.rows[i].cells;
+            var comentario = datos_docente[2].innerText;
+            if (textoEsValido(comentario))
+                docentes += 1;
+        }
+
+        //Si hay docentes cargados todos deben ser validos, siempre puede no haber ninguno
+        var es_valido = (tablaDocentes.rows.length == (docentes + 1));
+
+        var div_error = document.getElementById('div_error_docente-id-' + pregunta['pregunta_encuesta_id']);
+        div_error.hidden = es_valido;
+        return es_valido;
     }
 
     function setStarsValue(value, id) {
@@ -293,14 +567,19 @@
             numero_id = 0;
 
         row.id = "entradaTablaDocente_" + numero_id + "_" + idPregunta;
-        row.insertCell(0).innerHTML = docente.innerText;
-        row.insertCell(1).innerHTML = texto_comentario_element.value;
+
+        var celdaId = row.insertCell(0);
+        celdaId.innerHTML = docente.value;
+        celdaId.hidden = true;
+
+        row.insertCell(1).innerHTML = docente.innerText;
+        row.insertCell(2).innerHTML = texto_comentario_element.value;
 
         var docenteId = docente.id;
 
         var botones = '<button type="button" class="btn btn-default" onclick="editarDocente(' + numero_id + ',' + idPregunta + "," + docenteId + ')" style="margin-right: 5px;"><span class="glyphicon glyphicon-pencil"></span></button></td>';
         botones += '<button type="button" class="btn btn-default" onclick="eliminarDocente(' + numero_id + ',' + idPregunta + "," + docenteId + ')" style="margin-right: 5px;"><span class="glyphicon glyphicon-trash"></span></button></td>';
-        row.insertCell(2).innerHTML = botones;
+        row.insertCell(3).innerHTML = botones;
 
         var div_tabla_docentes = document.getElementById("div-tabla-docentes-" + idPregunta);
         div_tabla_docentes.hidden = false;
@@ -329,7 +608,7 @@
     function editarDocente(numeroId, idPregunta, docenteId) {
         var tabla = document.getElementById("tabla_docentes-" + idPregunta);
         var fila_actual = tabla.rows["entradaTablaDocente_" + numeroId + "_" + idPregunta];
-        var comentario = fila_actual.cells[1].innerText;
+        var comentario = fila_actual.cells[2].innerText;
 
         eliminarDocente(numeroId, idPregunta, docenteId);
 
@@ -493,7 +772,7 @@
                 <div class="liner"></div>
                 {% for i in range(titulos | length) %}
                     <li>
-                        <a href="{{ url_for(titulos[i]['url'], idEncuestaAlumno=idEncuestaAlumno) }}"
+                        <a onclick="validarRespuestasParcialesYGuardarRespuestas('{{ url_for(titulos[i]['url'], idEncuestaAlumno=idEncuestaAlumno) }}')"
                            title="{{titulos[i]['titulo']}}">
                             <span class="round-tabs">{{i+1}}<i class="icon icon-profile-male"></i></span>
                         </a>
@@ -504,14 +783,19 @@
     </div>
 </div>
 <!--- End Botonera -->
-
 <br>
-<div id="div_error_preguntas" hidden="true">
-    <br>
-    <div class="alert alert-danger">Una o más preguntas contienen errores o no han sido contestadas. Por favor, modifícalas antes de continuar con el siguiente paso.</div>
-</div>
 
 <div class="container">
+
+    <div id="div_error_preguntas" hidden="true">
+        <br>
+        <div class="alert alert-danger">Una o más preguntas contienen errores. Por favor, modifícalas antes de continuar con el siguiente paso.</div>
+    </div>
+
+    <div id="div_error_guardado" hidden="true">
+        <br>
+        <div class="alert alert-danger">Se produjo un error al guardar los datos de la página actual; es posible que una o más preguntas contengan errores. Por favor, modifícalas antes de continuar con el siguiente paso.</div>
+    </div>
 
     <div>
         <h2>{{encuesta["materia"]}} / Curso {{encuesta["curso"]}}</h2>
@@ -535,7 +819,7 @@
                     <tr>
                         <td>{{pregunta["texto_min"]}}</td>
                         {% for i in range(1,6) %}
-                            <td><input type="radio" name="votacion" value="{{i}}" style="margin:10px;"></td>
+                            <td><input type="radio" name="input_puntaje1a5-id-{{pregunta['pregunta_encuesta_id']}}" value="{{i}}" style="margin:10px;"></td>
                         {% endfor %}
                         <td>{{pregunta["texto_max"]}}</td>
                     </tr>
@@ -553,7 +837,7 @@
 
             <div id="div_error_textolibre-id-{{pregunta['pregunta_encuesta_id']}}" hidden="true">
                 <br>
-                <div class="alert alert-danger">El texto no puede estar vacío</div>
+                <div class="alert alert-danger">El texto no puede estar vacío, o lleno solo con espacios y/o símbolos.</div>
             </div>
 
         {% elif pregunta["tipo"] == "Si o No" %}
@@ -677,6 +961,11 @@
                 </div>
             </div>
 
+            <div id="div_error_horario-id-{{pregunta['pregunta_encuesta_id']}}" hidden="true">
+                <br>
+                <div class="alert alert-danger">Debes seleccionar al menos un horario de cursada.</div>
+            </div>
+
         {% elif pregunta["tipo"] == "Docente" %}
 
             <div id="div_agregar_docentes_{{pregunta['pregunta_encuesta_id']}}">
@@ -706,6 +995,7 @@
                 <div class='table-responsive'>
                     <table class='table table-hover' id="tabla_docentes-{{pregunta['pregunta_encuesta_id']}}">
                         <tr>
+                            <th hidden="true">Id Docente</th>
                             <th>Docente</th>
                             <th>Comentarios</th>
                             <th>Acciones</th>
@@ -716,6 +1006,12 @@
                     </table>
                 </div>
             </div>
+
+            <div id="div_error_docente-id-{{pregunta['pregunta_encuesta_id']}}" hidden="true">
+                <br>
+                <div class="alert alert-danger">El comentario de los docentes ingresados no puede ser vacío. Por favor edita o elimina los docentes con comentarios vacíos o compuestos solo por espacios y/o símbolos.</div>
+            </div>
+
 
         {% elif pregunta["tipo"] == "Correlativa" %}
 
@@ -773,6 +1069,11 @@
             </div>
 
             <br>
+
+            <div id="div_error_numero_{{pregunta['pregunta_encuesta_id']}}" hidden="true">
+                <br>
+                <div class="alert alert-danger">La cantidad de horas no puede superar las horas que tiene la semana.</div>
+            </div>
 
         {% elif pregunta["tipo"] == "Tags / Palabras Clave" %}
 
