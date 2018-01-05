@@ -16,7 +16,55 @@
         }
 
         agregarAccionesBotonesAnteriorYSiguiente();
+        cargarLasRespuestasGuardadas();
     });
+
+    function cargarLasRespuestasGuardadas() {
+        var respuestas = {{respuestas | safe}};
+        if ($.isEmptyObject(respuestas))
+            return;
+
+        var preguntas = {{preguntas | safe}};
+        for (var i=0; i<preguntas.length; i++) {
+            if ($.isEmptyObject(respuestas))
+                return;
+
+            var pregunta = preguntas[i];
+            var idPregunta = pregunta["pregunta_encuesta_id"];
+
+            if (idPregunta in respuestas) {
+                var respuesta = respuestas[idPregunta];
+                delete respuestas[idPregunta];
+                var tipo_pregunta = pregunta["tipo"];
+                cargarRespuestaGuardada(pregunta, tipo_pregunta, respuesta);
+                if (tipo_pregunta == "Si No") {
+                    debugger;
+                    agregarSubpreguntasSiNo(preguntas, pregunta);
+                }
+            }
+        }
+    }
+
+    function agregarSubpreguntasSiNo(preguntas, pregunta_si_no) {
+        debugger;
+    }
+
+    function cargarRespuestaGuardada(pregunta, tipo_pregunta, respuesta) {
+        switch(tipo_pregunta) {
+            case "Texto Libre":
+                return cargarRespuestaTextoLibre(pregunta, respuesta);
+            default:
+                debugger;
+                console.log(tipo_pregunta)
+                console.log(respuesta)
+                return;
+        }
+    }
+
+    function cargarRespuestaTextoLibre(pregunta, respuesta) {
+        var texto_div = document.getElementById('textolibre-id-' + pregunta['pregunta_encuesta_id']);
+        texto_div.value = respuesta["texto"];
+    }
 
     function agregarAccionesBotonesAnteriorYSiguiente() {
         var btn_anterior = document.getElementById('boton_anterior');

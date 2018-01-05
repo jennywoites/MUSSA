@@ -42,6 +42,8 @@ def completar_encuesta(idEncuestaAlumno, cookie, num_categoria):
     preguntas = invocar_servicio_obtener_preguntas_encuesta(cookie, [num_categoria])
     encuesta = invocar_obtener_encuesta_alumno(cookie, idEncuestaAlumno)
 
+    respuestas = invocar_obtener_respuestas_encuesta_alumno(cookie, idEncuestaAlumno, preguntas)
+
     posibles_correlativas = invocar_servicio_buscar_materias(cookie, encuesta["codigo_carrera"])
     for i in range(len(posibles_correlativas)):
         if posibles_correlativas[i]["id"] == encuesta["materia_id"]:
@@ -82,6 +84,7 @@ def completar_encuesta(idEncuestaAlumno, cookie, num_categoria):
                            encuesta=encuesta,
                            paso_activo=num_categoria,
                            preguntas=preguntas,
+                           respuestas=respuestas,
                            dias=DIAS,
                            hora_desde=horarios[:-1],
                            hora_hasta=horarios[1:],
