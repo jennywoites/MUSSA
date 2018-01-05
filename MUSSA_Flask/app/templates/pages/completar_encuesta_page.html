@@ -59,12 +59,34 @@
                 return cargarRespuestaNumero(pregunta, respuesta);
             case "Horario":
                 return cargarRespuestaHorario(pregunta, respuesta);
+            case "Docente":
+                return cargarRespuestaDocentes(pregunta, respuesta);
             default:
                 debugger;
                 console.log(tipo_pregunta)
                 console.log(respuesta)
                 return;
         }
+    }
+
+    function cargarRespuestaDocentes(pregunta, respuesta) {
+        var idPregunta = pregunta["pregunta_encuesta_id"];
+        for (var i=0; i<respuesta["comentarios_docentes"].length; i++) {
+            var datos_comentario_docente = respuesta["comentarios_docentes"][i];
+            var idDocente = datos_comentario_docente["id_docente"].toString();
+            var comentario = datos_comentario_docente["comentario"];
+            var docente = encontrarOpcionDocente(idPregunta, idDocente);
+            agregarComentarioDocenteALaTabla(idPregunta, docente, comentario);
+        }
+    }
+
+    function encontrarOpcionDocente(idPregunta, idDocente) {
+        var selector_docente = document.getElementById("selector_docentes_" + idPregunta);
+        for (var i=0; i<selector_docente.options.length; i++) {
+            if (selector_docente.options[i].value == idDocente)
+                return selector_docente.options[i];
+        }
+        return null;
     }
 
     function cargarRespuestaHorario(pregunta, respuesta) {
@@ -192,7 +214,6 @@
         var error_al_guardar = document.getElementById("div_error_guardado");
         error_al_guardar.hidden = true;
         do_request('POST', SERVICE_GUARDAR_RESPUESTAS_ENCUESTAS_ALUMNO, param, function(state, result) {
-            debugger;
             window.location.replace(nextUrl);
         }, function(state, result) {
             $('html, body').animate({scrollTop:0}, 'slow');
@@ -643,6 +664,12 @@
         var selector_docente = document.getElementById("selector_docentes_" + idPregunta);
         var docente = selector_docente[selector_docente.selectedIndex];
 
+        agregarComentarioDocenteALaTabla(idPregunta, docente, texto_comentario_element.value);
+
+        texto_comentario_element.value = "";
+    }
+
+    function agregarComentarioDocenteALaTabla(idPregunta, docente, comentario) {
         var tabla_docentes = document.getElementById("tabla_docentes-" + idPregunta);
 
         var filas = tabla_docentes.rows;
@@ -660,7 +687,7 @@
         celdaId.hidden = true;
 
         row.insertCell(1).innerHTML = docente.innerText;
-        row.insertCell(2).innerHTML = texto_comentario_element.value;
+        row.insertCell(2).innerHTML = comentario;
 
         var docenteId = docente.id;
 
@@ -673,8 +700,6 @@
 
         docente.hidden = true;
         mostrarOcultarSelectorDocentes(idPregunta);
-
-        texto_comentario_element.value = "";
     }
 
     function mostrarOcultarSelectorDocentes(idPregunta) {
