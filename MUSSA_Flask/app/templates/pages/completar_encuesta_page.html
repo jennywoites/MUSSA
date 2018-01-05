@@ -53,6 +53,10 @@
         switch(tipo_pregunta) {
             case "Texto Libre":
                 return cargarRespuestaTextoLibre(pregunta, respuesta);
+            case "Puntaje de 1 a 5":
+                return cargarRespuestaPuntaje1a5(pregunta, respuesta);
+            case "Numero":
+                return cargarRespuestaNumero(pregunta, respuesta);
             default:
                 debugger;
                 console.log(tipo_pregunta)
@@ -61,9 +65,20 @@
         }
     }
 
+    function cargarRespuestaPuntaje1a5(pregunta, respuesta) {
+        var table = document.getElementById("puntaje1a5-id-" + pregunta['pregunta_encuesta_id']);
+        var index = respuesta["puntaje"];
+        table.rows[0].cells[index].children[0].checked = true;
+    }
+
     function cargarRespuestaTextoLibre(pregunta, respuesta) {
         var texto_div = document.getElementById('textolibre-id-' + pregunta['pregunta_encuesta_id']);
         texto_div.value = respuesta["texto"];
+    }
+
+    function cargarRespuestaNumero(pregunta, respuesta) {
+        var div_numero = document.getElementById('numero_' + pregunta['pregunta_encuesta_id']);
+        div_numero.value = respuesta["numero"];
     }
 
     function agregarAccionesBotonesAnteriorYSiguiente() {
