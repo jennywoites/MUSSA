@@ -57,12 +57,32 @@
                 return cargarRespuestaPuntaje1a5(pregunta, respuesta);
             case "Numero":
                 return cargarRespuestaNumero(pregunta, respuesta);
+            case "Horario":
+                return cargarRespuestaHorario(pregunta, respuesta);
             default:
                 debugger;
                 console.log(tipo_pregunta)
                 console.log(respuesta)
                 return;
         }
+    }
+
+    function cargarRespuestaHorario(pregunta, respuesta) {
+        for (var i in respuesta["horarios"]) {
+            var horario = respuesta["horarios"][i];
+            var idPregunta = pregunta["pregunta_encuesta_id"];
+            var dia = horario["dia"];
+            var hora_desde = convertirAHoraReloj(horario["hora_desde"]);
+            var hora_hasta = convertirAHoraReloj(horario["hora_hasta"]);
+            agregarHorarioATabla(dia, hora_desde, hora_hasta, idPregunta);
+        }
+    }
+
+    function convertirAHoraReloj(horario) {
+        var minutos = (horario % 1 == 0) ? "00" : "30";
+        var horas = Math.floor(horario).toString();
+        horas = (horas.length == 1) ? ("0" + horas) : horas;
+        return horas + ":" + minutos;
     }
 
     function cargarRespuestaPuntaje1a5(pregunta, respuesta) {
@@ -490,6 +510,10 @@
         if (!horarioParaAgregarEsValido(dia, hora_desde, hora_hasta, idPregunta))
             return false;
 
+        agregarHorarioATabla(dia, hora_desde, hora_hasta, idPregunta);
+    }
+
+    function agregarHorarioATabla(dia, hora_desde, hora_hasta, idPregunta) {
         var horarios_table = document.getElementById("tabla_cursos_guardados-" + idPregunta);
         var horarios = horarios_table.rows;
 
