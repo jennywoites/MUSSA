@@ -9,7 +9,8 @@ from app.models.alumno_models import Alumno, MateriasAlumno
 from app.models.carreras_models import Carrera, Materia
 from app.models.horarios_models import Curso
 from app.models.docentes_models import CursosDocente, Docente
-from app.models.respuestas_encuesta_models import EncuestaAlumno
+from app.models.respuestas_encuesta_models import EncuestaAlumno, EstadoPasosEncuestaAlumno
+from app.DAO.EncuestasDAO import *
 
 from app.DAO.MateriasDAO import *
 from datetime import date
@@ -219,6 +220,11 @@ class AgregarMateriaAlumno(Resource):
             finalizada = False
         )
         db.session.add(encuesta)
+        db.session.commit()
+
+        estado_pasos = EstadoPasosEncuestaAlumno(encuesta_alumno_id=encuesta.id)
+        estado_pasos.inicializar_pasos()
+        db.session.add(estado_pasos)
         db.session.commit()
 
         return encuesta

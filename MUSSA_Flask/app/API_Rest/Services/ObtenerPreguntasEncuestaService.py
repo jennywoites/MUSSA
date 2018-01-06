@@ -83,6 +83,7 @@ class ObtenerPreguntasEncuesta(Resource):
     def generar_datos_pregunta(self, pregunta, datos):
         tipo_encuesta = TipoEncuesta.query.filter_by(id=pregunta.tipo_id).first()
 
+        datos["pregunta_id"] = pregunta.id
         datos["pregunta"] = pregunta.pregunta
         datos["tipo_num"] = tipo_encuesta.tipo
         datos["tipo"] = tipo_encuesta.descripcion
@@ -117,5 +118,6 @@ class ObtenerPreguntasEncuesta(Resource):
 
         datos = {}
         pregunta = PreguntaEncuesta.query.filter_by(id=id_encuesta).first()
+        self.generar_datos_pregunta(pregunta, datos)
         self.generar_datos_de_encuesta_completa(pregunta, datos)
         lista_preguntas.append(datos)

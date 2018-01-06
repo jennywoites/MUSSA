@@ -28,6 +28,9 @@ OBTENER_MATERIAS_ALUMNO_SERVICE = BASE_URL + "ObtenerMateriasAlumno"
 AGREGAR_MATERIA_ALUMNO_SERVICE = BASE_URL + "AgregarMateriaAlumno"
 ELIMINAR_MATERIA_ALUMNO_SERVICE = BASE_URL + "EliminarMateriaAlumno"
 OBTENER_ENCUESTAS_ALUMNO_SERVICE = BASE_URL + "ObtenerEncuestasAlumno"
+GUARDAR_RESPUESTAS_ENCUESTA_ALUMNO_SERVICE = BASE_URL + "GuardarRespuestasEncuestaAlumno"
+OBTENER_RESPUESTAS_ALUMNO_PARA_PREGUNTAS_ESPECIFICAS_SERVICE = (BASE_URL +
+                                                        "ObtenerRespuestasEncuestaAlumnoParaPreguntasEspecificas")
 
 # Requiere ser administrador
 GUARDAR_HORARIOS_DESDE_ARCHIVO_PDF_SERVICE = BASE_URL + ADMIN + "GuardarHorariosDesdeArchivoPDF"
