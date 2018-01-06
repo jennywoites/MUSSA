@@ -61,12 +61,34 @@
                 return cargarRespuestaHorario(pregunta, respuesta);
             case "Docente":
                 return cargarRespuestaDocentes(pregunta, respuesta);
+            case "Correlativa":
+                return cargarRespuestaCorrelativas(pregunta, respuesta);
             default:
                 debugger;
                 console.log(tipo_pregunta)
                 console.log(respuesta)
                 return;
         }
+    }
+
+    function cargarRespuestaCorrelativas(pregunta, respuesta) {
+        var idPregunta = pregunta["pregunta_encuesta_id"];
+
+        for (var i=0; i<respuesta["materias_correlativas"].length; i++) {
+            var idMateria = respuesta["materias_correlativas"][i]["id_materia"];
+            var materia = encontrarMateriaSelector(idPregunta, idMateria);
+            agregarMateriaCorrelativaALaTabla(materia, idPregunta);
+        }
+    }
+
+    function encontrarMateriaSelector(idPregunta, idMateria) {
+        var selector = document.getElementById("selector_posibles_correlativas_" + idPregunta);
+        for(var i=0; i<selector.options.length; i++) {
+            var opcionMateria = selector.options[i];
+            if (opcionMateria.value == idMateria)
+                return opcionMateria;
+        }
+        return null;
     }
 
     function cargarRespuestaDocentes(pregunta, respuesta) {
@@ -249,6 +271,8 @@
                 return generarRespuestaHorario(pregunta);
             case "Docente":
                 return generarRespuestaDocentes(pregunta);
+            case "Correlativa":
+                return generarRespuestaCorrelativas(pregunta);
             default:
                 return {};
         }
@@ -339,6 +363,22 @@
         return datos;
     }
 
+    function generarRespuestaCorrelativas(pregunta) {
+        var correlativas = [];
+
+        var idEncuesta = pregunta['pregunta_encuesta_id'];
+        var correlativas_table = document.getElementById("tabla_correlativas_" + idEncuesta);
+        for (var i=1; i<correlativas_table.rows.length; i++) {
+            var correlativa = correlativas_table.rows[i];
+            var idMateria = correlativa.cells[2].innerText;
+            correlativas.push(idMateria);
+        }
+
+        var datos = generarEstructuraRespuestaBase(pregunta)
+        datos["correlativas"] = correlativas;
+        return datos;
+    }
+
     function preguntaEsValida(pregunta, esGuardadoParcial) {
         switch(pregunta["tipo"]) {
             case "Puntaje de 1 a 5":
@@ -351,11 +391,18 @@
                 return validarPreguntaHorario(pregunta, esGuardadoParcial);
             case "Docente":
                 return validarPreguntaDocentes(pregunta, esGuardadoParcial);
+            case "Correlativa":
+                return validarPreguntaCorrelativas(pregunta, esGuardadoParcial);
             default:
                 console.log(pregunta);
                 debugger;
                 return true;
         }
+    }
+
+    function validarPreguntaCorrelativas(pregunta, esGuardadoParcial) {
+        //Tanto en el parcial como en el final, puede no tener ninguna correlativa
+        return true;
     }
 
     function validarPreguntaNumero(pregunta, esParcial) {
@@ -615,6 +662,10 @@
         if (materia.hidden)
             return;
 
+        agregarMateriaCorrelativaALaTabla(materia, idEncuesta);
+    }
+
+    function agregarMateriaCorrelativaALaTabla(materia, idEncuesta) {
         var correlativas_table = document.getElementById("tabla_correlativas_" + idEncuesta);
         var correlativas = correlativas_table.rows;
 
@@ -630,10 +681,27 @@
         var materiaId = materia.id;
         row.insertCell(1).innerHTML = '<button type="button" class="btn btn-default" onclick="eliminar_correlativa(' + numero_id + ',' + idEncuesta + "," + materiaId + ')"><span class="glyphicon glyphicon-trash"></span></button></td>'
 
+        var celdaId = row.insertCell(2);
+        celdaId.innerHTML = materia.value;
+        celdaId.hidden = true;
+
         var div_tabla_correlativas = document.getElementById("div_tabla_correlativas_" + idEncuesta);
         div_tabla_correlativas.hidden = false;
 
         materia.hidden = true;
+        showFirstNotHidden(document.getElementById("selector_posibles_correlativas_" + idEncuesta));
+    }
+
+    function showFirstNotHidden(selector) {
+        var indexSelected = -1;
+        for (var i=0; i<selector.options.length; i++) {
+            var opcionMateria = selector.options[i];
+            if (!opcionMateria.hidden) {
+                indexSelected = i;
+                break;
+            }
+        }
+        selector.selectedIndex = indexSelected;
     }
 
     function eliminar_correlativa(idOpcion, idEncuesta, materia) {
@@ -1152,6 +1220,7 @@
                         <tr>
                             <th>Materia</th>
                             <th>Eliminar</th>
+                            <th hidden="true">Id Materia</th>
                         </tr>
                         </thead>
                         <tbody>
