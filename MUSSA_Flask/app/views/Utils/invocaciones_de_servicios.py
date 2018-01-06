@@ -2,7 +2,7 @@ import logging
 import requests
 from app.API_Rest.services import *
 import json
-
+from app.DAO.EncuestasDAO import *
 
 def escribir_resultado_servicio(nombre_servicio, response):
     logging.info('Servicio {} result: {} - {}'.format(nombre_servicio, response, response.text))
@@ -163,10 +163,10 @@ def invocar_servicio_obtener_preguntas_encuesta(cookie, categorias):
         l_categorias += str(categoria) + ";"
     parametros["categorias"] = l_categorias[:-1]
 
-    carreras_response = requests.get(OBTENER_PREGUNTAS_ENCUESTA_SERVICE, params=parametros, cookies=cookie)
-    escribir_resultado_servicio('Obtener preguntas encuesta', carreras_response)
+    preguntas_response = requests.get(OBTENER_PREGUNTAS_ENCUESTA_SERVICE, params=parametros, cookies=cookie)
+    escribir_resultado_servicio('Obtener preguntas encuesta', preguntas_response)
 
-    return json.loads(carreras_response.text)["preguntas"]
+    return json.loads(preguntas_response.text)["preguntas"]
 
 
 def invocar_obtener_docentes_del_curso(cookie, id_curso):
@@ -215,3 +215,20 @@ def invocar_obtener_tematicas_materias(cookie):
     tematicas_response = requests.get(OBTENER_TEMATICAS_MATERIAS, cookies=cookie)
     escribir_resultado_servicio('Obtener Temáticas Materias', tematicas_response)
     return json.loads(tematicas_response.text)["tematicas"]
+
+def invocar_obtener_respuestas_encuesta_alumno(cookie, id_encuesta, preguntas):
+    parametros = {}
+    parametros["id_encuesta"] = id_encuesta
+
+    ids_preguntas = ""
+    for pregunta in preguntas:
+        ids_preguntas += str(pregunta["pregunta_id"]) + ";"
+        if pregunta["tipo_num"] == SI_NO:
+            for subpregunta in (pregunta["rta_si"] + pregunta["rta_no"]):
+                ids_preguntas += str(subpregunta["pregunta_id"]) + ";"
+    parametros["ids_preguntas"] = ids_preguntas[:-1]
+
+    respuestas_response = requests.get(OBTENER_RESPUESTAS_ALUMNO_PARA_PREGUNTAS_ESPECIFICAS_SERVICE,
+                                      params=parametros, cookies=cookie)
+    escribir_resultado_servicio('Obtener Respuestas Alumno para preguntas específicas', respuestas_response)
+    return json.loads(respuestas_response.text)["respuestas_encuestas"]
