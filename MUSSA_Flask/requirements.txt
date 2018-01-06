@@ -32,5 +32,8 @@ requests
 #Para parsear el PDF
 PyPDF2
 
+#Boostrap
+flask_bootstrap
+
 
 
