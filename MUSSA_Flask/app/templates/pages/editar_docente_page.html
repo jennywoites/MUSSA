@@ -1,0 +1,218 @@
+{% extends "common/page_base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+{% block content %}
+
+<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.11.1/bootstrap-table.min.css">
+<script type='text/javascript' src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.11.1/bootstrap-table.min.js"></script>
+<script type='text/javascript' src="/js/services.js"></script>
+
+<!- Bootrstrap table ->
+
+<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.11.1/bootstrap-table.min.css">
+<script type='text/javascript' src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.11.1/bootstrap-table.min.js"></script>
+<script type='text/javascript' src="/js/bootstrap-table-es-AR.js"></script>
+<!-- <script type='text/javascript' src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-validator/0.5.3/js/bootstrapValidator.js"></script>
+-->
+<style type='text/css'>
+    .row-index {
+      width: 50px;
+      display: inline-block;
+    }
+  </style>
+<!- fin Bootrstrap table ->
+
+<script>
+
+    $(document).ready(function() {
+                                   $("#enviar").click(function(e) {
+                                                        e.preventDefault();
+                                                        console.log("click");
+                                                        submit_docente();
+                                                        })
+                                  }
+                      )
+    function submit_docente(){
+        form = $("#docente_form");
+
+        var data = form.data();
+        // var isValid = data.bootstrapValidator.isValid();
+        // if(!isValid) return false
+        var docente = {"id_docente": {{ id_docente }} }
+        debugger;
+
+        docente["nombre"] = $("#nombre").val()
+        docente["apellido"] = $("#apellido").val()
+        docente["materias"] = $("#tabla_materias").bootstrapTable('getData');
+        var xhr = new XMLHttpRequest();
+        xhr.open("POST", SERVICE_MODIFICAR_DOCENTE, true);
+        xhr.setRequestHeader('Content-Type', 'application/json; charset=UTF-8');
+        xhr.setRequestHeader("X-CSRFToken", "{{ csrf_token() }}");
+        xhr.send(JSON.stringify(docente));
+        xhr.onloadend = function () {
+        // done
+        };
+        return false;
+    }
+
+    function get_id_carrera_seleccionada(){
+            return $("#carreras_disponibles")[0][$("#carreras_disponibles")[0].selectedIndex].value
+    }
+
+    function id_carrera_to_codigo_carrera(id_carrera){
+        var opciones = document.getElementById("carreras_disponibles").children;
+        for(var i=0; i<opciones.length; i++) {
+            var opcion = opciones[i];
+            if (opcion.id == id_carrera)
+                return opcion.value, opcion.text
+        }
+    }
+
+    function delete_row(row){
+        var row_number = row.parentElement.parentElement.rowIndex;
+        var table = $('#' + row.parentElement.parentElement.parentElement.parentElement.id);
+        table_data = table.bootstrapTable('getData');
+        table_data.pop(row_number);
+        table.bootstrapTable('load', table_data);
+    }
+
+    table_materia_actions = [
+            '<a class="remove ml10" href="javascript:void(0)" onclick="delete_row(this)"  title="Remove">',
+            '<i class="glyphicon glyphicon-trash"></i>',
+            '</a>'
+                ].join('');
+
+    $(window).on('load',(function(){
+      $(function() {
+        $('#tabla_materias').bootstrapTable({
+          data: [],
+          columns: {{ tabla_materias_columnas|safe }},
+        });
+
+       // $("#docente_form").bootstrapValidator();
+      });
+
+      do_request(SERVICE_OBTENER_DOCENTES + "?idDocente={{ id_docente }}", populate_data_docente, console.log);
+
+    }));
+
+    function populate_data_docente(service_data){
+        console.log(service_data);
+
+        var docente = service_data.docentes[0];
+        $('#nombre').val(docente.nombre);
+        $('#apellido').val(docente.apellido);
+
+        var materias = []
+        for (var materia in docente.materias_que_dicta){
+            materias.push({"codigo": materia ,
+                            "materia": docente.materias_que_dicta[materia]["nombre"],
+                            "id_carrera": docente.materias_que_dicta[materia]["id_carrera"],
+                            "carrera": docente.materias_que_dicta[materia]["carrera"],
+                            "actions": table_materia_actions});
+        }
+         $('#tabla_materias').bootstrapTable('load',materias);
+    }
+
+    function process_response_carreras(response){
+        var result = [{"id":-1, "text":"Seleccione una carrera", "value":-1}];
+        var carreras = response['carreras'];
+        carreras.sort();
+        for(var i=0; i< carreras.length; i++){
+            var carrera = carreras[i];
+            result.push({"id": carrera["codigo"],
+                         "text": carrera["codigo"] + " - " + carrera["nombre"] + " (Plan " + carrera["plan"] + ")",
+                         "value": carrera["id"]});
+        }
+        return result;
+    }
+
+    $(function(){
+        fill_dropdown('carreras_disponibles', SERVICE_BUSCAR_CARRERAS, process_response_carreras);
+    });
+
+    function populate_materias(id_carrera){
+        if(id_carrera>0){
+            fill_dropdown('materias_disponibles', SERVICE_BUSCAR_MATERIAS + "?carreras=" + id_carrera, format_materias_dropdown);
+            $("#materias_disponibles").prop('disabled', false);
+        }else{
+            $("#materias_disponibles").prop('disabled', true);
+        }
+    }
+
+    function format_materias_dropdown(response){
+        var result = [];
+        var materias = response['materias'];
+        materias.sort();
+        var filter_list = [];
+        table_data = $("#tabla_materias").bootstrapTable('getData');
+
+
+        for(var i=0; i< materias.length; i++){
+            var materia = materias[i];
+            var id_carrera = $("#carreras_disponibles")[0][$("#carreras_disponibles")[0].selectedIndex].value
+            var materia_presente=false;
+            for (var j=0;j<table_data.length;j++){
+                row=table_data[j];
+
+                if ( row.codigo == materia.codigo && row.id_carrera == id_carrera){
+                     materia_presente = true;
+                    break;
+                }
+            }
+            if(!materia_presente){
+                result.push({"id": materia["codigo"],
+                             "text":  materia["codigo"] + " - " + materia["nombre"],
+                             "id_carrera": materia["id_carrera"],
+                             "carrera": materia["carrera"]
+                             });
+            }
+        }
+        return result;
+    }
+
+    function add_materia(tabla, materia){
+
+            var materia_selected =  $("#" + materia)[0][$("#" + materia)[0].selectedIndex]
+            var carrera_selected = $("#carreras_disponibles")[0][$("#carreras_disponibles")[0].selectedIndex];
+            var nueva_materia = {"codigo": materia_selected.id,
+                                 "materia": materia_selected.text.split(' - ')[1],
+                                 "id_carrera":  $("#carreras_disponibles")[0][$("#carreras_disponibles")[0].selectedIndex].value,
+                                 "carrera": carrera_selected.text,
+                                 "actions": table_materia_actions}
+
+            $('#' + tabla).bootstrapTable('append',nueva_materia);
+            materia_selected.remove();
+    }
+
+
+</script>
+
+<div class="container">
+        <form method="POST" action="#" id="docente_form" data-toggle="validator">
+            {{ wtf.form_field(form.nombre) }}
+            {{ wtf.form_field(form.apellido) }}
+            <div class="row">
+
+                <div class="col-md-4"> {{ wtf.form_field(form.carreras_disponibles) }} </div>
+                <div class="col-md-4"> {{ wtf.form_field(form.materias_disponibles) }} </div>
+            </div>
+
+            <button class="btn btn-mussa-default"
+                        type="button" onclick="add_materia('tabla_materias','materias_disponibles')">
+                        Agregar materia
+                </button>
+            <table
+                    id="tabla_materias"
+                    data-toggle="true"
+                    data-toolbar="#toolbar"
+                    data-pagination="true"
+                    data-locale="es-AR"
+                    >
+            </table>
+            <br>
+            {{ form.enviar }}
+
+        </form>
+    </div>
+
+{% endblock %}

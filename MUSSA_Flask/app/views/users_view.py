@@ -1,5 +1,5 @@
 from flask import redirect, render_template
-from flask import request, url_for
+from flask import request, url_for, send_from_directory
 from flask_user import current_user, login_required, roles_accepted
 from app.models.user_models import UserProfileForm
 from app.views.base_view import main_blueprint
@@ -9,6 +9,10 @@ from app.views.PaginasAlumnosViews.agregar_materia_page_view import agregar_mate
 from app.views.PaginasAlumnosViews.editar_materia_page_view import editar_materia_page
 from app.views.PaginasAlumnosViews.completar_encuestas_view import *
 from app.views.PaginasAlumnosViews.historial_encuestas_page_view import historial_encuestas_page
+
+@main_blueprint.route('/js/<path:path>')
+def send_js(path):
+    return send_from_directory('templates/scripts', path)
 
 
 @main_blueprint.route('/member')

@@ -1,0 +1,152 @@
+{% extends "common/page_base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+{% block content %}
+
+<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.11.1/bootstrap-table.min.css">
+<script type='text/javascript' src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.11.1/bootstrap-table.min.js"></script>
+<script type='text/javascript' src="/js/services.js"></script>
+<!- Bootrstrap table ->
+<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.11.1/bootstrap-table.min.css">
+<script type='text/javascript' src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.11.1/bootstrap-table.min.js"></script>
+<script type='text/javascript' src="/js/bootstrap-table-es-AR.js"></script>
+<!-- <script type='text/javascript' src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-validator/0.5.3/js/bootstrapValidator.js"></script>
+-->
+<style type='text/css'>
+    .row-index {
+      width: 50px;
+      display: inline-block;
+    }
+
+    .lista-materias {
+        background-color: transparent;
+        border-color: transparent;
+    }
+
+  </style>
+<!- fin Bootrstrap table ->
+
+<script>
+    $(window).on('load',(function(){
+      $(function() {
+        $('#tabla_docentes').bootstrapTable({
+          data: [],
+          columns: {{ tabla_docentes_columnas|tojson|safe }},
+        });
+      });
+       do_request(SERVICE_OBTENER_DOCENTES, populate_data_docentes, console.log);
+
+    }));
+
+    function format_lista_materias(materias){
+        res = '<ul class="list-group">'
+        for(var materia in materias){
+            res += '<li class="list-group-item lista-materias">';
+            res +=  materia + " - " + materias[materia]['nombre'];
+            res +=  " - " + materias[materia]['carrera'];
+            res += '</li>';
+        }
+        res += "</ul>"
+        return res;
+    }
+
+    function get_acciones_tabla(id_docente){
+      return [
+                '<a class="remove" href="javascript:void(0)" onclick="confirm_delete(' + id_docente + ')"  title="Eliminar" style="padding: 10px" >',
+                '<i class="glyphicon glyphicon-trash"></i>',
+                '</a>',
+                '<a href="/admin/editar_docente/'+  id_docente  +'" onclick="delete_row(this)"  title="Editar" style="padding: 10px" >',
+                '<i class="glyphicon glyphicon-pencil"></i>',
+                '</a>'
+                    ].join('');
+    }
+
+    function populate_data_docentes(service_data){
+        console.log(service_data);
+
+
+
+        var docentes = []
+        var docente;
+       for(var i=0;i<service_data['docentes'].length; i++){
+            docente = service_data['docentes'][i];
+            docentes.push({"nombre": docente["nombre"],
+                           "apellido": docente["apellido"],
+                           "materias": format_lista_materias(docente["materias_que_dicta"]),
+                           "acciones": get_acciones_tabla(docente["id_docente"]),
+                           "id_docente": docente["id_docente"]
+                          });
+        }
+
+        $('#tabla_docentes').bootstrapTable('load', docentes);
+    }
+
+    function confirm_delete(id_docente){
+        var modal = $("#deleteModal");
+        var docente = $("#tabla_docentes").bootstrapTable('getRowByUniqueId', id_docente);
+        var nombre_docente = docente.nombre + ' ' + docente.apellido
+        modal.find('.modal-title').text('Se va a eliminar el docente ' + nombre_docente);
+        $('#confirm-delete-button').click(function() {
+                delete_docente(id_docente, modal);
+                });
+        modal.modal('show')
+    }
+
+    function delete_docente(id_docente, modal){
+        console.log("Delete " + id_docente);
+        $("#tabla_docentes").bootstrapTable('removeByUniqueId', id_docente);
+        modal.modal('hide')
+
+    }
+
+</script>
+
+<div class="container">
+<h1>Administrar docentes</h1>
+    <div id="alert_ok" hidden="true" class="alert alert-success"></div>
+    <div id="alert_error" hidden="true" class="alert alert-danger"></div>
+    <button class="btn btn-mussa-default"
+            type="button" onclick="javascript:void(0)">
+            Agrupar seleccionados
+    </button>
+    <table
+          id="tabla_docentes"
+          data-toggle="true"
+          data-toolbar="#toolbar"
+          data-pagination="true"
+          data-striped="true"
+          data-click-to-select="true"
+          data-select-item-name="state"
+          data-unique-id="id_docente"
+          data-locale="es-AR"
+          data-checkbox-header="false"
+  >
+  </table>
+
+    <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 class="modal-title" id="modalTitle">Eliminar docente</h3>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <h4>¿Esta seguro que desea eliminar?</h4>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                    <button type="button" id="confirm-delete-button" class="btn btn-danger">Eliminar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+</div>
+
+
+
+
+
+{% endblock %}

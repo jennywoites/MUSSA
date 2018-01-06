@@ -18,6 +18,11 @@ class Carrera(db.Model):
     def __str__(self):
         return "{} - {}".format(self.codigo, self.nombre)
 
+    def get_descripcion_carrera(self):
+        if not self.plan:
+            return "{} - {}".format(self.codigo, self.nombre)
+
+        return "{} - {} (Plan {})".format(self.codigo, self.nombre, self.plan)
 
 class Creditos(db.Model):
     __tablename__ = 'creditos'

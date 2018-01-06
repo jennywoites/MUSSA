@@ -32,3 +32,5 @@ OBTENER_ENCUESTAS_ALUMNO_SERVICE = BASE_URL + "ObtenerEncuestasAlumno"
 # Requiere ser administrador
 GUARDAR_HORARIOS_DESDE_ARCHIVO_PDF_SERVICE = BASE_URL + ADMIN + "GuardarHorariosDesdeArchivoPDF"
 MODIFICAR_CURSO_SERVICE = BASE_URL + ADMIN + "ModificarCurso"
+MODIFICAR_DOCENTE_SEVICE = BASE_URL + ADMIN + "ModificarDocente"
+ELIMINAR_DOCENTE =  BASE_URL + ADMIN + "EliminarDocente"
