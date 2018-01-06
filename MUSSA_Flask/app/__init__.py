@@ -16,7 +16,7 @@ from flask_wtf.csrf import CSRFProtect
 from flask_babel import Babel
 
 from flask_restful import Resource, Api
-
+from flask_bootstrap import Bootstrap
 # Instantiate Flask extensions
 db = SQLAlchemy()
 csrf_protect = CSRFProtect()
@@ -68,6 +68,7 @@ def create_app(extra_config_settings={}):
 
     # Define bootstrap_is_hidden_field for flask-bootstrap's bootstrap_wtf.html
     from wtforms.fields import HiddenField
+    Bootstrap(app)
 
     def is_hidden_field_filter(field):
         return isinstance(field, HiddenField)
@@ -169,3 +170,5 @@ def add_resources_usuarios(api):
 def add_resources_administrador(api):
     api.add_resource(GuardarHorariosDesdeArchivoPDF, '/api/admin/GuardarHorariosDesdeArchivoPDF')
     api.add_resource(ModificarCurso, '/api/admin/ModificarCurso')
+    api.add_resource(ModificarDocente, '/api/admin/ModificarDocente')
+    api.add_resource(EliminarDocente, '/api/admin/EliminarDocente')

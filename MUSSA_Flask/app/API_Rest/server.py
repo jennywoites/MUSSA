@@ -21,3 +21,5 @@ from app.API_Rest.Services.ObtenerEncuestasAlumnoService import *
 from app.API_Rest.Services.ObtenerTematicasMateriasService import *
 from app.API_Rest.Services.ObtenerRespuestasEncuestaAlumnoParaPreguntasEspecificasService import *
 from app.API_Rest.Services.GuardarRespuestasEncuestaAlumnoService import *
+from app.API_Rest.Services.ModificarDocenteService import *
+from app.API_Rest.Services.EliminarDocente import *

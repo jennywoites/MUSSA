@@ -2,5 +2,7 @@ from flask import render_template
 from flask_user import roles_accepted
 from app.views.base_view import main_blueprint
 
-from app.views.PaginasAdministradorViews.administrar_horario_page_view import administrar_horarios_page, administrar_horarios_upload_file
+from app.views.PaginasAdministradorViews.administrar_horario_page_view import administrar_horarios_page, \
+    administrar_horarios_upload_file
 from app.views.PaginasAdministradorViews.modificar_curso_page_view import modificar_curso_page
+from  app.views.PaginasAdministradorViews.administrar_docente_page_view import editar_docente_page
