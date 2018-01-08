@@ -1,28 +1,77 @@
 
-SERVICE_BUSCAR_CARRERAS = '/api/BuscarCarreras'
-SERVICE_BUSCAR_MATERIAS = '/api/BuscarMaterias'
-SERVICE_OBTENER_DOCENTES = '/api/ObtenerDocentes'
-SERVICE_MODIFICAR_DOCENTE = '/api/admin/ModificarDocente'
-
-
 SUCCESS = 200
+SUCCESS_NO_DATA = 204
 
-function do_request(url, on_success, on_error){
-    var xhttp = new XMLHttpRequest();
-    xhttp.onreadystatechange = function() {
-        if (this.readyState == 4 && this.status == 200) {
-           on_success(JSON.parse(xhttp.responseText));
-        } else {
-            //console.log(xhttp.responseText);
+function do_request(method, page, parametros, onSucces, onError) {
+    var method = method || "GET";
+
+    xmlhttp = new XMLHttpRequest();
+
+    xmlhttp.onreadystatechange = function() {
+        if (this.status == 0 || this.readyState != 4)
+            return;
+
+        if ( this.status != SUCCESS && this.status != SUCCESS_NO_DATA) {
+            onError(this.status, this.responseText);
         }
-    };
-    xhttp.open("GET", url, true);
-    xhttp.send();
+        else {
+            var json_result = {};
 
+            if (this.status == SUCCESS)
+                json_result = (this.responseText == "") ? {} : JSON.parse(this.responseText)
+
+            onSucces(this.status, json_result);
+        }
+    }
+
+    var encoded_params = jQuery.param(parametros)
+    var url = (method == 'GET') ? (page + '?' + encoded_params) : page;
+
+    var async = true;
+    xmlhttp.open(method, url, async);
+
+    xmlhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+    xmlhttp.withCredentials = true;
+
+    if (method == 'GET') {
+        xmlhttp.send();
+    } else {
+        xmlhttp.setRequestHeader("X-CSRFToken", "{{ csrf_token() }}");
+        xmlhttp.send(encoded_params);
+    }
 }
 
+//////////////////////////////////////////////////////////////////////
 
+SERVICE_BUSCAR_CARRERAS = '/api/BuscarCarreras'
+SERVICE_BUSCAR_MATERIAS = '/api/BuscarMaterias'
+SERVICE_MODIFICAR_DOCENTE = '/api/admin/ModificarDocente'
 
+HTTP = "http://"
+IP = "localhost:"
+PUERTO = "5000"
+BASE_API = "/api"
+BASE_URL = HTTP + IP + PUERTO + BASE_API
+
+function get_docente_service(idDocente, onSucces, onError) {
+    var url_servicio = BASE_URL + '/docente/' + idDocente;
+    do_request('GET', url_servicio, {}, onSucces, onError);
+}
+
+function eliminar_docente_service(idDocente, onSucces, onError) {
+    debugger;
+    var url_servicio = BASE_URL + '/docente/' + idDocente;
+    do_request('DELETE', url_servicio, {}, onSucces, onError);
+}
+
+function obtener_todos_los_docentes_service(onSucces, onError) {
+    var url_servicio = BASE_URL + '/docente/all';
+    do_request('GET', url_servicio, {}, function(status, response) {
+        onSucces(status, response["docentes"]);
+    }, onError);
+}
+
+//////////////////////////////////////////////////////////////////////
 
 function fill_dropdown(dropdown_id, service_url, process_response){
     do_request(service_url, function(responseText){
@@ -44,4 +93,3 @@ function fill_dropdown(dropdown_id, service_url, process_response){
 
     });
 }
-

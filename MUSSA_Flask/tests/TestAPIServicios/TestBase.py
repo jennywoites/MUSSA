@@ -1,8 +1,9 @@
 import app
-
+import os
 from flask_testing import TestCase
 from flask import url_for
 from app import db
+from app.ClienteAPI.ClienteAPI import ClienteAPI
 
 from app.DAO.UsersDAO import create_users
 from app.DAO.MateriasDAO import create_estados_materia, create_forma_aprobacion_materias
@@ -30,7 +31,9 @@ class TestBase(TestCase):
         settings['WTF_CSRF_ENABLED'] = False
         settings['DEBUG'] = True
 
+        os.chdir(os.path.join('..', '..'))
         self.app = app.create_app(extra_config_settings=settings)
+        os.chdir(os.path.join('.', 'tests', 'TestAPIServicios'))
         return self.app
 
     def do_login(self, data):
@@ -66,3 +69,9 @@ class TestBase(TestCase):
     def tearDown(self):
         db.session.remove()
         db.drop_all()
+
+    def get_url_get_docente(self, idDocente):
+        return ClienteAPI().get_url_get_docente(idDocente)
+
+    def get_url_obtener_todos_los_docentes(self):
+        return ClienteAPI().get_url_obtener_todos_los_docentes()

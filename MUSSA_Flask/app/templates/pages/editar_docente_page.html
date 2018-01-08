@@ -91,14 +91,13 @@
        // $("#docente_form").bootstrapValidator();
       });
 
-      do_request(SERVICE_OBTENER_DOCENTES + "?idDocente={{ id_docente }}", populate_data_docente, console.log);
-
+       get_docente_service({{ id_docente }}, populate_data_docente, console.log);
     }));
 
-    function populate_data_docente(service_data){
+    function populate_data_docente(service_status, service_data){
         console.log(service_data);
 
-        var docente = service_data.docentes[0];
+        var docente = service_data;
         $('#nombre').val(docente.nombre);
         $('#apellido').val(docente.apellido);
 

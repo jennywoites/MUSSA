@@ -178,12 +178,6 @@ def invocar_obtener_docentes_del_curso(cookie, id_curso):
     return json.loads(docentes_response.text)["docentes"]
 
 
-def invocar_obtener_todos_los_docentes(cookie):
-    docentes_response = requests.get(OBTENER_DOCENTES_SERVICE, cookies=cookie)
-    escribir_resultado_servicio('Obtener Docentes', docentes_response)
-    return json.loads(docentes_response.text)["docentes"]
-
-
 def invocar_obtener_encuestas_alumno(cookie, finalizadas):
     parametros = {}
     parametros["finalizadas"] = finalizadas
