@@ -213,16 +213,9 @@ class TestObtenerDocentes(TestBase):
     ##                      Tests                           ##
     ##########################################################
 
-    def test_obtener_los_docentes_con_parametros_da_error(self):
-        client = self.app.test_client()
-        parametros = {}
-        parametros["nombre_param"] = "a45d5"
-        response = client.get(OBTENER_DOCENTES_SERVICE, query_string=parametros)
-        assert (response.status_code == CLIENT_ERROR_BAD_REQUEST)
-
     def test_obtener_los_docentes_devuelve_todos_los_docentes(self):
         client = self.app.test_client()
-        response = client.get(OBTENER_DOCENTES_SERVICE)
+        response = client.get(self.get_url_obtener_todos_los_docentes())
         assert (response.status_code == SUCCESS_OK)
 
         docentes = json.loads(response.get_data(as_text=True))["docentes"]

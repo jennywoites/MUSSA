@@ -1,32 +1,22 @@
-# __init__.py is a special Python file that allows a directory to become
-# a Python package so it can be accessed using the 'import' statement.
-
-# __init__.py is a special Python file that allows a directory to become
-# a Python package so it can be accessed using the 'import' statement.
-
-from datetime import datetime
-import os
-
 from flask import Flask
 from flask_mail import Mail
-from flask_migrate import Migrate, MigrateCommand
+from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
 from flask_user import UserManager, SQLAlchemyAdapter
 from flask_wtf.csrf import CSRFProtect
 from flask_babel import Babel
-
 from flask_restful import Resource, Api
 from flask_bootstrap import Bootstrap
+import importlib
+import os
+
 # Instantiate Flask extensions
 db = SQLAlchemy()
 csrf_protect = CSRFProtect()
 mail = Mail()
 migrate = Migrate()
 
-from app.API_Rest.server import *
-
 import logging
-
 logging.basicConfig(filename='MUSSA.log', level=logging.DEBUG)
 
 
@@ -134,41 +124,98 @@ def init_email_error_handler(app):
 
 
 def add_resources_api_rest(api):
+    DIR_SERVICIOS = os.path.join('app', 'API_Rest', 'Services')
+
+    for archivo_o_directorio in os.listdir(DIR_SERVICIOS):
+        directorio = os.path.join(DIR_SERVICIOS, archivo_o_directorio)
+        if os.path.isdir(directorio) and (archivo_o_directorio != '__pycache__'):
+            for nombre_modulo in os.listdir(directorio):
+                if nombre_modulo in ['__init__.py', '__pycache__']:
+                    continue
+                nombre_paquete =  os.path.splitext(nombre_modulo)[0]
+                paquete = '.'.join(['app', 'API_Rest', 'Services', archivo_o_directorio, nombre_paquete])
+                modulo = importlib.import_module(paquete)
+                api.add_resource(modulo.CLASE, *modulo.URLS_SERVICIOS)
+
     add_resources_publicos(api)
     add_resources_usuarios(api)
     add_resources_administrador(api)
 
 
 def add_resources_publicos(api):
+    from app.API_Rest.Services.BuscarCarrerasService import BuscarCarreras
     api.add_resource(BuscarCarreras, '/api/BuscarCarreras')
+
+    from app.API_Rest.Services.BuscarMateriasService import BuscarMaterias
     api.add_resource(BuscarMaterias, '/api/BuscarMaterias')
+
+    from app.API_Rest.Services.ObtenerMateriaService import ObtenerMateria
     api.add_resource(ObtenerMateria, '/api/ObtenerMateria')
+
+    from app.API_Rest.Services.ObtenerMateriasCorrelativasService import ObtenerMateriasCorrelativas
     api.add_resource(ObtenerMateriasCorrelativas, '/api/ObtenerMateriasCorrelativas')
+
+    from app.API_Rest.Services.ObtenerCarrerasDondeSeDictaLaMateriaService import ObtenerCarrerasDondeSeDictaLaMateria
     api.add_resource(ObtenerCarrerasDondeSeDictaLaMateria, '/api/ObtenerCarrerasDondeSeDictaLaMateria')
+
+    from app.API_Rest.Services.BuscarCursosService import BuscarCursos
     api.add_resource(BuscarCursos, '/api/BuscarCursos')
+
+    from app.API_Rest.Services.ObtenerPreguntasEncuestaService import ObtenerPreguntasEncuesta
     api.add_resource(ObtenerPreguntasEncuesta, '/api/ObtenerPreguntasEncuesta')
+
+    from app.API_Rest.Services.ObtenerDocentesCursoService import ObtenerDocentesCurso
     api.add_resource(ObtenerDocentesCurso, '/api/ObtenerDocentesCurso')
-    api.add_resource(ObtenerDocentes, '/api/ObtenerDocentes')
+
+    from app.API_Rest.Services.ObtenerTematicasMateriasService import ObtenerTematicasMaterias
     api.add_resource(ObtenerTematicasMaterias, '/api/ObtenerTematicasMaterias')
 
 
 def add_resources_usuarios(api):
+    from app.API_Rest.Services.ObtenerPadronAlumnoService import ObtenerPadronAlumno
     api.add_resource(ObtenerPadronAlumno, '/api/ObtenerPadronAlumno')
+
+    from app.API_Rest.Services.ModificarPadronAlumnoService import ModificarPadronAlumno
     api.add_resource(ModificarPadronAlumno, '/api/ModificarPadronAlumno')
+
+    from app.API_Rest.Services.AgregarCarreraAlumnoService import AgregarCarreraAlumno
     api.add_resource(AgregarCarreraAlumno, '/api/AgregarCarreraAlumno')
+
+    from app.API_Rest.Services.ObtenerCarrerasAlumnoService import ObtenerCarrerasAlumno
     api.add_resource(ObtenerCarrerasAlumno, '/api/ObtenerCarrerasAlumno')
+
+    from app.API_Rest.Services.EliminarCarreraAlumnoService import EliminarCarreraAlumno
     api.add_resource(EliminarCarreraAlumno, '/api/EliminarCarreraAlumno')
+
+    from app.API_Rest.Services.ObtenerMateriasAlumnoService import ObtenerMateriasAlumno
     api.add_resource(ObtenerMateriasAlumno, '/api/ObtenerMateriasAlumno')
+
+    from app.API_Rest.Services.AgregarMateriaAlumnoService import AgregarMateriaAlumno
     api.add_resource(AgregarMateriaAlumno, '/api/AgregarMateriaAlumno')
+
+    from app.API_Rest.Services.EliminarMateriaAlumnoService import EliminarMateriaAlumno
     api.add_resource(EliminarMateriaAlumno, '/api/EliminarMateriaAlumno')
+
+    from app.API_Rest.Services.ObtenerEncuestasAlumnoService import ObtenerEncuestasAlumno
     api.add_resource(ObtenerEncuestasAlumno, '/api/ObtenerEncuestasAlumno')
+
+    from app.API_Rest.Services.ObtenerRespuestasEncuestaAlumnoParaPreguntasEspecificasService import ObtenerRespuestasEncuestaAlumnoParaPreguntasEspecificas
     api.add_resource(ObtenerRespuestasEncuestaAlumnoParaPreguntasEspecificas,
                      '/api/ObtenerRespuestasEncuestaAlumnoParaPreguntasEspecificas')
+
+    from app.API_Rest.Services.GuardarRespuestasEncuestaAlumnoService import GuardarRespuestasEncuestaAlumno
     api.add_resource(GuardarRespuestasEncuestaAlumno, '/api/GuardarRespuestasEncuestaAlumno')
 
 
 def add_resources_administrador(api):
+    from app.API_Rest.Services.GuardarHorariosDesdeArchivoPDFService import GuardarHorariosDesdeArchivoPDF
     api.add_resource(GuardarHorariosDesdeArchivoPDF, '/api/admin/GuardarHorariosDesdeArchivoPDF')
+
+    from app.API_Rest.Services.ModificarCursoService import ModificarCurso
     api.add_resource(ModificarCurso, '/api/admin/ModificarCurso')
+
+    from app.API_Rest.Services.ModificarDocenteService import ModificarDocente
     api.add_resource(ModificarDocente, '/api/admin/ModificarDocente')
+
+    from app.API_Rest.Services.EliminarDocente import EliminarDocente
     api.add_resource(EliminarDocente, '/api/admin/EliminarDocente')
