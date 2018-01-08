@@ -63,12 +63,20 @@
                 return cargarRespuestaDocentes(pregunta, respuesta);
             case "Correlativa":
                 return cargarRespuestaCorrelativas(pregunta, respuesta);
+            case "Estrellas":
+                return cargarRespuestaEstrellas(pregunta, respuesta);
             default:
                 debugger;
                 console.log(tipo_pregunta)
                 console.log(respuesta)
                 return;
         }
+    }
+
+    function cargarRespuestaEstrellas(pregunta, respuesta) {
+        var div_estrellas = document.getElementById("ec-stars-wrapper-" + pregunta['pregunta_encuesta_id']);
+        var cantidad_estrellas = respuesta["estrellas"];
+        pintarEstrellas(div_estrellas, cantidad_estrellas);
     }
 
     function cargarRespuestaCorrelativas(pregunta, respuesta) {
@@ -273,6 +281,8 @@
                 return generarRespuestaDocentes(pregunta);
             case "Correlativa":
                 return generarRespuestaCorrelativas(pregunta);
+            case "Estrellas":
+                return generarRespuestaEstrellas(pregunta);
             default:
                 return {};
         }
@@ -308,6 +318,15 @@
 
         var datos = generarEstructuraRespuestaBase(pregunta)
         datos["puntaje"] = puntaje;
+        return datos;
+    }
+
+    function generarRespuestaEstrellas(pregunta) {
+        var div_estrellas = document.getElementById("ec-stars-wrapper-" + pregunta['pregunta_encuesta_id']);
+        var estrellas = contarCantidadDeEstrellas(div_estrellas);
+
+        var datos = generarEstructuraRespuestaBase(pregunta)
+        datos["estrellas"] = estrellas;
         return datos;
     }
 
@@ -393,6 +412,8 @@
                 return validarPreguntaDocentes(pregunta, esGuardadoParcial);
             case "Correlativa":
                 return validarPreguntaCorrelativas(pregunta, esGuardadoParcial);
+            case "Estrellas":
+                return validarPreguntaEstrellas(pregunta, esGuardadoParcial);
             default:
                 console.log(pregunta);
                 debugger;
@@ -489,6 +510,31 @@
         return es_valida;
     }
 
+    function validarPreguntaEstrellas(pregunta, esParcial) {
+        var div_estrellas = document.getElementById("ec-stars-wrapper-" + pregunta['pregunta_encuesta_id']);
+
+        var estrellas = contarCantidadDeEstrellas(div_estrellas);
+
+        if (esParcial && estrellas == 0)
+            return true;
+
+        var es_valida = (estrellas > 0);
+        var div_error = document.getElementById("div_error_estrellas-id-" + pregunta['pregunta_encuesta_id']);
+        div_error.hidden = es_valida;
+
+        return es_valida;
+    }
+
+    function contarCantidadDeEstrellas(div_estrellas) {
+        var estrellas = 0;
+        for (var i=0; i<div_estrellas.children.length; i++) {
+            var opcion = div_estrellas.children[i];
+            if (opcion.style["color"] == "rgb(163, 72, 204)")
+                estrellas += 1;
+        }
+        return estrellas;
+    }
+
     function validarPreguntaTexto(pregunta, esParcial) {
         var input_texto = document.getElementById('textolibre-id-' + pregunta['pregunta_encuesta_id']).value;
 
@@ -527,15 +573,18 @@
     }
 
     function setStarsValue(value, id) {
+        var estrellas_element = document.getElementById(id);
+        pintarEstrellas(estrellas_element, value);
+    }
+
+    function pintarEstrellas(element, cantidad_estrellas) {
         var MAX_ESTRELLAS = 5;
 
-        var estrellas_element = document.getElementById(id);
+        for(var i=1; i<=cantidad_estrellas; i++)
+            element.children[i-1].style["color"] = "#A348CC";
 
-        for(var i=1; i<=value; i++)
-            estrellas_element.children[i-1].style["color"] = "#A348CC";
-
-        for (var i=(value + 1); i <= MAX_ESTRELLAS; i++)
-            estrellas_element.children[i-1].style["color"] = "#7592A7"
+        for (var i=(cantidad_estrellas + 1); i <= MAX_ESTRELLAS; i++)
+            element.children[i-1].style["color"] = "#7592A7"
     }
 
     function mostrarSubpreguntas(es_rta_si, id) {
@@ -1238,6 +1287,11 @@
                 {% endfor %}
             </div>
             <br>
+
+            <div id="div_error_estrellas-id-{{pregunta['pregunta_encuesta_id']}}" hidden="true">
+                <br>
+                <div class="alert alert-danger">Debe seleccionar una puntuación de 1 a 5 estrellas.</div>
+            </div>
 
         {% elif pregunta["tipo"] == "Numero" %}
 
