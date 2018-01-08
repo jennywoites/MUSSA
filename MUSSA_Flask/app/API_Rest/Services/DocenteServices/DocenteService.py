@@ -3,6 +3,8 @@ from app.API_Rest.codes import *
 from app.models.docentes_models import Docente, CursosDocente
 from app.models.carreras_models import Materia, Carrera
 from app.models.horarios_models import Curso
+from app import db
+from flask_user import roles_accepted
 import logging
 
 
@@ -10,6 +12,10 @@ class DocenteService(Resource):
 
     def getNombreClaseServicio(self):
         return "Docente Service"
+
+    ##########################################
+    ##                Servicios             ##
+    ##########################################
 
     def get(self, idDocente):
         if not idDocente > 0:
@@ -27,6 +33,29 @@ class DocenteService(Resource):
         logging.info(self.getNombreClaseServicio() + ': Resultado: {}'.format(result))
 
         return result
+
+    @roles_accepted('admin')
+    def delete(self, idDocente):
+        if not idDocente > 0:
+            logging.error(self.getNombreClaseServicio() + ': El id docente debe ser un entero mayor a 0')
+            return {'Error': 'El id docente debe ser un entero mayor a 0'}, CLIENT_ERROR_NOT_FOUND
+
+        if not self.existe_id_docente(idDocente):
+            logging.error(self.getNombreClaseServicio() + ': El id docente no existe')
+            return {'Error': 'El id docente no existe'}, CLIENT_ERROR_NOT_FOUND
+
+        docente = Docente.query.get(idDocente)
+        docente.delete()
+        db.session.commit()
+
+        result = SUCCESS_NO_CONTENT
+        logging.info(self.getNombreClaseServicio() + ': Resultado: {}'.format(result))
+
+        return result
+
+    ##########################################
+    ##          Funciones Auxiliares        ##
+    ##########################################
 
     def existe_id_docente(self, id_docente):
         return Docente.query.filter_by(id=id_docente).first()

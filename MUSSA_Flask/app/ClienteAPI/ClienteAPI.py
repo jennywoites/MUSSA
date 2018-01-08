@@ -22,6 +22,16 @@ class ClienteAPI:
     def escribir_resultado_servicio(self, nombre_servicio, response):
         logging.info('Servicio {} result: {} - {}'.format(nombre_servicio, response, response.text))
 
+    def invocar_get(self, url_servicio, cookies):
+        response = requests.get(url_servicio, cookies=cookies)
+        self.escribir_resultado_servicio(url_servicio, response)
+        return response.json()
+
+    def invocar_delete(self, url_servicio, cookies):
+        response = requests.delete(url_servicio, cookies=cookies)
+        self.escribir_resultado_servicio(url_servicio, response)
+        return response.json()
+
     ################################################
     ##                  URLS                      ##
     ################################################
@@ -35,19 +45,22 @@ class ClienteAPI:
         return self.BASE_URL + '/docente/all'
 
     ################################################
-    ##                  Servicios                 ##
+    ##              Servicios DOCENTE             ##
     ################################################
 
     def get_docente(self, cookie, idDocente):
-        """URL: '/api/docente/<int:idDocente>'"""
-        OBTENER_DOCENTE_SERVICE = self.get_url_get_docente(idDocente)
+        url_servicio = self.get_url_get_docente(idDocente)
+        return self.invocar_get(url_servicio, cookie)
 
-        docentes_response = requests.get(OBTENER_DOCENTE_SERVICE, cookies=cookie)
-        self.escribir_resultado_servicio(OBTENER_DOCENTE_SERVICE, docentes_response)
-        return docentes_response.json()
+    def eliminar_docente(self, cookie, idDocente):
+        url_servicio = self.get_url_get_docente(idDocente)
+        return self.invocar_delete(url_servicio, cookie)
 
     def obtener_todos_los_docentes(self, cookie):
-        OBTENER_TODOS_LOS_DOCENTES_SERVICE = self.get_url_obtener_todos_los_docentes()
-        docentes_response = requests.get(OBTENER_TODOS_LOS_DOCENTES_SERVICE, cookies=cookie)
-        self.escribir_resultado_servicio(OBTENER_TODOS_LOS_DOCENTES_SERVICE, docentes_response)
-        return docentes_response.json()["docentes"]
+        url_servicio = self.get_url_obtener_todos_los_docentes()
+        return self.invocar_get(url_servicio, cookie)["docentes"]
+
+    ################################################
+    ##              Servicios ENCUESTA            ##
+    ################################################
+

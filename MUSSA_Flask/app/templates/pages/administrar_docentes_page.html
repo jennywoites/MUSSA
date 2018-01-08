@@ -27,14 +27,13 @@
 
 <script>
     $(window).on('load',(function(){
-      $(function() {
-        $('#tabla_docentes').bootstrapTable({
-          data: [],
-          columns: {{ tabla_docentes_columnas|tojson|safe }},
+        $(function() {
+            $('#tabla_docentes').bootstrapTable({
+                data: [],
+                columns: {{ tabla_docentes_columnas|tojson|safe }},
+            });
         });
-      });
-       do_request(SERVICE_OBTENER_DOCENTES, populate_data_docentes, console.log);
-
+        obtener_todos_los_docentes_service(populate_data_docentes, console.log);
     }));
 
     function format_lista_materias(materias){
@@ -60,15 +59,13 @@
                     ].join('');
     }
 
-    function populate_data_docentes(service_data){
+    function populate_data_docentes(service_status, service_data){
         console.log(service_data);
-
-
 
         var docentes = []
         var docente;
-       for(var i=0;i<service_data['docentes'].length; i++){
-            docente = service_data['docentes'][i];
+       for(var i=0;i<service_data.length; i++){
+            docente = service_data[i];
             docentes.push({"nombre": docente["nombre"],
                            "apellido": docente["apellido"],
                            "materias": format_lista_materias(docente["materias_que_dicta"]),
@@ -83,19 +80,18 @@
     function confirm_delete(id_docente){
         var modal = $("#deleteModal");
         var docente = $("#tabla_docentes").bootstrapTable('getRowByUniqueId', id_docente);
-        var nombre_docente = docente.nombre + ' ' + docente.apellido
+        var nombre_docente = docente.nombre + ' ' + docente.apellido;
         modal.find('.modal-title').text('Se va a eliminar el docente ' + nombre_docente);
         $('#confirm-delete-button').click(function() {
                 delete_docente(id_docente, modal);
                 });
-        modal.modal('show')
+        modal.modal('show');
     }
 
     function delete_docente(id_docente, modal){
         console.log("Delete " + id_docente);
         $("#tabla_docentes").bootstrapTable('removeByUniqueId', id_docente);
-        modal.modal('hide')
-
+        modal.modal('hide');
     }
 
 </script>
