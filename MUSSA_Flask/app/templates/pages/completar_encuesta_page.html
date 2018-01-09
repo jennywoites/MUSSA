@@ -25,11 +25,11 @@
             return;
 
         var preguntas = {{preguntas | safe}};
-        for (var i=0; i<preguntas.length; i++) {
+        while(preguntas.length > 0) {
             if ($.isEmptyObject(respuestas))
                 return;
 
-            var pregunta = preguntas[i];
+            var pregunta = preguntas.pop();
             var idPregunta = pregunta["pregunta_encuesta_id"];
 
             if (idPregunta in respuestas) {
@@ -37,8 +37,7 @@
                 delete respuestas[idPregunta];
                 var tipo_pregunta = pregunta["tipo"];
                 cargarRespuestaGuardada(pregunta, tipo_pregunta, respuesta);
-                if (tipo_pregunta == "Si No") {
-                    debugger;
+                if (tipo_pregunta == "Si o No") {
                     agregarSubpreguntasSiNo(preguntas, pregunta);
                 }
             }
@@ -46,7 +45,23 @@
     }
 
     function agregarSubpreguntasSiNo(preguntas, pregunta_si_no) {
-        debugger;
+        agregarSubpreguntas(preguntas, pregunta_si_no["rta_si"], 'si');
+        agregarSubpreguntas(preguntas, pregunta_si_no["rta_no"], 'no');
+    }
+
+    function agregarSubpreguntas(preguntas, subpreguntas, tipo) {
+        for (var i=0; i< subpreguntas.length; i++) {
+            var subpregunta = subpreguntas[i];
+            var datos = {};
+            datos["pregunta"] = subpregunta["pregunta"];
+            datos["pregunta_id"] = subpregunta["pregunta_id"];
+            datos["pregunta_encuesta_id"] = subpregunta["pregunta_id"];
+            datos["tipo"] = "Texto Subpregunta";
+            datos["tipo_num"] = -1;
+            datos["tipo_respuesta_si_no"] = tipo;
+
+            preguntas.push(datos);
+        }
     }
 
     function cargarRespuestaGuardada(pregunta, tipo_pregunta, respuesta) {
@@ -69,12 +84,29 @@
                 return cargarRespuestaTematicas(pregunta, respuesta);
             case "Tags / Palabras Clave":
                 return cargarRespuestaPalabrasClave(pregunta, respuesta);
+            case "Si o No":
+                return cargarRespuestaSioNo(pregunta, respuesta);
+            case "Texto Subpregunta":
+                return cargarRespuestaTextoSubpregunta(pregunta, respuesta);
             default:
-                debugger;
                 console.log(tipo_pregunta)
                 console.log(respuesta)
                 return;
         }
+    }
+
+    function cargarRespuestaSioNo(pregunta, respuesta) {
+        var idPregunta = pregunta['pregunta_encuesta_id'];
+
+        var check_si = document.getElementById('check-si-' + idPregunta);
+        var check_no = document.getElementById('check-no-' + idPregunta);
+
+        var esta_marcado_si = (respuesta["respuesta"] == "Si");
+
+        check_si.children[0].children[0].checked = esta_marcado_si;
+        check_no.children[0].children[0].checked = !esta_marcado_si;
+
+        mostrarSubpreguntas(esta_marcado_si, idPregunta);
     }
 
     function cargarRespuestaPalabrasClave(pregunta, respuesta) {
@@ -172,6 +204,12 @@
 
     function cargarRespuestaTextoLibre(pregunta, respuesta) {
         var texto_div = document.getElementById('textolibre-id-' + pregunta['pregunta_encuesta_id']);
+        texto_div.value = respuesta["texto"];
+    }
+
+    function cargarRespuestaTextoSubpregunta(pregunta, respuesta) {
+        var tipo = pregunta["tipo_respuesta_si_no"];
+        var texto_div = document.getElementById('subpregunta-' + tipo + '-' + pregunta['pregunta_encuesta_id']);
         texto_div.value = respuesta["texto"];
     }
 
@@ -288,7 +326,7 @@
             else {
                 var respuesta = generarDatosRespuesta(pregunta);
                 if (!$.isEmptyObject(respuesta))
-                    respuestas.push(respuesta)
+                    agregarTodasALaLista(respuesta, respuestas);
             }
         }
         return hay_preguntas_invalidas;
@@ -314,9 +352,78 @@
                 return generarRespuestaTematicas(pregunta);
             case "Tags / Palabras Clave":
                 return generarRespuestaPalabrasClave(pregunta);
+            case "Si o No":
+                return generarRespuestaSioNo(pregunta);
             default:
                 return {};
         }
+    }
+
+    function generarRespuestaSioNo(pregunta) {
+        var idPregunta = pregunta['pregunta_encuesta_id'];
+        var check_si = document.getElementById('check-si-' + idPregunta);
+        var opcion_si_check = check_si.children[0].children[0].checked;
+
+        var check_no = document.getElementById('check-no-' + idPregunta);
+        var opcion_no_check = check_no.children[0].children[0].checked;
+
+        if (!opcion_si_check && !opcion_no_check)
+            return {};
+
+        var respuestas = [];
+        if (opcion_si_check) {
+            var rtas_si = generarRespuestasSubpreguntas(pregunta["rta_si"], 'si');
+            agregarTodasALaLista(rtas_si, respuestas);
+        }
+
+        if (opcion_no_check) {
+            var rtas_no = generarRespuestasSubpreguntas(pregunta["rta_no"], 'no');
+            agregarTodasALaLista(rtas_no, respuestas);
+        }
+
+        var datos = generarEstructuraRespuestaBase(pregunta)
+        datos["respuesta"] = opcion_si_check;
+        respuestas.push(datos);
+
+        return respuestas;
+    }
+
+    function agregarTodasALaLista(lista_a_agregar, lista_final) {
+        // Es un elemento y no una lista
+        if (!lista_a_agregar.length && !$.isEmptyObject(lista_a_agregar)) {
+            lista_final.push(lista_a_agregar);
+            return;
+        }
+
+        //Es un elemento vacio o es una lista vacia
+        if (!lista_a_agregar.length || lista_a_agregar.length == 0)
+            return;
+
+        for (var i=0; i<lista_a_agregar.length; i++) {
+            lista_final.push(lista_a_agregar[i]);
+        }
+    }
+
+    function generarRespuestasSubpreguntas(subpreguntas, tipo) {
+        if ($.isEmptyObject(subpreguntas))
+            return {};
+
+        var respuestas = [];
+        for (var i=0; i<subpreguntas.length; i++) {
+            var pregunta = subpreguntas[i];
+            var idPregunta = pregunta["pregunta_id"];
+
+            var id_input_texto = 'subpregunta-' + tipo + '-' + idPregunta;
+            var texto = document.getElementById(id_input_texto).value;
+            if (!textoEsValido(texto))
+                continue;
+
+            var datos = generarEstructuraRespuestaBase(pregunta)
+            datos["texto"] = texto;
+            respuestas.push(datos);
+        }
+
+        return respuestas;
     }
 
     function generarRespuestaPalabrasClave(pregunta) {
@@ -343,6 +450,9 @@
             var etiqueta = etiquetas_ya_elegidas[i];
             tematicas.push(etiqueta.value);
         }
+
+        if (tematicas.length == 0)
+            return {}
 
         var datos = generarEstructuraRespuestaBase(pregunta)
         datos["tematicas"] = tematicas;
@@ -479,11 +589,57 @@
                 return validarPreguntaTematicas(pregunta, esGuardadoParcial);
             case "Tags / Palabras Clave":
                 return validarPreguntaPalabrasClave(pregunta, esGuardadoParcial);
+            case "Si o No":
+                return validarPreguntaSiNo(pregunta, esGuardadoParcial);
             default:
                 console.log(pregunta);
-                debugger;
                 return true;
         }
+    }
+
+    function validarPreguntaSiNo(pregunta, esGuardadoParcial) {
+        var idPregunta = pregunta['pregunta_encuesta_id'];
+        var check_si = document.getElementById('check-si-' + idPregunta);
+        var opcion_si_check = check_si.children[0].children[0].checked;
+
+        var check_no = document.getElementById('check-no-' + idPregunta);
+        var opcion_no_check = check_no.children[0].children[0].checked;
+
+        if (esGuardadoParcial && !opcion_si_check && !opcion_no_check)
+            return true;
+
+        var subpreguntas_si_son_validas = true;
+        if (opcion_si_check)
+            subpreguntas_si_son_validas = validarSubpreguntas(pregunta["rta_si"], 'si', esGuardadoParcial)
+
+        var subpreguntas_no_son_validas = true;
+        if (opcion_no_check)
+            subpreguntas_no_son_validas = validarSubpreguntas(pregunta["rta_no"], 'no', esGuardadoParcial)
+
+        var div_error = document.getElementById('div_error_si_o_no-' + idPregunta);
+        div_error.hidden = (opcion_si_check || opcion_no_check);
+
+        var es_valida = ((opcion_si_check && subpreguntas_si_son_validas) || (opcion_no_check && subpreguntas_no_son_validas));
+        return es_valida;
+    }
+
+    function validarSubpreguntas(subpreguntas, tipo, esGuardadoParcial) {
+        if ($.isEmptyObject(subpreguntas))
+            return true;
+
+        var son_validas = true;
+        for (var i=0; i<subpreguntas.length; i++) {
+            var pregunta = subpreguntas[i];
+            var idPregunta = pregunta["pregunta_id"];
+
+            var id_input_texto = 'subpregunta-' + tipo + '-' + idPregunta;
+            var id_div_error = 'div_error_subpregunta-' + tipo + '-' + idPregunta;
+
+            if (!validarPreguntaOSubpreguntaTextoPorIds(id_input_texto, id_div_error, esGuardadoParcial))
+                son_validas = false;
+        }
+
+        return son_validas;
     }
 
     function validarPreguntaTematicas(pregunta, esGuardadoParcial) {
@@ -634,14 +790,20 @@
     }
 
     function validarPreguntaTexto(pregunta, esParcial) {
-        var input_texto = document.getElementById('textolibre-id-' + pregunta['pregunta_encuesta_id']).value;
+        var id_input_texto = 'textolibre-id-' + pregunta['pregunta_encuesta_id'];
+        var id_div_error = 'div_error_textolibre-id-' + pregunta['pregunta_encuesta_id'];
+        return validarPreguntaOSubpreguntaTextoPorIds(id_input_texto, id_div_error, esParcial)
+    }
+
+    function validarPreguntaOSubpreguntaTextoPorIds(id_input_texto, id_div_error, esParcial) {
+        var input_texto = document.getElementById(id_input_texto).value;
 
         if (esParcial && input_texto == "")
             return true;
 
         var es_valida = textoEsValido(input_texto);
 
-        var div_error = document.getElementById('div_error_textolibre-id-' + pregunta['pregunta_encuesta_id']);
+        var div_error = document.getElementById(id_div_error);
         div_error.hidden = es_valida;
 
         return es_valida;
@@ -1176,10 +1338,15 @@
         {% elif pregunta["tipo"] == "Si o No" %}
 
             <div class="radio" id="check-si-{{pregunta['pregunta_encuesta_id']}}">
-                <label><input type="radio" name="optradio" onclick="mostrarSubpreguntas(true, '{{pregunta['pregunta_encuesta_id']}}')">Si</label>
+                <label><input type="radio" name="optradio-{{pregunta['pregunta_encuesta_id']}}" onclick="mostrarSubpreguntas(true, '{{pregunta['pregunta_encuesta_id']}}')">Si</label>
             </div>
             <div class="radio" id="check-no-{{pregunta['pregunta_encuesta_id']}}">
-                <label><input type="radio" name="optradio" onclick="mostrarSubpreguntas(false, '{{pregunta['pregunta_encuesta_id']}}')">No</label>
+                <label><input type="radio" name="optradio-{{pregunta['pregunta_encuesta_id']}}" onclick="mostrarSubpreguntas(false, '{{pregunta['pregunta_encuesta_id']}}')">No</label>
+            </div>
+
+            <div id="div_error_si_o_no-{{pregunta['pregunta_encuesta_id']}}" hidden="true">
+                <br>
+                <div class="alert alert-danger">Debe seleccionar una de las dos opciones.</div>
             </div>
 
             {% for subpregunta in pregunta["rta_si"] %}
@@ -1193,7 +1360,12 @@
 
                     {% if subpregunta["tipo"] == "Texto Libre" %}
 
-                        <textarea class="form-control" rows="5" id="subpregunta-si-{{subpregunta['pregunta_encuesta_id']}}"></textarea>
+                        <textarea class="form-control" rows="5" id="subpregunta-si-{{subpregunta['pregunta_id']}}"></textarea>
+
+                        <div id="div_error_subpregunta-si-{{subpregunta['pregunta_id']}}" hidden="true">
+                            <br>
+                            <div class="alert alert-danger">El texto no puede estar vacío, o lleno solo con espacios y/o símbolos.</div>
+                        </div>
 
                     {% endif %}
 
@@ -1211,7 +1383,12 @@
 
                     {% if subpregunta["tipo"] == "Texto Libre" %}
 
-                        <textarea class="form-control" rows="5" id="comment" id="subpregunta-no-{{subpregunta['pregunta_encuesta_id']}}"></textarea>
+                        <textarea class="form-control" rows="5" id="subpregunta-no-{{subpregunta['pregunta_id']}}"></textarea>
+
+                        <div id="div_error_subpregunta-no-{{subpregunta['pregunta_id']}}" hidden="true">
+                            <br>
+                            <div class="alert alert-danger">El texto no puede estar vacío, o lleno solo con espacios y/o símbolos.</div>
+                        </div>
 
                     {% endif %}
                 </div>
