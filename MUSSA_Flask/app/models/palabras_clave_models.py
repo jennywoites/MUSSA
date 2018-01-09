@@ -29,6 +29,7 @@ class TematicaMateria(db.Model):
     id = db.Column(db.Integer, primary_key=True)
 
     tematica = db.Column(db.String(40), nullable=False, server_default='')
+    verificada = db.Column(db.Boolean(), nullable=False, server_default='')
 
     def __str__(self):
         return self.tematica

@@ -42,6 +42,8 @@ def completar_encuesta(idEncuestaAlumno, cookie, num_categoria):
     preguntas = invocar_servicio_obtener_preguntas_encuesta(cookie, [num_categoria])
     encuesta = invocar_obtener_encuesta_alumno(cookie, idEncuestaAlumno)
 
+    encuesta_esta_completa = invocar_encuesta_alumno_esta_completa(cookie, idEncuestaAlumno)
+
     respuestas = invocar_obtener_respuestas_encuesta_alumno(cookie, idEncuestaAlumno, preguntas)
     convertir_true_false(respuestas)
 
@@ -92,7 +94,8 @@ def completar_encuesta(idEncuestaAlumno, cookie, num_categoria):
                            posibles_correlativas=posibles_correlativas,
                            docentes=docentes,
                            tematicas=tematicas,
-                           anterior_siguiente=anterior_siguiente)
+                           anterior_siguiente=anterior_siguiente,
+                           encuesta_esta_completa = encuesta_esta_completa)
 
 def convertir_true_false(respuestas):
     for idPregunta in respuestas:

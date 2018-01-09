@@ -61,7 +61,7 @@ class EstadoPasosEncuestaAlumno(db.Model):
         self.estadoPaso2 = PASO_ENCUESTA_NO_INICIADO
         self.estadoPaso3 = PASO_ENCUESTA_NO_INICIADO
         self.estadoPaso4 = PASO_ENCUESTA_NO_INICIADO
-        self.estadoPaso5 = PASO_ENCUESTA_NO_INICIADO
+        self.estadoPaso5 = PASO_ENCUESTA_FINALIZADO
 
     def actualizar_estado_paso(self, numero_paso, finalizado):
         estado = PASO_ENCUESTA_FINALIZADO if finalizado else PASO_ENCUESTA_EN_CURSO
@@ -78,6 +78,15 @@ class EstadoPasosEncuestaAlumno(db.Model):
             self.estadoPaso5 = estado
 
         db.session.commit()
+
+    def estan_todos_los_pasos_completos(self):
+        return (
+            self.estadoPaso1 == PASO_ENCUESTA_FINALIZADO and
+            self.estadoPaso2 == PASO_ENCUESTA_FINALIZADO and
+            self.estadoPaso3 == PASO_ENCUESTA_FINALIZADO and
+            self.estadoPaso4 == PASO_ENCUESTA_FINALIZADO and
+            self.estadoPaso5 == PASO_ENCUESTA_FINALIZADO
+        )
 
 class RespuestaEncuestaPuntaje(db.Model):
     __tablename__ = 'rta_encuesta_puntaje'

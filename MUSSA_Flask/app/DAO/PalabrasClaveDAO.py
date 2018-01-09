@@ -1,6 +1,7 @@
 from app.models.palabras_clave_models import *
 from app import db
 
+
 def get_tematicas_por_defecto():
     return [
         "DATA MINING",
@@ -9,6 +10,7 @@ def get_tematicas_por_defecto():
         "ADMINISTRACION",
         "ECONOMIA"
     ]
+
 
 def create_tematicas():
     db.create_all()
@@ -23,7 +25,7 @@ def find_o_create_tematica(descripcion):
     tematica = TematicaMateria.query.filter_by(tematica=descripcion).first()
 
     if not tematica:
-        tematica = TematicaMateria(tematica=descripcion)
+        tematica = TematicaMateria(tematica=descripcion, verificada=True)
         db.session.add(tematica)
         db.session.commit()
 

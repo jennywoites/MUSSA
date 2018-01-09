@@ -507,7 +507,7 @@ class GuardarRespuestasEncuestaAlumno(Resource):
 
             tematica = TematicaMateria.query.filter_by(tematica=nombre_tematica).first()
             if not tematica:
-                tematica = TematicaMateria(tematica=nombre_tematica)
+                tematica = TematicaMateria(tematica=nombre_tematica, verificada=False)
                 db.session.add(tematica)
                 db.session.commit()
 

@@ -1662,6 +1662,21 @@
         </div>
     </div>
 
+    <br>
+
+    <div>
+        <label style="font-style: italic; color: #A348CC;">Guardar el estado actual de la encuesta y continuar editándola luego.</label>
+        <br>
+        <button type="button" class="btn btn-mussa-default" onclick="validarRespuestasParcialesYGuardarRespuestas('{{ url_for('main.historial_encuestas_page') }}')">Guardar y Volver</button>
+    </div>
+
+    {% if encuesta_esta_completa %}
+        <br>
+        <label style="font-style: italic; color: #A348CC;">Al finalizar la encuesta las respuestas son enviadas. Una vez que la encuesta es finalizada ya no es posible volver a editarla.</label>
+        <br>
+        <button type="button" class="btn btn-mussa-default">Finalizar Encuesta</button>
+    {% endif %}
+
 </div>
 
 {% endblock %}
