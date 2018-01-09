@@ -1,6 +1,6 @@
 from flask import render_template
 from flask_user import login_required
-from flask import request
+from flask import request, url_for
 from app.views.base_view import main_blueprint
 from app.views.Utils.invocaciones_de_servicios import *
 from app.DAO.EncuestasDAO import *
@@ -74,11 +74,26 @@ def completar_encuesta(idEncuestaAlumno, cookie, num_categoria):
     ]
 
     anterior_siguiente = {
-        GRUPO_ENCUESTA_GENERAL: ['', 'main.completar_encuesta_contenido_page'],
-        GRUPO_ENCUESTA_CONTENIDO: ['main.completar_encuesta_general_page', 'main.completar_encuesta_clases_page'],
-        GRUPO_ENCUESTA_CLASES: ['main.completar_encuesta_contenido_page', 'main.completar_encuesta_examenes_page'],
-        GRUPO_ENCUESTA_EXAMENES: ['main.completar_encuesta_clases_page', 'main.completar_encuesta_docentes_page'],
-        GRUPO_ENCUESTA_DOCENTES: ['main.completar_encuesta_examenes_page', '']
+        GRUPO_ENCUESTA_GENERAL: [
+            '',
+            url_for('main.completar_encuesta_contenido_page', idEncuestaAlumno=idEncuestaAlumno)
+        ],
+        GRUPO_ENCUESTA_CONTENIDO: [
+            url_for('main.completar_encuesta_general_page', idEncuestaAlumno=idEncuestaAlumno),
+            url_for('main.completar_encuesta_clases_page', idEncuestaAlumno=idEncuestaAlumno),
+        ],
+        GRUPO_ENCUESTA_CLASES: [
+            url_for('main.completar_encuesta_contenido_page', idEncuestaAlumno=idEncuestaAlumno),
+            url_for('main.completar_encuesta_examenes_page', idEncuestaAlumno=idEncuestaAlumno),
+        ],
+        GRUPO_ENCUESTA_EXAMENES: [
+            url_for('main.completar_encuesta_clases_page', idEncuestaAlumno=idEncuestaAlumno),
+            url_for('main.completar_encuesta_docentes_page', idEncuestaAlumno=idEncuestaAlumno),
+        ],
+        GRUPO_ENCUESTA_DOCENTES: [
+            url_for('main.completar_encuesta_examenes_page', idEncuestaAlumno=idEncuestaAlumno),
+            ''
+        ]
     }
 
     return render_template('pages/completar_encuesta_page.html',
