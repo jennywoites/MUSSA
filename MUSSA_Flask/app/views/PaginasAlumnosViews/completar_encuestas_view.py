@@ -1,6 +1,6 @@
 from flask import render_template
 from flask_user import login_required
-from flask import request
+from flask import request, url_for
 from app.views.base_view import main_blueprint
 from app.views.Utils.invocaciones_de_servicios import *
 from app.DAO.EncuestasDAO import *
@@ -42,7 +42,10 @@ def completar_encuesta(idEncuestaAlumno, cookie, num_categoria):
     preguntas = invocar_servicio_obtener_preguntas_encuesta(cookie, [num_categoria])
     encuesta = invocar_obtener_encuesta_alumno(cookie, idEncuestaAlumno)
 
+    encuesta_esta_completa = invocar_encuesta_alumno_esta_completa(cookie, idEncuestaAlumno)
+
     respuestas = invocar_obtener_respuestas_encuesta_alumno(cookie, idEncuestaAlumno, preguntas)
+    convertir_true_false(respuestas)
 
     posibles_correlativas = invocar_servicio_buscar_materias(cookie, encuesta["codigo_carrera"])
     for i in range(len(posibles_correlativas)):
@@ -71,11 +74,26 @@ def completar_encuesta(idEncuestaAlumno, cookie, num_categoria):
     ]
 
     anterior_siguiente = {
-        GRUPO_ENCUESTA_GENERAL: ['', 'main.completar_encuesta_contenido_page'],
-        GRUPO_ENCUESTA_CONTENIDO: ['main.completar_encuesta_general_page', 'main.completar_encuesta_clases_page'],
-        GRUPO_ENCUESTA_CLASES: ['main.completar_encuesta_contenido_page', 'main.completar_encuesta_examenes_page'],
-        GRUPO_ENCUESTA_EXAMENES: ['main.completar_encuesta_clases_page', 'main.completar_encuesta_docentes_page'],
-        GRUPO_ENCUESTA_DOCENTES: ['main.completar_encuesta_examenes_page', '']
+        GRUPO_ENCUESTA_GENERAL: [
+            '',
+            url_for('main.completar_encuesta_contenido_page', idEncuestaAlumno=idEncuestaAlumno)
+        ],
+        GRUPO_ENCUESTA_CONTENIDO: [
+            url_for('main.completar_encuesta_general_page', idEncuestaAlumno=idEncuestaAlumno),
+            url_for('main.completar_encuesta_clases_page', idEncuestaAlumno=idEncuestaAlumno),
+        ],
+        GRUPO_ENCUESTA_CLASES: [
+            url_for('main.completar_encuesta_contenido_page', idEncuestaAlumno=idEncuestaAlumno),
+            url_for('main.completar_encuesta_examenes_page', idEncuestaAlumno=idEncuestaAlumno),
+        ],
+        GRUPO_ENCUESTA_EXAMENES: [
+            url_for('main.completar_encuesta_clases_page', idEncuestaAlumno=idEncuestaAlumno),
+            url_for('main.completar_encuesta_docentes_page', idEncuestaAlumno=idEncuestaAlumno),
+        ],
+        GRUPO_ENCUESTA_DOCENTES: [
+            url_for('main.completar_encuesta_examenes_page', idEncuestaAlumno=idEncuestaAlumno),
+            ''
+        ]
     }
 
     return render_template('pages/completar_encuesta_page.html',
@@ -91,4 +109,10 @@ def completar_encuesta(idEncuestaAlumno, cookie, num_categoria):
                            posibles_correlativas=posibles_correlativas,
                            docentes=docentes,
                            tematicas=tematicas,
-                           anterior_siguiente=anterior_siguiente)
+                           anterior_siguiente=anterior_siguiente,
+                           encuesta_esta_completa = encuesta_esta_completa)
+
+def convertir_true_false(respuestas):
+    for idPregunta in respuestas:
+        if "respuesta" in respuestas[idPregunta]:
+            respuestas[idPregunta]["respuesta"] = 'Si' if respuestas[idPregunta]["respuesta"] else 'No'

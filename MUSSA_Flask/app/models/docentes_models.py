@@ -29,4 +29,3 @@ class CursosDocente(db.Model):
 
     docente_id = db.Column(db.Integer, db.ForeignKey('docente.id'))
     curso_id = db.Column(db.Integer, db.ForeignKey('curso.id'))
-
