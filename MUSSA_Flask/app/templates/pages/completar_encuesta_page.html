@@ -245,6 +245,7 @@
     }
 
     SERVICE_GUARDAR_RESPUESTAS_ENCUESTAS_ALUMNO = '/api/GuardarRespuestasEncuestaAlumno'
+    SERVICE_FINALIZAR_ENCUESTAS_ALUMNO = '/api/FinalizarEncuestaAlumno'
     SUCCESS = 200
 
     function do_request(method, page, parametros, onSucces, onError) {
@@ -283,10 +284,38 @@
     }
 
     function validarRespuestasParcialesYGuardarRespuestas(nextUrl) {
+        var esGuardadoParcial = true;
+        validarRespuestasYGuardarRespuestas(nextUrl, esGuardadoParcial, function(state, result) {
+            debugger;
+            window.location.replace(nextUrl);
+        });
+    }
+
+    function validarRespuestasGuardarYFinalizarEncuesta() {
+        var nextUrl = '{{ url_for('main.historial_encuestas_page') }}';
+        var esGuardadoParcial = false;
+        validarRespuestasYGuardarRespuestas(nextUrl, esGuardadoParcial, function(state, result) {
+            debugger;
+            var param = {};
+            param["id_encuesta"] = {{idEncuestaAlumno}};
+
+            var error_al_finalizar = document.getElementById("div_error_finalizar_encuesta");
+            error_al_finalizar.hidden = true;
+
+            do_request('POST', SERVICE_FINALIZAR_ENCUESTAS_ALUMNO, param, function(state, result) {
+                debugger;
+                window.location.replace(nextUrl);
+            }, function(state, result) {
+                error_al_finalizar.hidden = false;
+            })
+        });
+    }
+
+    function validarRespuestasYGuardarRespuestas(nextUrl, esGuardadoParcial, onSuccess) {
         var preguntas = {{preguntas | safe}};
 
         var respuestas = [];
-        var hay_preguntas_invalidas = validarPreguntasYGenerarDatosDeRespuestas(preguntas, respuestas);
+        var hay_preguntas_invalidas = validarPreguntasYGenerarDatosDeRespuestas(preguntas, respuestas, esGuardadoParcial);
 
         var div_error = document.getElementById('div_error_preguntas');
         div_error.hidden = !hay_preguntas_invalidas;
@@ -297,6 +326,7 @@
         }
 
         if ($.isEmptyObject(respuestas)) {
+            debugger;
             window.location.replace(nextUrl);
             return true;
         }
@@ -309,15 +339,15 @@
         var error_al_guardar = document.getElementById("div_error_guardado");
         error_al_guardar.hidden = true;
         do_request('POST', SERVICE_GUARDAR_RESPUESTAS_ENCUESTAS_ALUMNO, param, function(state, result) {
-            window.location.replace(nextUrl);
+            onSuccess(state, result)
         }, function(state, result) {
             $('html, body').animate({scrollTop:0}, 'slow');
             error_al_guardar.hidden = false;
         })
     }
 
-    function validarPreguntasYGenerarDatosDeRespuestas(preguntas, respuestas) {
-        var esGuardadoParcial = true;
+
+    function validarPreguntasYGenerarDatosDeRespuestas(preguntas, respuestas, esGuardadoParcial) {
         var hay_preguntas_invalidas = false;
         for (var i=0; i<preguntas.length; i++) {
             var pregunta = preguntas[i];
@@ -1676,7 +1706,13 @@
         <br>
         <label style="font-style: italic; color: #A348CC;">Al finalizar la encuesta las respuestas son enviadas. Una vez que la encuesta es finalizada ya no es posible volver a editarla.</label>
         <br>
-        <button type="button" class="btn btn-mussa-default">Finalizar Encuesta</button>
+        <button type="button" class="btn btn-mussa-default" onclick="validarRespuestasGuardarYFinalizarEncuesta()">Finalizar Encuesta</button>
+
+        <div id="div_error_finalizar_encuesta" hidden="true">
+            <br>
+            <div class="alert alert-danger">Se produjo un error al intentar finalizar la encuesta. Por favor inténtalo nuevamente.</div>
+        </div>
+
     {% endif %}
 
 </div>
