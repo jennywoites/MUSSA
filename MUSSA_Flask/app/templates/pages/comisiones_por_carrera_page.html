@@ -1,0 +1,49 @@
+{% extends "common/page_base.html" %}
+
+{% block content %}
+
+<div class="container">
+
+    <h2>{%trans%}Comisiones por Carrera{%endtrans%}</h2>
+
+    <br>
+
+    <div class='table-responsive'>
+        <table class='table table-hover' id="tabla_cursos_guardados">
+            <tr>
+                <th>Nombre</th>
+                <th>Carreras</th>
+                <th>Links</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for comision in comisiones %}
+                <tr>
+                    <td>{{comision["NOMBRE"]}}</td>
+                    <td>
+                        <ul class="list-group">
+                        {% for carrera in comision["CARRERAS"] %}
+                            <li class="list-group-item lista-con-colores-ocultos">
+                                {{carrera}}
+                            </li>
+                        {% endfor %}
+                        </ul>
+                    </td>
+                    <td>
+                        <ul class="list-group">
+                            {% for link in comision["LINKS"] %}
+                            <li class="list-group-item lista-con-colores-ocultos">
+                                <a target="_blank" href='{{link[1]}}'>{{link[0]}}
+                            </li>
+                            {% endfor %}
+                        </ul>
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+</div>
+
+{% endblock %}

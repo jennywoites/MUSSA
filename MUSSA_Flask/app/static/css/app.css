@@ -12,6 +12,14 @@ hr { border-color: #cccccc; margin: 0px; }
 
 .col-centered { float: none; margin: 0 auto; }
 
+/***************** Varios *******************/
+
+.lista-con-colores-ocultos {
+    background-color: transparent;
+    border-color: transparent;
+    margin-left: -15px;
+}
+
 /*************** CARROUSEL *****************/
 .item {
     display: block;

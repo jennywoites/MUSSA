@@ -65,7 +65,13 @@
                             <li><a href="{{ url_for('main.datos_academicos_page') }}">Datos Académicos</a></li>
                             <li><a href="{{ url_for('main.historial_encuestas_page') }}">Mis encuestas</a></li>
                         {% endif %}
-                        <li><a href="{{ url_for('main.links_utiles_page') }}">Links Útiles</a></li>
+                        <li class="dropdown">
+                        <li class="dropdown"><a class="dropdown-toggle" data-toggle="dropdown" href="#">Información <span class="caret"></span></a>
+                            <ul class="dropdown-menu">
+                                <li><a href="{{ url_for('main.links_utiles_page') }}">Links Útiles</a></li>
+                                <li><a href="{{ url_for('main.comisiones_por_carrera_page') }}">Comisiones por Carrera</a></li>
+                            </ul>
+                        </li>
                         <li><a href="{{ url_for('main.contacto_page') }}">Contacto</a></li>
                     </ul>
                     <ul class="nav navbar-nav navbar-right">
