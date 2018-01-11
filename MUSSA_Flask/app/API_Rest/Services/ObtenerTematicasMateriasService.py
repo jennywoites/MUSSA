@@ -14,8 +14,11 @@ class ObtenerTematicasMaterias(Resource):
             logging.error('El servicio Obtener Temáticas Materias no recibe parametros')
             return {'Error': 'Este servicio no recibe parametros'}, CLIENT_ERROR_BAD_REQUEST
 
+        query = TematicaMateria.query.filter_by(verificada=True)
+        tematicas = query.order_by(TematicaMateria.tematica.asc()).all()
+
         tematicas_result = []
-        for tematica in TematicaMateria.query.order_by(TematicaMateria.tematica.asc()).all():
+        for tematica in tematicas:
             tematicas_result.append({
                 "id": tematica.id,
                 "tema": tematica.tematica

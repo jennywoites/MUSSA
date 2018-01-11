@@ -159,7 +159,7 @@ class GuardarRespuestasEncuestaAlumno(Resource):
 
         finalizado = len(preguntas_categoria_actual) == 0
 
-        #Aunque no hayan respuestas docentes el paso queda finalizado
+        # Aunque no hayan respuestas docentes el paso queda finalizado
         if numero_paso == GRUPO_ENCUESTA_DOCENTES:
             finalizado = True
 
@@ -190,7 +190,6 @@ class GuardarRespuestasEncuestaAlumno(Resource):
                 subpregunta = PreguntaEncuesta.query.filter_by(id=pregunta_si_no.encuesta_id_no).first()
                 preguntas_categoria_actual[subpregunta.id] = subpregunta
 
-
     def respuesta_es_valida(self, respuesta, preguntas_categoria_actual, ids_respuestas, ids_respuestas_invalidas):
         idPregunta = respuesta["idPregunta"]
 
@@ -207,7 +206,6 @@ class GuardarRespuestasEncuestaAlumno(Resource):
             return False, 'Este servicio recibió un respuesta de encuesta inválida'
 
         return True, 'OK'
-
 
     def validar_respuesta(self, tipo_encuesta, respuesta, ids_respuestas, ids_respuestas_invalidas):
         acciones = {
@@ -311,6 +309,7 @@ class GuardarRespuestasEncuestaAlumno(Resource):
 
     MIN_NUMERO = 0
     MAX_NUMERO = 168
+
     def validar_respuesta_numero(self, respuesta, ids_respuestas_invalidas):
         if not str(respuesta["numero"]).isdigit():
             raise ValueError("El número debe ser un entero")
@@ -508,7 +507,7 @@ class GuardarRespuestasEncuestaAlumno(Resource):
 
             tematica = TematicaMateria.query.filter_by(tematica=nombre_tematica).first()
             if not tematica:
-                tematica = TematicaMateria(tematica=nombre_tematica)
+                tematica = TematicaMateria(tematica=nombre_tematica, verificada=False)
                 db.session.add(tematica)
                 db.session.commit()
 

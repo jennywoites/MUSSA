@@ -58,6 +58,7 @@
                         <th>Curso</th>
                         <th>Carrera</th>
                         <th>Aprobación de Cursada</th>
+                        <th>Ver</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -67,6 +68,9 @@
                         <td>{{encuesta["curso"]}}</td>
                         <td>{{encuesta["carrera"]}}</td>
                         <td>{{encuesta["fecha_aprobacion"]}}</td>
+                        <td>
+                            <button type="button" class="btn btn-link" onclick="window.location.href='{{ url_for('main.visualizar_encuesta_general_page', idEncuestaAlumno=encuesta['id'])}}'"><span class='glyphicon glyphicon-search'></span></button>
+                        </td>
                     </tr>
                     {% endfor %}
                     </tbody>

@@ -9,6 +9,7 @@ from app.views.PaginasAlumnosViews.agregar_materia_page_view import agregar_mate
 from app.views.PaginasAlumnosViews.editar_materia_page_view import editar_materia_page
 from app.views.PaginasAlumnosViews.completar_encuestas_view import *
 from app.views.PaginasAlumnosViews.historial_encuestas_page_view import historial_encuestas_page
+from app.views.PaginasAlumnosViews.visualizar_respuesta_encuestas_view import *
 
 @main_blueprint.route('/js/<path:path>')
 def send_js(path):
