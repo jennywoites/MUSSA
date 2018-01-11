@@ -15,36 +15,15 @@
                 </tr>
                 </thead>
                 <tbody>
-                <tr>
-                    <td><a target="_blank" href='http://fi.uba.ar/'>Facultad de Ingeniería</a></td>
-                    <td>Página oficial de la Facultad de Ingeniería de la Universidad de Buenos Aires</td>
-                </tr>
-                <tr>
-                    <td><a target="_blank" href='http://campus.fi.uba.ar/'>Campus</a></td>
-                    <td>Campus virtual FIUBA. Algunas materias utilizan el campus como vía de comunicación o para compartir archivos, subir trabajos prácticos, etc.</td>
-                </tr>
-                <tr>
-                    <td><a target="_blank" href='https://www.facebook.com/groups/fiubaconsultas2/'>FIUBA Consultas</a></td>
-                    <td>Grupo de Facebook de alumnos de la FIUBA. En él se hacen consultas muy diversas (incluidas las de ingresantes), algunos chistes, información importante, etc.</td>
-                </tr>
-                <tr>
-                    <td><a target="_blank" href='http://wiki.foros-fiuba.com.ar/'>Wiki Foros-FIUBA</a></td>
-                    <td>Ejercicios, trabajos prácticos y exámenes de las distintas materias subidos por alumnos.</td>
-                </tr>
-                <tr>
-                    <td><a target="_blank" href='http://www.foros-fiuba.com.ar/'>Foros FIUBA</a></td>
-                    <td>Foro de alumnos de FIUBA. Mucha información ya ha quedado desactualizada pero es posible encontrar información sobre algunas materias y preguntas de diversa índole.</td>
-                </tr>
-                <tr>
-                    <td><a target="_blank" href='http://www.fi.uba.ar/es/node/764'>Solicitud de Título</a></td>
-                    <td>Requisitos y trámites necesarios para tramitar el título FIUBA.</td>
-                    <td hidden>Si llegaste a este punto congrats! =D</td>
-                </tr>
-                <tr>
-                    <td><a target="_blank" href='http://sietgraduados.rec.uba.ar/'>Seguimiento del Título</a></td>
-                    <td>Requisitos y trámites necesarios para tramitar el título FIUBA.</td>
-                    <td hidden>Sentate a esperar porque este trámite dura entre un año y medio y dos años :'(</td>
-                </tr>
+                    {% for link in links %}
+                    <tr>
+                        <td><a target="_blank" href='{{link["URL"]}}'>{{link["MSJ_URL"]}}</a></td>
+                        <td>{{link["DESCRIPCION"]}}</td>
+                        {% if "COMENTARIO_OCULTO" in link %}
+                            <td hidden>{{link["COMENTARIO_OCULTO"]}}</td>
+                        {% endif %}
+                    </tr>
+                    {% endfor %}
                 </tbody>
             </table>
         </div>
