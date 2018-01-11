@@ -53,6 +53,10 @@ PUERTO = "5000"
 BASE_API = "/api"
 BASE_URL = HTTP + IP + PUERTO + BASE_API
 
+//*********************************************************//
+//                  Servicios Docentes                     //
+//*********************************************************//
+
 function get_docente_service(idDocente, onSucces, onError) {
     var url_servicio = BASE_URL + '/docente/' + idDocente;
     do_request('GET', url_servicio, {}, onSucces, onError);
@@ -69,6 +73,15 @@ function obtener_todos_los_docentes_service(onSucces, onError) {
     do_request('GET', url_servicio, {}, function(status, response) {
         onSucces(status, response["docentes"]);
     }, onError);
+}
+
+//*********************************************************//
+//                  Servicios Materias                     //
+//*********************************************************//
+
+function get_tematica_service(idTematica, onSucces, onError) {
+    var url_servicio = BASE_URL + '/materia/tematica/' + idTematica;
+    do_request('GET', url_servicio, {}, onSucces, onError);
 }
 
 //////////////////////////////////////////////////////////////////////
