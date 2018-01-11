@@ -44,6 +44,10 @@ class ClienteAPI:
         """URL: '/api/docente/all"""
         return self.BASE_URL + '/docente/all'
 
+    def get_url_get_tematica(self, idTematica):
+        """URL: '/api/materia/tematica/<int:idTematica>"""
+        return self.BASE_URL + '/materia/tematica/' + str(idTematica)
+
     ################################################
     ##              Servicios DOCENTE             ##
     ################################################
@@ -61,6 +65,9 @@ class ClienteAPI:
         return self.invocar_get(url_servicio, cookie)["docentes"]
 
     ################################################
-    ##              Servicios ENCUESTA            ##
+    ##             Servicios MATERIAS             ##
     ################################################
 
+    def get_tematica(self, cookie, idTematica):
+        url_servicio = self.get_url_get_tematica(self, idTematica)
+        return self.invocar_get(url_servicio, cookie)
