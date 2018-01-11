@@ -5,9 +5,9 @@ from app.models.palabras_clave_models import TematicaMateria
 import logging
 
 
-class TematicasService(Resource):
+class TematicaService(Resource):
     def getNombreClaseServicio(self):
-        return "Tematicas Service"
+        return "Tematica Service"
 
     ##########################################
     ##                Servicios             ##
@@ -47,7 +47,7 @@ class TematicasService(Resource):
 
 
 #########################################
-CLASE = TematicasService
+CLASE = TematicaService
 URLS_SERVICIOS = (
     '/api/materia/tematica/<int:idTematica>',
 )
