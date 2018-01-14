@@ -9,23 +9,23 @@ class TematicaService(BaseService):
     def getNombreClaseServicio(self):
         return "Tematica Service"
 
-    ##########################################
-    ##                Servicios             ##
-    ##########################################
-
     @roles_accepted('admin')
     def get(self, idTematica):
         self.logg_parametros_recibidos()
 
-        if not idTematica > 0:
-            msj = "El id de la temática debe ser un entero mayor a 0"
-            self.logg_error(msj)
-            return {'Error': 'msj'}, CLIENT_ERROR_NOT_FOUND
+        parametros_son_validos, msj, codigo = self.validar_parametros({
+            "idTematica": {
+                "PARAMETRO": idTematica,
+                "FUNCIONES_VALIDACION": {
+                    self.id_es_valido: [],
+                    self.existe_id: [TematicaMateria]
+                }
+            }
+        })
 
-        if not self.existe_id(TematicaMateria, idTematica):
-            msj = "El id de la temática no existe"
+        if not parametros_son_validos:
             self.logg_error(msj)
-            return {'Error': 'msj'}, CLIENT_ERROR_NOT_FOUND
+            return {'Error': 'msj'}, codigo
 
         tematica = TematicaMateria.query.get(idTematica)
         tematica_result = generarJSON_tematica_materia(tematica)

@@ -8,19 +8,23 @@ class AllTematicasService(BaseService):
     def getNombreClaseServicio(self):
         return "All Tematicas Service"
 
-    ##########################################
-    ##                Servicios             ##
-    ##########################################
-
     def get(self):
         self.logg_parametros_recibidos()
 
         solo_verificadas = self.obtener_booleano("solo_verificadas")
 
-        if not self.booleano_es_valido(solo_verificadas, obligatorio=False):
-            msj = "El parámetro 'solo_verificadas' no tiene un valor válido."
+        parametros_son_validos, msj, codigo = self.validar_parametros({
+            "solo_verificadas": {
+                "PARAMETRO": solo_verificadas,
+                "FUNCIONES_VALIDACION": {
+                    self.booleano_es_valido: [False]
+                }
+            }
+        })
+
+        if not parametros_son_validos:
             self.logg_error(msj)
-            return {'Error': msj}, CLIENT_ERROR_BAD_REQUEST
+            return {'Error': 'msj'}, codigo
 
         filtros = {}
         filtros["solo_verificadas"] = solo_verificadas
