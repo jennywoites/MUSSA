@@ -167,9 +167,6 @@ def add_resources_publicos(api):
     from app.API_Rest.Services.ObtenerDocentesCursoService import ObtenerDocentesCurso
     api.add_resource(ObtenerDocentesCurso, '/api/ObtenerDocentesCurso')
 
-    from app.API_Rest.Services.ObtenerTematicasMateriasService import ObtenerTematicasMaterias
-    api.add_resource(ObtenerTematicasMaterias, '/api/ObtenerTematicasMaterias')
-
 
 def add_resources_usuarios(api):
     from app.API_Rest.Services.ObtenerPadronAlumnoService import ObtenerPadronAlumno

@@ -22,8 +22,12 @@ class ClienteAPI:
     def escribir_resultado_servicio(self, nombre_servicio, response):
         logging.info('Servicio {} result: {} - {}'.format(nombre_servicio, response, response.text))
 
-    def invocar_get(self, url_servicio, cookies):
-        response = requests.get(url_servicio, cookies=cookies)
+    def invocar_get(self, url_servicio, cookies, parametros=None):
+        if parametros:
+            response = requests.get(url_servicio, params=parametros, cookies=cookies)
+        else:
+            response = requests.get(url_servicio, cookies=cookies)
+
         self.escribir_resultado_servicio(url_servicio, response)
         return response.json()
 
@@ -45,8 +49,12 @@ class ClienteAPI:
         return self.BASE_URL + '/docente/all'
 
     def get_url_get_tematica(self, idTematica):
-        """URL: '/api/materia/tematica/<int:idTematica>"""
-        return self.BASE_URL + '/materia/tematica/' + str(idTematica)
+        """URL: '/api/tematica/<int:idTematica>"""
+        return self.BASE_URL + '/tematica/' + str(idTematica)
+
+    def get_url_obtener_todas_las_tematicas(self):
+        """URL: '/api/tematica/all'"""
+        return self.BASE_URL + '/tematica/all'
 
     ################################################
     ##              Servicios DOCENTE             ##
@@ -65,9 +73,16 @@ class ClienteAPI:
         return self.invocar_get(url_servicio, cookie)["docentes"]
 
     ################################################
-    ##             Servicios MATERIAS             ##
+    ##            Servicios TEMATICAS             ##
     ################################################
 
     def get_tematica(self, cookie, idTematica):
-        url_servicio = self.get_url_get_tematica(self, idTematica)
+        url_servicio = self.get_url_get_tematica(idTematica)
         return self.invocar_get(url_servicio, cookie)
+
+    def obtener_todas_las_tematicas(self, cookie, solo_verificadas=True):
+        url_servicio = self.get_url_obtener_todas_las_tematicas()
+
+        parametros = {}
+        parametros["solo_verificadas"] = solo_verificadas
+        return self.invocar_get(url_servicio, cookie, parametros)["tematicas"]

@@ -5,9 +5,9 @@ from app.models.docentes_models import Docente
 import logging
 from app.API_Rest.Services.DocenteServices.DocenteService import DocenteService
 
-class ObtenerDocentesService(Resource):
+class AllDocentesService(Resource):
     def getNombreClaseServicio(self):
-        return "Obtener Docentes Service"
+        return "All Docentes Service"
 
     def get(self):
         docentes_result = []
@@ -26,7 +26,7 @@ class ObtenerDocentesService(Resource):
         return result
 
 #########################################
-CLASE = ObtenerDocentesService
+CLASE = AllDocentesService
 URLS_SERVICIOS = (
     '/api/docente/all',
 )

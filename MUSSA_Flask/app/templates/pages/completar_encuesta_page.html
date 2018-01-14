@@ -1654,7 +1654,7 @@
                             <select class="form-control" id="selector_tematica_{{pregunta['pregunta_encuesta_id']}}" name="selector_tematica_{{pregunta['pregunta_encuesta_id']}}" onchange="selector_tematica_change('{{pregunta['pregunta_encuesta_id']}}')">
                                 <option id="nueva_tematica_{{pregunta['pregunta_encuesta_id']}}" value="-1">Nueva Temática</option>
                                 {% for tematica in tematicas %}
-                                    <option id="tematica_opcion_{{tematica['id']}}_{{pregunta['pregunta_encuesta_id']}}" value="{{tematica['id']}}">{{tematica["tema"]}}</option>
+                                    <option id="tematica_opcion_{{tematica['id_tematica']}}_{{pregunta['pregunta_encuesta_id']}}" value="{{tematica['id_tematica']}}">{{tematica["tematica"]}}</option>
                                 {% endfor %}
                             </select>
                         </div>

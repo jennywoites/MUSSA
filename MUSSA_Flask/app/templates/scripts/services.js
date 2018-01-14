@@ -75,12 +75,19 @@ function obtener_todos_los_docentes_service(token, onSucces, onError) {
 }
 
 //*********************************************************//
-//                  Servicios Materias                     //
+//                  Servicios Tematicas                    //
 //*********************************************************//
 
-function get_tematica_service(idTematica, onSucces, onError) {
-    var url_servicio = BASE_URL + '/materia/tematica/' + idTematica;
-    do_request('GET', url_servicio, {}, onSucces, onError);
+function get_tematica_service(token, idTematica, onSuccess, onError) {
+    var url_servicio = BASE_URL + '/tematica/' + idTematica;
+    do_request('GET', url_servicio, {}, onSuccess, onError);
+}
+
+function obtener_todas_las_tematicas_service(token, solo_verificadas, onSuccess, onError) {
+    var url_servicio = BASE_URL + '/tematica/all';
+    parametros = {}
+    parametros["solo_verificadas"] = solo_verificadas
+    do_request('GET', url_servicio, parametros, onSuccess, onError);
 }
 
 //////////////////////////////////////////////////////////////////////

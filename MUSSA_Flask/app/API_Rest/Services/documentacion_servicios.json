@@ -1,0 +1,299 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "description": "Los siguientes son los servicios disponibles en la API para MUSSA",
+    "version": "1.0.0",
+    "title": "MUSSA API REST"
+  },
+  "basePath": "/v1",
+  "tags": [
+    {
+      "name": "materia",
+      "description": "Acceso a las materias"
+    },
+    {
+      "name": "docente",
+      "description": "Acceso a los docentes"
+    },
+    {
+      "name": "tematica",
+      "description": "Acceso a las temáticas"
+    }
+  ],
+  "schemes": [
+    "http"
+  ],
+  "paths": {
+    "/docente/{idDocente}": {
+      "get": {
+        "tags": [
+          "docente"
+        ],
+        "summary": "Devuelve el docente por id",
+        "description": "Devuelve los datos de un docente",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "idDocente",
+            "required": true,
+            "type": "integer",
+            "minimum": 1,
+            "description": "El ID del docente a buscar."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/Docente"
+            }
+          },
+          "400": {
+            "description": "BAD REQUEST. El ID de docente debe ser un entero y mayor que 0."
+          },
+          "401": {
+            "description": "La información de autorización no fue enviada o es inválida."
+          },
+          "404": {
+            "description": "El docente del ID especificado no fue encontrado."
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "docente"
+        ],
+        "summary": "Elimina un docente",
+        "description": "Elimina un docente",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "idDocente",
+            "required": true,
+            "type": "integer",
+            "minimum": 1,
+            "description": "El ID del docente a buscar."
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "OK. No se devuelven datos"
+          },
+          "400": {
+            "description": "BAD REQUEST. El ID de docente debe ser un entero y mayor que 0."
+          },
+          "401": {
+            "description": "La información de autorización no fue enviada o es inválida."
+          },
+          "404": {
+            "description": "El docente del ID especificado no fue encontrado."
+          }
+        }
+      }
+    },
+    "/docente/all": {
+      "get": {
+        "tags": [
+          "docente"
+        ],
+        "summary": "Devuelve todos los docentes con sus datos",
+        "description": "Devuelve una lista con los datos de cada docente",
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/ListaDocentes"
+            }
+          },
+          "204": {
+            "description": "OK. No hay datos para enviar."
+          },
+          "401": {
+            "description": "La información de autorización no fue enviada o es inválida."
+          }
+        }
+      }
+    },
+    "/tematica/{idTematica}": {
+      "get": {
+        "tags": [
+          "tematica"
+        ],
+        "summary": "Devuelve una tematica por id",
+        "description": "Devuelve los datos de un docente",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "idTematica",
+            "required": true,
+            "type": "integer",
+            "minimum": 1,
+            "description": "El ID de la temática a buscar."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/TematicaMateria"
+            }
+          },
+          "400": {
+            "description": "BAD REQUEST. El ID de la temática debe ser un entero y mayor que 0."
+          },
+          "401": {
+            "description": "La información de autorización no fue enviada o es inválida."
+          },
+          "404": {
+            "description": "La temática del ID especificado no fue encontrada."
+          }
+        }
+      }
+    },
+    "/tematica/all": {
+      "get": {
+        "tags": [
+          "tematica"
+        ],
+        "summary": "Devuelve una lista de tematicas",
+        "description": "Devuelve una lista con temáticas. Este servicio recibe el filtro en el cual se puede especificar si se quieren recibir solo las verificadas, solo las no verificadas o todas.",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "solo_verificadas",
+            "required": false,
+            "type": "boolean",
+            "description": "Si no se envia el filtro se devuelven todas las temáticas. Si se envía en True se devuelven solo aquellas temáticas verificadas por un administrador. Si se envía en False se devuelven solo aquellas temáticas ingresadas por usuarios y no verificadas por un administrador."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/ListaTematicas"
+            }
+          },
+          "400": {
+            "description": "BAD REQUEST. El parámetro solo_verificadas debe ser un booleano"
+          },
+          "401": {
+            "description": "La información de autorización no fue enviada o es inválida."
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "Docente": {
+      "type": "object",
+      "properties": {
+        "id_docente": {
+          "type": "integer",
+          "description": "ID del docente.",
+          "example": 1
+        },
+        "apellido": {
+          "type": "string",
+          "description": "Apellido del docente.",
+          "example": "Essaya"
+        },
+        "nombre": {
+          "type": "string",
+          "description": "Nombre del docente.",
+          "example": "Diego"
+        },
+        "nombre_completo": {
+          "type": "string",
+          "description": "Nombre completo del docente. Si solo tiene apellido, es este valor, si además tiene nombre es 'Apellido, Nombre'",
+          "example": "Essaya, Diego"
+        },
+        "materias_que_dicta": {
+          "type": "array",
+          "description": "Lista de materias que dicta el docente en las diferentes carreras. Si la materia que dicta la dicta en dos carreras, son dos elementos diferentes en la lista.",
+          "items": {
+            "$ref": "#/definitions/MateriasDocente"
+          }
+        }
+      }
+    },
+    "MateriasDocente": {
+      "type": "object",
+      "properties": {
+        "nombre": {
+          "type": "string",
+          "description": "Nombre de la materia.",
+          "example": "7540 - Algoritmos y Programación I"
+        },
+        "id_carrera": {
+          "type": "integer",
+          "description": "ID de la carrera a la que pertenece la materia.",
+          "example": 1
+        },
+        "carrera": {
+          "type": "string",
+          "description": "Descripcion de la carrera (codigo, nombre y plan) a la que pertenece la materia.",
+          "example": "10 - Ingeniería en Informática (Plan 1986)"
+        }
+      }
+    },
+    "ListaDocentes": {
+      "type": "object",
+      "properties": {
+        "docentes": {
+          "type": "array",
+          "description": "Lista de docentes",
+          "items": {
+            "$ref": "#/definitions/Docente"
+          }
+        }
+      }
+    },
+    "TematicaMateria": {
+      "type": "object",
+      "properties": {
+        "id_tematica": {
+          "type": "integer",
+          "description": "ID de la temática.",
+          "example": 1
+        },
+        "tematica": {
+          "type": "string",
+          "description": "Descripción de la temática",
+          "example": "DATA MINING"
+        },
+        "verificado": {
+          "type": "boolean",
+          "description": "Indica si la temática ha sido verificada o ingresada por un administrador (True) o si ha sido ingresada por el usuario (False).",
+          "example": true
+        }
+      }
+    },
+    "ListaTematicas": {
+      "type": "object",
+      "properties": {
+        "tematicas": {
+          "type": "array",
+          "description": "Lista de temáticas",
+          "items": {
+            "$ref": "#/definitions/TematicaMateria"
+          }
+        }
+      }
+    }
+  }
+}

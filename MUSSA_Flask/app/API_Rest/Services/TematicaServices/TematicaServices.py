@@ -3,6 +3,7 @@ from app.API_Rest.codes import *
 from flask_user import roles_accepted
 from app.models.palabras_clave_models import TematicaMateria
 import logging
+from app.models.generadorJSON.palabras_clave_generadorJSON import generarJSON_tematica_materia
 
 
 class TematicaService(Resource):
@@ -24,7 +25,7 @@ class TematicaService(Resource):
             return {'Error': 'El id de la temática no existe'}, CLIENT_ERROR_NOT_FOUND
 
         tematica = TematicaMateria.query.get(idTematica)
-        tematica_result = self.generarJSONTematica(tematica)
+        tematica_result = generarJSON_tematica_materia(tematica)
 
         result = (tematica_result, SUCCESS_OK)
         logging.info(self.getNombreClaseServicio() + ': Resultado: {}'.format(result))
@@ -38,17 +39,9 @@ class TematicaService(Resource):
     def existe_id(self, id_tematica):
         return TematicaMateria.query.get(id_tematica)
 
-    def generarJSONTematica(self, tematica):
-        return {
-            "id_tematica": tematica.id,
-            "tematica": tematica.tematica,
-            "verificada": tematica.verificada
-        }
-
-
 #########################################
 CLASE = TematicaService
 URLS_SERVICIOS = (
-    '/api/materia/tematica/<int:idTematica>',
+    '/api/tematica/<int:idTematica>',
 )
 #########################################
