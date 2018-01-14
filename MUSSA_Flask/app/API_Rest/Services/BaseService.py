@@ -68,7 +68,7 @@ class BaseService(Resource):
         2) Mensaje. Si hay error este mensaje indica su causa.
         3) Código: Si no hay error devuelve -1. Si hay error devuelve el código de error de servicio (ej: 404)
 
-        Recibe parámetros que es un diccionario con el siguiente formato:
+        Recibe 'parametros' que es un diccionario con el siguiente formato:
         - clave: nombre del parametro a validar
         - valor: diccionario con los siguientes campos:
             - 'PARAMETRO': valor que toma el parametro
