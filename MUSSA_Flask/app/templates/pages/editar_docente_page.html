@@ -91,7 +91,7 @@
        // $("#docente_form").bootstrapValidator();
       });
 
-       get_docente_service({{ id_docente }}, populate_data_docente, console.log);
+       get_docente_service("{{ csrf_token() }}", {{ id_docente }}, populate_data_docente, console.log);
     }));
 
     function populate_data_docente(service_status, service_data){

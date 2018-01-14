@@ -2,7 +2,7 @@
 SUCCESS = 200
 SUCCESS_NO_DATA = 204
 
-function do_request(method, page, parametros, onSucces, onError) {
+function do_request(method, page, CSRF_token, parametros, onSucces, onError) {
     var method = method || "GET";
 
     xmlhttp = new XMLHttpRequest();
@@ -36,7 +36,7 @@ function do_request(method, page, parametros, onSucces, onError) {
     if (method == 'GET') {
         xmlhttp.send();
     } else {
-        xmlhttp.setRequestHeader("X-CSRFToken", "{{ csrf_token() }}");
+        xmlhttp.setRequestHeader("X-CSRFToken", CSRF_token);
         xmlhttp.send(encoded_params);
     }
 }
@@ -57,20 +57,19 @@ BASE_URL = HTTP + IP + PUERTO + BASE_API
 //                  Servicios Docentes                     //
 //*********************************************************//
 
-function get_docente_service(idDocente, onSucces, onError) {
+function get_docente_service(token, idDocente, onSucces, onError) {
     var url_servicio = BASE_URL + '/docente/' + idDocente;
-    do_request('GET', url_servicio, {}, onSucces, onError);
+    do_request('GET', url_servicio, token, {}, onSucces, onError);
 }
 
-function eliminar_docente_service(idDocente, onSucces, onError) {
-    debugger;
+function eliminar_docente_service(token, idDocente, onSucces, onError) {
     var url_servicio = BASE_URL + '/docente/' + idDocente;
-    do_request('DELETE', url_servicio, {}, onSucces, onError);
+    do_request('DELETE', url_servicio, token, {}, onSucces, onError);
 }
 
-function obtener_todos_los_docentes_service(onSucces, onError) {
+function obtener_todos_los_docentes_service(token, onSucces, onError) {
     var url_servicio = BASE_URL + '/docente/all';
-    do_request('GET', url_servicio, {}, function(status, response) {
+    do_request('GET', url_servicio, token, {}, function(status, response) {
         onSucces(status, response["docentes"]);
     }, onError);
 }
