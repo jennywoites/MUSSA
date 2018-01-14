@@ -60,6 +60,9 @@ class BaseService(Resource):
     ##                      Validaciones                    ##
     ##########################################################
 
+    def existe_id(self, clase, id_clase):
+        return clase.query.get(id_clase) is not None
+
     def booleano_es_valido(self, valor, obligatorio=False):
         if not obligatorio and valor is None:
             return True
