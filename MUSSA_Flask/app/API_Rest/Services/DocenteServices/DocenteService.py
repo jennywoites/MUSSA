@@ -44,8 +44,7 @@ class DocenteService(Resource):
             logging.error(self.getNombreClaseServicio() + ': El id docente no existe')
             return {'Error': 'El id docente no existe'}, CLIENT_ERROR_NOT_FOUND
 
-        docente = Docente.query.get(idDocente)
-        docente.delete()
+        Docente.query.filter_by(id=idDocente).delete()
         db.session.commit()
 
         result = SUCCESS_NO_CONTENT

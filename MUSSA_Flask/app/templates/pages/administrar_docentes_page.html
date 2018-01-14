@@ -33,7 +33,7 @@
                 columns: {{ tabla_docentes_columnas|tojson|safe }},
             });
         });
-        obtener_todos_los_docentes_service(populate_data_docentes, console.log);
+        obtener_todos_los_docentes_service("{{ csrf_token() }}", populate_data_docentes, console.log);
     }));
 
     function format_lista_materias(materias){
@@ -89,9 +89,14 @@
     }
 
     function delete_docente(id_docente, modal){
-        console.log("Delete " + id_docente);
-        $("#tabla_docentes").bootstrapTable('removeByUniqueId', id_docente);
-        modal.modal('hide');
+        eliminar_docente_service("{{ csrf_token() }}", id_docente, function(status, result) {
+            $("#tabla_docentes").bootstrapTable('removeByUniqueId', id_docente);
+            modal.modal('hide');
+        }, function(status, response){
+            console.log(response);
+            console.log("No se pudo eliminar el docente: " + id_docente);
+        });
+
     }
 
 </script>
