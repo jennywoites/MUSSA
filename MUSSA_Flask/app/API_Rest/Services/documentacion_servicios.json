@@ -62,6 +62,66 @@
           }
         }
       },
+      "post": {
+        "tags": [
+          "docente"
+        ],
+        "summary": "Modifica el docente del id correspondiente",
+        "description": "Modifica los datos del docente del id correspondiente",
+        "produces": [
+          "application/json"
+        ],
+        "consumes": [
+          "multipart/form-data"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "idDocente",
+            "required": true,
+            "type": "integer",
+            "description": "El ID del docente a modificar."
+          },
+          {
+            "in": "formData",
+            "name": "apellido",
+            "required": true,
+            "type": "string",
+            "description": "Apellido del docente"
+          },
+          {
+            "in": "formData",
+            "name": "nombre",
+            "required": true,
+            "type": "string",
+            "description": "Nombre del docente. Si se desconoce el nombre enviar un string vacío."
+          },
+          {
+            "in": "formData",
+            "name": "ids_cursos",
+            "required": true,
+            "type": "array",
+            "description": "Lista de ids de cursos. Si el docente no dicta ningun curso, enviar una lista vacía.",
+            "items": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "BAD REQUEST. Uno o más parámetros no cumplen con las condiciones requeridas."
+          },
+          "401": {
+            "description": "La información de autorización no fue enviada o es inválida."
+          },
+          "404": {
+            "description": "El docente del ID especificado no fue encontrado."
+          }
+        }
+      },
       "delete": {
         "tags": [
           "docente"
