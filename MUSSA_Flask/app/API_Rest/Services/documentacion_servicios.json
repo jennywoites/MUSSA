@@ -8,6 +8,10 @@
   "basePath": "/v1",
   "tags": [
     {
+      "name": "carrera",
+      "description": "Acceso a las carreras"
+    },
+    {
       "name": "materia",
       "description": "Acceso a las materias"
     },
@@ -24,6 +28,47 @@
     "http"
   ],
   "paths": {
+    "/carrera/all": {
+      "get": {
+        "tags": [
+          "carrera"
+        ],
+        "summary": "Devuelve todas las carreras en base a los filtros enviados",
+        "description": "Devuelve una lista con carreras que cumplen con los filtros enviados. Si no se indica ningun filtro devuelve todas las carreras.",
+        "produces": [
+          "application/json"
+        ],
+        "consumes": [
+          "multipart/form-data"
+        ],
+        "parameters": [
+          {
+            "in": "formData",
+            "name": "codigo_materia",
+            "required": false,
+            "type": "integer",
+            "description": "Código de la materia para la cual se quiere saber en qué carreras se dicta. Si se quieren obtener todas las carreras en general, no enviar este parámetro."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/ListaCarreras"
+            }
+          },
+          "400": {
+            "description": "BAD REQUEST. Uno o más códigos de carrera no son válidos."
+          },
+          "401": {
+            "description": "La información de autorización no fue enviada o es inválida."
+          },
+          "404": {
+            "description": "Uno o más códigos de carrera no existen."
+          }
+        }
+      }
+    },
     "/docente/{idDocente}": {
       "get": {
         "tags": [
@@ -351,6 +396,43 @@
           "description": "Lista de temáticas",
           "items": {
             "$ref": "#/definitions/TematicaMateria"
+          }
+        }
+      }
+    },
+    "Carrera": {
+      "type": "object",
+      "properties": {
+        "id_carrera": {
+          "type": "integer",
+          "description": "ID de la carrera",
+          "example": 1
+        },
+        "codigo": {
+          "type": "integer",
+          "description": "Codigo de la carrera",
+          "example": 10
+        },
+        "nombre": {
+          "type": "string",
+          "description": "Nombre de la carrera",
+          "example": "Ingeniería en Informática"
+        },
+        "plan": {
+          "type": "string",
+          "description": "Plan de la carrera",
+          "example": "1986"
+        }
+      }
+    },
+    "ListaCarreras": {
+      "type": "object",
+      "properties": {
+        "carreras": {
+          "type": "array",
+          "description": "Lista de carreras",
+          "items": {
+            "$ref": "#/definitions/Carrera"
           }
         }
       }
