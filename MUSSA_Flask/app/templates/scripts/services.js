@@ -43,7 +43,6 @@ function do_request(method, page, CSRF_token, parametros, onSucces, onError) {
 
 //////////////////////////////////////////////////////////////////////
 
-SERVICE_BUSCAR_CARRERAS = '/api/BuscarCarreras'
 SERVICE_BUSCAR_MATERIAS = '/api/BuscarMaterias'
 
 HTTP = "http://"
@@ -77,10 +76,10 @@ function modificar_docente_service(token, idDocente, apellido, nombre, l_ids_cur
     do_request('POST', url_servicio, token, parametros, onSucces, onError);
 }
 
-function obtener_todos_los_docentes_service(token, onSucces, onError) {
+function obtener_todos_los_docentes_service(token, onSuccess, onError) {
     var url_servicio = BASE_URL + '/docente/all';
     do_request('GET', url_servicio, token, {}, function(status, response) {
-        onSucces(status, response["docentes"]);
+        onSuccess(status, response["docentes"]);
     }, onError);
 }
 
@@ -102,25 +101,33 @@ function obtener_todas_las_tematicas_service(token, solo_verificadas, onSuccess,
     do_request('GET', url_servicio, parametros, onSuccess, onError);
 }
 
+//*********************************************************//
+//                  Servicios Carreras                     //
+//*********************************************************//
+
+function get_todas_las_carreras_service(token, onSuccess, onError) {
+    var url_servicio = BASE_URL + '/carrera/all';
+    do_request('GET', url_servicio, token, {}, function(status, response) {
+        onSuccess(status, response["carreras"]);
+    }, onError);
+}
+
 //////////////////////////////////////////////////////////////////////
 
-function fill_dropdown(dropdown_id, service_url, process_response){
-    do_request(service_url, function(responseText){
-        process_data = process_response(responseText);
-        content = "";
-        for(var i=0; i<process_data.length; i++) {
-            current_data = process_data[i];
-            content += '<option';
-            if ("id" in current_data)
-                content += ' id="' + current_data["id"] + '"';
-            if ("value" in current_data)
-                content += ' value="' + current_data["value"] + '"';
-            content += ">";
-            if ("text" in current_data)
-                content += current_data["text"];
-            content += "</option>";
-        }
-        $("#" + dropdown_id).html(content);
-
-    });
+function fill_dropdown(dropdown_id, process_response, responseText){
+    process_data = process_response(responseText);
+    content = "";
+    for(var i=0; i<process_data.length; i++) {
+        current_data = process_data[i];
+        content += '<option';
+        if ("id" in current_data)
+            content += ' id="' + current_data["id"] + '"';
+        if ("value" in current_data)
+            content += ' value="' + current_data["value"] + '"';
+        content += ">";
+        if ("text" in current_data)
+            content += current_data["text"];
+        content += "</option>";
+    }
+    $("#" + dropdown_id).html(content);
 }

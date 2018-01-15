@@ -8,13 +8,6 @@ def escribir_resultado_servicio(nombre_servicio, response):
     logging.info('Servicio {} result: {} - {}'.format(nombre_servicio, response, response.text))
 
 
-def invocar_servicio_buscar_carreras(cookie):
-    carreras_response = requests.get(BUSCAR_CARRERAS_SERVICE, cookies=cookie)
-    escribir_resultado_servicio('Buscar Carreras', carreras_response)
-
-    return json.loads(carreras_response.text)["carreras"]
-
-
 def invocar_servicio_obtener_materia(cookie, idMateria):
     parametros = {}
     parametros["id_materia"] = idMateria

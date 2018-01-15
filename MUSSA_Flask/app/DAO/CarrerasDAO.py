@@ -1,17 +1,12 @@
-import datetime
 import os
-
-from flask import current_app
-
 from app import db
-from app.models.user_models import User, Role
 from app.models.carreras_models import Carrera, Creditos, Orientacion, Materia, TipoMateria, Correlativas
 
 RUTA_PLANES_CSV = "../../../PlanesdeEstudio/CSV/"
 RUTA_PLANES_INFO = "../../../PlanesdeEstudio/InfoCarrera/"
 
 CARRERAS = {
-    "9": ("Licenciatura en análisis de sistemas", "1986"),
+    "09": ("Licenciatura en análisis de sistemas", "1986"),
     "10": ("Ingeniería en Informática", "1986")
 }
 
@@ -24,7 +19,7 @@ ORIENTACIONES = "ORIENTACIONES"
 NOMBRE = 0
 CODIGO = 1
 
-CREDITOS_TESIS= "CREDITOS_TESIS"
+CREDITOS_TESIS = "CREDITOS_TESIS"
 CREDITOS_TP_PROFESIONAL = "CREDITOS_TP_PROFESIONAL"
 CREDITOS_OBLIGATORIAS = "CREDITOS_OBLIGATORIAS"
 CREDITOS_ORIENTACION = "CREDITOS_ORIENTACION"
@@ -32,6 +27,7 @@ CREDITOS_ELECTIVAS_CON_TP = "CREDITOS_ELECTIVAS_CON_TP"
 CREDITOS_ELECTIVAS_CON_TESIS = "CREDITOS_ELECTIVAS_CON_TESIS"
 CREDITOS_ELECTIVAS_GENERAL = "CREDITOS_ELECTIVAS_GENERAL"
 REQUIERE_SUFICIENCIA_IDIOMA = "REQUIERE_SUFICIENCIA_IDIOMA"
+
 
 def create_carreras():
     # Create all tables
@@ -53,7 +49,7 @@ def find_o_create_carrera(codigo, titulo, plan):
 
 
 def get_nombre_carrera_para_archivo(titulo, plan, extension):
-    vocales = {"á": "a", "é":"e", "í":"i", "ó":"o", "ú":"u"}
+    vocales = {"á": "a", "é": "e", "í": "i", "ó": "o", "ú": "u"}
 
     titulo = titulo.lower()
     for vocal in vocales:
@@ -73,18 +69,18 @@ def crear_carrera(codigo, titulo, plan):
     datos = cargar_datos_carrera(archivo_carrera)
 
     carrera = Carrera(
-        codigo = codigo,
-        nombre = titulo,
-        plan = plan,
-        duracion_estimada_en_cuatrimestres = datos[DURACION],
-        requiere_prueba_suficiencia_de_idioma = datos[REQUIERE_SUFICIENCIA_IDIOMA]
+        codigo=codigo,
+        nombre=titulo,
+        plan=plan,
+        duracion_estimada_en_cuatrimestres=datos[DURACION],
+        requiere_prueba_suficiencia_de_idioma=datos[REQUIERE_SUFICIENCIA_IDIOMA]
     )
-   
+
     guardar_cantidad_de_creditos(carrera, datos)
     guardar_orientaciones(carrera, datos)
 
     guardar_materias(carrera, codigo, titulo, plan)
-    
+
     db.session.add(carrera)
 
 
@@ -93,20 +89,20 @@ def guardar_orientaciones(carrera, datos):
 
     for orientacion in orientaciones:
         carrera.orientaciones.append(Orientacion(
-            descripcion = orientacion[NOMBRE],
-            clave_reducida = orientacion[CODIGO]
+            descripcion=orientacion[NOMBRE],
+            clave_reducida=orientacion[CODIGO]
         ))
 
 
 def guardar_cantidad_de_creditos(carrera, datos):
     creditos = Creditos(
-        creditos_obligatorias = datos[CREDITOS_OBLIGATORIAS],
-        creditos_orientacion = datos[CREDITOS_ORIENTACION],
-        creditos_electivas_general = datos[CREDITOS_ELECTIVAS_GENERAL],
-        creditos_electivas_con_tp = datos[CREDITOS_ELECTIVAS_CON_TP],
-        creditos_electivas_con_tesis = datos[CREDITOS_ELECTIVAS_CON_TESIS],
-        creditos_tesis = datos[CREDITOS_TESIS],
-        creditos_tp_profesional = datos[CREDITOS_TP_PROFESIONAL]
+        creditos_obligatorias=datos[CREDITOS_OBLIGATORIAS],
+        creditos_orientacion=datos[CREDITOS_ORIENTACION],
+        creditos_electivas_general=datos[CREDITOS_ELECTIVAS_GENERAL],
+        creditos_electivas_con_tp=datos[CREDITOS_ELECTIVAS_CON_TP],
+        creditos_electivas_con_tesis=datos[CREDITOS_ELECTIVAS_CON_TESIS],
+        creditos_tesis=datos[CREDITOS_TESIS],
+        creditos_tp_profesional=datos[CREDITOS_TP_PROFESIONAL]
     )
 
     if not carrera.creditos:
@@ -125,18 +121,18 @@ def cargar_datos_carrera(nombre_arch):
             linea = linea.rstrip()
 
             etiqueta, datos = linea.split(";")
-            etiqueta = etiqueta[1:len(etiqueta)-1]
+            etiqueta = etiqueta[1:len(etiqueta) - 1]
             datos = datos.split("-")
-            datos = [] if len(datos)==1 and datos[0] == "NULL" else datos
+            datos = [] if len(datos) == 1 and datos[0] == "NULL" else datos
 
-            if len(datos) == 1: #Salvo las orientaciones, todas son unico valor numerico entero
+            if len(datos) == 1:  # Salvo las orientaciones, todas son unico valor numerico entero
                 dato = datos[0]
-                dato = dato[1:len(dato)-1]
+                dato = dato[1:len(dato) - 1]
                 dic_datos[etiqueta] = int(dato)
             else:
                 orientaciones = []
                 for dato in datos:
-                    dato = dato[1:len(dato)-1]
+                    dato = dato[1:len(dato) - 1]
                     orientacion, cod_orientacion = dato.split(":")
                     orientaciones.append((orientacion, cod_orientacion))
                 dic_datos[etiqueta] = orientaciones
@@ -180,22 +176,22 @@ def crear_materia(linea, dict_correlativas):
     cred_minimos = int(cred_minimos)
 
     correlativas = correlativas.split("-")
-    if not correlativas or correlativas[0]=='':
+    if not correlativas or correlativas[0] == '':
         correlativas = []
 
     tipo = find_or_create_tipo_materia(tipo)
 
     materia = Materia(
-        codigo = codigo,
-        nombre = nombre,
-        objetivos = "",
-        tipo_materia_id = tipo.id,
-        creditos_minimos_para_cursarla = cred_minimos,
-        creditos = creditos
+        codigo=codigo,
+        nombre=nombre,
+        objetivos="",
+        tipo_materia_id=tipo.id,
+        creditos_minimos_para_cursarla=cred_minimos,
+        creditos=creditos
     )
 
     db.session.add(materia)
-    
+
     dict_correlativas[codigo] = correlativas
 
     return materia
@@ -232,12 +228,11 @@ def guardar_correlativas(dic_correlativas):
 
         for correlativa in dic_correlativas[cod]:
             materia_correlativa = Materia.query.filter(Materia.codigo == correlativa).first()
-        
-            if not materia_actual or not materia_correlativa:
 
+            if not materia_actual or not materia_correlativa:
                 print(materia_actual)
                 print(correlativa)
                 print(materia_correlativa)
                 input()
-    
+
             find_or_create_correlativa(materia_actual.id, materia_correlativa.id)

@@ -7,7 +7,6 @@ ADMIN = "admin/"
 BASE_URL = HTTP + IP + PUERTO + BASE_API
 
 # No requiere autenticacion
-BUSCAR_CARRERAS_SERVICE = BASE_URL + "BuscarCarreras"
 BUSCAR_MATERIAS_SERVICE = BASE_URL + "BuscarMaterias"
 OBTENER_MATERIA_SERVICE = BASE_URL + "ObtenerMateria"
 OBTENER_MATERIAS_CORRELATIVAS_SERVICE = BASE_URL + "ObtenerMateriasCorrelativas"

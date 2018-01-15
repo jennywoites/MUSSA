@@ -1,18 +1,12 @@
 if __name__ == '__main__':
-    import os
     import sys
 
     sys.path.append("../..")
 
 from tests.TestAPIServicios.TestBase import TestBase
-
-import app
 from app import db
 from app.models.carreras_models import Carrera
-
 import json
-
-from app.API_Rest.services import *
 
 
 class TestBuscarCarreras(TestBase):
@@ -60,7 +54,7 @@ class TestBuscarCarreras(TestBase):
 
     def test_buscar_carreras_sin_parametros_devuelve_todas_las_carreras(self):
         client = self.app.test_client()
-        response = client.get(BUSCAR_CARRERAS_SERVICE)
+        response = client.get(self.get_url_obtener_todas_las_carreras())
         assert (response.status_code == 200)
 
         carreras = json.loads(response.get_data(as_text=True))["carreras"]
@@ -76,11 +70,6 @@ class TestBuscarCarreras(TestBase):
         assert (ingenieria is not None)
         assert (ingenieria["codigo"] == '10')
         assert (ingenieria["nombre"] == 'Ingeniería en Informática')
-
-    def test_buscar_carreras_con_parametros_devuelve_bad_request(self):
-        client = self.app.test_client()
-        response = client.get(BUSCAR_CARRERAS_SERVICE, query_string={"parametro": "dato"})
-        assert (response.status_code == 400)
 
 
 if __name__ == '__main__':

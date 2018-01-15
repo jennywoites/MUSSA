@@ -65,6 +65,10 @@ class ClienteAPI:
         """URL: '/api/tematica/all'"""
         return self.BASE_URL + '/tematica/all'
 
+    def get_url_get_carreras(self):
+        """URL: '/api/carrera/all'"""
+        return self.BASE_URL + '/carrera/all'
+
     ################################################
     ##              Servicios DOCENTE             ##
     ################################################
@@ -105,3 +109,11 @@ class ClienteAPI:
         parametros = {}
         parametros["solo_verificadas"] = solo_verificadas
         return self.invocar_get(url_servicio, cookie, parametros)["tematicas"]
+
+    ################################################
+    ##            Servicios CARRERAS              ##
+    ################################################
+
+    def obtener_todas_las_carreras(self, cookie):
+        url_servicio = self.get_url_get_carreras()
+        return self.invocar_get(url_servicio, cookie, {})["carreras"]

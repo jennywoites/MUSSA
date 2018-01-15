@@ -143,9 +143,6 @@ def add_resources_api_rest(api):
 
 
 def add_resources_publicos(api):
-    from app.API_Rest.Services.BuscarCarrerasService import BuscarCarreras
-    api.add_resource(BuscarCarreras, '/api/BuscarCarreras')
-
     from app.API_Rest.Services.BuscarMateriasService import BuscarMaterias
     api.add_resource(BuscarMaterias, '/api/BuscarMaterias')
 

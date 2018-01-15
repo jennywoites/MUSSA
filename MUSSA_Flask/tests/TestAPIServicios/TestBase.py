@@ -75,3 +75,6 @@ class TestBase(TestCase):
 
     def get_url_obtener_todos_los_docentes(self):
         return ClienteAPI().get_url_obtener_todos_los_docentes()
+
+    def get_url_obtener_todas_las_carreras(self):
+        return ClienteAPI().get_url_get_carreras()

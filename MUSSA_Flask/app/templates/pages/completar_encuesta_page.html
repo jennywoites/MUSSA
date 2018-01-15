@@ -286,7 +286,6 @@
     function validarRespuestasParcialesYGuardarRespuestas(nextUrl) {
         var esGuardadoParcial = true;
         validarRespuestasYGuardarRespuestas(nextUrl, esGuardadoParcial, function(state, result) {
-            debugger;
             window.location.replace(nextUrl);
         });
     }
@@ -295,7 +294,6 @@
         var nextUrl = '{{ url_for('main.historial_encuestas_page') }}';
         var esGuardadoParcial = false;
         validarRespuestasYGuardarRespuestas(nextUrl, esGuardadoParcial, function(state, result) {
-            debugger;
             var param = {};
             param["id_encuesta"] = {{idEncuestaAlumno}};
 
@@ -303,7 +301,6 @@
             error_al_finalizar.hidden = true;
 
             do_request('POST', SERVICE_FINALIZAR_ENCUESTAS_ALUMNO, param, function(state, result) {
-                debugger;
                 window.location.replace(nextUrl);
             }, function(state, result) {
                 error_al_finalizar.hidden = false;
@@ -326,7 +323,6 @@
         }
 
         if ($.isEmptyObject(respuestas)) {
-            debugger;
             window.location.replace(nextUrl);
             return true;
         }
