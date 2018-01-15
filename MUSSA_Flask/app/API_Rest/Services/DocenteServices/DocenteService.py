@@ -18,13 +18,7 @@ class DocenteService(BaseService):
         self.logg_parametros_recibidos()
 
         parametros_son_validos, msj, codigo = self.validar_parametros({
-            "idDocente": {
-                "PARAMETRO": idDocente,
-                "FUNCIONES_VALIDACION": {
-                    self.id_es_valido: [],
-                    self.existe_id: [Docente]
-                }
-            }
+            "idDocente": self.validaciones_id_docente(idDocente)
         })
 
         if not parametros_son_validos:
@@ -44,13 +38,7 @@ class DocenteService(BaseService):
         self.logg_parametros_recibidos()
 
         parametros_son_validos, msj, codigo = self.validar_parametros({
-            "idDocente": {
-                "PARAMETRO": idDocente,
-                "FUNCIONES_VALIDACION": {
-                    self.id_es_valido: [],
-                    self.existe_id: [Docente]
-                }
-            }
+            "idDocente": self.validaciones_id_docente(idDocente)
         })
 
         if not parametros_son_validos:
@@ -65,6 +53,15 @@ class DocenteService(BaseService):
 
         return result
 
+    def validaciones_id_docente(self, idDocente):
+        return {
+            self.PARAMETRO: idDocente,
+            self.ES_OBLIGATORIO: True,
+            self.FUNCIONES_VALIDACION: {
+                self.id_es_valido: [],
+                self.existe_id: [Docente]
+            }
+        }
 
 #########################################
 CLASE = DocenteService

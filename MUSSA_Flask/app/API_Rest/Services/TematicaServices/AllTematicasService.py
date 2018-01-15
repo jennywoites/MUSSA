@@ -15,9 +15,10 @@ class AllTematicasService(BaseService):
 
         parametros_son_validos, msj, codigo = self.validar_parametros({
             "solo_verificadas": {
-                "PARAMETRO": solo_verificadas,
-                "FUNCIONES_VALIDACION": {
-                    self.booleano_es_valido: [False]
+                self.PARAMETRO: solo_verificadas,
+                self.ES_OBLIGATORIO: False,
+                self.FUNCIONES_VALIDACION: {
+                    self.booleano_es_valido: []
                 }
             }
         })

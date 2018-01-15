@@ -60,7 +60,9 @@ class BaseService(Resource):
     ##########################################################
     ##                      Validaciones                    ##
     ##########################################################
-
+    PARAMETRO = "PARAMETRO"
+    FUNCIONES_VALIDACION = "FUNCIONES_VALIDACION"
+    ES_OBLIGATORIO = "ES_OBLIGATORIO"
     def validar_parametros(self, parametros):
         """
         Valida los parametros enviados. Devuelve una tupla con los siguientes valores:
@@ -82,6 +84,7 @@ class BaseService(Resource):
         parametros_son_validos, msj, codigo = self.validar_parametros({
             "idTematica": {
                 "PARAMETRO": idTematica,
+                "ES_OBLIGATORIO": False,
                 "FUNCIONES_VALIDACION": {
                     self.id_es_valido: [],
                     self.existe_id: [TematicaMateria]
@@ -90,17 +93,25 @@ class BaseService(Resource):
         })
         """
         for nombre_parametro in parametros:
-            parametro = parametros[nombre_parametro]["PARAMETRO"]
-            funciones_validacion = parametros[nombre_parametro]["FUNCIONES_VALIDACION"]
+            parametro = parametros[nombre_parametro][self.PARAMETRO]
+            es_obligatorio = parametros[nombre_parametro][self.ES_OBLIGATORIO]
+            funciones_validacion = parametros[nombre_parametro][self.FUNCIONES_VALIDACION]
             for nombre_funcion_validacion in funciones_validacion:
-                argumentos_funcion = [nombre_parametro, parametro] + funciones_validacion[nombre_funcion_validacion]
+                argumentos_base = [nombre_parametro, parametro, es_obligatorio]
+                argumentos_funcion = argumentos_base + funciones_validacion[nombre_funcion_validacion]
                 es_valido, msj, codigo = nombre_funcion_validacion(*argumentos_funcion)
                 if not es_valido:
                     return es_valido, msj, codigo
+
         return True, 'Todos los parámetros son válidos', -1
 
+    def mensaje_campo_no_obligatorio(self, nombre_parametro):
+        return True, 'El ' + nombre_parametro + ' no existe pero no es obligatorio', -1
 
-    def id_es_valido(self, nombre_parametro, id_a_validar):
+    def id_es_valido(self, nombre_parametro, id_a_validar, es_obligatorio):
+        if not id_a_validar and not es_obligatorio:
+            return self.mensaje_campo_no_obligatorio(nombre_parametro)
+
         id_a_validar = str(id_a_validar)
 
         if not id_a_validar.isdigit():
@@ -113,7 +124,10 @@ class BaseService(Resource):
         return es_valido, msj, codigo
 
 
-    def existe_id(self, nombre_parametro, id_clase, clase):
+    def existe_id(self, nombre_parametro, id_clase, es_obligatorio, clase):
+        if not id_clase and not es_obligatorio:
+            return self.mensaje_campo_no_obligatorio(nombre_parametro)
+
         elemento = clase.query.get(id_clase)
 
         msj, codigo = ('El ' + nombre_parametro + ' existe', -1) if elemento \
@@ -122,11 +136,11 @@ class BaseService(Resource):
         return elemento is not None, msj, codigo
 
 
-    def booleano_es_valido(self, nombre_parametro, valor, obligatorio=False):
-        msj_base = "El valor booleano " + nombre_parametro
-        if not obligatorio and valor is None:
-            return True, msj_base + ' no es requerido', -1
+    def booleano_es_valido(self, nombre_parametro, valor, es_obligatorio):
+        if not es_obligatorio and valor is None:
+            return self.mensaje_campo_no_obligatorio(nombre_parametro)
 
+        msj_base = "El valor booleano " + nombre_parametro
         msj, codigo = (msj_base + ' no es válido', -1) if valor is None \
             else (msj_base + ' es válido', CLIENT_ERROR_BAD_REQUEST)
 

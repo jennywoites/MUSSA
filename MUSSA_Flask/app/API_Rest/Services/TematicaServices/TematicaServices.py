@@ -15,8 +15,9 @@ class TematicaService(BaseService):
 
         parametros_son_validos, msj, codigo = self.validar_parametros({
             "idTematica": {
-                "PARAMETRO": idTematica,
-                "FUNCIONES_VALIDACION": {
+                self.PARAMETRO: idTematica,
+                self.ES_OBLIGATORIO: True,
+                self.FUNCIONES_VALIDACION: {
                     self.id_es_valido: [],
                     self.existe_id: [TematicaMateria]
                 }
