@@ -1,6 +1,6 @@
 import logging
 import requests
-
+import json
 
 class ClienteAPI:
     class __ClienteAPI:
@@ -31,8 +31,17 @@ class ClienteAPI:
         self.escribir_resultado_servicio(url_servicio, response)
         return response.json()
 
-    def invocar_delete(self, url_servicio, cookies):
-        response = requests.delete(url_servicio, cookies=cookies)
+    def invocar_post(self, url_servicio, cookies, csrf_token, parametros=None):
+        if parametros:
+            response = requests.post(url_servicio, data=parametros, cookies=cookies, headers={"X-CSRFToken": csrf_token})
+        else:
+            response = requests.post(url_servicio, cookies=cookies, headers={"X-CSRFToken": csrf_token})
+
+        self.escribir_resultado_servicio(url_servicio, response)
+        return response.json()
+
+    def invocar_delete(self, url_servicio, cookies, csrf_token):
+        response = requests.delete(url_servicio, cookies=cookies, headers={"X-CSRFToken": csrf_token})
         self.escribir_resultado_servicio(url_servicio, response)
         return response.json()
 
@@ -64,9 +73,19 @@ class ClienteAPI:
         url_servicio = self.get_url_get_docente(idDocente)
         return self.invocar_get(url_servicio, cookie)
 
-    def eliminar_docente(self, cookie, idDocente):
+    def modificar_docente(self, cookie, csrf_token, idDocente, apellido, nombre, l_ids_cursos):
         url_servicio = self.get_url_get_docente(idDocente)
-        return self.invocar_delete(url_servicio, cookie)
+
+        parametros = {}
+        parametros["apellido"] = apellido
+        parametros["nombre"] = nombre
+        parametros["l_ids_cursos"] = json.dumps(l_ids_cursos)
+
+        return self.invocar_post(url_servicio, cookie, csrf_token, parametros)
+
+    def eliminar_docente(self, cookie, csrf_token, idDocente):
+        url_servicio = self.get_url_get_docente(idDocente)
+        return self.invocar_delete(url_servicio, cookie, csrf_token)
 
     def obtener_todos_los_docentes(self, cookie):
         url_servicio = self.get_url_obtener_todos_los_docentes()

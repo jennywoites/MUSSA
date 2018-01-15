@@ -216,6 +216,3 @@ def add_resources_administrador(api):
 
     from app.API_Rest.Services.ModificarCursoService import ModificarCurso
     api.add_resource(ModificarCurso, '/api/admin/ModificarCurso')
-
-    from app.API_Rest.Services.ModificarDocenteService import ModificarDocente
-    api.add_resource(ModificarDocente, '/api/admin/ModificarDocente')

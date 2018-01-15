@@ -2,6 +2,7 @@ from flask_restful import Resource
 import logging
 from flask import request
 from app.API_Rest.codes import *
+import json
 
 
 class BaseService(Resource):
@@ -57,12 +58,30 @@ class BaseService(Resource):
 
         return None
 
+    def obtener_texto(self, nombre_campo):
+        """
+        Devuelve el dato del campo en formato string.
+        Si el campo no existe devuelve None.
+        """
+        return self.obtener_parametro(nombre_campo)
+
+    def obtener_lista(self, nombre_campo):
+        """
+        Devuelve una lista decodificada.
+        Si el campo no existe devuelve una lista vacía
+        """
+        l_valores = self.obtener_parametro(nombre_campo)
+        return json.loads(l_valores) if l_valores else []
+
+
     ##########################################################
     ##                      Validaciones                    ##
     ##########################################################
+
     PARAMETRO = "PARAMETRO"
     FUNCIONES_VALIDACION = "FUNCIONES_VALIDACION"
     ES_OBLIGATORIO = "ES_OBLIGATORIO"
+
     def validar_parametros(self, parametros):
         """
         Valida los parametros enviados. Devuelve una tupla con los siguientes valores:
@@ -79,6 +98,9 @@ class BaseService(Resource):
                 - valor: Lista de parametros extras que recibe la funcion ademas del atributo. Si no recibe parametros
                         extras entonces la lista es una lista vacía.
 
+        * En caso de que el parámetro sea una lista o tupla se aplicarán las funciones de validación a cada elemento
+         de la tupla o lista
+
         Ejemplo de invocación:
 
         parametros_son_validos, msj, codigo = self.validar_parametros({
@@ -93,15 +115,25 @@ class BaseService(Resource):
         })
         """
         for nombre_parametro in parametros:
-            parametro = parametros[nombre_parametro][self.PARAMETRO]
+            parametro_o_lista = parametros[nombre_parametro][self.PARAMETRO]
+
+            elementos_a_evaluar = [parametro_o_lista] if not isinstance(parametro_o_lista, (list, tuple)) \
+                else parametro_o_lista
+
             es_obligatorio = parametros[nombre_parametro][self.ES_OBLIGATORIO]
             funciones_validacion = parametros[nombre_parametro][self.FUNCIONES_VALIDACION]
-            for nombre_funcion_validacion in funciones_validacion:
-                argumentos_base = [nombre_parametro, parametro, es_obligatorio]
-                argumentos_funcion = argumentos_base + funciones_validacion[nombre_funcion_validacion]
-                es_valido, msj, codigo = nombre_funcion_validacion(*argumentos_funcion)
-                if not es_valido:
-                    return es_valido, msj, codigo
+
+            for i in range(len(elementos_a_evaluar)):
+                parametro = elementos_a_evaluar[i]
+                nombre_parametro_actual = nombre_parametro if (len(elementos_a_evaluar) == 1) \
+                    else (nombre_parametro + "-" + str(i))
+
+                for nombre_funcion_validacion in funciones_validacion:
+                    argumentos_base = [nombre_parametro_actual, parametro, es_obligatorio]
+                    argumentos_funcion = argumentos_base + funciones_validacion[nombre_funcion_validacion]
+                    es_valido, msj, codigo = nombre_funcion_validacion(*argumentos_funcion)
+                    if not es_valido:
+                        return es_valido, msj, codigo
 
         return True, 'Todos los parámetros son válidos', -1
 
@@ -123,7 +155,6 @@ class BaseService(Resource):
 
         return es_valido, msj, codigo
 
-
     def existe_id(self, nombre_parametro, id_clase, es_obligatorio, clase):
         if not id_clase and not es_obligatorio:
             return self.mensaje_campo_no_obligatorio(nombre_parametro)
@@ -135,7 +166,6 @@ class BaseService(Resource):
 
         return elemento is not None, msj, codigo
 
-
     def booleano_es_valido(self, nombre_parametro, valor, es_obligatorio):
         if not es_obligatorio and valor is None:
             return self.mensaje_campo_no_obligatorio(nombre_parametro)
@@ -145,6 +175,20 @@ class BaseService(Resource):
             else (msj_base + ' es válido', CLIENT_ERROR_BAD_REQUEST)
 
         return valor is not None, msj, codigo
+
+    def validar_contenido_y_longitud_texto(self, nombre_parametro, valor, es_obligatorio, len_min, len_max):
+        if not es_obligatorio and valor is None:
+            return self.mensaje_campo_no_obligatorio(nombre_parametro)
+
+        for simbolo in "¡!,.-¿?*/+-'[]{}() &%$|@#~¬=;:\n":
+            valor = valor.replace(simbolo, '')
+
+        es_valido = (len_min <= len(valor) <= len_max)
+        msj, codigo = ("El texto de {} debe tener al menos {} caracteres, y tener una logitud menor a {} "
+                       "caracteres".format(nombre_parametro, len_min, len_max), CLIENT_ERROR_BAD_REQUEST) if es_valido \
+                        else ('El texto de ' + nombre_parametro + ' es valido.', -1)
+
+        return es_valido, msj, codigo
 
 #######################################################################################################################
 # Todos los servicios requieren tener los siguientes campos definidos al finalizar la declaracion de la clase.        #

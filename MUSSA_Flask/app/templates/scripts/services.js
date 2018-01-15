@@ -45,7 +45,6 @@ function do_request(method, page, CSRF_token, parametros, onSucces, onError) {
 
 SERVICE_BUSCAR_CARRERAS = '/api/BuscarCarreras'
 SERVICE_BUSCAR_MATERIAS = '/api/BuscarMaterias'
-SERVICE_MODIFICAR_DOCENTE = '/api/admin/ModificarDocente'
 
 HTTP = "http://"
 IP = "localhost:"

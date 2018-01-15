@@ -31,9 +31,8 @@ GUARDAR_RESPUESTAS_ENCUESTA_ALUMNO_SERVICE = BASE_URL + "GuardarRespuestasEncues
 ENCUESTA_ALUMNO_ESTA_COMPLETA_SERVICE = BASE_URL + 'EncuestaAlumnoEstaCompleta'
 FINALIZAR_ENCUESTA_ALUMNO_SERVICE = BASE_URL + 'FinalizarEncuestaAlumno'
 OBTENER_RESPUESTAS_ALUMNO_PARA_PREGUNTAS_ESPECIFICAS_SERVICE = (BASE_URL +
-                                                        "ObtenerRespuestasEncuestaAlumnoParaPreguntasEspecificas")
+                                                                "ObtenerRespuestasEncuestaAlumnoParaPreguntasEspecificas")
 
 # Requiere ser administrador
 GUARDAR_HORARIOS_DESDE_ARCHIVO_PDF_SERVICE = BASE_URL + ADMIN + "GuardarHorariosDesdeArchivoPDF"
 MODIFICAR_CURSO_SERVICE = BASE_URL + ADMIN + "ModificarCurso"
-MODIFICAR_DOCENTE_SEVICE = BASE_URL + ADMIN + "ModificarDocente"
