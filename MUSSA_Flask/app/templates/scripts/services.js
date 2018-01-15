@@ -66,6 +66,17 @@ function eliminar_docente_service(token, idDocente, onSucces, onError) {
     do_request('DELETE', url_servicio, token, {}, onSucces, onError);
 }
 
+function modificar_docente_service(token, idDocente, apellido, nombre, l_ids_curso, onSucces, onError) {
+    var url_servicio = BASE_URL + '/docente/' + idDocente;
+
+    parametros = {};
+    parametro["apellido"] = apellido;
+    parametro["nombre"] = nombre;
+    parametro["l_ids_curso"] = JSON.stringify(l_ids_curso);
+
+    do_request('POST', url_servicio, token, parametros, onSucces, onError);
+}
+
 function obtener_todos_los_docentes_service(token, onSucces, onError) {
     var url_servicio = BASE_URL + '/docente/all';
     do_request('GET', url_servicio, token, {}, function(status, response) {
@@ -84,8 +95,10 @@ function get_tematica_service(token, idTematica, onSuccess, onError) {
 
 function obtener_todas_las_tematicas_service(token, solo_verificadas, onSuccess, onError) {
     var url_servicio = BASE_URL + '/tematica/all';
+
     parametros = {}
     parametros["solo_verificadas"] = solo_verificadas
+
     do_request('GET', url_servicio, parametros, onSuccess, onError);
 }
 

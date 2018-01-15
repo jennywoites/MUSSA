@@ -3,7 +3,8 @@ import logging
 from flask import request
 from app.API_Rest.codes import *
 import json
-
+from flask_user import current_user
+from app.models.alumno_models import Alumno
 
 class BaseService(Resource):
     def getNombreClaseServicio(self):
@@ -189,6 +190,20 @@ class BaseService(Resource):
                         else ('El texto de ' + nombre_parametro + ' es valido.', -1)
 
         return es_valido, msj, codigo
+
+    def alumno_es_usuario_actual(self, nombre_parametro, valor, es_obligatorio):
+        """
+        Devuelve True si el id enviado como valor corresponde al id de alumno del usuario actual
+        False en caso contrario.
+        """
+        alumno = Alumno.query.filter_by(user_id=current_user.id).first()
+        es_valido = (alumno.id == valor)
+
+        msj, codigo = ('El alumno pertenece al usuario actual', -1) if es_valido \
+            else ('El id de alumno no pertenece al usuario actual', CLIENT_ERROR_UNAUTHORIZED)
+
+        return es_valido, msj, codigo
+
 
 #######################################################################################################################
 # Todos los servicios requieren tener los siguientes campos definidos al finalizar la declaracion de la clase.        #
