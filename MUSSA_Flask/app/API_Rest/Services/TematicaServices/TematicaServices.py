@@ -26,7 +26,7 @@ class TematicaService(BaseService):
 
         if not parametros_son_validos:
             self.logg_error(msj)
-            return {'Error': 'msj'}, codigo
+            return {'Error': msj}, codigo
 
         tematica = TematicaMateria.query.get(idTematica)
         tematica_result = generarJSON_tematica_materia(tematica)

@@ -24,7 +24,7 @@ class DocenteService(BaseService):
 
         if not parametros_son_validos:
             self.logg_error(msj)
-            return {'Error': 'msj'}, codigo
+            return {'Error': msj}, codigo
 
         docente = Docente.query.get(idDocente)
         docente_result = generarJSON_docente(docente)
@@ -44,7 +44,7 @@ class DocenteService(BaseService):
 
         if not parametros_son_validos:
             self.logg_error(msj)
-            return {'Error': 'msj'}, codigo
+            return {'Error': msj}, codigo
 
         Docente.query.filter_by(id=idDocente).delete()
         db.session.commit()
@@ -64,7 +64,7 @@ class DocenteService(BaseService):
         if not nombre or not apellido:
             msj = "Uno o más parámetros requeridos no fueron enviados"
             self.logg_error(msj)
-            return {'Error': 'msj'}, CLIENT_ERROR_BAD_REQUEST
+            return {'Error': msj}, CLIENT_ERROR_BAD_REQUEST
 
         l_ids_cursos = self.obtener_lista('l_ids_cursos')
 
@@ -96,7 +96,7 @@ class DocenteService(BaseService):
 
         if not parametros_son_validos:
             self.logg_error(msj)
-            return {'Error': 'msj'}, codigo
+            return {'Error': msj}, codigo
 
         self.actualizar_datos_docente(idDocente, apellido, nombre)
 

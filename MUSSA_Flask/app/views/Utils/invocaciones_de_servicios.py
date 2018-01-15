@@ -4,6 +4,7 @@ from app.API_Rest.services import *
 import json
 from app.DAO.EncuestasDAO import *
 
+
 def escribir_resultado_servicio(nombre_servicio, response):
     logging.info('Servicio {} result: {} - {}'.format(nombre_servicio, response, response.text))
 
@@ -26,17 +27,6 @@ def invocar_servicio_obtener_correlativas(cookie, idMateria):
     escribir_resultado_servicio('Obtener Materias Correlativas', correlativas_response)
 
     return json.loads(correlativas_response.text)["correlativas"]
-
-
-def invocar_servicio_obtener_carreras_para_una_materia(cookie, codigo):
-    parametros = {}
-    parametros["codigo_materia"] = codigo
-
-    carreras_response = requests.get(OBTENER_CARRERAS_DONDE_SE_DICTA_LA_MATERIA_SERVICE, params=parametros,
-                                     cookies=cookie)
-    escribir_resultado_servicio('Buscar Carreras donde se dicta una materia', carreras_response)
-
-    return json.loads(carreras_response.text)["carreras"]
 
 
 def invocar_guardar_horarios_desde_PDF(csrf_token, cookie, ruta, anio, cuatrimestre):
@@ -198,6 +188,7 @@ def invocar_servicio_buscar_materias(cookie, carrera):
 
     return json.loads(materias_response.text)["materias"]
 
+
 def invocar_obtener_respuestas_encuesta_alumno(cookie, id_encuesta, preguntas):
     parametros = {}
     parametros["id_encuesta"] = id_encuesta
@@ -211,12 +202,13 @@ def invocar_obtener_respuestas_encuesta_alumno(cookie, id_encuesta, preguntas):
     parametros["ids_preguntas"] = ids_preguntas[:-1]
 
     respuestas_response = requests.get(OBTENER_RESPUESTAS_ALUMNO_PARA_PREGUNTAS_ESPECIFICAS_SERVICE,
-                                      params=parametros, cookies=cookie)
+                                       params=parametros, cookies=cookie)
     escribir_resultado_servicio('Obtener Respuestas Alumno para preguntas específicas', respuestas_response)
     return json.loads(respuestas_response.text)["respuestas_encuestas"]
 
+
 def invocar_encuesta_alumno_esta_completa(cookie, idEncuestaAlumno):
     parametros = {"id_encuesta": idEncuestaAlumno}
-    response = requests.get(ENCUESTA_ALUMNO_ESTA_COMPLETA_SERVICE,  params=parametros, cookies=cookie)
+    response = requests.get(ENCUESTA_ALUMNO_ESTA_COMPLETA_SERVICE, params=parametros, cookies=cookie)
     escribir_resultado_servicio('Encuesta Alumno está completa', response)
     return json.loads(response.text)["esta_completa"]

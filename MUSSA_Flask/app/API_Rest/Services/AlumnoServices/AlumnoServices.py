@@ -30,7 +30,7 @@ class AlumnoService(BaseService):
 
         if not parametros_son_validos:
             self.logg_error(msj)
-            return {'Error': 'msj'}, codigo
+            return {'Error': msj}, codigo
 
         alumno = Alumno.query.get(idAlumno)
         alumno_result = generarJSON_alumno(alumno)

@@ -6,6 +6,7 @@ import json
 from flask_user import current_user
 from app.models.alumno_models import Alumno
 
+
 class BaseService(Resource):
     def getNombreClaseServicio(self):
         raise NotImplementedError("Todas las clases hijas deben tener un nombre. "
@@ -73,7 +74,6 @@ class BaseService(Resource):
         """
         l_valores = self.obtener_parametro(nombre_campo)
         return json.loads(l_valores) if l_valores else []
-
 
     ##########################################################
     ##                      Validaciones                    ##
@@ -187,7 +187,29 @@ class BaseService(Resource):
         es_valido = (len_min <= len(valor) <= len_max)
         msj, codigo = ("El texto de {} debe tener al menos {} caracteres, y tener una logitud menor a {} "
                        "caracteres".format(nombre_parametro, len_min, len_max), CLIENT_ERROR_BAD_REQUEST) if es_valido \
-                        else ('El texto de ' + nombre_parametro + ' es valido.', -1)
+            else ('El texto de ' + nombre_parametro + ' es valido.', -1)
+
+        return es_valido, msj, codigo
+
+    def es_numero_valido(self, nombre_parametro, valor, es_obligatorio):
+        if not es_obligatorio and valor is None:
+            return self.mensaje_campo_no_obligatorio(nombre_parametro)
+
+        es_valido = str(valor).isdigit()
+
+        msj, codigo = ("El {} no es un número".format(nombre_parametro), CLIENT_ERROR_BAD_REQUEST) if not es_valido \
+            else ("El {} es un número válido".format(nombre_parametro), -1)
+
+        return es_valido, msj, codigo
+
+    def existe_el_elemento(self, nombre_parametro, valor, es_obligatorio, clase, propiedad):
+        if not es_obligatorio and valor is None:
+            return self.mensaje_campo_no_obligatorio(nombre_parametro)
+
+        es_valido = len(clase.query.filter(propiedad == valor).all()) > 0
+
+        msj, codigo = ("El {} no existe".format(nombre_parametro), CLIENT_ERROR_NOT_FOUND) if not es_valido \
+            else ("El {} existe".format(nombre_parametro), -1)
 
         return es_valido, msj, codigo
 
@@ -203,7 +225,6 @@ class BaseService(Resource):
             else ('El id de alumno no pertenece al usuario actual', CLIENT_ERROR_UNAUTHORIZED)
 
         return es_valido, msj, codigo
-
 
 #######################################################################################################################
 # Todos los servicios requieren tener los siguientes campos definidos al finalizar la declaracion de la clase.        #

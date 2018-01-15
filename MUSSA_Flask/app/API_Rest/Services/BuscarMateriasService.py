@@ -1,10 +1,9 @@
 from flask_restful import Resource
 from app.API_Rest.codes import *
 from flask import request
-
 from app.models.carreras_models import Carrera, Materia
-
 import logging
+
 
 class BuscarMaterias(Resource):
     def get(self):
@@ -40,7 +39,6 @@ class BuscarMaterias(Resource):
 
         return result
 
-
     def son_parametros_validos(self, codigo, nombre, carreras):
         if codigo and not self.es_codigo_valido(codigo):
             return False
@@ -53,11 +51,9 @@ class BuscarMaterias(Resource):
 
         return True
 
-
     def es_codigo_valido(self, codigo):
         LONGITUD_CODIGO_MAXIMA = 4
         return codigo.isdigit() and len(codigo) <= LONGITUD_CODIGO_MAXIMA
-
 
     def es_nombre_de_materia_valido(self, nombre):
         for palabra in nombre.split(" "):
@@ -65,12 +61,10 @@ class BuscarMaterias(Resource):
                 return False
         return True
 
-
     def son_carreras_validas(self, carreras):
         for carrera in carreras:
             if (not carrera.isdigit() or
-                not Carrera.query.filter_by(codigo=carrera).first()):
-                
+                    not Carrera.query.filter_by(codigo=carrera).first()):
                 return False
 
         return True

@@ -114,6 +114,11 @@ class ClienteAPI:
     ##            Servicios CARRERAS              ##
     ################################################
 
-    def obtener_todas_las_carreras(self, cookie):
+    def obtener_todas_las_carreras(self, cookie, codigo_materia=''):
         url_servicio = self.get_url_get_carreras()
-        return self.invocar_get(url_servicio, cookie, {})["carreras"]
+
+        parametros = {}
+        if codigo_materia:
+            parametros["codigo_materia"] = codigo_materia
+
+        return self.invocar_get(url_servicio, cookie, parametros)["carreras"]

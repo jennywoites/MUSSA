@@ -1,18 +1,12 @@
 if __name__ == '__main__':
-    import os
     import sys
 
     sys.path.append("../..")
 
 from tests.TestAPIServicios.TestBase import TestBase
-
-import app
 from app import db
 from app.models.carreras_models import Carrera, Materia, TipoMateria
-
 import json
-
-from app.API_Rest.services import *
 from app.API_Rest.codes import *
 
 
@@ -96,7 +90,7 @@ class TestObtenerCarrerasDondeSeDictaLaMateria(TestBase):
     def test_obtener_carreras_codigo_materia_con_mas_de_una_carrera_devuelve_todas_las_carreras(self):
         params = {"codigo_materia": "9000"}
         client = self.app.test_client()
-        response = client.get(OBTENER_CARRERAS_DONDE_SE_DICTA_LA_MATERIA_SERVICE, query_string=params)
+        response = client.get(self.get_url_obtener_todas_las_carreras(), query_string=params)
         assert (response.status_code == SUCCESS_OK)
 
         carreras = json.loads(response.get_data(as_text=True))["carreras"]
@@ -106,21 +100,19 @@ class TestObtenerCarrerasDondeSeDictaLaMateria(TestBase):
         ingenieria, licenciatura = self.obtener_carreras(carreras)
 
         assert (licenciatura is not None)
-        assert (licenciatura["id"] == 1)
+        assert (licenciatura["id_carrera"] == 1)
         assert (licenciatura["codigo"] == '9')
         assert (licenciatura["nombre"] == 'Licenciatura en Análisis de Sistemas')
-        assert (licenciatura["id_materia"] == 1)
 
         assert (ingenieria is not None)
-        assert (ingenieria["id"] == 2)
+        assert (ingenieria["id_carrera"] == 2)
         assert (ingenieria["codigo"] == '10')
         assert (ingenieria["nombre"] == 'Ingeniería en Informática')
-        assert (ingenieria["id_materia"] == 2)
 
     def test_obtener_carreras_codigo_materia_con_unica_carrera_devuelve_una_sola_carrera(self):
         params = {"codigo_materia": "8686"}
         client = self.app.test_client()
-        response = client.get(OBTENER_CARRERAS_DONDE_SE_DICTA_LA_MATERIA_SERVICE, query_string=params)
+        response = client.get(self.get_url_obtener_todas_las_carreras(), query_string=params)
         assert (response.status_code == SUCCESS_OK)
 
         carreras = json.loads(response.get_data(as_text=True))["carreras"]
@@ -130,27 +122,20 @@ class TestObtenerCarrerasDondeSeDictaLaMateria(TestBase):
         carrera = carreras[0]
 
         assert (carrera is not None)
-        assert (carrera["id"] == 1)
+        assert (carrera["id_carrera"] == 1)
         assert (carrera["codigo"] == '9')
         assert (carrera["nombre"] == 'Licenciatura en Análisis de Sistemas')
-        assert (carrera["id_materia"] == 3)
 
     def test_obtener_carreras_con_codigo_inexistente_devuelve_bad_request(self):
         params = {"codigo_materia": "8998"}
         client = self.app.test_client()
-        response = client.get(OBTENER_CARRERAS_DONDE_SE_DICTA_LA_MATERIA_SERVICE, query_string=params)
-        assert (response.status_code == CLIENT_ERROR_BAD_REQUEST)
+        response = client.get(self.get_url_obtener_todas_las_carreras(), query_string=params)
+        assert (response.status_code == CLIENT_ERROR_NOT_FOUND)
 
     def test_obtener_carreras_con_codigo_invalido_devuelve_bad_request(self):
         params = {"codigo_materia": "8ad8"}
         client = self.app.test_client()
-        response = client.get(OBTENER_CARRERAS_DONDE_SE_DICTA_LA_MATERIA_SERVICE, query_string=params)
-        assert (response.status_code == CLIENT_ERROR_BAD_REQUEST)
-
-    def test_obtener_carreras_con_parametros_invalidos_devuelve_bad_request(self):
-        params = {"parametro": "dato"}
-        client = self.app.test_client()
-        response = client.get(OBTENER_CARRERAS_DONDE_SE_DICTA_LA_MATERIA_SERVICE, query_string=params)
+        response = client.get(self.get_url_obtener_todas_las_carreras(), query_string=params)
         assert (response.status_code == CLIENT_ERROR_BAD_REQUEST)
 
 

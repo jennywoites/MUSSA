@@ -17,6 +17,7 @@ mail = Mail()
 migrate = Migrate()
 
 import logging
+
 logging.basicConfig(filename='MUSSA.log', level=logging.DEBUG)
 
 
@@ -132,7 +133,7 @@ def add_resources_api_rest(api):
             for nombre_modulo in os.listdir(directorio):
                 if nombre_modulo in ['__init__.py', '__pycache__']:
                     continue
-                nombre_paquete =  os.path.splitext(nombre_modulo)[0]
+                nombre_paquete = os.path.splitext(nombre_modulo)[0]
                 paquete = '.'.join(['app', 'API_Rest', 'Services', archivo_o_directorio, nombre_paquete])
                 modulo = importlib.import_module(paquete)
                 api.add_resource(modulo.CLASE, *modulo.URLS_SERVICIOS)
@@ -151,9 +152,6 @@ def add_resources_publicos(api):
 
     from app.API_Rest.Services.ObtenerMateriasCorrelativasService import ObtenerMateriasCorrelativas
     api.add_resource(ObtenerMateriasCorrelativas, '/api/ObtenerMateriasCorrelativas')
-
-    from app.API_Rest.Services.ObtenerCarrerasDondeSeDictaLaMateriaService import ObtenerCarrerasDondeSeDictaLaMateria
-    api.add_resource(ObtenerCarrerasDondeSeDictaLaMateria, '/api/ObtenerCarrerasDondeSeDictaLaMateria')
 
     from app.API_Rest.Services.BuscarCursosService import BuscarCursos
     api.add_resource(BuscarCursos, '/api/BuscarCursos')
@@ -193,7 +191,8 @@ def add_resources_usuarios(api):
     from app.API_Rest.Services.ObtenerEncuestasAlumnoService import ObtenerEncuestasAlumno
     api.add_resource(ObtenerEncuestasAlumno, '/api/ObtenerEncuestasAlumno')
 
-    from app.API_Rest.Services.ObtenerRespuestasEncuestaAlumnoParaPreguntasEspecificasService import ObtenerRespuestasEncuestaAlumnoParaPreguntasEspecificas
+    from app.API_Rest.Services.ObtenerRespuestasEncuestaAlumnoParaPreguntasEspecificasService import \
+        ObtenerRespuestasEncuestaAlumnoParaPreguntasEspecificas
     api.add_resource(ObtenerRespuestasEncuestaAlumnoParaPreguntasEspecificas,
                      '/api/ObtenerRespuestasEncuestaAlumnoParaPreguntasEspecificas')
 

@@ -25,7 +25,7 @@ class AllTematicasService(BaseService):
 
         if not parametros_son_validos:
             self.logg_error(msj)
-            return {'Error': 'msj'}, codigo
+            return {'Error': msj}, codigo
 
         filtros = {}
         filtros["solo_verificadas"] = solo_verificadas
