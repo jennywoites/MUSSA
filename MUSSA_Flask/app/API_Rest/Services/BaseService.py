@@ -5,6 +5,7 @@ from app.API_Rest.codes import *
 import json
 from flask_user import current_user
 from app.models.alumno_models import Alumno
+from app import db
 
 
 class BaseService(Resource):
@@ -237,16 +238,9 @@ class BaseService(Resource):
     def servicio_get_base(self, idClase, nombreParametro, clase, funcion_generador_JSON):
         self.logg_parametros_recibidos()
 
-        parametros_son_validos, msj, codigo = self.validar_parametros({
-            nombreParametro: {
-                self.PARAMETRO: idClase,
-                self.ES_OBLIGATORIO: True,
-                self.FUNCIONES_VALIDACION: [
-                    (self.id_es_valido, []),
-                    (self.existe_id, [clase])
-                ]
-            }
-        })
+        parametros_son_validos, msj, codigo = self.validar_parametros(
+            self.validaciones_entidad_basica(nombreParametro, idClase, clase)
+        )
 
         if not parametros_son_validos:
             self.logg_error(msj)
@@ -259,7 +253,35 @@ class BaseService(Resource):
 
         return result
 
+    def servicio_delete_base(self, idClase, nombreParametro, clase):
+        self.logg_parametros_recibidos()
 
+        parametros_son_validos, msj, codigo = self.validar_parametros(
+            self.validaciones_entidad_basica(nombreParametro, idClase, clase)
+        )
+
+        if not parametros_son_validos:
+            self.logg_error(msj)
+            return {'Error': msj}, codigo
+
+        clase.query.filter_by(id=idClase).delete()
+        db.session.commit()
+
+        result = SUCCESS_NO_CONTENT
+        self.logg_resultado(result)
+
+        return result
+
+
+    def validaciones_entidad_basica(self, nombreParametro, idClase, clase):
+        return {nombreParametro: {
+            self.PARAMETRO: idClase,
+            self.ES_OBLIGATORIO: True,
+            self.FUNCIONES_VALIDACION: [
+                (self.id_es_valido, []),
+                (self.existe_id, [clase])
+            ]
+        }}
 
 #######################################################################################################################
 # Todos los servicios requieren tener los siguientes campos definidos al finalizar la declaracion de la clase.        #

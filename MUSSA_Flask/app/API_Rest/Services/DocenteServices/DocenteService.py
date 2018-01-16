@@ -21,23 +21,7 @@ class DocenteService(BaseService):
 
     @roles_accepted('admin')
     def delete(self, idDocente):
-        self.logg_parametros_recibidos()
-
-        parametros_son_validos, msj, codigo = self.validar_parametros({
-            "idDocente": self.validaciones_id_docente(idDocente)
-        })
-
-        if not parametros_son_validos:
-            self.logg_error(msj)
-            return {'Error': msj}, codigo
-
-        Docente.query.filter_by(id=idDocente).delete()
-        db.session.commit()
-
-        result = SUCCESS_NO_CONTENT
-        self.logg_resultado(result)
-
-        return result
+        self.servicio_delete_base(idDocente, "idDocente", Docente)
 
     @roles_accepted('admin')
     def post(self, idDocente):
@@ -54,7 +38,14 @@ class DocenteService(BaseService):
         l_ids_cursos = self.obtener_lista('l_ids_cursos')
 
         parametros_son_validos, msj, codigo = self.validar_parametros({
-            "idDocente": self.validaciones_id_docente(idDocente),
+            "idDocente": {
+                self.PARAMETRO: idDocente,
+                self.ES_OBLIGATORIO: True,
+                self.FUNCIONES_VALIDACION: [
+                    (self.id_es_valido, []),
+                    (self.existe_id, [Docente])
+                ]
+            },
             "apellido": {
                 self.PARAMETRO: apellido,
                 self.ES_OBLIGATORIO: True,
@@ -108,16 +99,6 @@ class DocenteService(BaseService):
                 curso_id=id_curso
             ))
             db.session.commit()
-
-    def validaciones_id_docente(self, idDocente):
-        return {
-            self.PARAMETRO: idDocente,
-            self.ES_OBLIGATORIO: True,
-            self.FUNCIONES_VALIDACION: [
-                (self.id_es_valido, []),
-                (self.existe_id, [Docente])
-            ]
-        }
 
 
 #########################################
