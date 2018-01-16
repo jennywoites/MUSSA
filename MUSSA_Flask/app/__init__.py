@@ -147,9 +147,6 @@ def add_resources_publicos(api):
     from app.API_Rest.Services.BuscarMateriasService import BuscarMaterias
     api.add_resource(BuscarMaterias, '/api/BuscarMaterias')
 
-    from app.API_Rest.Services.ObtenerMateriasCorrelativasService import ObtenerMateriasCorrelativas
-    api.add_resource(ObtenerMateriasCorrelativas, '/api/ObtenerMateriasCorrelativas')
-
     from app.API_Rest.Services.BuscarCursosService import BuscarCursos
     api.add_resource(BuscarCursos, '/api/BuscarCursos')
 

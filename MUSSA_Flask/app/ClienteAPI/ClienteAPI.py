@@ -2,6 +2,7 @@ import logging
 import requests
 import json
 
+
 class ClienteAPI:
     class __ClienteAPI:
         def __init__(self):
@@ -33,7 +34,8 @@ class ClienteAPI:
 
     def invocar_post(self, url_servicio, cookies, csrf_token, parametros=None):
         if parametros:
-            response = requests.post(url_servicio, data=parametros, cookies=cookies, headers={"X-CSRFToken": csrf_token})
+            response = requests.post(url_servicio, data=parametros, cookies=cookies,
+                                     headers={"X-CSRFToken": csrf_token})
         else:
             response = requests.post(url_servicio, cookies=cookies, headers={"X-CSRFToken": csrf_token})
 
@@ -73,7 +75,12 @@ class ClienteAPI:
         """URL: '/api/materia/<int:idMateria>'"""
         return self.BASE_URL + '/materia/' + str(idMateria)
 
-    ################################################
+    def get_url_materias_correlativas(self, idMateria):
+        """URL: '/api/materia/<int:idMateria>/correlativas'"""
+        return self.BASE_URL + '/materia/' + str(idMateria) + '/correlativas'
+
+        ################################################
+
     ##              Servicios DOCENTE             ##
     ################################################
 
@@ -134,3 +141,7 @@ class ClienteAPI:
     def get_materia(self, cookie, idMateria):
         url_servicio = self.get_url_get_materia(idMateria)
         return self.invocar_get(url_servicio, cookie)
+
+    def obtener_materias_correlativas(self, cookie, idMateria):
+        url_servicio = self.get_url_materias_correlativas(idMateria)
+        return self.invocar_get(url_servicio, cookie)["correlativas"]

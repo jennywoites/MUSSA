@@ -9,16 +9,6 @@ def escribir_resultado_servicio(nombre_servicio, response):
     logging.info('Servicio {} result: {} - {}'.format(nombre_servicio, response, response.text))
 
 
-def invocar_servicio_obtener_correlativas(cookie, idMateria):
-    parametros = {}
-    parametros["id_materia"] = idMateria
-
-    correlativas_response = requests.get(OBTENER_MATERIAS_CORRELATIVAS_SERVICE, params=parametros, cookies=cookie)
-    escribir_resultado_servicio('Obtener Materias Correlativas', correlativas_response)
-
-    return json.loads(correlativas_response.text)["correlativas"]
-
-
 def invocar_guardar_horarios_desde_PDF(csrf_token, cookie, ruta, anio, cuatrimestre):
     parametros = {}
     parametros["ruta"] = ruta
