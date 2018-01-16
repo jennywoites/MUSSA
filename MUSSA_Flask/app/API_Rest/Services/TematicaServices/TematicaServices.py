@@ -11,29 +11,7 @@ class TematicaService(BaseService):
 
     @roles_accepted('admin')
     def get(self, idTematica):
-        self.logg_parametros_recibidos()
-
-        parametros_son_validos, msj, codigo = self.validar_parametros({
-            "idTematica": {
-                self.PARAMETRO: idTematica,
-                self.ES_OBLIGATORIO: True,
-                self.FUNCIONES_VALIDACION: {
-                    self.id_es_valido: [],
-                    self.existe_id: [TematicaMateria]
-                }
-            }
-        })
-
-        if not parametros_son_validos:
-            self.logg_error(msj)
-            return {'Error': msj}, codigo
-
-        tematica = TematicaMateria.query.get(idTematica)
-        tematica_result = generarJSON_tematica_materia(tematica)
-
-        result = (tematica_result, SUCCESS_OK)
-        self.logg_resultado(result)
-        return result
+        return self.servicio_get_base(idTematica, "idTematica", TematicaMateria, generarJSON_tematica_materia)
 
 
 #########################################

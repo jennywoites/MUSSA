@@ -4,6 +4,7 @@ from app.API_Rest.Services.BaseService import BaseService
 from app.models.generadorJSON.alumno_generadorJSON import generarJSON_alumno
 from app.models.alumno_models import Alumno
 
+
 class AlumnoService(BaseService):
     def getNombreClaseServicio(self):
         return "Alumno Service"

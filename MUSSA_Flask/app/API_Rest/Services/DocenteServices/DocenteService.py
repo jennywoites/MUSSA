@@ -7,6 +7,7 @@ from app.models.generadorJSON.docentes_generadorJSON import generarJSON_docente
 from app.models.docentes_models import CursosDocente
 from app.models.horarios_models import Curso
 
+
 class DocenteService(BaseService):
     def getNombreClaseServicio(self):
         return "Docente Service"
@@ -16,23 +17,7 @@ class DocenteService(BaseService):
     ##########################################
 
     def get(self, idDocente):
-        self.logg_parametros_recibidos()
-
-        parametros_son_validos, msj, codigo = self.validar_parametros({
-            "idDocente": self.validaciones_id_docente(idDocente)
-        })
-
-        if not parametros_son_validos:
-            self.logg_error(msj)
-            return {'Error': msj}, codigo
-
-        docente = Docente.query.get(idDocente)
-        docente_result = generarJSON_docente(docente)
-
-        result = (docente_result, SUCCESS_OK)
-        self.logg_resultado(result)
-
-        return result
+        return self.servicio_get_base(idDocente, "idDocente", Docente, generarJSON_docente)
 
     @roles_accepted('admin')
     def delete(self, idDocente):
@@ -133,6 +118,7 @@ class DocenteService(BaseService):
                 self.existe_id: [Docente]
             }
         }
+
 
 #########################################
 CLASE = DocenteService

@@ -226,6 +226,37 @@ class BaseService(Resource):
 
         return es_valido, msj, codigo
 
+    ##########################################################
+    ##             Servicios Base de las Entidades          ##
+    ##########################################################
+
+    def servicio_get_base(self, idClase, nombreParametro, clase, funcion_generador_JSON):
+        self.logg_parametros_recibidos()
+
+        parametros_son_validos, msj, codigo = self.validar_parametros({
+            nombreParametro: {
+                self.PARAMETRO: idClase,
+                self.ES_OBLIGATORIO: True,
+                self.FUNCIONES_VALIDACION: {
+                    self.id_es_valido: [],
+                    self.existe_id: [clase]
+                }
+            }
+        })
+
+        if not parametros_son_validos:
+            self.logg_error(msj)
+            return {'Error': msj}, codigo
+
+        instancia_buscada = clase.query.get(idClase)
+
+        result = (funcion_generador_JSON(instancia_buscada), SUCCESS_OK)
+        self.logg_resultado(result)
+
+        return result
+
+
+
 #######################################################################################################################
 # Todos los servicios requieren tener los siguientes campos definidos al finalizar la declaracion de la clase.        #
 #                                                                                                                     #

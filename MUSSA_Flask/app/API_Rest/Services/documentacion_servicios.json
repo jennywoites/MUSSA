@@ -28,6 +28,44 @@
     "http"
   ],
   "paths": {
+    "/carrera/{idCarrera}": {
+      "get": {
+        "tags": [
+          "carrera"
+        ],
+        "summary": "Devuelve todas la carrera del ID especificado",
+        "description": "Devuelve la carrera del ID especificado.",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "idCarrera",
+            "required": true,
+            "type": "integer",
+            "description": "ID de la carrera buscada."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/Carrera"
+            }
+          },
+          "400": {
+            "description": "BAD REQUEST. El ID de la carrera debe ser un entero mayor a 0."
+          },
+          "401": {
+            "description": "La información de autorización no fue enviada o es inválida."
+          },
+          "404": {
+            "description": "El ID de carrera no existe."
+          }
+        }
+      }
+    },
     "/carrera/all": {
       "get": {
         "tags": [
@@ -65,6 +103,44 @@
           },
           "404": {
             "description": "Uno o más códigos de carrera no existen."
+          }
+        }
+      }
+    },
+    "/materia/{idMateria}": {
+      "get": {
+        "tags": [
+          "materia"
+        ],
+        "summary": "Devuelve todas la materia del ID especificado",
+        "description": "Devuelve la materia del ID especificado.",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "idMateria",
+            "required": true,
+            "type": "integer",
+            "description": "ID de la materia buscada."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/Materia"
+            }
+          },
+          "400": {
+            "description": "BAD REQUEST. El ID de la materia debe ser un entero mayor a 0."
+          },
+          "401": {
+            "description": "La información de autorización no fue enviada o es inválida."
+          },
+          "404": {
+            "description": "El ID de materia no existe."
           }
         }
       }
@@ -304,6 +380,61 @@
     }
   },
   "definitions": {
+    "Materia": {
+      "type": "object",
+      "properties": {
+        "id_materia": {
+          "type": "integer",
+          "description": "ID de la materia.",
+          "example": 1
+        },
+        "codigo": {
+          "type": "string",
+          "description": "Código de la materia.",
+          "example": "7540"
+        },
+        "nombre": {
+          "type": "string",
+          "description": "Nombre de la materia.",
+          "example": "Algoritmos y Programación I"
+        },
+        "objetivos": {
+          "type": "string",
+          "description": "Objetivos de la materia.",
+          "example": "Enseñar los fundamentos básicos de la programación."
+        },
+        "creditos": {
+          "type": "integer",
+          "description": "Créditos que otorga la materia.",
+          "example": 6
+        },
+        "creditos_minimos_para_cursarla": {
+          "type": "integer",
+          "description": "Créditos mínimos que requiere la materia para ser cursada. Algunas materias en lugar de tener otras materias como correlativas solo tienen una restricción de créditos mínimos para ser cursadas. Salvo para esas materias puntuales que el valor será mayor a 0, para la mayoría el valor será exactamente 0.",
+          "example": 0
+        },
+        "tipo_materia_id": {
+          "type": "integer",
+          "description": "ID del tipo de materia.",
+          "example": 2
+        },
+        "tipo_materia": {
+          "type": "string",
+          "description": "Descripción del tipo de materia. El tipo de materia indica por ejemplo si es una materia electiva u obligatoria.",
+          "example": "OBLIGATORIA"
+        },
+        "carrera_id": {
+          "type": "integer",
+          "description": "ID de la carrera a la que pertenece la materia.",
+          "example": 1
+        },
+        "carrera": {
+          "type": "string",
+          "description": "Descripción completa de la carrera.",
+          "example": "09 - Licenciatura en Análisis de Sistemas (Plan 1986)"
+        }
+      }
+    },
     "Docente": {
       "type": "object",
       "properties": {
