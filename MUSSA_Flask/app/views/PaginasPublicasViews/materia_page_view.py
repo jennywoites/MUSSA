@@ -7,13 +7,12 @@ from app.views.Utils.invocaciones_de_servicios import *
 
 @main_blueprint.route('/materias/<int:idMateria>', methods=['GET'])
 def materia_page(idMateria):
-    materia = invocar_servicio_obtener_materia(request.cookies, idMateria)
+    cookies = request.cookies
 
-    carreras = ClienteAPI().obtener_todas_las_carreras(request.cookies, materia["codigo"])
-
-    correlativas = invocar_servicio_obtener_correlativas(request.cookies, idMateria)
-
-    cursos = invocar_servicio_obtener_curso(request.cookies, materia["codigo"], materia["carrera_id"])
+    materia = ClienteAPI().get_materia(cookies, idMateria)
+    carreras = ClienteAPI().obtener_todas_las_carreras(cookies, materia["codigo"])
+    correlativas = invocar_servicio_obtener_correlativas(cookies, idMateria)
+    cursos = invocar_servicio_obtener_curso(cookies, materia["codigo"], materia["carrera_id"])
 
     return render_template('pages/materia_page.html',
                            materia=materia,

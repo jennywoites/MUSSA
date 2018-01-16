@@ -94,9 +94,10 @@ class BaseService(Resource):
         - clave: nombre del parametro a validar
         - valor: diccionario con los siguientes campos:
             - 'PARAMETRO': valor que toma el parametro
-            - 'FUNCIONES_VALIDACION': diccionario con funciones:
-                - clave: Nombre de la funcion de validacion
-                - valor: Lista de parametros extras que recibe la funcion ademas del atributo. Si no recibe parametros
+            - 'FUNCIONES_VALIDACION': lista con funciones. La lista de funciones se ejectura en orden.
+                Las funciones se organizan como tuplas donde la posición es:
+                - Pos 0: Nombre de la funcion de validacion
+                - Pos 1: Lista de parametros extras que recibe la funcion ademas del atributo. Si no recibe parametros
                         extras entonces la lista es una lista vacía.
 
         * En caso de que el parámetro sea una lista o tupla se aplicarán las funciones de validación a cada elemento
@@ -108,10 +109,10 @@ class BaseService(Resource):
             "idTematica": {
                 "PARAMETRO": idTematica,
                 "ES_OBLIGATORIO": False,
-                "FUNCIONES_VALIDACION": {
-                    self.id_es_valido: [],
-                    self.existe_id: [TematicaMateria]
-                }
+                "FUNCIONES_VALIDACION": [
+                    (self.id_es_valido, []),
+                    (self.existe_id, [TematicaMateria])
+                ]
             }
         })
         """
@@ -129,9 +130,12 @@ class BaseService(Resource):
                 nombre_parametro_actual = nombre_parametro if (len(elementos_a_evaluar) == 1) \
                     else (nombre_parametro + "-" + str(i))
 
-                for nombre_funcion_validacion in funciones_validacion:
+                NOMBRE_FUNCION = 0
+                PARAMETROS_EXTRAS = 1
+                for datos_funciones_validacion in funciones_validacion:
+                    nombre_funcion_validacion = datos_funciones_validacion[NOMBRE_FUNCION]
                     argumentos_base = [nombre_parametro_actual, parametro, es_obligatorio]
-                    argumentos_funcion = argumentos_base + funciones_validacion[nombre_funcion_validacion]
+                    argumentos_funcion = argumentos_base + datos_funciones_validacion[PARAMETROS_EXTRAS]
                     es_valido, msj, codigo = nombre_funcion_validacion(*argumentos_funcion)
                     if not es_valido:
                         return es_valido, msj, codigo
@@ -237,10 +241,10 @@ class BaseService(Resource):
             nombreParametro: {
                 self.PARAMETRO: idClase,
                 self.ES_OBLIGATORIO: True,
-                self.FUNCIONES_VALIDACION: {
-                    self.id_es_valido: [],
-                    self.existe_id: [clase]
-                }
+                self.FUNCIONES_VALIDACION: [
+                    (self.id_es_valido, []),
+                    (self.existe_id, [clase])
+                ]
             }
         })
 

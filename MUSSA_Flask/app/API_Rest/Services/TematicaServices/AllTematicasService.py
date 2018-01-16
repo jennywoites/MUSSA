@@ -17,9 +17,9 @@ class AllTematicasService(BaseService):
             "solo_verificadas": {
                 self.PARAMETRO: solo_verificadas,
                 self.ES_OBLIGATORIO: False,
-                self.FUNCIONES_VALIDACION: {
-                    self.booleano_es_valido: []
-                }
+                self.FUNCIONES_VALIDACION: [
+                    (self.booleano_es_valido, [])
+                ]
             }
         })
 

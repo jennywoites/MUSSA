@@ -58,24 +58,24 @@ class DocenteService(BaseService):
             "apellido": {
                 self.PARAMETRO: apellido,
                 self.ES_OBLIGATORIO: True,
-                self.FUNCIONES_VALIDACION: {
-                    self.validar_contenido_y_longitud_texto: [3, 35]
-                }
+                self.FUNCIONES_VALIDACION: [
+                    (self.validar_contenido_y_longitud_texto, [3, 35])
+                ]
             },
             "nombre": {
                 self.PARAMETRO: nombre,
                 self.ES_OBLIGATORIO: True,
-                self.FUNCIONES_VALIDACION: {
-                    self.validar_contenido_y_longitud_texto: [0, 40]
-                }
+                self.FUNCIONES_VALIDACION: [
+                    (self.validar_contenido_y_longitud_texto, [0, 40])
+                ]
             },
             "l_ids_cursos": {
                 self.PARAMETRO: l_ids_cursos,
                 self.ES_OBLIGATORIO: True,
-                self.FUNCIONES_VALIDACION: {
-                    self.id_es_valido: [],
-                    self.existe_id: [Curso]
-                }
+                self.FUNCIONES_VALIDACION: [
+                    (self.id_es_valido, []),
+                    (self.existe_id, [Curso])
+                ]
             }
         })
 
@@ -113,10 +113,10 @@ class DocenteService(BaseService):
         return {
             self.PARAMETRO: idDocente,
             self.ES_OBLIGATORIO: True,
-            self.FUNCIONES_VALIDACION: {
-                self.id_es_valido: [],
-                self.existe_id: [Docente]
-            }
+            self.FUNCIONES_VALIDACION: [
+                (self.id_es_valido, []),
+                (self.existe_id, [Docente])
+            ]
         }
 
 

@@ -112,6 +112,15 @@ function get_todas_las_carreras_service(token, onSuccess, onError) {
     }, onError);
 }
 
+//*********************************************************//
+//                  Servicios Materias                     //
+//*********************************************************//
+
+function get_materia_service(token, idMateria, onSucces, onError) {
+    var url_servicio = BASE_URL + '/materia/' + idMateria;
+    do_request('GET', url_servicio, token, {}, onSucces, onError);
+}
+
 //////////////////////////////////////////////////////////////////////
 
 function fill_dropdown(dropdown_id, process_response, responseText){

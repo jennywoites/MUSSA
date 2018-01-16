@@ -4,31 +4,30 @@
 
     <script>
 
-    SERVICE_BUSCAR_MATERIAS = '/api/BuscarMaterias'
+        SERVICE_BUSCAR_MATERIAS = '/api/BuscarMaterias'
 
-SUCCESS = 200
+        SUCCESS = 200
 
-function do_request(page, onSucces, onError){
-    xmlhttp = new XMLHttpRequest();
+        function do_request(page, onSucces, onError){
+            xmlhttp = new XMLHttpRequest();
 
-    xmlhttp.onreadystatechange = function() {
-        if (this.status == 0 || this.readyState != 4)
-            return;
+            xmlhttp.onreadystatechange = function() {
+                if (this.status == 0 || this.readyState != 4)
+                    return;
 
-        if ( this.status != SUCCESS ) {
-            onError(this.status, this.responseText);
+                if ( this.status != SUCCESS ) {
+                    onError(this.status, this.responseText);
+                }
+                else {
+                    json_result = (this.responseText == "") ? {} : JSON.parse(this.responseText)
+                    onSucces(this.status, json_result);
+                }
+            }
+
+            xmlhttp.open("GET", page, true);
+            xmlhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+            xmlhttp.send();
         }
-        else {
-            json_result = (this.responseText == "") ? {} : JSON.parse(this.responseText)
-            onSucces(this.status, json_result);
-        }
-    }
-
-    xmlhttp.open("GET", page, true);
-    xmlhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-    xmlhttp.send();
-}
-
 
         function ver_materia_otra_carrera(codigo_carrera, codigo_materia) {
             page = SERVICE_BUSCAR_MATERIAS;
@@ -62,7 +61,7 @@ function do_request(page, onSucces, onError){
 
             {% for otra_carrera in carreras %}
                 {% if otra_carrera["id_carrera"] != materia["carrera_id"] %}
-                    <a onclick="ver_materia_otra_carrera({{otra_carrera["codigo"]}}, {{materia["codigo"]}})">{{otra_carrera["nombre"]}}</a>
+                    <a onclick="ver_materia_otra_carrera({{otra_carrera['codigo']}}, {{materia['codigo']}})">{{otra_carrera["descripcion"]}}</a>
                 {% endif %}
             {% endfor %}
 

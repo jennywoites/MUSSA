@@ -78,3 +78,6 @@ class TestBase(TestCase):
 
     def get_url_obtener_todas_las_carreras(self):
         return ClienteAPI().get_url_get_carreras()
+
+    def get_url_get_materia(self, idMateria):
+        return ClienteAPI().get_url_get_materia(idMateria)

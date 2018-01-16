@@ -69,6 +69,10 @@ class ClienteAPI:
         """URL: '/api/carrera/all'"""
         return self.BASE_URL + '/carrera/all'
 
+    def get_url_get_materia(self, idMateria):
+        """URL: '/api/materia/<int:idMateria>'"""
+        return self.BASE_URL + '/materia/' + str(idMateria)
+
     ################################################
     ##              Servicios DOCENTE             ##
     ################################################
@@ -122,3 +126,11 @@ class ClienteAPI:
             parametros["codigo_materia"] = codigo_materia
 
         return self.invocar_get(url_servicio, cookie, parametros)["carreras"]
+
+    ################################################
+    ##              Servicios MATERIA             ##
+    ################################################
+
+    def get_materia(self, cookie, idMateria):
+        url_servicio = self.get_url_get_materia(idMateria)
+        return self.invocar_get(url_servicio, cookie)

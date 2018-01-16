@@ -1,18 +1,13 @@
 if __name__ == '__main__':
-    import os
     import sys
 
     sys.path.append("../..")
 
 from tests.TestAPIServicios.TestBase import TestBase
-
-import app
 from app import db
 from app.models.carreras_models import Carrera, Materia, TipoMateria
-
 from app.API_Rest.services import *
 from app.API_Rest.codes import *
-
 import json
 
 
@@ -57,34 +52,33 @@ class TestObtenerMateria(TestBase):
         carrera = Carrera.query.first()
 
         client = self.app.test_client()
-        response = client.get(OBTENER_MATERIA_SERVICE, query_string={"id_materia": "1"})
+        idMateria = 1
+        response = client.get(self.get_url_get_materia(idMateria))
         assert (response.status_code == SUCCESS_OK)
 
-        materia = json.loads(response.get_data(as_text=True))["materia"]
+        materia = json.loads(response.get_data(as_text=True))
 
-        assert (materia_bdd.id == materia["id"])
+        assert (materia_bdd.id == materia["id_materia"])
         assert (materia_bdd.codigo == materia["codigo"])
         assert (materia_bdd.nombre == materia["nombre"])
         assert (materia_bdd.creditos == materia["creditos"])
         assert (materia_bdd.creditos_minimos_para_cursarla == materia["creditos_minimos_para_cursarla"])
-        assert (tipo.descripcion == materia["tipo"])
+        assert (tipo.descripcion == materia["tipo_materia"])
+        assert (tipo.id == materia["tipo_materia_id"])
         assert (carrera.id == materia["carrera_id"])
-        assert (carrera.nombre == materia["carrera"])
+        assert (carrera.get_descripcion_carrera() == materia["carrera"])
 
     def test_obtener_materia_con_id_numerico_inexistente_devuelve_error(self):
         client = self.app.test_client()
-        response = client.get(OBTENER_MATERIA_SERVICE, query_string={"id_materia": "10"})
-        assert (response.status_code == CLIENT_ERROR_BAD_REQUEST)
+        idMateria = 10
+        response = client.get(self.get_url_get_materia(idMateria))
+        assert (response.status_code == CLIENT_ERROR_NOT_FOUND)
 
-    def test_obtener_materia_con_id_invalido_devuelve_error(self):
+    def test_obtener_materia_con_id_invalido_devuelve_not_found_ya_que_no_mapea_con_los_servicios_registrados(self):
         client = self.app.test_client()
-        response = client.get(OBTENER_MATERIA_SERVICE, query_string={"id_materia": "4sd0"})
-        assert (response.status_code == CLIENT_ERROR_BAD_REQUEST)
-
-    def test_obtener_materia_sin_parametors_devuelve_error(self):
-        client = self.app.test_client()
-        response = client.get(OBTENER_MATERIA_SERVICE)
-        assert (response.status_code == CLIENT_ERROR_BAD_REQUEST)
+        idMateria = "4sd0"
+        response = client.get(self.get_url_get_materia(idMateria))
+        assert (response.status_code == CLIENT_ERROR_NOT_FOUND)
 
 
 if __name__ == '__main__':

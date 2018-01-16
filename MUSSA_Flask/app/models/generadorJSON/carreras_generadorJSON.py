@@ -6,12 +6,12 @@ def generarJSON_carrera(carrera):
         'id_carrera': carrera.id,
         'codigo': carrera.codigo,
         'nombre': carrera.nombre,
-        'plan': carrera.plan
+        'plan': carrera.plan,
+        'descripcion': carrera.get_descripcion_carrera()
     }
 
 
 def generarJSON_materia(materia):
-    # Cambio id--> id_materia, tipo --> tipo_materia
     return {
         "id_materia": materia.id,
         "codigo": materia.codigo,

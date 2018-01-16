@@ -4,6 +4,7 @@ from app.API_Rest.Services.BaseService import BaseService
 from app.models.filtros.carreras_filter import filtrar_carrera
 from app.models.carreras_models import Materia
 
+
 class AllCarrerasService(BaseService):
     def getNombreClaseServicio(self):
         return "All Carreras Service"
@@ -17,10 +18,10 @@ class AllCarrerasService(BaseService):
             "codigo_materia": {
                 self.PARAMETRO: codigo_materia,
                 self.ES_OBLIGATORIO: False,
-                self.FUNCIONES_VALIDACION: {
-                    self.es_numero_valido: [],
-                    self.existe_el_elemento: [Materia, Materia.codigo]
-                }
+                self.FUNCIONES_VALIDACION: [
+                    (self.es_numero_valido, []),
+                    (self.existe_el_elemento, [Materia, Materia.codigo])
+                ]
             }
         })
 

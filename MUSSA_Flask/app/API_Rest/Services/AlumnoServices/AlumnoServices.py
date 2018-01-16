@@ -21,11 +21,11 @@ class AlumnoService(BaseService):
             "idAlumno": {
                 self.PARAMETRO: idAlumno,
                 self.ES_OBLIGATORIO: True,
-                self.FUNCIONES_VALIDACION: {
-                    self.id_es_valido: [],
-                    self.existe_id: [Alumno],
-                    self.alumno_es_usuario_actual: []
-                }
+                self.FUNCIONES_VALIDACION: [
+                    (self.id_es_valido, []),
+                    (self.existe_id, [Alumno]),
+                    (self.alumno_es_usuario_actual, [])
+                ]
             }
         })
 

@@ -9,16 +9,6 @@ def escribir_resultado_servicio(nombre_servicio, response):
     logging.info('Servicio {} result: {} - {}'.format(nombre_servicio, response, response.text))
 
 
-def invocar_servicio_obtener_materia(cookie, idMateria):
-    parametros = {}
-    parametros["id_materia"] = idMateria
-
-    materia_response = requests.get(OBTENER_MATERIA_SERVICE, params=parametros, cookies=cookie)
-    escribir_resultado_servicio('Obtener Materia', materia_response)
-
-    return json.loads(materia_response.text)["materia"]
-
-
 def invocar_servicio_obtener_correlativas(cookie, idMateria):
     parametros = {}
     parametros["id_materia"] = idMateria
