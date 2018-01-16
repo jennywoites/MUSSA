@@ -145,6 +145,44 @@
         }
       }
     },
+    "/materia/{idMateria}/correlativas": {
+      "get": {
+        "tags": [
+          "materia"
+        ],
+        "summary": "Devuelve todas las materias correlativas a la materia del ID especificado.",
+        "description": "Devuelve todas las materias correlativas a la materia del ID especificado.",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "idMateria",
+            "required": true,
+            "type": "integer",
+            "description": "ID de la materia buscada."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/ListaCorrelativas"
+            }
+          },
+          "400": {
+            "description": "BAD REQUEST. El ID de la materia debe ser un entero mayor a 0."
+          },
+          "401": {
+            "description": "La información de autorización no fue enviada o es inválida."
+          },
+          "404": {
+            "description": "El ID de materia no existe."
+          }
+        }
+      }
+    },
     "/docente/{idDocente}": {
       "get": {
         "tags": [
@@ -435,6 +473,18 @@
         }
       }
     },
+    "ListaCorrelativas": {
+      "type": "object",
+      "properties": {
+        "correlativas": {
+          "type": "array",
+          "description": "Lista de materias correlativas",
+          "items": {
+            "$ref": "#/definitions/Materia"
+          }
+        }
+      }
+    },
     "Docente": {
       "type": "object",
       "properties": {
@@ -553,6 +603,11 @@
           "type": "string",
           "description": "Plan de la carrera",
           "example": "1986"
+        },
+        "descripcion": {
+          "type": "string",
+          "description": "Descripción completa de la carrera. El formato es 'codigo - nombre de la carrera (Plan año)'",
+          "example": "09 - Licenciatura en Análisis de Sistemas (Plan 1986)"
         }
       }
     },
