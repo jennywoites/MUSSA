@@ -464,6 +464,9 @@
             }
         }
 
+        if (palabras_clave.length == 0)
+            return {};
+
         var datos = generarEstructuraRespuestaBase(pregunta)
         datos["palabras_clave"] = palabras_clave;
         return datos;
@@ -521,6 +524,9 @@
     function generarRespuestaEstrellas(pregunta) {
         var div_estrellas = document.getElementById("ec-stars-wrapper-" + pregunta['pregunta_encuesta_id']);
         var estrellas = contarCantidadDeEstrellas(div_estrellas);
+
+        if (estrellas == 0)
+            return {};
 
         var datos = generarEstructuraRespuestaBase(pregunta)
         datos["estrellas"] = estrellas;
@@ -589,6 +595,9 @@
             var idMateria = correlativa.cells[2].innerText;
             correlativas.push(idMateria);
         }
+
+        if (correlativas.length == 0)
+            return {};
 
         var datos = generarEstructuraRespuestaBase(pregunta)
         datos["correlativas"] = correlativas;
