@@ -38,7 +38,6 @@
         // var isValid = data.bootstrapValidator.isValid();
         // if(!isValid) return false
         var docente = {"id_docente": {{ id_docente }} }
-        debugger;
 
         docente["nombre"] = $("#nombre").val()
         docente["apellido"] = $("#apellido").val()
@@ -114,7 +113,7 @@
 
     function process_response_carreras(response){
         var result = [{"id":-1, "text":"Seleccione una carrera", "value":-1}];
-        var carreras = response['carreras'];
+        var carreras = response;
         carreras.sort();
         for(var i=0; i< carreras.length; i++){
             var carrera = carreras[i];
@@ -126,7 +125,11 @@
     }
 
     $(function(){
-        fill_dropdown('carreras_disponibles', SERVICE_BUSCAR_CARRERAS, process_response_carreras);
+        get_todas_las_carreras_service('{{ csrf_token() }}', function(status, responseText){
+            fill_dropdown('carreras_disponibles', process_response_carreras, responseText);
+        }, function(status, responseText){
+            console.log(responseText);
+        });
     });
 
     function populate_materias(id_carrera){

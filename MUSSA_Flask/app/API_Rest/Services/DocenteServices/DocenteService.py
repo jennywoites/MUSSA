@@ -1,15 +1,14 @@
-from flask_restful import Resource
 from app.API_Rest.codes import *
-from app.models.docentes_models import Docente, CursosDocente
-from app.models.carreras_models import Materia, Carrera
-from app.models.horarios_models import Curso
+from app.models.docentes_models import Docente
 from app import db
 from flask_user import roles_accepted
-import logging
+from app.API_Rest.Services.BaseService import BaseService
+from app.models.generadorJSON.docentes_generadorJSON import generarJSON_docente
+from app.models.docentes_models import CursosDocente
+from app.models.horarios_models import Curso
 
 
-class DocenteService(Resource):
-
+class DocenteService(BaseService):
     def getNombreClaseServicio(self):
         return "Docente Service"
 
@@ -18,71 +17,82 @@ class DocenteService(Resource):
     ##########################################
 
     def get(self, idDocente):
-        if not idDocente > 0:
-            logging.error(self.getNombreClaseServicio() + ': El id docente debe ser un entero mayor a 0')
-            return {'Error': 'El id docente debe ser un entero mayor a 0'}, CLIENT_ERROR_NOT_FOUND
-
-        if not self.existe_id_docente(idDocente):
-            logging.error(self.getNombreClaseServicio() + ': El id docente no existe')
-            return {'Error': 'El id docente no existe'}, CLIENT_ERROR_NOT_FOUND
-
-        docente = Docente.query.get(idDocente)
-        docente_result = self.generarJSONDocente(docente)
-
-        result = (docente_result, SUCCESS_OK)
-        logging.info(self.getNombreClaseServicio() + ': Resultado: {}'.format(result))
-
-        return result
+        return self.servicio_get_base(idDocente, "idDocente", Docente, generarJSON_docente)
 
     @roles_accepted('admin')
     def delete(self, idDocente):
-        if not idDocente > 0:
-            logging.error(self.getNombreClaseServicio() + ': El id docente debe ser un entero mayor a 0')
-            return {'Error': 'El id docente debe ser un entero mayor a 0'}, CLIENT_ERROR_NOT_FOUND
+        self.servicio_delete_base(idDocente, "idDocente", Docente)
 
-        if not self.existe_id_docente(idDocente):
-            logging.error(self.getNombreClaseServicio() + ': El id docente no existe')
-            return {'Error': 'El id docente no existe'}, CLIENT_ERROR_NOT_FOUND
+    @roles_accepted('admin')
+    def post(self, idDocente):
+        self.logg_parametros_recibidos()
 
-        Docente.query.filter_by(id=idDocente).delete()
-        db.session.commit()
+        apellido = self.obtener_texto('apellido')
+        nombre = self.obtener_texto('nombre')
 
-        result = SUCCESS_NO_CONTENT
-        logging.info(self.getNombreClaseServicio() + ': Resultado: {}'.format(result))
+        if not nombre or not apellido:
+            msj = "Uno o más parámetros requeridos no fueron enviados"
+            self.logg_error(msj)
+            return {'Error': msj}, CLIENT_ERROR_BAD_REQUEST
+
+        l_ids_cursos = self.obtener_lista('l_ids_cursos')
+
+        parametros_son_validos, msj, codigo = self.validar_parametros(dict([
+            self.get_validaciones_entidad_basica("idDocente", idDocente, Docente),
+            ("apellido", {
+                self.PARAMETRO: apellido,
+                self.ES_OBLIGATORIO: True,
+                self.FUNCIONES_VALIDACION: [
+                    (self.validar_contenido_y_longitud_texto, [3, 35])
+                ]
+            }),
+            ("nombre", {
+                self.PARAMETRO: nombre,
+                self.ES_OBLIGATORIO: True,
+                self.FUNCIONES_VALIDACION: [
+                    (self.validar_contenido_y_longitud_texto, [0, 40])
+                ]
+            }),
+            ("l_ids_cursos", {
+                self.PARAMETRO: l_ids_cursos,
+                self.ES_OBLIGATORIO: True,
+                self.FUNCIONES_VALIDACION: [
+                    (self.id_es_valido, []),
+                    (self.existe_id, [Curso])
+                ]
+            })
+        ]))
+
+        if not parametros_son_validos:
+            self.logg_error(msj)
+            return {'Error': msj}, codigo
+
+        self.actualizar_datos_docente(idDocente, apellido, nombre)
+
+        self.actualizar_cursos_que_dicta_el_docente(idDocente, l_ids_cursos)
+
+        result = SUCCESS_OK
+        self.logg_resultado(result)
 
         return result
 
-    ##########################################
-    ##          Funciones Auxiliares        ##
-    ##########################################
+    def actualizar_datos_docente(self, idDocente, apellido, nombre):
+        docente = Docente.query.get(idDocente)
+        docente.apellido = apellido
+        docente.nombre = nombre
+        db.session.commit()
 
-    def existe_id_docente(self, id_docente):
-        return Docente.query.filter_by(id=id_docente).first()
+    def actualizar_cursos_que_dicta_el_docente(self, idDocente, l_ids_cursos):
+        CursosDocente.query.filter_by(docente_id=idDocente).delete()
+        db.session.commit()
 
-    def generarJSONDocente(self, docente):
-        return {
-            "id_docente": docente.id,
-            "apellido": docente.apellido,
-            "nombre": docente.nombre,
-            "nombre_completo": docente.obtener_nombre_completo(),
-            "materias_que_dicta": self.generarJSONMateriasDocente(docente)
-        }
+        for id_curso in l_ids_cursos:
+            db.session.add(CursosDocente(
+                docente_id=idDocente,
+                curso_id=id_curso
+            ))
+            db.session.commit()
 
-    def generarJSONMateriasDocente(self, docente):
-        materias = {}
-
-        cursos_del_docente = CursosDocente.query.filter_by(docente_id=docente.id).all()
-        for c in cursos_del_docente:
-            curso = Curso.query.filter_by(id=c.curso_id).first()
-            materia = Materia.query.filter_by(codigo=curso.codigo_materia).first()
-            carrera = Carrera.query.filter_by(id=materia.carrera_id).first()
-            materias[materia.codigo] = {
-                "nombre": materia.nombre,
-                "id_carrera": materia.carrera_id,
-                "carrera": carrera.get_descripcion_carrera()
-            }
-
-        return materias
 
 #########################################
 CLASE = DocenteService

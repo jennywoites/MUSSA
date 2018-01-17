@@ -1,17 +1,12 @@
 if __name__ == '__main__':
-    import os
     import sys
 
     sys.path.append("../..")
 
 from tests.TestAPIServicios.TestBase import TestBase
-
-import app
 from app import db
 from app.models.carreras_models import Materia, Carrera, TipoMateria, Correlativas
-
 import json
-
 from app.API_Rest.services import *
 from app.API_Rest.codes import *
 
@@ -128,10 +123,9 @@ class TestObtenerMateriasCorrelativas(TestBase):
     ##########################################################
 
     def test_obtener_materias_correlativas_con_materia_sin_correlativas_devuelve_lista_vacia(self):
-        params = {"id_materia": self.ID_SIN_CORRELATIVAS}
-
         client = self.app.test_client()
-        response = client.get(OBTENER_MATERIAS_CORRELATIVAS_SERVICE, query_string=params)
+        idMateria = self.ID_SIN_CORRELATIVAS
+        response = client.get(self.get_url_materias_correlativas(idMateria))
         assert (response.status_code == SUCCESS_OK)
 
         correlativas = json.loads(response.get_data(as_text=True))["correlativas"]
@@ -139,24 +133,22 @@ class TestObtenerMateriasCorrelativas(TestBase):
         assert (len(correlativas) == 0)
 
     def test_obtener_materias_correlativas_con_materia_con_unica_correlativa_devuelve_lista_de_un_elemento(self):
-        params = {"id_materia": self.ID_CON_UNA_CORRELATIVA}
-
         client = self.app.test_client()
-        response = client.get(OBTENER_MATERIAS_CORRELATIVAS_SERVICE, query_string=params)
+        idMateria = self.ID_CON_UNA_CORRELATIVA
+        response = client.get(self.get_url_materias_correlativas(idMateria))
         assert (response.status_code == SUCCESS_OK)
 
         correlativas = json.loads(response.get_data(as_text=True))["correlativas"]
 
         assert (len(correlativas) == 1)
-        assert (correlativas[0]["id"] == 3)
+        assert (correlativas[0]["id_materia"] == 3)
         assert (correlativas[0]["codigo"] == "7090")
         assert (correlativas[0]["nombre"] == "es correlativa de 9032")
 
     def test_obtener_materias_correlativas_con_materia_con_correlativas_devuelve_lista_con_todas_las_correlativas(self):
-        params = {"id_materia": self.ID_CON_DOS_CORRELATIVAS}
-
         client = self.app.test_client()
-        response = client.get(OBTENER_MATERIAS_CORRELATIVAS_SERVICE, query_string=params)
+        idMateria = self.ID_CON_DOS_CORRELATIVAS
+        response = client.get(self.get_url_materias_correlativas(idMateria))
         assert (response.status_code == SUCCESS_OK)
 
         correlativas = json.loads(response.get_data(as_text=True))["correlativas"]
@@ -164,25 +156,16 @@ class TestObtenerMateriasCorrelativas(TestBase):
         assert (len(correlativas) == 2)
 
     def test_obtener_materias_con_id_inexistente_devuelve_error(self):
-        params = {"id_materia": "72"}
-
         client = self.app.test_client()
-        response = client.get(OBTENER_MATERIAS_CORRELATIVAS_SERVICE, query_string=params)
-        assert (response.status_code == CLIENT_ERROR_BAD_REQUEST)
+        idMateria = 72
+        response = client.get(self.get_url_materias_correlativas(idMateria))
+        assert (response.status_code == CLIENT_ERROR_NOT_FOUND)
 
     def test_obtener_materias_con_id_invalido_devuelve_error(self):
-        params = {"id_materia": "7sd2"}
-
         client = self.app.test_client()
-        response = client.get(OBTENER_MATERIAS_CORRELATIVAS_SERVICE, query_string=params)
-        assert (response.status_code == CLIENT_ERROR_BAD_REQUEST)
-
-    def test_obtener_materias_con_parametros_invalidos_devuelve_error(self):
-        params = {"isaderia": "7sd2"}
-
-        client = self.app.test_client()
-        response = client.get(OBTENER_MATERIAS_CORRELATIVAS_SERVICE, query_string=params)
-        assert (response.status_code == CLIENT_ERROR_BAD_REQUEST)
+        idMateria = "7sd2"
+        response = client.get(self.get_url_materias_correlativas(idMateria))
+        assert (response.status_code == CLIENT_ERROR_NOT_FOUND)
 
 
 if __name__ == '__main__':

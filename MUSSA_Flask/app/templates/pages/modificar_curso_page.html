@@ -238,7 +238,7 @@
                 if ($(nombre_input)[0].checked) {
                     if (ids_carreras != "")
                         ids_carreras += ";";
-                    ids_carreras += carrera["id"];
+                    ids_carreras += carrera["id_carrera"];
                 }
             }
 
@@ -366,7 +366,7 @@
                                         <ul class="list-group">
                                             {% for codigo in docentes[i]["materias_que_dicta"] %}
                                             <li class="list-group-item" style="border-color: transparent; background-color: transparent;">
-                                                {{codigo}} - {{docentes[i]["materias_que_dicta"][codigo]}}
+                                                {{codigo}} - {{docentes[i]["materias_que_dicta"][codigo]["nombre"]}} / {{docentes[i]["materias_que_dicta"][codigo]["carrera"]}}
                                             </li>
                                             {% endfor %}
                                         </ul>

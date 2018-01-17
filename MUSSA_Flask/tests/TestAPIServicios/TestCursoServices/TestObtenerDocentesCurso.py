@@ -185,8 +185,8 @@ class TestObtenerDocentesCurso(TestBase):
     ##                 Funciones Auxiliares                 ##
     ##########################################################
 
-    def se_encuentra_el_docente(self, docente_origen, l_docentes):
-        for docente_servicio in l_docentes:
+    def se_encuentra_el_docente(self, docente_origen, curso):
+        for docente_servicio in curso["datos_docentes"]:
             if self.los_docentes_son_iguales(docente_servicio, docente_origen):
                 return True
 
@@ -213,33 +213,24 @@ class TestObtenerDocentesCurso(TestBase):
     ##                      Tests                           ##
     ##########################################################
 
-    def test_obtener_los_docentes_del_curso_con_id_curso_invalido_da_error(self):
-        client = self.app.test_client()
-        parametros = {}
-        parametros["id_curso"] = "a45d5"
-        response = client.get(OBTENER_DOCENTES_CURSO_SERVICE, query_string=parametros)
-        assert (response.status_code == CLIENT_ERROR_BAD_REQUEST)
-
     def test_obtener_los_docentes_del_curso_con_id_curso_valido_inexistente_da_error(self):
         client = self.app.test_client()
-        parametros = {}
-        parametros["id_curso"] = 56
-        response = client.get(OBTENER_DOCENTES_CURSO_SERVICE, query_string=parametros)
-        assert (response.status_code == CLIENT_ERROR_BAD_REQUEST)
+
+        idCurso = 56
+        response = client.get(self.get_url_get_curso(idCurso))
+        assert (response.status_code == CLIENT_ERROR_NOT_FOUND)
 
     def test_obtener_los_docentes_del_curso_con_id_curso_valido_devuelve_los_docentes(self):
         client = self.app.test_client()
-        parametros = {}
-        parametros["id_curso"] = 1
-        response = client.get(OBTENER_DOCENTES_CURSO_SERVICE, query_string=parametros)
+
+        idCurso = 1
+        response = client.get(self.get_url_get_curso(idCurso))
         assert (response.status_code == SUCCESS_OK)
 
-        docentes = json.loads(response.get_data(as_text=True))["docentes"]
+        curso = json.loads(response.get_data(as_text=True))
 
-        assert (len(docentes) == 2)
-
-        self.se_encuentra_el_docente(self.DOCENTE_CON_NOMBRE, docentes)
-        self.se_encuentra_el_docente(self.DOCENTE_SIN_NOMBRE, docentes)
+        self.se_encuentra_el_docente(self.DOCENTE_CON_NOMBRE, curso)
+        self.se_encuentra_el_docente(self.DOCENTE_SIN_NOMBRE, curso)
 
 
 if __name__ == '__main__':

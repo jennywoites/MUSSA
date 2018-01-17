@@ -75,3 +75,18 @@ class TestBase(TestCase):
 
     def get_url_obtener_todos_los_docentes(self):
         return ClienteAPI().get_url_obtener_todos_los_docentes()
+
+    def get_url_obtener_todas_las_carreras(self):
+        return ClienteAPI().get_url_get_carreras()
+
+    def get_url_get_materia(self, idMateria):
+        return ClienteAPI().get_url_get_materia(idMateria)
+
+    def get_url_materias_correlativas(self, idMateria):
+        return ClienteAPI().get_url_materias_correlativas(idMateria)
+
+    def get_url_get_curso(self, idCurso):
+        return ClienteAPI().get_url_get_curso(idCurso)
+
+    def get_url_all_cursos(self):
+        return ClienteAPI().get_url_all_cursos()

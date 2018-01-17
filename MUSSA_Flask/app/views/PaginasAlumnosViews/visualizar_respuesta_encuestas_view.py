@@ -5,6 +5,7 @@ from app.views.base_view import main_blueprint
 from app.views.Utils.invocaciones_de_servicios import *
 from app.DAO.EncuestasDAO import *
 from app.utils import frange, get_numero_dos_digitos, DIAS
+from app.ClienteAPI.ClienteAPI import ClienteAPI
 
 
 @main_blueprint.route('/encuestas/visualizar_encuesta/general/<int:idEncuestaAlumno>', methods=['GET'])
@@ -53,7 +54,7 @@ def visualizar_encuesta(idEncuestaAlumno, cookie, num_categoria):
             break
     posibles_correlativas.pop(i)
 
-    docentes = invocar_obtener_docentes_del_curso(cookie, encuesta["id_curso"])
+    docentes = ClienteAPI().obtener_docentes_del_curso(cookie, encuesta["id_curso"])
 
     HORA_MIN = 7
     HORA_MAX = 23
@@ -62,8 +63,6 @@ def visualizar_encuesta(idEncuestaAlumno, cookie, num_categoria):
         hora = int(i)
         minutos = "00" if hora == i else "30"
         horarios.append("{}:{}".format(get_numero_dos_digitos(hora), minutos))
-
-    tematicas = invocar_obtener_tematicas_materias(cookie)
 
     titulos = [
         {'url': 'main.visualizar_encuesta_general_page', 'titulo': 'General'},
@@ -108,8 +107,8 @@ def visualizar_encuesta(idEncuestaAlumno, cookie, num_categoria):
                            hora_hasta=horarios[1:],
                            posibles_correlativas=posibles_correlativas,
                            docentes=docentes,
-                           tematicas=tematicas,
                            anterior_siguiente=anterior_siguiente)
+
 
 def convertir_true_false(respuestas):
     for idPregunta in respuestas:

@@ -1,21 +1,20 @@
 from flask import redirect, render_template
 from flask import request, url_for, flash
 from flask_user import login_required
-
+from app.ClienteAPI.ClienteAPI import ClienteAPI
 from app.views.base_view import main_blueprint
-
 from app.views.Utils.invocaciones_de_servicios import *
-
 from flask_babel import gettext
 from app.DAO.MateriasDAO import *
 import functools
+
 
 @main_blueprint.route('/datos_academicos', methods=['GET'])
 @login_required
 def datos_academicos_page():
     cookie = request.cookies
     padron = invocar_obtener_padron_alumno(cookie)
-    carreras = invocar_servicio_buscar_carreras(cookie)
+    carreras = ClienteAPI().obtener_todas_las_carreras(cookie)
 
     mis_carreras = invocar_obtener_carreras_alumno(cookie)
     carreras_nuevas = filtrar_carreras_no_cursadas(carreras, mis_carreras)
@@ -25,10 +24,10 @@ def datos_academicos_page():
     mis_materias = sorted(mis_materias, key=functools.cmp_to_key(cmp_materias_result))
 
     return render_template('pages/datos_academicos_page.html',
-        padron = padron,
-        carreras = carreras_nuevas,
-        mis_carreras = mis_carreras,
-        mis_materias = mis_materias)
+                           padron=padron,
+                           carreras=carreras_nuevas,
+                           mis_carreras=mis_carreras,
+                           mis_materias=mis_materias)
 
 
 def filtrar_carreras_no_cursadas(carreras, mis_carreras):
@@ -87,7 +86,8 @@ def cmp_codigo(codigo1, codigo2):
 def convertir_codigo(materia):
     LONGITUD_CODIGO = 4
     codigo = materia["codigo"]
-    return "0"*(LONGITUD_CODIGO - len(codigo)) + codigo
+    return "0" * (LONGITUD_CODIGO - len(codigo)) + codigo
+
 
 @main_blueprint.route('/datos_academicos/agregar_carrera', methods=['POST'])
 @login_required

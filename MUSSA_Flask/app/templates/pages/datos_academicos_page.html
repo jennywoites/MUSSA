@@ -159,7 +159,7 @@
                         <div class="form-group">                
                             <select class="form-control" id="carrera_a_agregar" name="carrera_a_agregar">
                                 {% for carrera in carreras %}
-                                    <option id="carrera_{{carrera['codigo']}}" value="{{carrera['id']}}">{{carrera["codigo"]}} - {{carrera["nombre"]}} ({{carrera["plan"]}})</option>
+                                    <option id="carrera_{{carrera['codigo']}}" value="{{carrera['id_carrera']}}">{{carrera["codigo"]}} - {{carrera["nombre"]}} ({{carrera["plan"]}})</option>
                                 {% endfor %}
                             </select>
                         </div>

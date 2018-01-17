@@ -17,6 +17,7 @@ mail = Mail()
 migrate = Migrate()
 
 import logging
+
 logging.basicConfig(filename='MUSSA.log', level=logging.DEBUG)
 
 
@@ -132,7 +133,7 @@ def add_resources_api_rest(api):
             for nombre_modulo in os.listdir(directorio):
                 if nombre_modulo in ['__init__.py', '__pycache__']:
                     continue
-                nombre_paquete =  os.path.splitext(nombre_modulo)[0]
+                nombre_paquete = os.path.splitext(nombre_modulo)[0]
                 paquete = '.'.join(['app', 'API_Rest', 'Services', archivo_o_directorio, nombre_paquete])
                 modulo = importlib.import_module(paquete)
                 api.add_resource(modulo.CLASE, *modulo.URLS_SERVICIOS)
@@ -143,32 +144,11 @@ def add_resources_api_rest(api):
 
 
 def add_resources_publicos(api):
-    from app.API_Rest.Services.BuscarCarrerasService import BuscarCarreras
-    api.add_resource(BuscarCarreras, '/api/BuscarCarreras')
-
     from app.API_Rest.Services.BuscarMateriasService import BuscarMaterias
     api.add_resource(BuscarMaterias, '/api/BuscarMaterias')
 
-    from app.API_Rest.Services.ObtenerMateriaService import ObtenerMateria
-    api.add_resource(ObtenerMateria, '/api/ObtenerMateria')
-
-    from app.API_Rest.Services.ObtenerMateriasCorrelativasService import ObtenerMateriasCorrelativas
-    api.add_resource(ObtenerMateriasCorrelativas, '/api/ObtenerMateriasCorrelativas')
-
-    from app.API_Rest.Services.ObtenerCarrerasDondeSeDictaLaMateriaService import ObtenerCarrerasDondeSeDictaLaMateria
-    api.add_resource(ObtenerCarrerasDondeSeDictaLaMateria, '/api/ObtenerCarrerasDondeSeDictaLaMateria')
-
-    from app.API_Rest.Services.BuscarCursosService import BuscarCursos
-    api.add_resource(BuscarCursos, '/api/BuscarCursos')
-
     from app.API_Rest.Services.ObtenerPreguntasEncuestaService import ObtenerPreguntasEncuesta
     api.add_resource(ObtenerPreguntasEncuesta, '/api/ObtenerPreguntasEncuesta')
-
-    from app.API_Rest.Services.ObtenerDocentesCursoService import ObtenerDocentesCurso
-    api.add_resource(ObtenerDocentesCurso, '/api/ObtenerDocentesCurso')
-
-    from app.API_Rest.Services.ObtenerTematicasMateriasService import ObtenerTematicasMaterias
-    api.add_resource(ObtenerTematicasMaterias, '/api/ObtenerTematicasMaterias')
 
 
 def add_resources_usuarios(api):
@@ -199,7 +179,8 @@ def add_resources_usuarios(api):
     from app.API_Rest.Services.ObtenerEncuestasAlumnoService import ObtenerEncuestasAlumno
     api.add_resource(ObtenerEncuestasAlumno, '/api/ObtenerEncuestasAlumno')
 
-    from app.API_Rest.Services.ObtenerRespuestasEncuestaAlumnoParaPreguntasEspecificasService import ObtenerRespuestasEncuestaAlumnoParaPreguntasEspecificas
+    from app.API_Rest.Services.ObtenerRespuestasEncuestaAlumnoParaPreguntasEspecificasService import \
+        ObtenerRespuestasEncuestaAlumnoParaPreguntasEspecificas
     api.add_resource(ObtenerRespuestasEncuestaAlumnoParaPreguntasEspecificas,
                      '/api/ObtenerRespuestasEncuestaAlumnoParaPreguntasEspecificas')
 
@@ -219,6 +200,3 @@ def add_resources_administrador(api):
 
     from app.API_Rest.Services.ModificarCursoService import ModificarCurso
     api.add_resource(ModificarCurso, '/api/admin/ModificarCurso')
-
-    from app.API_Rest.Services.ModificarDocenteService import ModificarDocente
-    api.add_resource(ModificarDocente, '/api/admin/ModificarDocente')

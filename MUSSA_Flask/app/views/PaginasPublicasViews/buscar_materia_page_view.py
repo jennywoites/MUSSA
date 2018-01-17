@@ -1,14 +1,11 @@
-from app.views.base_view import main_blueprint  
+from app.views.base_view import main_blueprint
+from flask import render_template
+from flask import request
+from app.ClienteAPI.ClienteAPI import ClienteAPI
 
-from flask import redirect, render_template
-from flask import request, url_for
-
-import requests
-
-from app.views.Utils.invocaciones_de_servicios import *
 
 @main_blueprint.route('/buscar_materias', methods=['GET'])
 def buscar_materias_page():
-    carreras = invocar_servicio_buscar_carreras(request.cookies)
+    carreras = ClienteAPI().obtener_todas_las_carreras(request.cookies)
     return render_template('pages/buscar_materias_page.html',
-                carreras= carreras)
+                           carreras=carreras)

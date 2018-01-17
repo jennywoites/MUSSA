@@ -1,21 +1,22 @@
 from flask import redirect, render_template
 from flask import request, url_for, flash
 from flask_user import login_required
-
 from app.views.base_view import main_blueprint
-
 from app.views.Utils.invocaciones_de_servicios import *
-
 from app.DAO.MateriasDAO import *
-
 from datetime import datetime
+from app.ClienteAPI.ClienteAPI import ClienteAPI
+
 
 @main_blueprint.route('/datos_academicos/editar_materia/<int:idMateria>', methods=['GET'])
 @login_required
 def editar_materia_page(idMateria):
-    materia = invocar_obtener_materia_alumno(request.cookies, idMateria)[0]
+    cookies = request.cookies
+    materia = invocar_obtener_materia_alumno(cookies, idMateria)[0]
 
-    cursos = invocar_servicio_obtener_curso(request.cookies, materia["codigo"], materia["id_carrera"])
+    cursos = ClienteAPI().obtener_cursos_con_filtros(cookies, codigo_materia=materia["codigo"],
+                                                     id_carrera=materia["id_carrera"], filtrar_cursos=True)
+
     for i in range(len(cursos)):
         texto = ""
         for carrera in cursos[i]["carreras"]:
@@ -35,11 +36,11 @@ def editar_materia_page(idMateria):
     anios = [x for x in range(hoy, hoy - MAX_TIEMPO, -1)]
 
     return render_template('pages/editar_materia_page.html',
-        materia = materia,
-        cursos = cursos,
-        estados = estados,
-        formas_aprobacion = formas_aprobacion,
-        anios = anios)
+                           materia=materia,
+                           cursos=cursos,
+                           estados=estados,
+                           formas_aprobacion=formas_aprobacion,
+                           anios=anios)
 
 
 @main_blueprint.route('/datos_academicos/editar_materia_save/<int:idMateria>', methods=['POST'])
@@ -64,7 +65,7 @@ def editar_materia_page_save(idMateria):
 
     if 'OK' in response:
         flash("Se gurdaron los cambios en la materia", 'success')
-    else:   
+    else:
         flash(response["Error"], 'error')
 
     return redirect(url_for("main.datos_academicos_page"))

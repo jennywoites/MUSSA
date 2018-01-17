@@ -234,7 +234,7 @@ class TestBuscarMaterias(TestBase):
         parametros["carreras"] = "9,10,56"
 
         client = self.app.test_client()
-        response = client.get(BUSCAR_CARRERAS_SERVICE, query_string=parametros)
+        response = client.get(BUSCAR_MATERIAS_SERVICE, query_string=parametros)
         assert (response.status_code == 400)
 
     def test_buscar_materias_con_carreras_existentes_y_mal_separador_devuelve_bad_request(self):
@@ -242,7 +242,7 @@ class TestBuscarMaterias(TestBase):
         parametros["carreras"] = "9-10"
 
         client = self.app.test_client()
-        response = client.get(BUSCAR_CARRERAS_SERVICE, query_string=parametros)
+        response = client.get(BUSCAR_MATERIAS_SERVICE, query_string=parametros)
         assert (response.status_code == 400)
 
     def test_buscar_materias_con_codigo_no_numerico_devuelve_bad_request(self):
@@ -250,7 +250,7 @@ class TestBuscarMaterias(TestBase):
         parametros["codigo"] = "89a"
 
         client = self.app.test_client()
-        response = client.get(BUSCAR_CARRERAS_SERVICE, query_string=parametros)
+        response = client.get(BUSCAR_MATERIAS_SERVICE, query_string=parametros)
         assert (response.status_code == 400)
 
     def test_buscar_materias_con_codigo_numerico_muy_largo_devuelve_bad_request(self):
@@ -258,7 +258,7 @@ class TestBuscarMaterias(TestBase):
         parametros["codigo"] = "89899"
 
         client = self.app.test_client()
-        response = client.get(BUSCAR_CARRERAS_SERVICE, query_string=parametros)
+        response = client.get(BUSCAR_MATERIAS_SERVICE, query_string=parametros)
         assert (response.status_code == 400)
 
     def test_buscar_materias_con_nombre_materia_con_numeros_devuelve_bad_request(self):
@@ -266,7 +266,7 @@ class TestBuscarMaterias(TestBase):
         parametros["nombre"] = "8asf98sfafs9sfafsa9"
 
         client = self.app.test_client()
-        response = client.get(BUSCAR_CARRERAS_SERVICE, query_string=parametros)
+        response = client.get(BUSCAR_MATERIAS_SERVICE, query_string=parametros)
         assert (response.status_code == 400)
 
     def test_buscar_materias_con_nombre_materia_con_simbolos_devuelve_bad_request(self):
@@ -274,7 +274,7 @@ class TestBuscarMaterias(TestBase):
         parametros["nombre"] = "./adjkjad../jjkadk../"
 
         client = self.app.test_client()
-        response = client.get(BUSCAR_CARRERAS_SERVICE, query_string=parametros)
+        response = client.get(BUSCAR_MATERIAS_SERVICE, query_string=parametros)
         assert (response.status_code == 400)
 
 

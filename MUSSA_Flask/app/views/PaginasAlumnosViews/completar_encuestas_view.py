@@ -1,11 +1,12 @@
 from flask import render_template
 from flask_user import login_required
-from flask import request, url_for
+from flask import request, url_for, redirect
 from app.views.base_view import main_blueprint
 from app.views.Utils.invocaciones_de_servicios import *
 from app.DAO.EncuestasDAO import *
 from app.utils import frange, get_numero_dos_digitos, DIAS
-
+from app.ClienteAPI.ClienteAPI import ClienteAPI
+from app.API_Rest.codes import *
 
 @main_blueprint.route('/encuestas/completar_encuesta/general/<int:idEncuestaAlumno>', methods=['GET'])
 @login_required
@@ -42,6 +43,9 @@ def completar_encuesta(idEncuestaAlumno, cookie, num_categoria):
     preguntas = invocar_servicio_obtener_preguntas_encuesta(cookie, [num_categoria])
     encuesta = invocar_obtener_encuesta_alumno(cookie, idEncuestaAlumno)
 
+    if encuesta["finalizada"]:
+        return redirect(url_for('main.historial_encuestas_page'), code=REDIRECTION_FOUND)
+
     encuesta_esta_completa = invocar_encuesta_alumno_esta_completa(cookie, idEncuestaAlumno)
 
     respuestas = invocar_obtener_respuestas_encuesta_alumno(cookie, idEncuestaAlumno, preguntas)
@@ -53,7 +57,7 @@ def completar_encuesta(idEncuestaAlumno, cookie, num_categoria):
             break
     posibles_correlativas.pop(i)
 
-    docentes = invocar_obtener_docentes_del_curso(cookie, encuesta["id_curso"])
+    docentes = ClienteAPI().obtener_docentes_del_curso(cookie, encuesta["id_curso"])
 
     HORA_MIN = 7
     HORA_MAX = 23
@@ -63,7 +67,7 @@ def completar_encuesta(idEncuestaAlumno, cookie, num_categoria):
         minutos = "00" if hora == i else "30"
         horarios.append("{}:{}".format(get_numero_dos_digitos(hora), minutos))
 
-    tematicas = invocar_obtener_tematicas_materias(cookie)
+    tematicas = ClienteAPI().obtener_todas_las_tematicas(cookie)
 
     titulos = [
         {'url': 'main.completar_encuesta_general_page', 'titulo': 'General'},
@@ -110,7 +114,8 @@ def completar_encuesta(idEncuestaAlumno, cookie, num_categoria):
                            docentes=docentes,
                            tematicas=tematicas,
                            anterior_siguiente=anterior_siguiente,
-                           encuesta_esta_completa = encuesta_esta_completa)
+                           encuesta_esta_completa=encuesta_esta_completa)
+
 
 def convertir_true_false(respuestas):
     for idPregunta in respuestas:

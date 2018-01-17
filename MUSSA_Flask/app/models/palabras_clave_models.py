@@ -34,7 +34,6 @@ class TematicaMateria(db.Model):
     def __str__(self):
         return self.tematica
 
-
 class TematicaPorMateria(db.Model):
     __tablename__ = 'tematica_por_materia'
     id = db.Column(db.Integer, primary_key=True)

@@ -1,32 +1,32 @@
-from flask_restful import Resource
 from app.API_Rest.codes import *
 from app.models.docentes_models import Docente
+from app.models.generadorJSON.docentes_generadorJSON import generarJSON_docente
+from app.API_Rest.Services.BaseService import BaseService
 
-import logging
-from app.API_Rest.Services.DocenteServices.DocenteService import DocenteService
 
-class ObtenerDocentesService(Resource):
+class AllDocentesService(BaseService):
     def getNombreClaseServicio(self):
-        return "Obtener Docentes Service"
+        return "All Docentes Service"
 
     def get(self):
+        self.logg_parametros_recibidos()
+
         docentes_result = []
 
         query = Docente.query
         docentes = query.order_by(Docente.apellido.asc()).order_by(Docente.nombre.asc()).all()
 
-        docenteService = DocenteService()
-
         for docente in docentes:
-            docentes_result.append(docenteService.generarJSONDocente(docente))
+            docentes_result.append(generarJSON_docente(docente))
 
         result = ({'docentes': docentes_result}, SUCCESS_OK)
-        logging.info(self.getNombreClaseServicio() + ': Resultado: {}'.format(result))
+        self.logg_resultado(result)
 
         return result
 
+
 #########################################
-CLASE = ObtenerDocentesService
+CLASE = AllDocentesService
 URLS_SERVICIOS = (
     '/api/docente/all',
 )

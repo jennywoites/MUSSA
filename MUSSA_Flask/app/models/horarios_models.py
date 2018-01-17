@@ -16,6 +16,19 @@ class Curso(db.Model):
     def __str__(self):
         return "Curso {} de {}".format(self.codigo, self.codigo_materia)
 
+    def mensaje_cuatrimestre(self):
+        if not self.se_dicta_primer_cuatrimestre and not self.se_dicta_segundo_cuatrimestre:
+            return "No se dicta actualmente"
+        if self.se_dicta_primer_cuatrimestre and self.se_dicta_segundo_cuatrimestre:
+            return "Ambos cuatrimestres"
+        if self.se_dicta_primer_cuatrimestre:
+            return "Solo el 1º cuatrimestre"
+        return "Solo el 2º cuatrimestre"
+
+    def calcular_puntaje(self):
+        if self.cantidad_encuestas_completas == 0:
+            return 0
+        return (self.puntaje_total_encuestas / self.cantidad_encuestas_completas)
 
 class Horario(db.Model):
     __tablename__ = 'horario'
@@ -29,6 +42,16 @@ class Horario(db.Model):
     def __str__(self):
         return "Horario: {} de {} a {}".format(self.dia, self.hora_desde, self.hora_hasta)
 
+    def convertir_hora(self, horario):
+        l_horario = str(horario).split(".")
+        hora = l_horario[0]
+
+        if (0 <= int(hora) < 10):
+            hora = "0" + hora
+
+        if len(l_horario) == 1:
+            return hora + ":00"
+        return hora + ":30"
 
 class HorarioPorCurso(db.Model):
     __tablename__ = 'horario_por_curso'

@@ -286,7 +286,6 @@
     function validarRespuestasParcialesYGuardarRespuestas(nextUrl) {
         var esGuardadoParcial = true;
         validarRespuestasYGuardarRespuestas(nextUrl, esGuardadoParcial, function(state, result) {
-            debugger;
             window.location.replace(nextUrl);
         });
     }
@@ -295,7 +294,6 @@
         var nextUrl = '{{ url_for('main.historial_encuestas_page') }}';
         var esGuardadoParcial = false;
         validarRespuestasYGuardarRespuestas(nextUrl, esGuardadoParcial, function(state, result) {
-            debugger;
             var param = {};
             param["id_encuesta"] = {{idEncuestaAlumno}};
 
@@ -303,7 +301,6 @@
             error_al_finalizar.hidden = true;
 
             do_request('POST', SERVICE_FINALIZAR_ENCUESTAS_ALUMNO, param, function(state, result) {
-                debugger;
                 window.location.replace(nextUrl);
             }, function(state, result) {
                 error_al_finalizar.hidden = false;
@@ -326,7 +323,6 @@
         }
 
         if ($.isEmptyObject(respuestas)) {
-            debugger;
             window.location.replace(nextUrl);
             return true;
         }
@@ -468,6 +464,9 @@
             }
         }
 
+        if (palabras_clave.length == 0)
+            return {};
+
         var datos = generarEstructuraRespuestaBase(pregunta)
         datos["palabras_clave"] = palabras_clave;
         return datos;
@@ -525,6 +524,9 @@
     function generarRespuestaEstrellas(pregunta) {
         var div_estrellas = document.getElementById("ec-stars-wrapper-" + pregunta['pregunta_encuesta_id']);
         var estrellas = contarCantidadDeEstrellas(div_estrellas);
+
+        if (estrellas == 0)
+            return {};
 
         var datos = generarEstructuraRespuestaBase(pregunta)
         datos["estrellas"] = estrellas;
@@ -593,6 +595,9 @@
             var idMateria = correlativa.cells[2].innerText;
             correlativas.push(idMateria);
         }
+
+        if (correlativas.length == 0)
+            return {};
 
         var datos = generarEstructuraRespuestaBase(pregunta)
         datos["correlativas"] = correlativas;
@@ -1654,7 +1659,7 @@
                             <select class="form-control" id="selector_tematica_{{pregunta['pregunta_encuesta_id']}}" name="selector_tematica_{{pregunta['pregunta_encuesta_id']}}" onchange="selector_tematica_change('{{pregunta['pregunta_encuesta_id']}}')">
                                 <option id="nueva_tematica_{{pregunta['pregunta_encuesta_id']}}" value="-1">Nueva Temática</option>
                                 {% for tematica in tematicas %}
-                                    <option id="tematica_opcion_{{tematica['id']}}_{{pregunta['pregunta_encuesta_id']}}" value="{{tematica['id']}}">{{tematica["tema"]}}</option>
+                                    <option id="tematica_opcion_{{tematica['id_tematica']}}_{{pregunta['pregunta_encuesta_id']}}" value="{{tematica['id_tematica']}}">{{tematica["tematica"]}}</option>
                                 {% endfor %}
                             </select>
                         </div>
