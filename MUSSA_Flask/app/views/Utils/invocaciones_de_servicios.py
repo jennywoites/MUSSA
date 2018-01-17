@@ -22,33 +22,6 @@ def invocar_guardar_horarios_desde_PDF(csrf_token, cookie, ruta, anio, cuatrimes
     return json.loads(horarios_response.text)
 
 
-def invocar_buscar_cursos(cookie, codigo_materia='', nombre_curso='', id_curso=''):
-    parametros = {}
-    if codigo_materia: parametros["codigo_materia"] = codigo_materia
-    if nombre_curso: parametros["nombre_curso"] = nombre_curso
-    if id_curso: parametros["id_curso"] = id_curso
-    parametros["filtrar_cursos"] = False
-
-    cursos_response = requests.get(BUSCAR_CURSOS_SERVICE, params=parametros, cookies=cookie)
-    escribir_resultado_servicio('Buscar Cursos', cursos_response)
-    return json.loads(cursos_response.text)["cursos"]
-
-
-def invocar_servicio_obtener_curso(cookie, codigo_materia='', id_carrera=''):
-    parametros = {}
-    parametros["filtrar_cursos"] = True
-
-    if codigo_materia:
-        parametros["codigo_materia"] = codigo_materia
-
-    if id_carrera:
-        parametros["id_carrera"] = id_carrera
-
-    cursos_response = requests.get(BUSCAR_CURSOS_SERVICE, params=parametros, cookies=cookie)
-    escribir_resultado_servicio('Buscar Cursos', cursos_response)
-    return json.loads(cursos_response.text)["cursos"]
-
-
 def invocar_obtener_padron_alumno(cookie):
     padron_response = requests.get(OBTENER_PADRON_ALUMNO_SERVICE, cookies=cookie)
     escribir_resultado_servicio('Obtener Padron Alumno', padron_response)
@@ -130,15 +103,6 @@ def invocar_servicio_obtener_preguntas_encuesta(cookie, categorias):
     escribir_resultado_servicio('Obtener preguntas encuesta', preguntas_response)
 
     return json.loads(preguntas_response.text)["preguntas"]
-
-
-def invocar_obtener_docentes_del_curso(cookie, id_curso):
-    parametros = {}
-    parametros["id_curso"] = id_curso
-
-    docentes_response = requests.get(OBTENER_DOCENTES_CURSO_SERVICE, params=parametros, cookies=cookie)
-    escribir_resultado_servicio('Obtener Docentes del Curso', docentes_response)
-    return json.loads(docentes_response.text)["docentes"]
 
 
 def invocar_obtener_encuestas_alumno(cookie, finalizadas):

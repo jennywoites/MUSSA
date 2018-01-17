@@ -366,7 +366,7 @@
                                         <ul class="list-group">
                                             {% for codigo in docentes[i]["materias_que_dicta"] %}
                                             <li class="list-group-item" style="border-color: transparent; background-color: transparent;">
-                                                {{codigo}} - {{docentes[i]["materias_que_dicta"][codigo]}}
+                                                {{codigo}} - {{docentes[i]["materias_que_dicta"][codigo]["nombre"]}} / {{docentes[i]["materias_que_dicta"][codigo]["carrera"]}}
                                             </li>
                                             {% endfor %}
                                         </ul>

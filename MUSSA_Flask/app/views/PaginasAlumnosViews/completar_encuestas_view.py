@@ -57,7 +57,7 @@ def completar_encuesta(idEncuestaAlumno, cookie, num_categoria):
             break
     posibles_correlativas.pop(i)
 
-    docentes = invocar_obtener_docentes_del_curso(cookie, encuesta["id_curso"])
+    docentes = ClienteAPI().obtener_docentes_del_curso(cookie, encuesta["id_curso"])
 
     HORA_MIN = 7
     HORA_MAX = 23

@@ -37,38 +37,31 @@ class DocenteService(BaseService):
 
         l_ids_cursos = self.obtener_lista('l_ids_cursos')
 
-        parametros_son_validos, msj, codigo = self.validar_parametros({
-            "idDocente": {
-                self.PARAMETRO: idDocente,
-                self.ES_OBLIGATORIO: True,
-                self.FUNCIONES_VALIDACION: [
-                    (self.id_es_valido, []),
-                    (self.existe_id, [Docente])
-                ]
-            },
-            "apellido": {
+        parametros_son_validos, msj, codigo = self.validar_parametros(dict([
+            self.get_validaciones_entidad_basica("idDocente", idDocente, Docente),
+            ("apellido", {
                 self.PARAMETRO: apellido,
                 self.ES_OBLIGATORIO: True,
                 self.FUNCIONES_VALIDACION: [
                     (self.validar_contenido_y_longitud_texto, [3, 35])
                 ]
-            },
-            "nombre": {
+            }),
+            ("nombre", {
                 self.PARAMETRO: nombre,
                 self.ES_OBLIGATORIO: True,
                 self.FUNCIONES_VALIDACION: [
                     (self.validar_contenido_y_longitud_texto, [0, 40])
                 ]
-            },
-            "l_ids_cursos": {
+            }),
+            ("l_ids_cursos", {
                 self.PARAMETRO: l_ids_cursos,
                 self.ES_OBLIGATORIO: True,
                 self.FUNCIONES_VALIDACION: [
                     (self.id_es_valido, []),
                     (self.existe_id, [Curso])
                 ]
-            }
-        })
+            })
+        ]))
 
         if not parametros_son_validos:
             self.logg_error(msj)

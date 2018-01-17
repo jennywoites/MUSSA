@@ -5,14 +5,18 @@ from app.views.base_view import main_blueprint
 from app.views.Utils.invocaciones_de_servicios import *
 from app.DAO.MateriasDAO import *
 from datetime import datetime
+from app.ClienteAPI.ClienteAPI import ClienteAPI
 
 
 @main_blueprint.route('/datos_academicos/editar_materia/<int:idMateria>', methods=['GET'])
 @login_required
 def editar_materia_page(idMateria):
-    materia = invocar_obtener_materia_alumno(request.cookies, idMateria)[0]
+    cookies = request.cookies
+    materia = invocar_obtener_materia_alumno(cookies, idMateria)[0]
 
-    cursos = invocar_servicio_obtener_curso(request.cookies, materia["codigo"], materia["id_carrera"])
+    cursos = ClienteAPI().obtener_cursos_con_filtros(cookies, codigo_materia=materia["codigo"],
+                                                     id_carrera=materia["id_carrera"], filtrar_cursos=True)
+
     for i in range(len(cursos)):
         texto = ""
         for carrera in cursos[i]["carreras"]:

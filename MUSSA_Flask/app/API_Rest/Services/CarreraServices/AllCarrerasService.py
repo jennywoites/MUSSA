@@ -14,16 +14,9 @@ class AllCarrerasService(BaseService):
 
         codigo_materia = self.obtener_parametro("codigo_materia")
 
-        parametros_son_validos, msj, codigo = self.validar_parametros({
-            "codigo_materia": {
-                self.PARAMETRO: codigo_materia,
-                self.ES_OBLIGATORIO: False,
-                self.FUNCIONES_VALIDACION: [
-                    (self.es_numero_valido, []),
-                    (self.existe_el_elemento, [Materia, Materia.codigo])
-                ]
-            }
-        })
+        parametros_son_validos, msj, codigo = self.validar_parametros(dict([
+            self.get_validaciones_codigo_materia("codigo_materia", codigo_materia, False)
+        ]))
 
         if not parametros_son_validos:
             self.logg_error(msj)

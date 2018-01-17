@@ -14,16 +14,9 @@ class CorrelativasService(BaseService):
     def get(self, idMateria):
         self.logg_parametros_recibidos()
 
-        parametros_son_validos, msj, codigo = self.validar_parametros({
-            "idMateria": {
-                self.PARAMETRO: idMateria,
-                self.ES_OBLIGATORIO: True,
-                self.FUNCIONES_VALIDACION: [
-                    (self.id_es_valido, []),
-                    (self.existe_id, [Materia])
-                ]
-            }
-        })
+        parametros_son_validos, msj, codigo = self.validar_parametros(dict([
+            self.get_validaciones_entidad_basica("idMateria", idMateria, Materia)
+        ]))
 
         if not parametros_son_validos:
             self.logg_error(msj)

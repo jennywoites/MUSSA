@@ -12,7 +12,12 @@ def materia_page(idMateria):
     materia = ClienteAPI().get_materia(cookies, idMateria)
     carreras = ClienteAPI().obtener_todas_las_carreras(cookies, materia["codigo"])
     correlativas = ClienteAPI().obtener_materias_correlativas(cookies, idMateria)
-    cursos = invocar_servicio_obtener_curso(cookies, materia["codigo"], materia["carrera_id"])
+    cursos = ClienteAPI().obtener_cursos_con_filtros(
+        cookies,
+        codigo_materia=materia["codigo"],
+        id_carrera=materia["carrera_id"],
+        filtrar_cursos=True
+    )
 
     return render_template('pages/materia_page.html',
                            materia=materia,

@@ -5,6 +5,7 @@ from app.API_Rest.codes import *
 import json
 from flask_user import current_user
 from app.models.alumno_models import Alumno
+from app.models.carreras_models import Materia
 from app import db
 
 
@@ -190,9 +191,9 @@ class BaseService(Resource):
             valor = valor.replace(simbolo, '')
 
         es_valido = (len_min <= len(valor) <= len_max)
-        msj, codigo = ("El texto de {} debe tener al menos {} caracteres, y tener una logitud menor a {} "
-                       "caracteres".format(nombre_parametro, len_min, len_max), CLIENT_ERROR_BAD_REQUEST) if es_valido \
-            else ('El texto de ' + nombre_parametro + ' es valido.', -1)
+        msj, codigo = ("El texto de {} debe tener al menos {} caracteres, y tener una logitud "
+                       "menor a {} caracteres".format(nombre_parametro, len_min, len_max), CLIENT_ERROR_BAD_REQUEST)\
+                        if not es_valido else ('El texto de ' + nombre_parametro + ' es valido.', -1)
 
         return es_valido, msj, codigo
 
@@ -212,6 +213,17 @@ class BaseService(Resource):
             return self.mensaje_campo_no_obligatorio(nombre_parametro)
 
         es_valido = len(clase.query.filter(propiedad == valor).all()) > 0
+
+        msj, codigo = ("El {} no existe".format(nombre_parametro), CLIENT_ERROR_NOT_FOUND) if not es_valido \
+            else ("El {} existe".format(nombre_parametro), -1)
+
+        return es_valido, msj, codigo
+
+    def existe_elemento_que_comienza_con_el_valor(self, nombre_parametro, valor, es_obligatorio, clase, propiedad):
+        if not es_obligatorio and valor is None:
+            return self.mensaje_campo_no_obligatorio(nombre_parametro)
+
+        es_valido = len(clase.query.filter(propiedad.like(str(valor) + "%")).all()) > 0
 
         msj, codigo = ("El {} no existe".format(nombre_parametro), CLIENT_ERROR_NOT_FOUND) if not es_valido \
             else ("El {} existe".format(nombre_parametro), -1)
@@ -238,9 +250,9 @@ class BaseService(Resource):
     def servicio_get_base(self, idClase, nombreParametro, clase, funcion_generador_JSON):
         self.logg_parametros_recibidos()
 
-        parametros_son_validos, msj, codigo = self.validar_parametros(
-            self.validaciones_entidad_basica(nombreParametro, idClase, clase)
-        )
+        parametros_son_validos, msj, codigo = self.validar_parametros(dict([
+            self.get_validaciones_entidad_basica(nombreParametro, idClase, clase)
+        ]))
 
         if not parametros_son_validos:
             self.logg_error(msj)
@@ -256,9 +268,9 @@ class BaseService(Resource):
     def servicio_delete_base(self, idClase, nombreParametro, clase):
         self.logg_parametros_recibidos()
 
-        parametros_son_validos, msj, codigo = self.validar_parametros(
-            self.validaciones_entidad_basica(nombreParametro, idClase, clase)
-        )
+        parametros_son_validos, msj, codigo = self.validar_parametros(dict([
+            self.get_validaciones_entidad_basica(nombreParametro, idClase, clase)
+        ]))
 
         if not parametros_son_validos:
             self.logg_error(msj)
@@ -272,16 +284,29 @@ class BaseService(Resource):
 
         return result
 
+    ##########################################################
+    ##           Formato de validaciones generales          ##
+    ##########################################################
 
-    def validaciones_entidad_basica(self, nombreParametro, idClase, clase):
-        return {nombreParametro: {
+    def get_validaciones_entidad_basica(self, nombreParametro, idClase, clase, es_obligatorio=True):
+        return (nombreParametro, {
             self.PARAMETRO: idClase,
-            self.ES_OBLIGATORIO: True,
+            self.ES_OBLIGATORIO: es_obligatorio,
             self.FUNCIONES_VALIDACION: [
                 (self.id_es_valido, []),
                 (self.existe_id, [clase])
             ]
-        }}
+        })
+
+    def get_validaciones_codigo_materia(self, nombreParametro, valor, obligatorio):
+        return (nombreParametro, {
+            self.PARAMETRO: valor,
+            self.ES_OBLIGATORIO: obligatorio,
+            self.FUNCIONES_VALIDACION: [
+                (self.es_numero_valido, []),
+                (self.existe_elemento_que_comienza_con_el_valor, [Materia, Materia.codigo])
+            ]
+        })
 
 #######################################################################################################################
 # Todos los servicios requieren tener los siguientes campos definidos al finalizar la declaracion de la clase.        #

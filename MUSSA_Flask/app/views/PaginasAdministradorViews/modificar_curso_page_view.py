@@ -13,12 +13,11 @@ HORA_MAX = 23
 @main_blueprint.route('/admin/curso/<int:idCurso>', methods=['GET'])
 @roles_accepted('admin')
 def modificar_curso_page(idCurso):
-    client = ClienteAPI()
-
     cookies = request.cookies
-    curso = invocar_buscar_cursos(cookies, id_curso=idCurso).pop()
-    docentes_actuales = invocar_obtener_docentes_del_curso(cookies, idCurso)
-    docentes = client.obtener_todos_los_docentes(cookies)
+
+    curso = ClienteAPI().get_curso(cookies, idCurso)
+    docentes_actuales = ClienteAPI().obtener_docentes_del_curso(cookies, idCurso)
+    docentes = ClienteAPI().obtener_todos_los_docentes(cookies)
     carreras = ClienteAPI().obtener_todas_las_carreras(request.cookies)
 
     carreras_curso = []

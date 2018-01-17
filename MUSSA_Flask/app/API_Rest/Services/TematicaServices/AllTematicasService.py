@@ -13,15 +13,15 @@ class AllTematicasService(BaseService):
 
         solo_verificadas = self.obtener_booleano("solo_verificadas")
 
-        parametros_son_validos, msj, codigo = self.validar_parametros({
-            "solo_verificadas": {
+        parametros_son_validos, msj, codigo = self.validar_parametros(dict([
+            ("solo_verificadas", {
                 self.PARAMETRO: solo_verificadas,
                 self.ES_OBLIGATORIO: False,
                 self.FUNCIONES_VALIDACION: [
                     (self.booleano_es_valido, [])
                 ]
-            }
-        })
+            })
+        ]))
 
         if not parametros_son_validos:
             self.logg_error(msj)

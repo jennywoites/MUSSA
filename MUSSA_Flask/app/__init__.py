@@ -147,14 +147,8 @@ def add_resources_publicos(api):
     from app.API_Rest.Services.BuscarMateriasService import BuscarMaterias
     api.add_resource(BuscarMaterias, '/api/BuscarMaterias')
 
-    from app.API_Rest.Services.BuscarCursosService import BuscarCursos
-    api.add_resource(BuscarCursos, '/api/BuscarCursos')
-
     from app.API_Rest.Services.ObtenerPreguntasEncuestaService import ObtenerPreguntasEncuesta
     api.add_resource(ObtenerPreguntasEncuesta, '/api/ObtenerPreguntasEncuesta')
-
-    from app.API_Rest.Services.ObtenerDocentesCursoService import ObtenerDocentesCurso
-    api.add_resource(ObtenerDocentesCurso, '/api/ObtenerDocentesCurso')
 
 
 def add_resources_usuarios(api):

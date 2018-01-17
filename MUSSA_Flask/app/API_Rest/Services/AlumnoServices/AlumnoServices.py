@@ -17,8 +17,8 @@ class AlumnoService(BaseService):
     def get(self, idAlumno):
         self.logg_parametros_recibidos()
 
-        parametros_son_validos, msj, codigo = self.validar_parametros({
-            "idAlumno": {
+        parametros_son_validos, msj, codigo = self.validar_parametros(dict([
+            ("idAlumno", {
                 self.PARAMETRO: idAlumno,
                 self.ES_OBLIGATORIO: True,
                 self.FUNCIONES_VALIDACION: [
@@ -26,8 +26,8 @@ class AlumnoService(BaseService):
                     (self.existe_id, [Alumno]),
                     (self.alumno_es_usuario_actual, [])
                 ]
-            }
-        })
+            })
+        ]))
 
         if not parametros_son_validos:
             self.logg_error(msj)

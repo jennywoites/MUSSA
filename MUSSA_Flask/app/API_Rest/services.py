@@ -8,9 +8,7 @@ BASE_URL = HTTP + IP + PUERTO + BASE_API
 
 # No requiere autenticacion
 BUSCAR_MATERIAS_SERVICE = BASE_URL + "BuscarMaterias"
-BUSCAR_CURSOS_SERVICE = BASE_URL + "BuscarCursos"
 OBTENER_PREGUNTAS_ENCUESTA_SERVICE = BASE_URL + "ObtenerPreguntasEncuesta"
-OBTENER_DOCENTES_CURSO_SERVICE = BASE_URL + "ObtenerDocentesCurso"
 OBTENER_TEMATICAS_MATERIAS = BASE_URL + "ObtenerTematicasMaterias"
 
 # Requiere estar logueado

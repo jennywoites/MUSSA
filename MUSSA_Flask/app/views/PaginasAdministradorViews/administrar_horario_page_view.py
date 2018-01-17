@@ -1,15 +1,10 @@
 from flask import redirect, render_template
 from flask import request, url_for, flash
-from flask_user import current_user, login_required, roles_accepted
+from flask_user import roles_accepted
 from werkzeug import secure_filename
-
-from app import db
-from app.models.user_models import UserProfileForm
-
+from app.ClienteAPI.ClienteAPI import ClienteAPI
 from app.views.base_view import main_blueprint
-
 from app.views.Utils.invocaciones_de_servicios import *
-
 from datetime import datetime
 from flask_babel import gettext
 
@@ -18,7 +13,9 @@ from flask_babel import gettext
 @roles_accepted('admin')
 def administrar_horarios_page():
     MAX_TIEMPO = 5
-    cursos = invocar_buscar_cursos(request.cookies)
+
+    cursos = ClienteAPI().obtener_todos_los_cursos_existentes(request.cookies)
+
     hoy = datetime.now().year
     anios = [x for x in range(hoy, hoy - MAX_TIEMPO, -1)]
     return render_template('pages/administrar_horarios_page.html',

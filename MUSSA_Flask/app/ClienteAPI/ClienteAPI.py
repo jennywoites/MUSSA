@@ -79,8 +79,15 @@ class ClienteAPI:
         """URL: '/api/materia/<int:idMateria>/correlativas'"""
         return self.BASE_URL + '/materia/' + str(idMateria) + '/correlativas'
 
-        ################################################
+    def get_url_get_curso(self, idCurso):
+        """URL: '/api/curso/<int:idCurso>'"""
+        return self.BASE_URL + '/curso/' + str(idCurso)
 
+    def get_url_all_cursos(self):
+        """URL: '/api/curso/all'"""
+        return self.BASE_URL + '/curso/all'
+
+    ################################################
     ##              Servicios DOCENTE             ##
     ################################################
 
@@ -145,3 +152,29 @@ class ClienteAPI:
     def obtener_materias_correlativas(self, cookie, idMateria):
         url_servicio = self.get_url_materias_correlativas(idMateria)
         return self.invocar_get(url_servicio, cookie)["correlativas"]
+
+    ################################################
+    ##              Servicios CURSO               ##
+    ################################################
+
+    def get_curso(self, cookie, idCurso):
+        url_servicio = self.get_url_get_curso(idCurso)
+        return self.invocar_get(url_servicio, cookie)
+
+    def obtener_docentes_del_curso(self, cookie, idCurso):
+        curso = self.get_curso(cookie, idCurso)
+        return curso["datos_docentes"]
+
+    def obtener_cursos_con_filtros(self, cookie, nombre_curso='', codigo_materia='', id_carrera='', filtrar_cursos=''):
+        url_servicio = self.get_url_all_cursos()
+
+        parametros = {}
+        if nombre_curso: parametros["nombre_curso"] = nombre_curso
+        if codigo_materia: parametros["codigo_materia"] = codigo_materia
+        if id_carrera: parametros["id_carrera"] = id_carrera
+        if filtrar_cursos: parametros["filtrar_cursos"] = filtrar_cursos
+
+        return self.invocar_get(url_servicio, cookie, parametros)["cursos"]
+
+    def obtener_todos_los_cursos_existentes(self, cookie, nombre_curso='', codigo_materia='', id_carrera=''):
+        self.obtener_cursos_con_filtros(cookie, nombre_curso, codigo_materia, id_carrera, filtrar_cursos=False)
