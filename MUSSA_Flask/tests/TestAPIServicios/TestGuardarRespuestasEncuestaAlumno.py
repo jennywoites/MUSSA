@@ -120,9 +120,6 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
         encuesta = EncuestaAlumno(
             alumno_id=self.ENCUESTA["alumno_id"],
             materia_alumno_id=self.ENCUESTA["materia_alumno_id"],
-            carrera=self.ENCUESTA["carrera"],
-            materia=self.ENCUESTA["materia"],
-            curso=self.ENCUESTA["curso"],
             cuatrimestre_aprobacion_cursada=self.ENCUESTA["cuatrimestre_aprobacion_cursada"],
             anio_aprobacion_cursada=self.ENCUESTA["anio_aprobacion_cursada"],
             finalizada=self.ENCUESTA["finalizada"]
@@ -405,10 +402,10 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
             preguntas.append(subpregunta)
 
     def se_encuentra_el_horario(self, horario, l_horarios):
-        for h  in l_horarios:
+        for h in l_horarios:
             if (h["dia"] == horario["dia"].upper() and
-                    h["hora_desde"] == horario["hora_desde"] and
-                    h["hora_hasta"] == horario["hora_hasta"]):
+                        h["hora_desde"] == horario["hora_desde"] and
+                        h["hora_hasta"] == horario["hora_hasta"]):
                 return True
         return False
 
@@ -534,7 +531,7 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
 
         response = client.get(OBTENER_PREGUNTAS_ENCUESTA_SERVICE, query_string={"categorias": paso_actual})
         preguntas = json.loads(response.get_data(as_text=True))["preguntas"]
-        preguntas = [preguntas[0], preguntas[3],preguntas[8],preguntas[10], preguntas[12], preguntas[13]]
+        preguntas = [preguntas[0], preguntas[3], preguntas[8], preguntas[10], preguntas[12], preguntas[13]]
 
         encuesta = EncuestaAlumno.query.first()
 
@@ -556,7 +553,7 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
 
         response = client.get(OBTENER_PREGUNTAS_ENCUESTA_SERVICE, query_string={"categorias": paso_actual})
         preguntas = json.loads(response.get_data(as_text=True))["preguntas"]
-        preguntas = [preguntas[0], preguntas[3],preguntas[8],preguntas[10], preguntas[12], preguntas[13]]
+        preguntas = [preguntas[0], preguntas[3], preguntas[8], preguntas[10], preguntas[12], preguntas[13]]
 
         encuesta = EncuestaAlumno.query.first()
 
@@ -579,11 +576,11 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
 
         estados_pasos = EstadoPasosEncuestaAlumno.query.filter_by(encuesta_alumno_id=encuesta.id).first()
 
-        assert(estados_pasos.estadoPaso1 == PASO_ENCUESTA_NO_INICIADO) #GRUPO_ENCUESTA_GENERAL
-        assert(estados_pasos.estadoPaso2 == PASO_ENCUESTA_NO_INICIADO) #GRUPO_ENCUESTA_CONTENIDO
-        assert(estados_pasos.estadoPaso3 == PASO_ENCUESTA_NO_INICIADO) #GRUPO_ENCUESTA_CLASES
-        assert(estados_pasos.estadoPaso4 == PASO_ENCUESTA_NO_INICIADO) #GRUPO_ENCUESTA_EXAMENES
-        assert(estados_pasos.estadoPaso5 == PASO_ENCUESTA_NO_INICIADO) #GRUPO_ENCUESTA_DOCENTES
+        assert (estados_pasos.estadoPaso1 == PASO_ENCUESTA_NO_INICIADO)  # GRUPO_ENCUESTA_GENERAL
+        assert (estados_pasos.estadoPaso2 == PASO_ENCUESTA_NO_INICIADO)  # GRUPO_ENCUESTA_CONTENIDO
+        assert (estados_pasos.estadoPaso3 == PASO_ENCUESTA_NO_INICIADO)  # GRUPO_ENCUESTA_CLASES
+        assert (estados_pasos.estadoPaso4 == PASO_ENCUESTA_NO_INICIADO)  # GRUPO_ENCUESTA_EXAMENES
+        assert (estados_pasos.estadoPaso5 == PASO_ENCUESTA_FINALIZADO)  # GRUPO_ENCUESTA_DOCENTES
 
         parametros = {}
         parametros["id_encuesta"] = encuesta.id
@@ -598,11 +595,11 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
 
         estados_pasos = EstadoPasosEncuestaAlumno.query.filter_by(encuesta_alumno_id=encuesta.id).first()
 
-        assert(estados_pasos.estadoPaso1 == PASO_ENCUESTA_NO_INICIADO) #GRUPO_ENCUESTA_GENERAL
-        assert(estados_pasos.estadoPaso2 == PASO_ENCUESTA_FINALIZADO) #GRUPO_ENCUESTA_CONTENIDO
-        assert(estados_pasos.estadoPaso3 == PASO_ENCUESTA_NO_INICIADO) #GRUPO_ENCUESTA_CLASES
-        assert(estados_pasos.estadoPaso4 == PASO_ENCUESTA_NO_INICIADO) #GRUPO_ENCUESTA_EXAMENES
-        assert(estados_pasos.estadoPaso5 == PASO_ENCUESTA_NO_INICIADO) #GRUPO_ENCUESTA_DOCENTES
+        assert (estados_pasos.estadoPaso1 == PASO_ENCUESTA_NO_INICIADO)  # GRUPO_ENCUESTA_GENERAL
+        assert (estados_pasos.estadoPaso2 == PASO_ENCUESTA_FINALIZADO)  # GRUPO_ENCUESTA_CONTENIDO
+        assert (estados_pasos.estadoPaso3 == PASO_ENCUESTA_NO_INICIADO)  # GRUPO_ENCUESTA_CLASES
+        assert (estados_pasos.estadoPaso4 == PASO_ENCUESTA_NO_INICIADO)  # GRUPO_ENCUESTA_EXAMENES
+        assert (estados_pasos.estadoPaso5 == PASO_ENCUESTA_FINALIZADO)  # GRUPO_ENCUESTA_DOCENTES
 
     def test_guardar_respuestas_parciales_en_categoria_contenido_guarda_correctamente_y_el_paso_queda_en_curso(self):
         paso_actual = GRUPO_ENCUESTA_CONTENIDO
@@ -611,17 +608,17 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
 
         response = client.get(OBTENER_PREGUNTAS_ENCUESTA_SERVICE, query_string={"categorias": paso_actual})
         preguntas = json.loads(response.get_data(as_text=True))["preguntas"]
-        preguntas = [preguntas[0], preguntas[3],preguntas[6]]
+        preguntas = [preguntas[0], preguntas[3], preguntas[6]]
 
         encuesta = EncuestaAlumno.query.first()
 
         estados_pasos = EstadoPasosEncuestaAlumno.query.filter_by(encuesta_alumno_id=encuesta.id).first()
 
-        assert(estados_pasos.estadoPaso1 == PASO_ENCUESTA_NO_INICIADO) #GRUPO_ENCUESTA_GENERAL
-        assert(estados_pasos.estadoPaso2 == PASO_ENCUESTA_NO_INICIADO) #GRUPO_ENCUESTA_CONTENIDO
-        assert(estados_pasos.estadoPaso3 == PASO_ENCUESTA_NO_INICIADO) #GRUPO_ENCUESTA_CLASES
-        assert(estados_pasos.estadoPaso4 == PASO_ENCUESTA_NO_INICIADO) #GRUPO_ENCUESTA_EXAMENES
-        assert(estados_pasos.estadoPaso5 == PASO_ENCUESTA_NO_INICIADO) #GRUPO_ENCUESTA_DOCENTES
+        assert (estados_pasos.estadoPaso1 == PASO_ENCUESTA_NO_INICIADO)  # GRUPO_ENCUESTA_GENERAL
+        assert (estados_pasos.estadoPaso2 == PASO_ENCUESTA_NO_INICIADO)  # GRUPO_ENCUESTA_CONTENIDO
+        assert (estados_pasos.estadoPaso3 == PASO_ENCUESTA_NO_INICIADO)  # GRUPO_ENCUESTA_CLASES
+        assert (estados_pasos.estadoPaso4 == PASO_ENCUESTA_NO_INICIADO)  # GRUPO_ENCUESTA_EXAMENES
+        assert (estados_pasos.estadoPaso5 == PASO_ENCUESTA_FINALIZADO)  # GRUPO_ENCUESTA_DOCENTES
 
         parametros = {}
         parametros["id_encuesta"] = encuesta.id
@@ -636,11 +633,11 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
 
         estados_pasos = EstadoPasosEncuestaAlumno.query.filter_by(encuesta_alumno_id=encuesta.id).first()
 
-        assert(estados_pasos.estadoPaso1 == PASO_ENCUESTA_NO_INICIADO) #GRUPO_ENCUESTA_GENERAL
-        assert(estados_pasos.estadoPaso2 == PASO_ENCUESTA_EN_CURSO) #GRUPO_ENCUESTA_CONTENIDO
-        assert(estados_pasos.estadoPaso3 == PASO_ENCUESTA_NO_INICIADO) #GRUPO_ENCUESTA_CLASES
-        assert(estados_pasos.estadoPaso4 == PASO_ENCUESTA_NO_INICIADO) #GRUPO_ENCUESTA_EXAMENES
-        assert(estados_pasos.estadoPaso5 == PASO_ENCUESTA_NO_INICIADO) #GRUPO_ENCUESTA_DOCENTES
+        assert (estados_pasos.estadoPaso1 == PASO_ENCUESTA_NO_INICIADO)  # GRUPO_ENCUESTA_GENERAL
+        assert (estados_pasos.estadoPaso2 == PASO_ENCUESTA_EN_CURSO)  # GRUPO_ENCUESTA_CONTENIDO
+        assert (estados_pasos.estadoPaso3 == PASO_ENCUESTA_NO_INICIADO)  # GRUPO_ENCUESTA_CLASES
+        assert (estados_pasos.estadoPaso4 == PASO_ENCUESTA_NO_INICIADO)  # GRUPO_ENCUESTA_EXAMENES
+        assert (estados_pasos.estadoPaso5 == PASO_ENCUESTA_FINALIZADO)  # GRUPO_ENCUESTA_DOCENTES
 
     def test_guardar_nuevas_respuestas_parciales_sobre_paso_finalizado_queda_en_curso(self):
         paso_actual = GRUPO_ENCUESTA_CONTENIDO
@@ -654,11 +651,11 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
 
         estados_pasos = EstadoPasosEncuestaAlumno.query.filter_by(encuesta_alumno_id=encuesta.id).first()
 
-        assert(estados_pasos.estadoPaso1 == PASO_ENCUESTA_NO_INICIADO) #GRUPO_ENCUESTA_GENERAL
-        assert(estados_pasos.estadoPaso2 == PASO_ENCUESTA_NO_INICIADO) #GRUPO_ENCUESTA_CONTENIDO
-        assert(estados_pasos.estadoPaso3 == PASO_ENCUESTA_NO_INICIADO) #GRUPO_ENCUESTA_CLASES
-        assert(estados_pasos.estadoPaso4 == PASO_ENCUESTA_NO_INICIADO) #GRUPO_ENCUESTA_EXAMENES
-        assert(estados_pasos.estadoPaso5 == PASO_ENCUESTA_NO_INICIADO) #GRUPO_ENCUESTA_DOCENTES
+        assert (estados_pasos.estadoPaso1 == PASO_ENCUESTA_NO_INICIADO)  # GRUPO_ENCUESTA_GENERAL
+        assert (estados_pasos.estadoPaso2 == PASO_ENCUESTA_NO_INICIADO)  # GRUPO_ENCUESTA_CONTENIDO
+        assert (estados_pasos.estadoPaso3 == PASO_ENCUESTA_NO_INICIADO)  # GRUPO_ENCUESTA_CLASES
+        assert (estados_pasos.estadoPaso4 == PASO_ENCUESTA_NO_INICIADO)  # GRUPO_ENCUESTA_EXAMENES
+        assert (estados_pasos.estadoPaso5 == PASO_ENCUESTA_FINALIZADO)  # GRUPO_ENCUESTA_DOCENTES
 
         parametros = {}
         parametros["id_encuesta"] = encuesta.id
@@ -673,13 +670,13 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
 
         estados_pasos = EstadoPasosEncuestaAlumno.query.filter_by(encuesta_alumno_id=encuesta.id).first()
 
-        assert(estados_pasos.estadoPaso1 == PASO_ENCUESTA_NO_INICIADO) #GRUPO_ENCUESTA_GENERAL
-        assert(estados_pasos.estadoPaso2 == PASO_ENCUESTA_FINALIZADO) #GRUPO_ENCUESTA_CONTENIDO
-        assert(estados_pasos.estadoPaso3 == PASO_ENCUESTA_NO_INICIADO) #GRUPO_ENCUESTA_CLASES
-        assert(estados_pasos.estadoPaso4 == PASO_ENCUESTA_NO_INICIADO) #GRUPO_ENCUESTA_EXAMENES
-        assert(estados_pasos.estadoPaso5 == PASO_ENCUESTA_NO_INICIADO) #GRUPO_ENCUESTA_DOCENTES
+        assert (estados_pasos.estadoPaso1 == PASO_ENCUESTA_NO_INICIADO)  # GRUPO_ENCUESTA_GENERAL
+        assert (estados_pasos.estadoPaso2 == PASO_ENCUESTA_FINALIZADO)  # GRUPO_ENCUESTA_CONTENIDO
+        assert (estados_pasos.estadoPaso3 == PASO_ENCUESTA_NO_INICIADO)  # GRUPO_ENCUESTA_CLASES
+        assert (estados_pasos.estadoPaso4 == PASO_ENCUESTA_NO_INICIADO)  # GRUPO_ENCUESTA_EXAMENES
+        assert (estados_pasos.estadoPaso5 == PASO_ENCUESTA_FINALIZADO)  # GRUPO_ENCUESTA_DOCENTES
 
-        preguntas = [preguntas[0], preguntas[3],preguntas[6]]
+        preguntas = [preguntas[0], preguntas[3], preguntas[6]]
         parametros["respuestas"] = self.crear_respuestas_alumno(preguntas, self.get_datos_respuestas_default())
         response = client.post(GUARDAR_RESPUESTAS_ENCUESTA_ALUMNO_SERVICE, data=parametros)
         assert (response.status_code == SUCCESS_OK)
@@ -690,11 +687,11 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
 
         estados_pasos = EstadoPasosEncuestaAlumno.query.filter_by(encuesta_alumno_id=encuesta.id).first()
 
-        assert(estados_pasos.estadoPaso1 == PASO_ENCUESTA_NO_INICIADO) #GRUPO_ENCUESTA_GENERAL
-        assert(estados_pasos.estadoPaso2 == PASO_ENCUESTA_EN_CURSO) #GRUPO_ENCUESTA_CONTENIDO
-        assert(estados_pasos.estadoPaso3 == PASO_ENCUESTA_NO_INICIADO) #GRUPO_ENCUESTA_CLASES
-        assert(estados_pasos.estadoPaso4 == PASO_ENCUESTA_NO_INICIADO) #GRUPO_ENCUESTA_EXAMENES
-        assert(estados_pasos.estadoPaso5 == PASO_ENCUESTA_NO_INICIADO) #GRUPO_ENCUESTA_DOCENTES
+        assert (estados_pasos.estadoPaso1 == PASO_ENCUESTA_NO_INICIADO)  # GRUPO_ENCUESTA_GENERAL
+        assert (estados_pasos.estadoPaso2 == PASO_ENCUESTA_EN_CURSO)  # GRUPO_ENCUESTA_CONTENIDO
+        assert (estados_pasos.estadoPaso3 == PASO_ENCUESTA_NO_INICIADO)  # GRUPO_ENCUESTA_CLASES
+        assert (estados_pasos.estadoPaso4 == PASO_ENCUESTA_NO_INICIADO)  # GRUPO_ENCUESTA_EXAMENES
+        assert (estados_pasos.estadoPaso5 == PASO_ENCUESTA_FINALIZADO)  # GRUPO_ENCUESTA_DOCENTES
 
     def test_guardar_nuevas_respuestas_completas_sobre_paso_finalizado_queda_finalizado(self):
         paso_actual = GRUPO_ENCUESTA_CONTENIDO
@@ -708,11 +705,11 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
 
         estados_pasos = EstadoPasosEncuestaAlumno.query.filter_by(encuesta_alumno_id=encuesta.id).first()
 
-        assert(estados_pasos.estadoPaso1 == PASO_ENCUESTA_NO_INICIADO) #GRUPO_ENCUESTA_GENERAL
-        assert(estados_pasos.estadoPaso2 == PASO_ENCUESTA_NO_INICIADO) #GRUPO_ENCUESTA_CONTENIDO
-        assert(estados_pasos.estadoPaso3 == PASO_ENCUESTA_NO_INICIADO) #GRUPO_ENCUESTA_CLASES
-        assert(estados_pasos.estadoPaso4 == PASO_ENCUESTA_NO_INICIADO) #GRUPO_ENCUESTA_EXAMENES
-        assert(estados_pasos.estadoPaso5 == PASO_ENCUESTA_NO_INICIADO) #GRUPO_ENCUESTA_DOCENTES
+        assert (estados_pasos.estadoPaso1 == PASO_ENCUESTA_NO_INICIADO)  # GRUPO_ENCUESTA_GENERAL
+        assert (estados_pasos.estadoPaso2 == PASO_ENCUESTA_NO_INICIADO)  # GRUPO_ENCUESTA_CONTENIDO
+        assert (estados_pasos.estadoPaso3 == PASO_ENCUESTA_NO_INICIADO)  # GRUPO_ENCUESTA_CLASES
+        assert (estados_pasos.estadoPaso4 == PASO_ENCUESTA_NO_INICIADO)  # GRUPO_ENCUESTA_EXAMENES
+        assert (estados_pasos.estadoPaso5 == PASO_ENCUESTA_FINALIZADO)  # GRUPO_ENCUESTA_DOCENTES
 
         parametros = {}
         parametros["id_encuesta"] = encuesta.id
@@ -727,11 +724,11 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
 
         estados_pasos = EstadoPasosEncuestaAlumno.query.filter_by(encuesta_alumno_id=encuesta.id).first()
 
-        assert(estados_pasos.estadoPaso1 == PASO_ENCUESTA_NO_INICIADO) #GRUPO_ENCUESTA_GENERAL
-        assert(estados_pasos.estadoPaso2 == PASO_ENCUESTA_FINALIZADO) #GRUPO_ENCUESTA_CONTENIDO
-        assert(estados_pasos.estadoPaso3 == PASO_ENCUESTA_NO_INICIADO) #GRUPO_ENCUESTA_CLASES
-        assert(estados_pasos.estadoPaso4 == PASO_ENCUESTA_NO_INICIADO) #GRUPO_ENCUESTA_EXAMENES
-        assert(estados_pasos.estadoPaso5 == PASO_ENCUESTA_NO_INICIADO) #GRUPO_ENCUESTA_DOCENTES
+        assert (estados_pasos.estadoPaso1 == PASO_ENCUESTA_NO_INICIADO)  # GRUPO_ENCUESTA_GENERAL
+        assert (estados_pasos.estadoPaso2 == PASO_ENCUESTA_FINALIZADO)  # GRUPO_ENCUESTA_CONTENIDO
+        assert (estados_pasos.estadoPaso3 == PASO_ENCUESTA_NO_INICIADO)  # GRUPO_ENCUESTA_CLASES
+        assert (estados_pasos.estadoPaso4 == PASO_ENCUESTA_NO_INICIADO)  # GRUPO_ENCUESTA_EXAMENES
+        assert (estados_pasos.estadoPaso5 == PASO_ENCUESTA_FINALIZADO)  # GRUPO_ENCUESTA_DOCENTES
 
         parametros["respuestas"] = self.crear_respuestas_alumno(preguntas, self.get_datos_respuestas_default())
         response = client.post(GUARDAR_RESPUESTAS_ENCUESTA_ALUMNO_SERVICE, data=parametros)
@@ -743,11 +740,11 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
 
         estados_pasos = EstadoPasosEncuestaAlumno.query.filter_by(encuesta_alumno_id=encuesta.id).first()
 
-        assert(estados_pasos.estadoPaso1 == PASO_ENCUESTA_NO_INICIADO) #GRUPO_ENCUESTA_GENERAL
-        assert(estados_pasos.estadoPaso2 == PASO_ENCUESTA_FINALIZADO) #GRUPO_ENCUESTA_CONTENIDO
-        assert(estados_pasos.estadoPaso3 == PASO_ENCUESTA_NO_INICIADO) #GRUPO_ENCUESTA_CLASES
-        assert(estados_pasos.estadoPaso4 == PASO_ENCUESTA_NO_INICIADO) #GRUPO_ENCUESTA_EXAMENES
-        assert(estados_pasos.estadoPaso5 == PASO_ENCUESTA_NO_INICIADO) #GRUPO_ENCUESTA_DOCENTES
+        assert (estados_pasos.estadoPaso1 == PASO_ENCUESTA_NO_INICIADO)  # GRUPO_ENCUESTA_GENERAL
+        assert (estados_pasos.estadoPaso2 == PASO_ENCUESTA_FINALIZADO)  # GRUPO_ENCUESTA_CONTENIDO
+        assert (estados_pasos.estadoPaso3 == PASO_ENCUESTA_NO_INICIADO)  # GRUPO_ENCUESTA_CLASES
+        assert (estados_pasos.estadoPaso4 == PASO_ENCUESTA_NO_INICIADO)  # GRUPO_ENCUESTA_EXAMENES
+        assert (estados_pasos.estadoPaso5 == PASO_ENCUESTA_FINALIZADO)  # GRUPO_ENCUESTA_DOCENTES
 
     def test_guardar_nuevas_respuestas_parciales_sobre_paso_en_curso_queda_en_curso(self):
         paso_actual = GRUPO_ENCUESTA_CONTENIDO
@@ -761,16 +758,16 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
 
         estados_pasos = EstadoPasosEncuestaAlumno.query.filter_by(encuesta_alumno_id=encuesta.id).first()
 
-        assert(estados_pasos.estadoPaso1 == PASO_ENCUESTA_NO_INICIADO) #GRUPO_ENCUESTA_GENERAL
-        assert(estados_pasos.estadoPaso2 == PASO_ENCUESTA_NO_INICIADO) #GRUPO_ENCUESTA_CONTENIDO
-        assert(estados_pasos.estadoPaso3 == PASO_ENCUESTA_NO_INICIADO) #GRUPO_ENCUESTA_CLASES
-        assert(estados_pasos.estadoPaso4 == PASO_ENCUESTA_NO_INICIADO) #GRUPO_ENCUESTA_EXAMENES
-        assert(estados_pasos.estadoPaso5 == PASO_ENCUESTA_NO_INICIADO) #GRUPO_ENCUESTA_DOCENTES
+        assert (estados_pasos.estadoPaso1 == PASO_ENCUESTA_NO_INICIADO)  # GRUPO_ENCUESTA_GENERAL
+        assert (estados_pasos.estadoPaso2 == PASO_ENCUESTA_NO_INICIADO)  # GRUPO_ENCUESTA_CONTENIDO
+        assert (estados_pasos.estadoPaso3 == PASO_ENCUESTA_NO_INICIADO)  # GRUPO_ENCUESTA_CLASES
+        assert (estados_pasos.estadoPaso4 == PASO_ENCUESTA_NO_INICIADO)  # GRUPO_ENCUESTA_EXAMENES
+        assert (estados_pasos.estadoPaso5 == PASO_ENCUESTA_FINALIZADO)  # GRUPO_ENCUESTA_DOCENTES
 
         parametros = {}
         parametros["id_encuesta"] = encuesta.id
         parametros["categoria"] = paso_actual
-        preguntas1 = [preguntas[0], preguntas[3],preguntas[6]]
+        preguntas1 = [preguntas[0], preguntas[3], preguntas[6]]
         parametros["respuestas"] = self.crear_respuestas_alumno(preguntas1, self.get_datos_respuestas_default())
         response = client.post(GUARDAR_RESPUESTAS_ENCUESTA_ALUMNO_SERVICE, data=parametros)
         assert (response.status_code == SUCCESS_OK)
@@ -781,11 +778,11 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
 
         estados_pasos = EstadoPasosEncuestaAlumno.query.filter_by(encuesta_alumno_id=encuesta.id).first()
 
-        assert(estados_pasos.estadoPaso1 == PASO_ENCUESTA_NO_INICIADO) #GRUPO_ENCUESTA_GENERAL
-        assert(estados_pasos.estadoPaso2 == PASO_ENCUESTA_EN_CURSO) #GRUPO_ENCUESTA_CONTENIDO
-        assert(estados_pasos.estadoPaso3 == PASO_ENCUESTA_NO_INICIADO) #GRUPO_ENCUESTA_CLASES
-        assert(estados_pasos.estadoPaso4 == PASO_ENCUESTA_NO_INICIADO) #GRUPO_ENCUESTA_EXAMENES
-        assert(estados_pasos.estadoPaso5 == PASO_ENCUESTA_NO_INICIADO) #GRUPO_ENCUESTA_DOCENTES
+        assert (estados_pasos.estadoPaso1 == PASO_ENCUESTA_NO_INICIADO)  # GRUPO_ENCUESTA_GENERAL
+        assert (estados_pasos.estadoPaso2 == PASO_ENCUESTA_EN_CURSO)  # GRUPO_ENCUESTA_CONTENIDO
+        assert (estados_pasos.estadoPaso3 == PASO_ENCUESTA_NO_INICIADO)  # GRUPO_ENCUESTA_CLASES
+        assert (estados_pasos.estadoPaso4 == PASO_ENCUESTA_NO_INICIADO)  # GRUPO_ENCUESTA_EXAMENES
+        assert (estados_pasos.estadoPaso5 == PASO_ENCUESTA_FINALIZADO)  # GRUPO_ENCUESTA_DOCENTES
 
         preguntas2 = [preguntas[0], preguntas[1]]
         parametros["respuestas"] = self.crear_respuestas_alumno(preguntas2, self.get_datos_respuestas_default())
@@ -798,11 +795,11 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
 
         estados_pasos = EstadoPasosEncuestaAlumno.query.filter_by(encuesta_alumno_id=encuesta.id).first()
 
-        assert(estados_pasos.estadoPaso1 == PASO_ENCUESTA_NO_INICIADO) #GRUPO_ENCUESTA_GENERAL
-        assert(estados_pasos.estadoPaso2 == PASO_ENCUESTA_EN_CURSO) #GRUPO_ENCUESTA_CONTENIDO
-        assert(estados_pasos.estadoPaso3 == PASO_ENCUESTA_NO_INICIADO) #GRUPO_ENCUESTA_CLASES
-        assert(estados_pasos.estadoPaso4 == PASO_ENCUESTA_NO_INICIADO) #GRUPO_ENCUESTA_EXAMENES
-        assert(estados_pasos.estadoPaso5 == PASO_ENCUESTA_NO_INICIADO) #GRUPO_ENCUESTA_DOCENTES
+        assert (estados_pasos.estadoPaso1 == PASO_ENCUESTA_NO_INICIADO)  # GRUPO_ENCUESTA_GENERAL
+        assert (estados_pasos.estadoPaso2 == PASO_ENCUESTA_EN_CURSO)  # GRUPO_ENCUESTA_CONTENIDO
+        assert (estados_pasos.estadoPaso3 == PASO_ENCUESTA_NO_INICIADO)  # GRUPO_ENCUESTA_CLASES
+        assert (estados_pasos.estadoPaso4 == PASO_ENCUESTA_NO_INICIADO)  # GRUPO_ENCUESTA_EXAMENES
+        assert (estados_pasos.estadoPaso5 == PASO_ENCUESTA_FINALIZADO)  # GRUPO_ENCUESTA_DOCENTES
 
     def test_guardar_nuevas_respuestas_completas_sobre_paso_en_curso_queda_finalizado(self):
         paso_actual = GRUPO_ENCUESTA_CONTENIDO
@@ -816,16 +813,16 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
 
         estados_pasos = EstadoPasosEncuestaAlumno.query.filter_by(encuesta_alumno_id=encuesta.id).first()
 
-        assert(estados_pasos.estadoPaso1 == PASO_ENCUESTA_NO_INICIADO) #GRUPO_ENCUESTA_GENERAL
-        assert(estados_pasos.estadoPaso2 == PASO_ENCUESTA_NO_INICIADO) #GRUPO_ENCUESTA_CONTENIDO
-        assert(estados_pasos.estadoPaso3 == PASO_ENCUESTA_NO_INICIADO) #GRUPO_ENCUESTA_CLASES
-        assert(estados_pasos.estadoPaso4 == PASO_ENCUESTA_NO_INICIADO) #GRUPO_ENCUESTA_EXAMENES
-        assert(estados_pasos.estadoPaso5 == PASO_ENCUESTA_NO_INICIADO) #GRUPO_ENCUESTA_DOCENTES
+        assert (estados_pasos.estadoPaso1 == PASO_ENCUESTA_NO_INICIADO)  # GRUPO_ENCUESTA_GENERAL
+        assert (estados_pasos.estadoPaso2 == PASO_ENCUESTA_NO_INICIADO)  # GRUPO_ENCUESTA_CONTENIDO
+        assert (estados_pasos.estadoPaso3 == PASO_ENCUESTA_NO_INICIADO)  # GRUPO_ENCUESTA_CLASES
+        assert (estados_pasos.estadoPaso4 == PASO_ENCUESTA_NO_INICIADO)  # GRUPO_ENCUESTA_EXAMENES
+        assert (estados_pasos.estadoPaso5 == PASO_ENCUESTA_FINALIZADO)  # GRUPO_ENCUESTA_DOCENTES
 
         parametros = {}
         parametros["id_encuesta"] = encuesta.id
         parametros["categoria"] = paso_actual
-        preguntas1 = [preguntas[0], preguntas[3],preguntas[6]]
+        preguntas1 = [preguntas[0], preguntas[3], preguntas[6]]
         parametros["respuestas"] = self.crear_respuestas_alumno(preguntas1, self.get_datos_respuestas_default())
         response = client.post(GUARDAR_RESPUESTAS_ENCUESTA_ALUMNO_SERVICE, data=parametros)
         assert (response.status_code == SUCCESS_OK)
@@ -836,11 +833,11 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
 
         estados_pasos = EstadoPasosEncuestaAlumno.query.filter_by(encuesta_alumno_id=encuesta.id).first()
 
-        assert(estados_pasos.estadoPaso1 == PASO_ENCUESTA_NO_INICIADO) #GRUPO_ENCUESTA_GENERAL
-        assert(estados_pasos.estadoPaso2 == PASO_ENCUESTA_EN_CURSO) #GRUPO_ENCUESTA_CONTENIDO
-        assert(estados_pasos.estadoPaso3 == PASO_ENCUESTA_NO_INICIADO) #GRUPO_ENCUESTA_CLASES
-        assert(estados_pasos.estadoPaso4 == PASO_ENCUESTA_NO_INICIADO) #GRUPO_ENCUESTA_EXAMENES
-        assert(estados_pasos.estadoPaso5 == PASO_ENCUESTA_NO_INICIADO) #GRUPO_ENCUESTA_DOCENTES
+        assert (estados_pasos.estadoPaso1 == PASO_ENCUESTA_NO_INICIADO)  # GRUPO_ENCUESTA_GENERAL
+        assert (estados_pasos.estadoPaso2 == PASO_ENCUESTA_EN_CURSO)  # GRUPO_ENCUESTA_CONTENIDO
+        assert (estados_pasos.estadoPaso3 == PASO_ENCUESTA_NO_INICIADO)  # GRUPO_ENCUESTA_CLASES
+        assert (estados_pasos.estadoPaso4 == PASO_ENCUESTA_NO_INICIADO)  # GRUPO_ENCUESTA_EXAMENES
+        assert (estados_pasos.estadoPaso5 == PASO_ENCUESTA_FINALIZADO)  # GRUPO_ENCUESTA_DOCENTES
 
         parametros["respuestas"] = self.crear_respuestas_alumno(preguntas, self.get_datos_respuestas_default())
         response = client.post(GUARDAR_RESPUESTAS_ENCUESTA_ALUMNO_SERVICE, data=parametros)
@@ -852,11 +849,11 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
 
         estados_pasos = EstadoPasosEncuestaAlumno.query.filter_by(encuesta_alumno_id=encuesta.id).first()
 
-        assert(estados_pasos.estadoPaso1 == PASO_ENCUESTA_NO_INICIADO) #GRUPO_ENCUESTA_GENERAL
-        assert(estados_pasos.estadoPaso2 == PASO_ENCUESTA_FINALIZADO) #GRUPO_ENCUESTA_CONTENIDO
-        assert(estados_pasos.estadoPaso3 == PASO_ENCUESTA_NO_INICIADO) #GRUPO_ENCUESTA_CLASES
-        assert(estados_pasos.estadoPaso4 == PASO_ENCUESTA_NO_INICIADO) #GRUPO_ENCUESTA_EXAMENES
-        assert(estados_pasos.estadoPaso5 == PASO_ENCUESTA_NO_INICIADO) #GRUPO_ENCUESTA_DOCENTES
+        assert (estados_pasos.estadoPaso1 == PASO_ENCUESTA_NO_INICIADO)  # GRUPO_ENCUESTA_GENERAL
+        assert (estados_pasos.estadoPaso2 == PASO_ENCUESTA_FINALIZADO)  # GRUPO_ENCUESTA_CONTENIDO
+        assert (estados_pasos.estadoPaso3 == PASO_ENCUESTA_NO_INICIADO)  # GRUPO_ENCUESTA_CLASES
+        assert (estados_pasos.estadoPaso4 == PASO_ENCUESTA_NO_INICIADO)  # GRUPO_ENCUESTA_EXAMENES
+        assert (estados_pasos.estadoPaso5 == PASO_ENCUESTA_FINALIZADO)  # GRUPO_ENCUESTA_DOCENTES
 
     def test_guardar_respuestas_completas_en_categoria_docentes_guarda_correctamente_y_el_paso_queda_finalizado(self):
         paso_actual = GRUPO_ENCUESTA_DOCENTES
@@ -870,11 +867,11 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
 
         estados_pasos = EstadoPasosEncuestaAlumno.query.filter_by(encuesta_alumno_id=encuesta.id).first()
 
-        assert(estados_pasos.estadoPaso1 == PASO_ENCUESTA_NO_INICIADO) #GRUPO_ENCUESTA_GENERAL
-        assert(estados_pasos.estadoPaso2 == PASO_ENCUESTA_NO_INICIADO) #GRUPO_ENCUESTA_CONTENIDO
-        assert(estados_pasos.estadoPaso3 == PASO_ENCUESTA_NO_INICIADO) #GRUPO_ENCUESTA_CLASES
-        assert(estados_pasos.estadoPaso4 == PASO_ENCUESTA_NO_INICIADO) #GRUPO_ENCUESTA_EXAMENES
-        assert(estados_pasos.estadoPaso5 == PASO_ENCUESTA_NO_INICIADO) #GRUPO_ENCUESTA_DOCENTES
+        assert (estados_pasos.estadoPaso1 == PASO_ENCUESTA_NO_INICIADO)  # GRUPO_ENCUESTA_GENERAL
+        assert (estados_pasos.estadoPaso2 == PASO_ENCUESTA_NO_INICIADO)  # GRUPO_ENCUESTA_CONTENIDO
+        assert (estados_pasos.estadoPaso3 == PASO_ENCUESTA_NO_INICIADO)  # GRUPO_ENCUESTA_CLASES
+        assert (estados_pasos.estadoPaso4 == PASO_ENCUESTA_NO_INICIADO)  # GRUPO_ENCUESTA_EXAMENES
+        assert (estados_pasos.estadoPaso5 == PASO_ENCUESTA_FINALIZADO)  # GRUPO_ENCUESTA_DOCENTES
 
         parametros = {}
         parametros["id_encuesta"] = encuesta.id
@@ -896,11 +893,11 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
 
         estados_pasos = EstadoPasosEncuestaAlumno.query.filter_by(encuesta_alumno_id=encuesta.id).first()
 
-        assert(estados_pasos.estadoPaso1 == PASO_ENCUESTA_NO_INICIADO) #GRUPO_ENCUESTA_GENERAL
-        assert(estados_pasos.estadoPaso2 == PASO_ENCUESTA_NO_INICIADO) #GRUPO_ENCUESTA_CONTENIDO
-        assert(estados_pasos.estadoPaso3 == PASO_ENCUESTA_NO_INICIADO) #GRUPO_ENCUESTA_CLASES
-        assert(estados_pasos.estadoPaso4 == PASO_ENCUESTA_NO_INICIADO) #GRUPO_ENCUESTA_EXAMENES
-        assert(estados_pasos.estadoPaso5 == PASO_ENCUESTA_FINALIZADO) #GRUPO_ENCUESTA_DOCENTES
+        assert (estados_pasos.estadoPaso1 == PASO_ENCUESTA_NO_INICIADO)  # GRUPO_ENCUESTA_GENERAL
+        assert (estados_pasos.estadoPaso2 == PASO_ENCUESTA_NO_INICIADO)  # GRUPO_ENCUESTA_CONTENIDO
+        assert (estados_pasos.estadoPaso3 == PASO_ENCUESTA_NO_INICIADO)  # GRUPO_ENCUESTA_CLASES
+        assert (estados_pasos.estadoPaso4 == PASO_ENCUESTA_NO_INICIADO)  # GRUPO_ENCUESTA_EXAMENES
+        assert (estados_pasos.estadoPaso5 == PASO_ENCUESTA_FINALIZADO)  # GRUPO_ENCUESTA_DOCENTES
 
     def test_guardar_respuestas_en_categoria_docentes_sin_datos_de_respuesta_deja_el_paso_finalizado(self):
         paso_actual = GRUPO_ENCUESTA_DOCENTES
@@ -914,11 +911,11 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
 
         estados_pasos = EstadoPasosEncuestaAlumno.query.filter_by(encuesta_alumno_id=encuesta.id).first()
 
-        assert(estados_pasos.estadoPaso1 == PASO_ENCUESTA_NO_INICIADO) #GRUPO_ENCUESTA_GENERAL
-        assert(estados_pasos.estadoPaso2 == PASO_ENCUESTA_NO_INICIADO) #GRUPO_ENCUESTA_CONTENIDO
-        assert(estados_pasos.estadoPaso3 == PASO_ENCUESTA_NO_INICIADO) #GRUPO_ENCUESTA_CLASES
-        assert(estados_pasos.estadoPaso4 == PASO_ENCUESTA_NO_INICIADO) #GRUPO_ENCUESTA_EXAMENES
-        assert(estados_pasos.estadoPaso5 == PASO_ENCUESTA_NO_INICIADO) #GRUPO_ENCUESTA_DOCENTES
+        assert (estados_pasos.estadoPaso1 == PASO_ENCUESTA_NO_INICIADO)  # GRUPO_ENCUESTA_GENERAL
+        assert (estados_pasos.estadoPaso2 == PASO_ENCUESTA_NO_INICIADO)  # GRUPO_ENCUESTA_CONTENIDO
+        assert (estados_pasos.estadoPaso3 == PASO_ENCUESTA_NO_INICIADO)  # GRUPO_ENCUESTA_CLASES
+        assert (estados_pasos.estadoPaso4 == PASO_ENCUESTA_NO_INICIADO)  # GRUPO_ENCUESTA_EXAMENES
+        assert (estados_pasos.estadoPaso5 == PASO_ENCUESTA_FINALIZADO)  # GRUPO_ENCUESTA_DOCENTES
 
         parametros = {}
         parametros["id_encuesta"] = encuesta.id
@@ -933,11 +930,11 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
 
         estados_pasos = EstadoPasosEncuestaAlumno.query.filter_by(encuesta_alumno_id=encuesta.id).first()
 
-        assert(estados_pasos.estadoPaso1 == PASO_ENCUESTA_NO_INICIADO) #GRUPO_ENCUESTA_GENERAL
-        assert(estados_pasos.estadoPaso2 == PASO_ENCUESTA_NO_INICIADO) #GRUPO_ENCUESTA_CONTENIDO
-        assert(estados_pasos.estadoPaso3 == PASO_ENCUESTA_NO_INICIADO) #GRUPO_ENCUESTA_CLASES
-        assert(estados_pasos.estadoPaso4 == PASO_ENCUESTA_NO_INICIADO) #GRUPO_ENCUESTA_EXAMENES
-        assert(estados_pasos.estadoPaso5 == PASO_ENCUESTA_FINALIZADO) #GRUPO_ENCUESTA_DOCENTES
+        assert (estados_pasos.estadoPaso1 == PASO_ENCUESTA_NO_INICIADO)  # GRUPO_ENCUESTA_GENERAL
+        assert (estados_pasos.estadoPaso2 == PASO_ENCUESTA_NO_INICIADO)  # GRUPO_ENCUESTA_CONTENIDO
+        assert (estados_pasos.estadoPaso3 == PASO_ENCUESTA_NO_INICIADO)  # GRUPO_ENCUESTA_CLASES
+        assert (estados_pasos.estadoPaso4 == PASO_ENCUESTA_NO_INICIADO)  # GRUPO_ENCUESTA_EXAMENES
+        assert (estados_pasos.estadoPaso5 == PASO_ENCUESTA_FINALIZADO)  # GRUPO_ENCUESTA_DOCENTES
 
     def test_guardar_respuesta_de_tipo_texto_ya_guardada_la_sobreescribe(self):
         paso_actual = GRUPO_ENCUESTA_GENERAL
@@ -965,8 +962,8 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
 
         respuestas = self.obtener_respuestas_guardadas_alumno(preguntas, encuesta, client)
 
-        assert(len(respuestas) == 1)
-        assert(respuestas['3']["texto"] == texto_inicial)
+        assert (len(respuestas) == 1)
+        assert (respuestas['3']["texto"] == texto_inicial)
 
         texto_nuevo = "Este es un texto nuevo compuesto por varios caracteres pero diferente del anterior."
         parametros["respuestas"] = self.crear_respuestas_alumno(preguntas, {
@@ -979,8 +976,8 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
 
         respuestas_nuevas = self.obtener_respuestas_guardadas_alumno(preguntas, encuesta, client)
 
-        assert(len(respuestas_nuevas) == 1)
-        assert(respuestas_nuevas['3']["texto"] == texto_nuevo)
+        assert (len(respuestas_nuevas) == 1)
+        assert (respuestas_nuevas['3']["texto"] == texto_nuevo)
 
     def test_guardar_respuesta_de_tipo_texto_con_texto_vacio_da_error(self):
         paso_actual = GRUPO_ENCUESTA_GENERAL
@@ -1054,8 +1051,8 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
 
         respuestas = self.obtener_respuestas_guardadas_alumno(preguntas, encuesta, client)
 
-        assert(len(respuestas) == 1)
-        assert(respuestas['27']["puntaje"] == puntaje_inicial)
+        assert (len(respuestas) == 1)
+        assert (respuestas['27']["puntaje"] == puntaje_inicial)
 
         puntaje_nuevo = 2
         parametros["respuestas"] = self.crear_respuestas_alumno(preguntas, {
@@ -1068,8 +1065,8 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
 
         respuestas_nuevas = self.obtener_respuestas_guardadas_alumno(preguntas, encuesta, client)
 
-        assert(len(respuestas_nuevas) == 1)
-        assert(respuestas_nuevas['27']["puntaje"] == puntaje_nuevo)
+        assert (len(respuestas_nuevas) == 1)
+        assert (respuestas_nuevas['27']["puntaje"] == puntaje_nuevo)
 
     def test_guardar_respuesta_de_tipo_puntaje_permite_puntajes_del_1_al_5_inclusives(self):
         paso_actual = GRUPO_ENCUESTA_CLASES
@@ -1226,7 +1223,6 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
         response = client.post(GUARDAR_RESPUESTAS_ENCUESTA_ALUMNO_SERVICE, data=parametros)
         assert (response.status_code == CLIENT_ERROR_BAD_REQUEST)
 
-
     def test_guardar_respuesta_de_tipo_puntaje_vacio_da_error(self):
         paso_actual = GRUPO_ENCUESTA_CLASES
 
@@ -1299,8 +1295,8 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
 
         respuestas = self.obtener_respuestas_guardadas_alumno(preguntas, encuesta, client)
 
-        assert(len(respuestas) == 1)
-        assert(respuestas['9']["numero"] == numero_inicial)
+        assert (len(respuestas) == 1)
+        assert (respuestas['9']["numero"] == numero_inicial)
 
         numero_nuevo = 89
         parametros["respuestas"] = self.crear_respuestas_alumno(preguntas, {
@@ -1313,8 +1309,8 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
 
         respuestas_nuevas = self.obtener_respuestas_guardadas_alumno(preguntas, encuesta, client)
 
-        assert(len(respuestas_nuevas) == 1)
-        assert(respuestas_nuevas['9']["numero"] == numero_nuevo)
+        assert (len(respuestas_nuevas) == 1)
+        assert (respuestas_nuevas['9']["numero"] == numero_nuevo)
 
     def test_guardar_respuesta_de_tipo_numero_permite_numeros_entre_0_y_168_inclusives(self):
         paso_actual = GRUPO_ENCUESTA_GENERAL
@@ -1342,8 +1338,8 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
 
         respuestas = self.obtener_respuestas_guardadas_alumno(preguntas, encuesta, client)
 
-        assert(len(respuestas) == 1)
-        assert(respuestas['9']["numero"] == numero)
+        assert (len(respuestas) == 1)
+        assert (respuestas['9']["numero"] == numero)
 
         numero = 168
         parametros["respuestas"] = self.crear_respuestas_alumno(preguntas, {
@@ -1356,8 +1352,8 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
 
         respuestas = self.obtener_respuestas_guardadas_alumno(preguntas, encuesta, client)
 
-        assert(len(respuestas) == 1)
-        assert(respuestas['9']["numero"] == numero)
+        assert (len(respuestas) == 1)
+        assert (respuestas['9']["numero"] == numero)
 
     def test_guardar_respuesta_de_tipo_numero_menor_que_cero_da_error(self):
         paso_actual = GRUPO_ENCUESTA_GENERAL
@@ -1510,9 +1506,9 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
 
         respuestas = self.obtener_respuestas_guardadas_alumno(preguntas, encuesta, client)
 
-        assert(len(respuestas) == 2)
-        assert(respuestas['13']["respuesta"] == True)
-        assert(respuestas['14']["texto"] == texto_si_primera_respuesta)
+        assert (len(respuestas) == 2)
+        assert (respuestas['13']["respuesta"] == True)
+        assert (respuestas['14']["texto"] == texto_si_primera_respuesta)
 
         texto_si_primera_segunda_respuesta = "Texto si de la segunda respuesta"
         parametros["respuestas"] = self.crear_respuestas_alumno(preguntas, {
@@ -1528,9 +1524,9 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
 
         respuestas = self.obtener_respuestas_guardadas_alumno(preguntas, encuesta, client)
 
-        assert(len(respuestas) == 2)
-        assert(respuestas['13']["respuesta"] == True)
-        assert(respuestas['14']["texto"] == texto_si_primera_segunda_respuesta)
+        assert (len(respuestas) == 2)
+        assert (respuestas['13']["respuesta"] == True)
+        assert (respuestas['14']["texto"] == texto_si_primera_segunda_respuesta)
 
     def test_guardar_respuesta_de_tipo_no_con_subrespuesta_la_sobreescribe_con_otra_subrespuesta_no(self):
         paso_actual = GRUPO_ENCUESTA_GENERAL
@@ -1563,9 +1559,9 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
 
         respuestas = self.obtener_respuestas_guardadas_alumno(preguntas, encuesta, client)
 
-        assert(len(respuestas) == 2)
-        assert(respuestas['4']["respuesta"] == False)
-        assert(respuestas['5']["texto"] == texto_no_primera_respuesta)
+        assert (len(respuestas) == 2)
+        assert (respuestas['4']["respuesta"] == False)
+        assert (respuestas['5']["texto"] == texto_no_primera_respuesta)
 
         texto_no_segunda_respuesta = "Texto si de la segunda respuesta"
         parametros["respuestas"] = self.crear_respuestas_alumno(preguntas, {
@@ -1581,11 +1577,12 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
 
         respuestas = self.obtener_respuestas_guardadas_alumno(preguntas, encuesta, client)
 
-        assert(len(respuestas) == 2)
-        assert(respuestas['4']["respuesta"] == False)
-        assert(respuestas['5']["texto"] == texto_no_segunda_respuesta)
+        assert (len(respuestas) == 2)
+        assert (respuestas['4']["respuesta"] == False)
+        assert (respuestas['5']["texto"] == texto_no_segunda_respuesta)
 
-    def test_guardar_respuesta_de_tipo_si_con_subrespuesta_enviando_subrespuesta_no_sin_existir_la_pregunta_no_da_error(self):
+    def test_guardar_respuesta_de_tipo_si_con_subrespuesta_enviando_subrespuesta_no_sin_existir_la_pregunta_no_da_error(
+            self):
         paso_actual = GRUPO_ENCUESTA_GENERAL
 
         client = self.loguear_usuario()
@@ -1616,9 +1613,9 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
 
         respuestas = self.obtener_respuestas_guardadas_alumno(preguntas, encuesta, client)
 
-        assert(len(respuestas) == 2)
-        assert(respuestas['13']["respuesta"] == True)
-        assert(respuestas['14']["texto"] == texto_si_primera_respuesta)
+        assert (len(respuestas) == 2)
+        assert (respuestas['13']["respuesta"] == True)
+        assert (respuestas['14']["texto"] == texto_si_primera_respuesta)
 
         texto_si_primera_segunda_respuesta = "Texto si de la segunda respuesta"
         parametros["respuestas"] = self.crear_respuestas_alumno(preguntas, {
@@ -1663,9 +1660,9 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
 
         respuestas = self.obtener_respuestas_guardadas_alumno(preguntas, encuesta, client)
 
-        assert(len(respuestas) == 2)
-        assert(respuestas['4']["respuesta"] == False)
-        assert(respuestas['5']["texto"] == texto_no_primera_respuesta)
+        assert (len(respuestas) == 2)
+        assert (respuestas['4']["respuesta"] == False)
+        assert (respuestas['5']["texto"] == texto_no_primera_respuesta)
 
         texto_no_segunda_respuesta = "Texto si de la segunda respuesta"
         parametros["respuestas"] = self.crear_respuestas_alumno(preguntas, {
@@ -1710,9 +1707,9 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
 
         respuestas = self.obtener_respuestas_guardadas_alumno(preguntas, encuesta, client)
 
-        assert(len(respuestas) == 2)
-        assert(respuestas['13']["respuesta"] == True)
-        assert(respuestas['14']["texto"] == texto_si_primera_respuesta)
+        assert (len(respuestas) == 2)
+        assert (respuestas['13']["respuesta"] == True)
+        assert (respuestas['14']["texto"] == texto_si_primera_respuesta)
 
         parametros["respuestas"] = self.crear_respuestas_alumno(preguntas, {
             SI_NO: {
@@ -1724,8 +1721,8 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
 
         respuestas = self.obtener_respuestas_guardadas_alumno(preguntas, encuesta, client)
 
-        assert(len(respuestas) == 1)
-        assert(respuestas['13']["respuesta"] == False)
+        assert (len(respuestas) == 1)
+        assert (respuestas['13']["respuesta"] == False)
 
     def test_guardar_respuesta_de_tipo_no_con_subrespuesta_la_sobreescribe_con_otra_subrespuesta_si(self):
         paso_actual = GRUPO_ENCUESTA_GENERAL
@@ -1758,9 +1755,9 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
 
         respuestas = self.obtener_respuestas_guardadas_alumno(preguntas, encuesta, client)
 
-        assert(len(respuestas) == 2)
-        assert(respuestas['4']["respuesta"] == False)
-        assert(respuestas['5']["texto"] == texto_no_primera_respuesta)
+        assert (len(respuestas) == 2)
+        assert (respuestas['4']["respuesta"] == False)
+        assert (respuestas['5']["texto"] == texto_no_primera_respuesta)
 
         parametros["respuestas"] = self.crear_respuestas_alumno(preguntas, {
             SI_NO: {
@@ -1772,8 +1769,8 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
 
         respuestas = self.obtener_respuestas_guardadas_alumno(preguntas, encuesta, client)
 
-        assert(len(respuestas) == 1)
-        assert(respuestas['4']["respuesta"] == True)
+        assert (len(respuestas) == 1)
+        assert (respuestas['4']["respuesta"] == True)
 
     def test_guardar_respuesta_de_tipo_no_con_false_formato_texto_es_valida(self):
         paso_actual = GRUPO_ENCUESTA_GENERAL
@@ -1938,11 +1935,11 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
 
         estados_pasos = EstadoPasosEncuestaAlumno.query.filter_by(encuesta_alumno_id=encuesta.id).first()
 
-        assert(estados_pasos.estadoPaso1 == PASO_ENCUESTA_NO_INICIADO) #GRUPO_ENCUESTA_GENERAL
-        assert(estados_pasos.estadoPaso2 == PASO_ENCUESTA_NO_INICIADO) #GRUPO_ENCUESTA_CONTENIDO
-        assert(estados_pasos.estadoPaso3 == PASO_ENCUESTA_NO_INICIADO) #GRUPO_ENCUESTA_CLASES
-        assert(estados_pasos.estadoPaso4 == PASO_ENCUESTA_NO_INICIADO) #GRUPO_ENCUESTA_EXAMENES
-        assert(estados_pasos.estadoPaso5 == PASO_ENCUESTA_NO_INICIADO) #GRUPO_ENCUESTA_DOCENTES
+        assert (estados_pasos.estadoPaso1 == PASO_ENCUESTA_NO_INICIADO)  # GRUPO_ENCUESTA_GENERAL
+        assert (estados_pasos.estadoPaso2 == PASO_ENCUESTA_NO_INICIADO)  # GRUPO_ENCUESTA_CONTENIDO
+        assert (estados_pasos.estadoPaso3 == PASO_ENCUESTA_NO_INICIADO)  # GRUPO_ENCUESTA_CLASES
+        assert (estados_pasos.estadoPaso4 == PASO_ENCUESTA_NO_INICIADO)  # GRUPO_ENCUESTA_EXAMENES
+        assert (estados_pasos.estadoPaso5 == PASO_ENCUESTA_FINALIZADO)  # GRUPO_ENCUESTA_DOCENTES
 
         parametros = {}
         parametros["id_encuesta"] = encuesta.id
@@ -1954,11 +1951,11 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
 
         estados_pasos = EstadoPasosEncuestaAlumno.query.filter_by(encuesta_alumno_id=encuesta.id).first()
 
-        assert(estados_pasos.estadoPaso1 == PASO_ENCUESTA_EN_CURSO) #GRUPO_ENCUESTA_GENERAL
-        assert(estados_pasos.estadoPaso2 == PASO_ENCUESTA_NO_INICIADO) #GRUPO_ENCUESTA_CONTENIDO
-        assert(estados_pasos.estadoPaso3 == PASO_ENCUESTA_NO_INICIADO) #GRUPO_ENCUESTA_CLASES
-        assert(estados_pasos.estadoPaso4 == PASO_ENCUESTA_NO_INICIADO) #GRUPO_ENCUESTA_EXAMENES
-        assert(estados_pasos.estadoPaso5 == PASO_ENCUESTA_NO_INICIADO) #GRUPO_ENCUESTA_DOCENTES
+        assert (estados_pasos.estadoPaso1 == PASO_ENCUESTA_EN_CURSO)  # GRUPO_ENCUESTA_GENERAL
+        assert (estados_pasos.estadoPaso2 == PASO_ENCUESTA_NO_INICIADO)  # GRUPO_ENCUESTA_CONTENIDO
+        assert (estados_pasos.estadoPaso3 == PASO_ENCUESTA_NO_INICIADO)  # GRUPO_ENCUESTA_CLASES
+        assert (estados_pasos.estadoPaso4 == PASO_ENCUESTA_NO_INICIADO)  # GRUPO_ENCUESTA_EXAMENES
+        assert (estados_pasos.estadoPaso5 == PASO_ENCUESTA_FINALIZADO)  # GRUPO_ENCUESTA_DOCENTES
 
         parametros["respuestas"] = self.crear_respuestas_correctas_completas_si_no(preguntas)
         response = client.post(GUARDAR_RESPUESTAS_ENCUESTA_ALUMNO_SERVICE, data=parametros)
@@ -1966,11 +1963,11 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
 
         estados_pasos = EstadoPasosEncuestaAlumno.query.filter_by(encuesta_alumno_id=encuesta.id).first()
 
-        assert(estados_pasos.estadoPaso1 == PASO_ENCUESTA_FINALIZADO) #GRUPO_ENCUESTA_GENERAL
-        assert(estados_pasos.estadoPaso2 == PASO_ENCUESTA_NO_INICIADO) #GRUPO_ENCUESTA_CONTENIDO
-        assert(estados_pasos.estadoPaso3 == PASO_ENCUESTA_NO_INICIADO) #GRUPO_ENCUESTA_CLASES
-        assert(estados_pasos.estadoPaso4 == PASO_ENCUESTA_NO_INICIADO) #GRUPO_ENCUESTA_EXAMENES
-        assert(estados_pasos.estadoPaso5 == PASO_ENCUESTA_NO_INICIADO) #GRUPO_ENCUESTA_DOCENTES
+        assert (estados_pasos.estadoPaso1 == PASO_ENCUESTA_FINALIZADO)  # GRUPO_ENCUESTA_GENERAL
+        assert (estados_pasos.estadoPaso2 == PASO_ENCUESTA_NO_INICIADO)  # GRUPO_ENCUESTA_CONTENIDO
+        assert (estados_pasos.estadoPaso3 == PASO_ENCUESTA_NO_INICIADO)  # GRUPO_ENCUESTA_CLASES
+        assert (estados_pasos.estadoPaso4 == PASO_ENCUESTA_NO_INICIADO)  # GRUPO_ENCUESTA_EXAMENES
+        assert (estados_pasos.estadoPaso5 == PASO_ENCUESTA_FINALIZADO)  # GRUPO_ENCUESTA_DOCENTES
 
     def test_guardar_respuestas_parciales_en_categoria_general_con_subpreguntas_en_finalizadas_queda_en_curso(self):
         paso_actual = GRUPO_ENCUESTA_GENERAL
@@ -1984,11 +1981,11 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
 
         estados_pasos = EstadoPasosEncuestaAlumno.query.filter_by(encuesta_alumno_id=encuesta.id).first()
 
-        assert(estados_pasos.estadoPaso1 == PASO_ENCUESTA_NO_INICIADO) #GRUPO_ENCUESTA_GENERAL
-        assert(estados_pasos.estadoPaso2 == PASO_ENCUESTA_NO_INICIADO) #GRUPO_ENCUESTA_CONTENIDO
-        assert(estados_pasos.estadoPaso3 == PASO_ENCUESTA_NO_INICIADO) #GRUPO_ENCUESTA_CLASES
-        assert(estados_pasos.estadoPaso4 == PASO_ENCUESTA_NO_INICIADO) #GRUPO_ENCUESTA_EXAMENES
-        assert(estados_pasos.estadoPaso5 == PASO_ENCUESTA_NO_INICIADO) #GRUPO_ENCUESTA_DOCENTES
+        assert (estados_pasos.estadoPaso1 == PASO_ENCUESTA_NO_INICIADO)  # GRUPO_ENCUESTA_GENERAL
+        assert (estados_pasos.estadoPaso2 == PASO_ENCUESTA_NO_INICIADO)  # GRUPO_ENCUESTA_CONTENIDO
+        assert (estados_pasos.estadoPaso3 == PASO_ENCUESTA_NO_INICIADO)  # GRUPO_ENCUESTA_CLASES
+        assert (estados_pasos.estadoPaso4 == PASO_ENCUESTA_NO_INICIADO)  # GRUPO_ENCUESTA_EXAMENES
+        assert (estados_pasos.estadoPaso5 == PASO_ENCUESTA_FINALIZADO)  # GRUPO_ENCUESTA_DOCENTES
 
         parametros = {}
         parametros["id_encuesta"] = encuesta.id
@@ -2000,11 +1997,11 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
 
         estados_pasos = EstadoPasosEncuestaAlumno.query.filter_by(encuesta_alumno_id=encuesta.id).first()
 
-        assert(estados_pasos.estadoPaso1 == PASO_ENCUESTA_FINALIZADO) #GRUPO_ENCUESTA_GENERAL
-        assert(estados_pasos.estadoPaso2 == PASO_ENCUESTA_NO_INICIADO) #GRUPO_ENCUESTA_CONTENIDO
-        assert(estados_pasos.estadoPaso3 == PASO_ENCUESTA_NO_INICIADO) #GRUPO_ENCUESTA_CLASES
-        assert(estados_pasos.estadoPaso4 == PASO_ENCUESTA_NO_INICIADO) #GRUPO_ENCUESTA_EXAMENES
-        assert(estados_pasos.estadoPaso5 == PASO_ENCUESTA_NO_INICIADO) #GRUPO_ENCUESTA_DOCENTES
+        assert (estados_pasos.estadoPaso1 == PASO_ENCUESTA_FINALIZADO)  # GRUPO_ENCUESTA_GENERAL
+        assert (estados_pasos.estadoPaso2 == PASO_ENCUESTA_NO_INICIADO)  # GRUPO_ENCUESTA_CONTENIDO
+        assert (estados_pasos.estadoPaso3 == PASO_ENCUESTA_NO_INICIADO)  # GRUPO_ENCUESTA_CLASES
+        assert (estados_pasos.estadoPaso4 == PASO_ENCUESTA_NO_INICIADO)  # GRUPO_ENCUESTA_EXAMENES
+        assert (estados_pasos.estadoPaso5 == PASO_ENCUESTA_FINALIZADO)  # GRUPO_ENCUESTA_DOCENTES
 
         parametros["respuestas"] = self.crear_respuestas_alumno(preguntas, self.get_datos_respuestas_default())
         response = client.post(GUARDAR_RESPUESTAS_ENCUESTA_ALUMNO_SERVICE, data=parametros)
@@ -2012,11 +2009,11 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
 
         estados_pasos = EstadoPasosEncuestaAlumno.query.filter_by(encuesta_alumno_id=encuesta.id).first()
 
-        assert(estados_pasos.estadoPaso1 == PASO_ENCUESTA_EN_CURSO) #GRUPO_ENCUESTA_GENERAL
-        assert(estados_pasos.estadoPaso2 == PASO_ENCUESTA_NO_INICIADO) #GRUPO_ENCUESTA_CONTENIDO
-        assert(estados_pasos.estadoPaso3 == PASO_ENCUESTA_NO_INICIADO) #GRUPO_ENCUESTA_CLASES
-        assert(estados_pasos.estadoPaso4 == PASO_ENCUESTA_NO_INICIADO) #GRUPO_ENCUESTA_EXAMENES
-        assert(estados_pasos.estadoPaso5 == PASO_ENCUESTA_NO_INICIADO) #GRUPO_ENCUESTA_DOCENTES
+        assert (estados_pasos.estadoPaso1 == PASO_ENCUESTA_EN_CURSO)  # GRUPO_ENCUESTA_GENERAL
+        assert (estados_pasos.estadoPaso2 == PASO_ENCUESTA_NO_INICIADO)  # GRUPO_ENCUESTA_CONTENIDO
+        assert (estados_pasos.estadoPaso3 == PASO_ENCUESTA_NO_INICIADO)  # GRUPO_ENCUESTA_CLASES
+        assert (estados_pasos.estadoPaso4 == PASO_ENCUESTA_NO_INICIADO)  # GRUPO_ENCUESTA_EXAMENES
+        assert (estados_pasos.estadoPaso5 == PASO_ENCUESTA_FINALIZADO)  # GRUPO_ENCUESTA_DOCENTES
 
     def test_guardar_respuesta_de_tipo_estrellas_ya_guardada_la_sobreescribe(self):
         paso_actual = GRUPO_ENCUESTA_GENERAL
@@ -2044,8 +2041,8 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
 
         respuestas = self.obtener_respuestas_guardadas_alumno(preguntas, encuesta, client)
 
-        assert(len(respuestas) == 1)
-        assert(respuestas['1']["estrellas"] == estrellas_inicial)
+        assert (len(respuestas) == 1)
+        assert (respuestas['1']["estrellas"] == estrellas_inicial)
 
         estrellas_nuevo = 5
         parametros["respuestas"] = self.crear_respuestas_alumno(preguntas, {
@@ -2058,8 +2055,8 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
 
         respuestas_nuevas = self.obtener_respuestas_guardadas_alumno(preguntas, encuesta, client)
 
-        assert(len(respuestas_nuevas) == 1)
-        assert(respuestas_nuevas['1']["estrellas"] == estrellas_nuevo)
+        assert (len(respuestas_nuevas) == 1)
+        assert (respuestas_nuevas['1']["estrellas"] == estrellas_nuevo)
 
     def test_guardar_respuesta_de_tipo_estrellas_permite_numeros_del_1_al_5(self):
         paso_actual = GRUPO_ENCUESTA_GENERAL
@@ -2247,19 +2244,19 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
         parametros["categoria"] = paso_actual
 
         horarios_iniciales = [{
-              "dia": "Lunes",
-              "hora_desde": "7.5",
-              "hora_desde_reloj": "07:30",
-              "hora_hasta": "11",
-              "hora_hasta_reloj": "11:00"
-          },
-          {
-              "dia": "Martes",
-              "hora_desde": "12",
-              "hora_desde_reloj": "12:00",
-              "hora_hasta": "15",
-              "hora_hasta_reloj": "15:00"
-          }]
+            "dia": "Lunes",
+            "hora_desde": "7.5",
+            "hora_desde_reloj": "07:30",
+            "hora_hasta": "11",
+            "hora_hasta_reloj": "11:00"
+        },
+            {
+                "dia": "Martes",
+                "hora_desde": "12",
+                "hora_desde_reloj": "12:00",
+                "hora_hasta": "15",
+                "hora_hasta_reloj": "15:00"
+            }]
 
         parametros["respuestas"] = self.crear_respuestas_alumno(preguntas, {
             HORARIO: {
@@ -2271,12 +2268,12 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
 
         respuestas = self.obtener_respuestas_guardadas_alumno(preguntas, encuesta, client)
 
-        assert(len(respuestas) == 1)
+        assert (len(respuestas) == 1)
         rta_horarios_iniciales = respuestas['8']["horarios"]
-        assert(len(rta_horarios_iniciales) == 2)
+        assert (len(rta_horarios_iniciales) == 2)
 
-        assert(self.se_encuentra_el_horario(horarios_iniciales[0], rta_horarios_iniciales))
-        assert(self.se_encuentra_el_horario(horarios_iniciales[1], rta_horarios_iniciales))
+        assert (self.se_encuentra_el_horario(horarios_iniciales[0], rta_horarios_iniciales))
+        assert (self.se_encuentra_el_horario(horarios_iniciales[1], rta_horarios_iniciales))
 
         horarios_nuevos = [{
             "dia": "Miercoles",
@@ -2295,11 +2292,11 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
 
         respuestas = self.obtener_respuestas_guardadas_alumno(preguntas, encuesta, client)
 
-        assert(len(respuestas) == 1)
+        assert (len(respuestas) == 1)
         rta_horarios_nuevos = respuestas['8']["horarios"]
-        assert(len(rta_horarios_nuevos) == 1)
+        assert (len(rta_horarios_nuevos) == 1)
 
-        assert(self.se_encuentra_el_horario(horarios_nuevos[0], rta_horarios_nuevos))
+        assert (self.se_encuentra_el_horario(horarios_nuevos[0], rta_horarios_nuevos))
 
     def test_guardar_respuesta_de_tipo_horarios_con_dia_invalido_da_error(self):
         paso_actual = GRUPO_ENCUESTA_GENERAL
@@ -2385,13 +2382,14 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
         response = client.post(GUARDAR_RESPUESTAS_ENCUESTA_ALUMNO_SERVICE, data=parametros)
         assert (response.status_code == CLIENT_ERROR_BAD_REQUEST)
 
-        #Test con:
+        # Test con:
         # Datos invalidos / incompletos / incorrectos
         #  + Guardar respuestas que fueron guardadas previamente las sobreescribe
-            #DOCENTE = 4
-            #CORRELATIVA = 5
-            #TAG = 8
-            #TEMATICA = 9
+        # DOCENTE = 4
+        # CORRELATIVA = 5
+        # TAG = 8
+        # TEMATICA = 9
+
 
 if __name__ == '__main__':
     import unittest

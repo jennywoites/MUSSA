@@ -2,7 +2,6 @@ from flask_restful import Resource
 from app.API_Rest.codes import *
 from flask import request
 from flask_user import current_user, login_required
-from app import db
 from app.models.respuestas_encuesta_models import *
 from app.models.alumno_models import Alumno
 from app.models.docentes_models import Docente
@@ -200,10 +199,10 @@ class GuardarRespuestasEncuestaAlumno(Resource):
         pregunta = preguntas_categoria_actual.pop(idPregunta)
         tipo_encuesta = TipoEncuesta.query.filter_by(id=pregunta.tipo_id).first().tipo
 
-        if not self.validar_respuesta(tipo_encuesta, respuesta, ids_respuestas, ids_respuestas_invalidas):
-            logging.error('El servicio Guardar Respuestas Encuesta Alumno recibió una '
-                          'respuesta de encuesta inválida')
-            return False, 'Este servicio recibió un respuesta de encuesta inválida'
+        es_valida, msj = self.validar_respuesta(tipo_encuesta, respuesta, ids_respuestas, ids_respuestas_invalidas)
+        if not es_valida:
+            logging.error(msj)
+            return False, msj
 
         return True, 'OK'
 
@@ -224,10 +223,10 @@ class GuardarRespuestasEncuestaAlumno(Resource):
         try:
             ids_respuestas[respuesta["idPregunta"]] = respuesta["idPregunta"]
             acciones[tipo_encuesta](respuesta, ids_respuestas_invalidas)
-        except:
-            return False
+        except Exception as error:
+            return False, error.args[0]
 
-        return True
+        return True, 'Es valida'
 
     MIN_PUNTAJE = 1
     MAX_PUNTAJE = 5
@@ -290,8 +289,8 @@ class GuardarRespuestasEncuestaAlumno(Resource):
     def validar_respuesta_correlativas(self, respuesta, ids_respuestas_invalidas):
         correlativas = respuesta["correlativas"]
         for id_materia_correlativa in correlativas:
-            assert (str(id_materia_correlativa).isdigit())
-            if not Materia.query.filter_by(id=id_materia_correlativa).first():
+            assert str(id_materia_correlativa).isdigit(), "El id de la materia correlativa no es un número"
+            if not Materia.query.get(id_materia_correlativa):
                 raise ValueError("La materia con id {} que se desea indicar como "
                                  "correlativa no existe".format(id_materia_correlativa))
 
@@ -324,7 +323,7 @@ class GuardarRespuestasEncuestaAlumno(Resource):
 
     def validar_respuesta_tags(self, respuesta, ids_respuestas_invalidas):
         palabras_clave = respuesta["palabras_clave"]
-        assert (0 < len(palabras_clave) <= self.MAX_CANTIDAD_PALABRAS_CLAVE)
+        assert (0 < len(palabras_clave) <= self.MAX_CANTIDAD_PALABRAS_CLAVE), "La cantidad de palabras clave supera el máximo"
         for palabra in palabras_clave:
             self.validar_contenido_y_longitud_texto(1, self.MAX_CARACTERES_PALABRA_CLAVE_TAG, palabra)
 
@@ -333,7 +332,7 @@ class GuardarRespuestasEncuestaAlumno(Resource):
 
     def validar_respuesta_tematicas(self, respuesta, ids_respuestas_invalidas):
         tematicas = respuesta["tematicas"]
-        assert (0 < len(tematicas) <= self.MAX_CANTIDAD_TEMATICAS)
+        assert (0 < len(tematicas) <= self.MAX_CANTIDAD_TEMATICAS), "La cantidad de temáticas supera el máximo"
         for tematica in tematicas:
             self.validar_contenido_y_longitud_texto(1, self.MAX_CARACTERES_TEMATICA, tematica)
 
@@ -354,10 +353,10 @@ class GuardarRespuestasEncuestaAlumno(Resource):
 
     def obtener_categoria(self, args):
         categoria = args["categoria"] if "categoria" in args else None
-        assert (categoria.isdigit())
+        assert categoria.isdigit(), "La categoría no es un número"
 
         grupo = GrupoEncuesta.query.filter_by(numero_grupo=categoria).first()
-        assert (grupo is not None)
+        assert grupo is not None, "La categoría no existe"
 
         return grupo.id
 

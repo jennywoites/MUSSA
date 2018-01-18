@@ -43,8 +43,6 @@ function do_request(method, page, CSRF_token, parametros, onSucces, onError) {
 
 //////////////////////////////////////////////////////////////////////
 
-SERVICE_BUSCAR_MATERIAS = '/api/BuscarMaterias'
-
 HTTP = "http://"
 IP = "localhost:"
 PUERTO = "5000"
@@ -120,6 +118,51 @@ function get_materia_service(token, idMateria, onSucces, onError) {
     var url_servicio = BASE_URL + '/materia/' + idMateria;
     do_request('GET', url_servicio, token, {}, onSucces, onError);
 }
+
+function get_materias_con_filtro_service(token, codigo, nombre, ids_carreras, onSuccess, onError) {
+    var url_servicio = BASE_URL + '/materia/all';
+
+    parametros = {};
+    if (codigo)
+        parametros["codigo"] = codigo;
+
+    if (nombre)
+        parametros["nombre"] = nombre;
+
+    if (!$.isEmptyObject(ids_carreras))
+        parametros["ids_carreras"] = JSON.stringify(ids_carreras);
+
+    do_request('GET', url_servicio, token, parametros, function(status, response) {
+        onSuccess(status, response["materias"]);
+    }, onError);
+}
+
+//*********************************************************//
+//                  Servicios Cursos                       //
+//*********************************************************//
+
+function get_cursos_con_filtro_service(token, nombre_curso, codigo_materia, id_carrera, filtrar_cursos, onSuccess, onError) {
+    var url_servicio = BASE_URL + '/curso/all';
+
+    parametros = {};
+
+    if (nombre_curso)
+        parametros["nombre_curso"] = nombre_curso;
+
+    if (codigo_materia)
+        parametros["codigo_materia"] = codigo_materia;
+
+    if (id_carrera)
+        parametros["id_carrera"] = id_carrera;
+
+    if (filtrar_cursos)
+        parametros["filtrar_cursos"] = filtrar_cursos;
+
+    do_request('GET', url_servicio, token, parametros, function(status, response) {
+        onSuccess(status, response["cursos"]);
+    }, onError);
+}
+
 
 //////////////////////////////////////////////////////////////////////
 

@@ -167,20 +167,11 @@
         var idPregunta = pregunta["pregunta_encuesta_id"];
 
         for (var i=0; i<respuesta["materias_correlativas"].length; i++) {
-            var idMateria = respuesta["materias_correlativas"][i]["id_materia"];
-            var materia = encontrarMateriaSelector(idPregunta, idMateria);
-            agregarMateriaCorrelativaALaTabla(materia, idPregunta);
+            var materiaCorrelativa = respuesta["materias_correlativas"][i];
+            var idMateria = materiaCorrelativa["id_materia"];
+            var nombreMateria = materiaCorrelativa["codigo"] + " - " + materiaCorrelativa["nombre"];
+            agregarMateriaCorrelativaALaTabla(idMateria, nombreMateria, idPregunta);
         }
-    }
-
-    function encontrarMateriaSelector(idPregunta, idMateria) {
-        var selector = document.getElementById("selector_posibles_correlativas_" + idPregunta);
-        for(var i=0; i<selector.options.length; i++) {
-            var opcionMateria = selector.options[i];
-            if (opcionMateria.value == idMateria)
-                return opcionMateria;
-        }
-        return null;
     }
 
     function cargarRespuestaDocentes(pregunta, respuesta) {
@@ -189,18 +180,9 @@
             var datos_comentario_docente = respuesta["comentarios_docentes"][i];
             var idDocente = datos_comentario_docente["id_docente"].toString();
             var comentario = datos_comentario_docente["comentario"];
-            var docente = encontrarOpcionDocente(idPregunta, idDocente);
-            agregarComentarioDocenteALaTabla(idPregunta, docente, comentario);
+            var nombreDocente = datos_comentario_docente["nombre_completo"];
+            agregarComentarioDocenteALaTabla(idPregunta, idDocente, nombreDocente, comentario);
         }
-    }
-
-    function encontrarOpcionDocente(idPregunta, idDocente) {
-        var selector_docente = document.getElementById("selector_docentes_" + idPregunta);
-        for (var i=0; i<selector_docente.options.length; i++) {
-            if (selector_docente.options[i].value == idDocente)
-                return selector_docente.options[i];
-        }
-        return null;
     }
 
     function cargarRespuestaHorario(pregunta, respuesta) {
@@ -323,7 +305,7 @@
         return hora
     }
 
-    function agregarMateriaCorrelativaALaTabla(materia, idEncuesta) {
+    function agregarMateriaCorrelativaALaTabla(idMateria, nombre_materia, idEncuesta) {
         var correlativas_table = document.getElementById("tabla_correlativas_" + idEncuesta);
         var correlativas = correlativas_table.rows;
 
@@ -335,18 +317,14 @@
             numero_id = 0;
 
         row.id = "materia_" + numero_id + "_" + idEncuesta;
-        row.insertCell(0).innerHTML = materia.innerHTML;
-        var materiaId = materia.id;
+        row.insertCell(0).innerHTML = nombre_materia;
 
         var celdaId = row.insertCell(1);
-        celdaId.innerHTML = materia.value;
+        celdaId.innerHTML = idMateria;
         celdaId.hidden = true;
 
         var div_tabla_correlativas = document.getElementById("div_tabla_correlativas_" + idEncuesta);
         div_tabla_correlativas.hidden = false;
-
-        materia.hidden = true;
-        showFirstNotHidden(document.getElementById("selector_posibles_correlativas_" + idEncuesta));
     }
 
     function showFirstNotHidden(selector) {
@@ -361,7 +339,7 @@
         selector.selectedIndex = indexSelected;
     }
 
-    function agregarComentarioDocenteALaTabla(idPregunta, docente, comentario) {
+    function agregarComentarioDocenteALaTabla(idPregunta, idDocente, nombreDocente, comentario) {
         var tabla_docentes = document.getElementById("tabla_docentes-" + idPregunta);
 
         var filas = tabla_docentes.rows;
@@ -375,18 +353,14 @@
         row.id = "entradaTablaDocente_" + numero_id + "_" + idPregunta;
 
         var celdaId = row.insertCell(0);
-        celdaId.innerHTML = docente.value;
+        celdaId.innerHTML = idDocente;
         celdaId.hidden = true;
 
-        row.insertCell(1).innerHTML = docente.innerText;
+        row.insertCell(1).innerHTML = nombreDocente;
         row.insertCell(2).innerHTML = comentario;
-
-        var docenteId = docente.id;
 
         var div_tabla_docentes = document.getElementById("div-tabla-docentes-" + idPregunta);
         div_tabla_docentes.hidden = false;
-
-        docente.hidden = true;
     }
 
     function agregarTematicaSeleccionada(idPregunta, opcionElegida) {
@@ -489,7 +463,7 @@
 <div class="container">
 
     <div>
-        <h2>{{encuesta["materia"]}} / Curso {{encuesta["curso"]}}</h2>
+        <h2>{{encuesta["materia"]["codigo"]}} - {{encuesta["materia"]["nombre"]}} | Curso {{encuesta["curso"]["codigo_curso"]}} | {{encuesta["curso"]["docentes"]}}</h2>
 
         <h3>Sección {{paso_activo+1}}: {{titulos[paso_activo]["titulo"]}}</h3>
     </div>
@@ -567,53 +541,6 @@
 
     {% elif pregunta["tipo"] == "Horario" %}
 
-    <div hidden="true">
-        <div class="row">
-            <div class="col-sm-2">
-                <div class="form-group">
-
-                    <select class="form-control" id="horario-dia-{{pregunta['pregunta_encuesta_id']}}" name="dia">
-                        {% for dia in dias %}
-                        <option>{{dia}}</option>
-                        {% endfor %}
-                    </select>
-
-                </div>
-            </div>
-
-            <div class="col-xs-1">
-                <p>De:</p>
-            </div>
-
-            <div class="col-sm-2">
-                <div class="form-group">
-                    <select class="form-control" id="hora_desde-{{pregunta['pregunta_encuesta_id']}}" name="hora_desde">
-                        {% for i in range(hora_desde | length) %}
-                        <option id="hora_desde_{{i}}">{{hora_desde[i]}}</option>
-                        {% endfor %}
-                    </select>
-                </div>
-            </div>
-
-            <div class="col-xs-1">
-                <p>A:</p>
-            </div>
-
-            <div class="col-sm-2">
-                <div class="form-group">
-                    <select class="form-control" id="hora_hasta-{{pregunta['pregunta_encuesta_id']}}" name="hora_hasta">
-                        {% for i in range(hora_hasta | length) %}
-                        <option id="hora_hasta_{{i}}">{{hora_hasta[i]}}</option>
-                        {% endfor %}
-                    </select>
-                </div>
-            </div>
-        </div>
-
-    </div>
-
-    <br>
-
     <div class="form-group" id="div-tabla-{{pregunta['pregunta_encuesta_id']}}" hidden="true">
         <div class='table-responsive'>
             <table class='table table-hover' id="tabla_cursos_guardados-{{pregunta['pregunta_encuesta_id']}}">
@@ -631,21 +558,6 @@
 
     {% elif pregunta["tipo"] == "Docente" %}
 
-    <div id="div_agregar_docentes_{{pregunta['pregunta_encuesta_id']}}" hidden="true">
-
-        <div class="form-group">
-            <select class="form-control" id="selector_docentes_{{pregunta['pregunta_encuesta_id']}}" name="selector_posibles_correlativas_{{pregunta['pregunta_encuesta_id']}}">
-                {% for docente in docentes %}
-                <option id="docente_{{docente['id_docente']}}_{{pregunta['pregunta_encuesta_id']}}" value="{{docente['id_docente']}}">{{docente["nombre_completo"]}}</option>
-                {% endfor %}
-            </select>
-        </div>
-
-        <textarea class="form-control" rows="5" id="texto-docentes-{{pregunta['pregunta_encuesta_id']}}"></textarea>
-
-    </div>
-
-    <br>
     <div class="form-group" id="div-tabla-docentes-{{pregunta['pregunta_encuesta_id']}}" hidden="true">
         <div class='table-responsive'>
             <table class='table table-hover' id="tabla_docentes-{{pregunta['pregunta_encuesta_id']}}">
@@ -668,26 +580,6 @@
 
     {% elif pregunta["tipo"] == "Correlativa" %}
 
-    <br>
-
-    <div class="row" hidden="true">
-        <div class="col-sm-7">
-            <div class="form-group">
-                <select class="form-control" id="selector_posibles_correlativas_{{pregunta['pregunta_encuesta_id']}}" name="selector_posibles_correlativas_{{pregunta['pregunta_encuesta_id']}}">
-                    {% for correlativa in posibles_correlativas %}
-                    <option id="materia_opcion_{{correlativa['id']}}_{{pregunta['pregunta_encuesta_id']}}" value="{{correlativa['id']}}">{{correlativa["codigo"]}} - {{correlativa["nombre"]}}</option>
-                    {% endfor %}
-                </select>
-            </div>
-        </div>
-    </div>
-
-    <label id="label_correlativas_no_elegidas_{{pregunta['pregunta_encuesta_id']}}" hidden="true">
-        No se ha seleccionado ninguna correlativa para esta materia.
-    </label>
-
-    <br>
-
     <div class="form-group" id="div_tabla_correlativas_{{pregunta['pregunta_encuesta_id']}}" hidden="true">
         <div class='table-responsive'>
             <table class='table table-hover' id="tabla_correlativas_{{pregunta['pregunta_encuesta_id']}}">
@@ -701,6 +593,11 @@
             </table>
         </div>
     </div>
+
+    <br>
+    <label id="label_correlativas_no_elegidas_{{pregunta['pregunta_encuesta_id']}}" hidden="true">
+        No se ha seleccionado ninguna correlativa para esta materia.
+    </label>
 
     {% elif pregunta["tipo"] == "Estrellas" %}
 

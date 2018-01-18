@@ -1328,7 +1328,7 @@
     </div>
 
     <div>
-        <h2>{{encuesta["materia"]}} / Curso {{encuesta["curso"]}}</h2>
+        <h2>{{encuesta["materia"]["codigo"]}} - {{encuesta["materia"]["nombre"]}} | Curso {{encuesta["curso"]["codigo_curso"]}} | {{encuesta["curso"]["docentes"]}}</h2>
 
         <h3>Sección {{paso_activo+1}}: {{titulos[paso_activo]["titulo"]}}</h3>
     </div>
@@ -1567,7 +1567,7 @@
                     <div class="form-group">
                         <select class="form-control" id="selector_posibles_correlativas_{{pregunta['pregunta_encuesta_id']}}" name="selector_posibles_correlativas_{{pregunta['pregunta_encuesta_id']}}">
                             {% for correlativa in posibles_correlativas %}
-                                <option id="materia_opcion_{{correlativa['id']}}_{{pregunta['pregunta_encuesta_id']}}" value="{{correlativa['id']}}">{{correlativa["codigo"]}} - {{correlativa["nombre"]}}</option>
+                                <option id="materia_opcion_{{correlativa['id_materia']}}_{{pregunta['pregunta_encuesta_id']}}" value="{{correlativa['id_materia']}}">{{correlativa["codigo"]}} - {{correlativa["nombre"]}}</option>
                             {% endfor %}
                         </select>
                     </div>

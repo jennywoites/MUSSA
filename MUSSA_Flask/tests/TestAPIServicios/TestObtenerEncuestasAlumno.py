@@ -184,9 +184,6 @@ class TestObtenerEncuestasAlumno(TestBase):
         db.session.add(EncuestaAlumno(
             alumno_id=self.ENCUESTA["alumno_id"],
             materia_alumno_id=self.ENCUESTA["materia_alumno_id"],
-            carrera=self.ENCUESTA["carrera"],
-            materia=self.ENCUESTA["materia"],
-            curso=self.ENCUESTA["curso"],
             cuatrimestre_aprobacion_cursada=self.ENCUESTA["cuatrimestre_aprobacion_cursada"],
             anio_aprobacion_cursada=self.ENCUESTA["anio_aprobacion_cursada"],
             finalizada=self.ENCUESTA["finalizada"]

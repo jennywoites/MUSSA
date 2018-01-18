@@ -14,14 +14,7 @@ def agregar_materia_page():
     cookie = request.cookies
 
     mis_carreras = invocar_obtener_carreras_alumno(cookie)
-    materias = invocar_obtener_materias_alumno(cookie, [PENDIENTE])
-
-    cursos = ClienteAPI().obtener_cursos_con_filtros(cookie, filtrar_cursos=True)
-    for i in range(len(cursos)):
-        texto = ""
-        for carrera in cursos[i]["carreras"]:
-            texto += "carrera_" + str(carrera["id_carrera"]) + ";"
-        cursos[i]["carreras"] = texto[:-1]
+    #materias = invocar_obtener_materias_alumno(cookie, [PENDIENTE])
 
     estados = []
     for estado in [EN_CURSO, FINAL_PENDIENTE, APROBADA, DESAPROBADA]:
@@ -37,8 +30,6 @@ def agregar_materia_page():
 
     return render_template('pages/agregar_materia_page.html',
                            carreras=mis_carreras,
-                           materias=materias,
-                           cursos=cursos,
                            estados=estados,
                            formas_aprobacion=formas_aprobacion,
                            anios=anios)

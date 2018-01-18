@@ -16,12 +16,16 @@
       "description": "Acceso a las materias"
     },
     {
-      "name": "docente",
-      "description": "Acceso a los docentes"
+      "name": "curso",
+      "description": "Acceso a los cursos"
     },
     {
       "name": "tematica",
       "description": "Acceso a las temáticas"
+    },
+    {
+      "name": "docente",
+      "description": "Acceso a los docentes"
     }
   ],
   "schemes": [
@@ -33,7 +37,7 @@
         "tags": [
           "carrera"
         ],
-        "summary": "Devuelve todas la carrera del ID especificado",
+        "summary": "Devuelve la carrera del ID especificado",
         "description": "Devuelve la carrera del ID especificado.",
         "produces": [
           "application/json"
@@ -112,7 +116,7 @@
         "tags": [
           "materia"
         ],
-        "summary": "Devuelve todas la materia del ID especificado",
+        "summary": "Devuelve la materia del ID especificado",
         "description": "Devuelve la materia del ID especificado.",
         "produces": [
           "application/json"
@@ -141,6 +145,61 @@
           },
           "404": {
             "description": "El ID de materia no existe."
+          }
+        }
+      }
+    },
+    "/materia/all": {
+      "get": {
+        "tags": [
+          "materia"
+        ],
+        "summary": "Devuelve todas las materia que coincidan con los parámetros de búsqueda o todos las masterias si no se envian parámetros.",
+        "description": "Devuelve todas las materia que coincidan con los parámetros de búsqueda o todos las masterias si no se envian parámetros.",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "formData",
+            "name": "codigo_materia",
+            "required": false,
+            "type": "integer",
+            "description": "Código de la materia buscada. Puede enviarse solo los primeros dígitos. Se buscarán todas aquellas materias cuyo código comience con el código enviado."
+          },
+          {
+            "in": "formData",
+            "name": "nombre",
+            "required": false,
+            "type": "integer",
+            "description": "Nombre de la materia buscada. Puede enviarse una parte del nombre. Se buscarán todas aquellas materias cuyo nombre contenga el nombre enviado."
+          },
+          {
+            "in": "formData",
+            "name": "ids_carreras",
+            "required": false,
+            "type": "array",
+            "description": "Lista de ids de carreras. No enviarlo o enviar una lista vacía implica no filtrar por carrera.",
+            "items": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/ListaMaterias"
+            }
+          },
+          "400": {
+            "description": "BAD REQUEST. Uno o más parámetros contienen errores."
+          },
+          "401": {
+            "description": "La información de autorización no fue enviada o es inválida."
+          },
+          "404": {
+            "description": "Los ids o códigos enviados no existen."
           }
         }
       }
@@ -179,6 +238,118 @@
           },
           "404": {
             "description": "El ID de materia no existe."
+          }
+        }
+      }
+    },
+    "/curso/{idCurso}": {
+      "get": {
+        "tags": [
+          "curso"
+        ],
+        "summary": "Devuelve el curso del ID especificado",
+        "description": "Devuelve el curso del ID especificado.",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "idCurso",
+            "required": true,
+            "type": "integer",
+            "description": "ID del curso buscado."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/Curso"
+            }
+          },
+          "400": {
+            "description": "BAD REQUEST. El ID del curso debe ser un entero mayor a 0."
+          },
+          "401": {
+            "description": "La información de autorización no fue enviada o es inválida."
+          },
+          "404": {
+            "description": "El ID de curso no existe."
+          }
+        }
+      }
+    },
+    "/tematica/{idTematica}": {
+      "get": {
+        "tags": [
+          "tematica"
+        ],
+        "summary": "Devuelve una tematica por id",
+        "description": "Devuelve los datos de un docente",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "idTematica",
+            "required": true,
+            "type": "integer",
+            "minimum": 1,
+            "description": "El ID de la temática a buscar."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/TematicaMateria"
+            }
+          },
+          "400": {
+            "description": "BAD REQUEST. El ID de la temática debe ser un entero y mayor que 0."
+          },
+          "401": {
+            "description": "La información de autorización no fue enviada o es inválida."
+          },
+          "404": {
+            "description": "La temática del ID especificado no fue encontrada."
+          }
+        }
+      }
+    },
+    "/tematica/all": {
+      "get": {
+        "tags": [
+          "tematica"
+        ],
+        "summary": "Devuelve una lista de tematicas",
+        "description": "Devuelve una lista con temáticas. Este servicio recibe el filtro en el cual se puede especificar si se quieren recibir solo las verificadas, solo las no verificadas o todas.",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "solo_verificadas",
+            "required": false,
+            "type": "boolean",
+            "description": "Si no se envia el filtro se devuelven todas las temáticas. Si se envía en True se devuelven solo aquellas temáticas verificadas por un administrador. Si se envía en False se devuelven solo aquellas temáticas ingresadas por usuarios y no verificadas por un administrador."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/ListaTematicas"
+            }
+          },
+          "400": {
+            "description": "BAD REQUEST. El parámetro solo_verificadas debe ser un booleano"
+          },
+          "401": {
+            "description": "La información de autorización no fue enviada o es inválida."
           }
         }
       }
@@ -341,83 +512,21 @@
           }
         }
       }
-    },
-    "/tematica/{idTematica}": {
-      "get": {
-        "tags": [
-          "tematica"
-        ],
-        "summary": "Devuelve una tematica por id",
-        "description": "Devuelve los datos de un docente",
-        "produces": [
-          "application/json"
-        ],
-        "parameters": [
-          {
-            "in": "path",
-            "name": "idTematica",
-            "required": true,
-            "type": "integer",
-            "minimum": 1,
-            "description": "El ID de la temática a buscar."
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "schema": {
-              "$ref": "#/definitions/TematicaMateria"
-            }
-          },
-          "400": {
-            "description": "BAD REQUEST. El ID de la temática debe ser un entero y mayor que 0."
-          },
-          "401": {
-            "description": "La información de autorización no fue enviada o es inválida."
-          },
-          "404": {
-            "description": "La temática del ID especificado no fue encontrada."
-          }
-        }
-      }
-    },
-    "/tematica/all": {
-      "get": {
-        "tags": [
-          "tematica"
-        ],
-        "summary": "Devuelve una lista de tematicas",
-        "description": "Devuelve una lista con temáticas. Este servicio recibe el filtro en el cual se puede especificar si se quieren recibir solo las verificadas, solo las no verificadas o todas.",
-        "produces": [
-          "application/json"
-        ],
-        "parameters": [
-          {
-            "in": "query",
-            "name": "solo_verificadas",
-            "required": false,
-            "type": "boolean",
-            "description": "Si no se envia el filtro se devuelven todas las temáticas. Si se envía en True se devuelven solo aquellas temáticas verificadas por un administrador. Si se envía en False se devuelven solo aquellas temáticas ingresadas por usuarios y no verificadas por un administrador."
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "schema": {
-              "$ref": "#/definitions/ListaTematicas"
-            }
-          },
-          "400": {
-            "description": "BAD REQUEST. El parámetro solo_verificadas debe ser un booleano"
-          },
-          "401": {
-            "description": "La información de autorización no fue enviada o es inválida."
-          }
-        }
-      }
     }
   },
   "definitions": {
+    "ListaMaterias": {
+      "type": "object",
+      "properties": {
+        "materias": {
+          "type": "array",
+          "description": "Lista de materias",
+          "items": {
+            "$ref": "#/definitions/Materia"
+          }
+        }
+      }
+    },
     "Materia": {
       "type": "object",
       "properties": {
@@ -482,6 +591,82 @@
           "items": {
             "$ref": "#/definitions/Materia"
           }
+        }
+      }
+    },
+    "Curso": {
+      "type": "object",
+      "properties": {
+        "id_curso": {
+          "type": "integer",
+          "description": "ID del curso.",
+          "example": 1
+        },
+        "codigo_curso": {
+          "type": "string",
+          "description": "Código del curso.",
+          "example": "2A"
+        },
+        "codigo_materia": {
+          "type": "string",
+          "description": "Código de materia a la que pertenece el curso",
+          "example": "7540"
+        },
+        "se_dicta_primer_cuatri": {
+          "type": "boolean",
+          "description": "Indica si el curso se dicta los primeros cuatrimestres",
+          "example": true
+        },
+        "se_dicta_segundo_cuatri": {
+          "type": "boolean",
+          "description": "Indica si el curso se dicta los segundos cuatrimestres",
+          "example": true
+        },
+        "cuatrimestre": {
+          "type": "string",
+          "description": "Texto que indica en qué cuatrimestres este curso es dictado",
+          "example": "Ambos cuatrimestres"
+        },
+        "carreras": {
+          "type": "array",
+          "description": "Lista de carreras a las que pertenece el curso. Un curso puede dictarse para materias de igual código en diferentes carreras.",
+          "items": {
+            "$ref": "#definitions/Carrera"
+          }
+        },
+        "horarios": {
+          "type": "array",
+          "description": "Lista de horarios en las que es dictado el curso. La composición de estos horarios es la carga horaria completa del curso.",
+          "items": {
+            "$ref": "#definitions/Horario"
+          }
+        },
+        "docentes": {
+          "type": "string",
+          "description": "Nombres de los docentes del curso concatenados en un único string.",
+          "example": "Essaya-Wainer-Woites"
+        },
+        "datos_docentes": {
+          "type": "array",
+          "description": "Lista de datos completos de los docentes que dicatn el curso.",
+          "items": {
+            "$ref": "#definitions/Docente"
+          }
+        },
+        "puntaje": {
+          "type": "number",
+          "description": "Puntaje del curso en base a las encuestas. El puntaje es 0 si no hay encuestas. Si hay encuestas para el curso se calcula como la cantidad de encuestas completas sobre el puntaje total de encuestas.",
+          "example": 4.5
+        },
+        "cantidad_encuestas_completas": {
+          "type": "integer",
+          "description": "Total de encuestas completas y finalizadas para el curso.",
+          "example": 10
+        },
+        "puntaje_total_encuestas": {
+          "type": "integer",
+          "description": "Sumatoria de los puntajes de las encuestas completas y finalizadas para el curso.",
+          "example": 450
         }
       }
     },
@@ -620,6 +805,26 @@
           "items": {
             "$ref": "#/definitions/Carrera"
           }
+        }
+      }
+    },
+    "Horario": {
+      "type": "object",
+      "properties": {
+        "dia": {
+          "type": "string",
+          "description": "Dia de la semana",
+          "example": "LUNES"
+        },
+        "hora_desde": {
+          "type": "string",
+          "description": "Horario de inicio",
+          "example": "07:30"
+        },
+        "hora_hasta": {
+          "type": "string",
+          "description": "Horario de fin",
+          "example": "12:00"
         }
       }
     }

@@ -31,9 +31,19 @@ class TestBase(TestCase):
         settings['WTF_CSRF_ENABLED'] = False
         settings['DEBUG'] = True
 
-        os.chdir(os.path.join('..', '..'))
+        extension_path = []
+        path_actual = os.getcwd()
+        while(not (len(extension_path) > 0 and extension_path[0] == 'tests')):
+            path_separado = os.path.split(path_actual)
+            extension_path.insert(0, path_separado[-1])
+            path_actual = path_separado[0]
+
+        pasos_retroceder = [".." for directorio in extension_path]
+        os.chdir(os.path.join(*pasos_retroceder))
+
         self.app = app.create_app(extra_config_settings=settings)
-        os.chdir(os.path.join('.', 'tests', 'TestAPIServicios'))
+
+        os.chdir(os.path.join('.', *extension_path))
         return self.app
 
     def do_login(self, data):
@@ -82,6 +92,9 @@ class TestBase(TestCase):
     def get_url_get_materia(self, idMateria):
         return ClienteAPI().get_url_get_materia(idMateria)
 
+    def get_url_get_materias(self):
+        return ClienteAPI().get_url_get_materias()
+
     def get_url_materias_correlativas(self, idMateria):
         return ClienteAPI().get_url_materias_correlativas(idMateria)
 
@@ -90,3 +103,6 @@ class TestBase(TestCase):
 
     def get_url_all_cursos(self):
         return ClienteAPI().get_url_all_cursos()
+
+    def get_url_obtener_todas_las_tematicas(self):
+        return ClienteAPI().get_url_obtener_todas_las_tematicas()

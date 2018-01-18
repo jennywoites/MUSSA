@@ -1,10 +1,13 @@
 from flask_restful import Resource
 from app.API_Rest.codes import *
 from flask import request
-
+from app.models.horarios_models import Curso
+from app.models.carreras_models import Carrera, Materia
 from flask_user import current_user, login_required
 from app.models.alumno_models import Alumno, MateriasAlumno
 from app.models.respuestas_encuesta_models import EncuestaAlumno
+from app.models.generadorJSON.carreras_generadorJSON import generarJSON_carrera, generarJSON_materia
+from app.models.generadorJSON.horarios_generadorJSON import generarJSON_curso
 
 import logging
 
@@ -37,18 +40,18 @@ class ObtenerEncuestasAlumno(Resource):
 
         encuestas_result = []
         for encuesta in encuestas:
-            materiaAlumno = MateriasAlumno.query.filter_by(id=encuesta.materia_alumno_id).first()
+            materiaAlumno = MateriasAlumno.query.get(encuesta.materia_alumno_id)
+            carrera = Carrera.query.get(materiaAlumno.carrera_id)
+            curso = Curso.query.get(materiaAlumno.curso_id)
+            materia = Materia.query.get(materiaAlumno.materia_id)
 
             encuestas_result.append({
                 "id": encuesta.id,
                 "alumno_id": encuesta.alumno_id,
                 "materia_alumno_id": encuesta.materia_alumno_id,
-                "carrera": encuesta.carrera,
-                "codigo_carrera": encuesta.carrera[:encuesta.carrera.index(" - ")],
-                "materia": encuesta.materia,
-                "materia_id": materiaAlumno.materia_id,
-                "curso": encuesta.curso,
-                "id_curso": materiaAlumno.curso_id,
+                "carrera": generarJSON_carrera(carrera),
+                "materia": generarJSON_materia(materia),
+                "curso": generarJSON_curso(curso),
                 "cuatrimestre_aprobacion_cursada": encuesta.cuatrimestre_aprobacion_cursada,
                 "anio_aprobacion_cursada": encuesta.anio_aprobacion_cursada,
                 "fecha_aprobacion": "{}C / {}".format(encuesta.cuatrimestre_aprobacion_cursada,

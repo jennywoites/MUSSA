@@ -51,13 +51,17 @@ def completar_encuesta(idEncuestaAlumno, cookie, num_categoria):
     respuestas = invocar_obtener_respuestas_encuesta_alumno(cookie, idEncuestaAlumno, preguntas)
     convertir_true_false(respuestas)
 
-    posibles_correlativas = invocar_servicio_buscar_materias(cookie, encuesta["codigo_carrera"])
+    posibles_correlativas = ClienteAPI().obtener_todas_las_materias(
+        cookie,
+        ids_carreras=[encuesta["carrera"]["id_carrera"]]
+    )
+
     for i in range(len(posibles_correlativas)):
-        if posibles_correlativas[i]["id"] == encuesta["materia_id"]:
+        if posibles_correlativas[i]["id_materia"] == encuesta["materia"]["id_materia"]:
             break
     posibles_correlativas.pop(i)
 
-    docentes = ClienteAPI().obtener_docentes_del_curso(cookie, encuesta["id_curso"])
+    docentes = ClienteAPI().obtener_docentes_del_curso(cookie, encuesta["curso"]["id_curso"])
 
     HORA_MIN = 7
     HORA_MAX = 23

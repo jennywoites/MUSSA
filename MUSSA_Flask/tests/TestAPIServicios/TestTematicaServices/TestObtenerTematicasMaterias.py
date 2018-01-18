@@ -1,12 +1,10 @@
 if __name__ == '__main__':
     import sys
-
     sys.path.append("../..")
 
 from tests.TestAPIServicios.TestBase import TestBase
 from app.models.palabras_clave_models import TematicaMateria
 from app.DAO.MateriasDAO import *
-from app.API_Rest.services import *
 from app.API_Rest.codes import *
 import json
 
@@ -15,17 +13,20 @@ class TestObtenerTematicasMaterias(TestBase):
 
     TEMA_1 = {
         "id": 1,
-        "tema": "TEMA1"
+        "tema": "TEMA1",
+        "verificada": True
     }
 
     TEMA_2 = {
         "id": 2,
-        "tema": "TEMA2"
+        "tema": "TEMA2",
+        "verificada": True
     }
 
     TEMA_3 = {
         "id": 3,
-        "tema": "TEMA3"
+        "tema": "TEMA3",
+        "verificada": True
     }
 
     ##########################################################
@@ -40,7 +41,8 @@ class TestObtenerTematicasMaterias(TestBase):
 
     def crear_tematica(self, dic_tematica):
         db.session.add(TematicaMateria(
-            tematica=dic_tematica["tema"]
+            tematica=dic_tematica["tema"],
+            verificada=dic_tematica["verificada"]
         ))
         db.session.commit()
 
@@ -55,8 +57,8 @@ class TestObtenerTematicasMaterias(TestBase):
         return False
 
     def tematicas_son_iguales(self, origen, servidor):
-        return (origen["id"] == servidor["id"] and
-                origen["tema"] == servidor["tema"] )
+        return (origen["id"] == servidor["id_tematica"] and
+                origen["tema"] == servidor["tematica"] )
 
     ##########################################################
     ##                      Tests                           ##
@@ -65,7 +67,7 @@ class TestObtenerTematicasMaterias(TestBase):
     def test_obtener_tematicas_sin_existir_en_la_base_de_datos_devuelve_lista_vacia(self):
         client = self.loguear_usuario()
 
-        response = client.get(OBTENER_TEMATICAS_MATERIAS)
+        response = client.get(self.get_url_obtener_todas_las_tematicas())
         assert (response.status_code == SUCCESS_OK)
 
         tematicas = json.loads(response.get_data(as_text=True))["tematicas"]
@@ -78,7 +80,7 @@ class TestObtenerTematicasMaterias(TestBase):
 
         client = self.loguear_usuario()
 
-        response = client.get(OBTENER_TEMATICAS_MATERIAS)
+        response = client.get(self.get_url_obtener_todas_las_tematicas())
         assert (response.status_code == SUCCESS_OK)
 
         tematicas = json.loads(response.get_data(as_text=True))["tematicas"]
@@ -88,13 +90,7 @@ class TestObtenerTematicasMaterias(TestBase):
         self.se_encuentra_la_tematica(self.TEMA_2, tematicas)
         self.se_encuentra_la_tematica(self.TEMA_3, tematicas)
 
-    def test_obtener_tematicas_con_parametros_da_error(self):
-        client = self.loguear_usuario()
-        response = client.get(OBTENER_TEMATICAS_MATERIAS, query_string={"parametros": "sdaa"})
-        assert (response.status_code == CLIENT_ERROR_BAD_REQUEST)
-
 
 if __name__ == '__main__':
     import unittest
-
     unittest.main()

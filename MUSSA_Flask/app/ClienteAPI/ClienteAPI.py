@@ -75,6 +75,10 @@ class ClienteAPI:
         """URL: '/api/materia/<int:idMateria>'"""
         return self.BASE_URL + '/materia/' + str(idMateria)
 
+    def get_url_get_materias(self):
+        """URL: '/api/materia'"""
+        return self.BASE_URL + '/materia/all'
+
     def get_url_materias_correlativas(self, idMateria):
         """URL: '/api/materia/<int:idMateria>/correlativas'"""
         return self.BASE_URL + '/materia/' + str(idMateria) + '/correlativas'
@@ -153,6 +157,17 @@ class ClienteAPI:
         url_servicio = self.get_url_materias_correlativas(idMateria)
         return self.invocar_get(url_servicio, cookie)["correlativas"]
 
+    def obtener_todas_las_materias(self, cookie, codigo_materia='', nombre='', ids_carreras=[]):
+        url_servicio = self.get_url_get_materias()
+
+        parametros = {}
+        if codigo_materia: parametros["codigo_materia"] = codigo_materia
+        if nombre: parametros["nombre"] = nombre
+        if ids_carreras: parametros["ids_carreras"] = json.dumps(ids_carreras)
+
+        return self.invocar_get(url_servicio, cookie, parametros)["materias"]
+
+
     ################################################
     ##              Servicios CURSO               ##
     ################################################
@@ -174,7 +189,8 @@ class ClienteAPI:
         if id_carrera: parametros["id_carrera"] = id_carrera
         if filtrar_cursos: parametros["filtrar_cursos"] = filtrar_cursos
 
-        return self.invocar_get(url_servicio, cookie, parametros)["cursos"]
+        response = self.invocar_get(url_servicio, cookie, parametros)
+        return response["cursos"]
 
     def obtener_todos_los_cursos_existentes(self, cookie, nombre_curso='', codigo_materia='', id_carrera=''):
-        self.obtener_cursos_con_filtros(cookie, nombre_curso, codigo_materia, id_carrera, filtrar_cursos=False)
+        return self.obtener_cursos_con_filtros(cookie, nombre_curso, codigo_materia, id_carrera, filtrar_cursos=False)

@@ -100,7 +100,8 @@ class BaseService(Resource):
                 Las funciones se organizan como tuplas donde la posición es:
                 - Pos 0: Nombre de la funcion de validacion
                 - Pos 1: Lista de parametros extras que recibe la funcion ademas del atributo. Si no recibe parametros
-                        extras entonces la lista es una lista vacía.
+                        extras entonces la lista es una lista vacía. Los parámetros extras son todos aquellos luego de:
+                        'nombre_parametro', 'valor', 'es_obligatorio'
 
         * En caso de que el parámetro sea una lista o tupla se aplicarán las funciones de validación a cada elemento
          de la tupla o lista
