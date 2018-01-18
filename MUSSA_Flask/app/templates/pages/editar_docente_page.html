@@ -117,9 +117,9 @@
         carreras.sort();
         for(var i=0; i< carreras.length; i++){
             var carrera = carreras[i];
-            result.push({"id": carrera["codigo"],
+            result.push({"id": carrera["id_carrera"],
                          "text": carrera["codigo"] + " - " + carrera["nombre"] + " (Plan " + carrera["plan"] + ")",
-                         "value": carrera["id"]});
+                         "value": carrera["id_carrera"]});
         }
         return result;
     }
@@ -132,19 +132,22 @@
         });
     });
 
-    function populate_materias(id_carrera){
+    function populate_materias(id_carrera) {
         if(id_carrera>0){
-            fill_dropdown('materias_disponibles', SERVICE_BUSCAR_MATERIAS + "?carreras=" + id_carrera, format_materias_dropdown);
-            $("#materias_disponibles").prop('disabled', false);
+            get_materias_con_filtro_service('{{ csrf_token() }}', '', '', [id_carrera], function(status, responseText){
+                fill_dropdown('materias_disponibles', format_materias_dropdown, responseText);
+                $("#materias_disponibles").prop('disabled', false);
+            }, function(status, responseText){
+                $("#materias_disponibles").prop('disabled', true);
+            });
         }else{
-            $("#materias_disponibles").prop('disabled', true);
+            console.log("No implementado");
         }
     }
 
     function format_materias_dropdown(response){
         var result = [];
-        var materias = response['materias'];
-        materias.sort();
+        var materias = response;
         var filter_list = [];
         table_data = $("#tabla_materias").bootstrapTable('getData');
 

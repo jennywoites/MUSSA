@@ -121,8 +121,6 @@ def init_email_error_handler(app):
 
     app.logger.basicConfig(filename='example.log', level=logging.DEBUG)
 
-    # Log errors using: app.logger.error('Some error message')
-
 
 def add_resources_api_rest(api):
     DIR_SERVICIOS = os.path.join('app', 'API_Rest', 'Services')
@@ -144,9 +142,6 @@ def add_resources_api_rest(api):
 
 
 def add_resources_publicos(api):
-    from app.API_Rest.Services.BuscarMateriasService import BuscarMaterias
-    api.add_resource(BuscarMaterias, '/api/BuscarMaterias')
-
     from app.API_Rest.Services.ObtenerPreguntasEncuestaService import ObtenerPreguntasEncuesta
     api.add_resource(ObtenerPreguntasEncuesta, '/api/ObtenerPreguntasEncuesta')
 

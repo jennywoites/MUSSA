@@ -2,47 +2,19 @@
 
 {% block content %}
 
+    <script type='text/javascript' src="/js/services.js"></script>
+
     <script>
 
-        SERVICE_BUSCAR_MATERIAS = '/api/BuscarMaterias'
-
-        SUCCESS = 200
-
-        function do_request(page, onSucces, onError){
-            xmlhttp = new XMLHttpRequest();
-
-            xmlhttp.onreadystatechange = function() {
-                if (this.status == 0 || this.readyState != 4)
-                    return;
-
-                if ( this.status != SUCCESS ) {
-                    onError(this.status, this.responseText);
-                }
-                else {
-                    json_result = (this.responseText == "") ? {} : JSON.parse(this.responseText)
-                    onSucces(this.status, json_result);
-                }
-            }
-
-            xmlhttp.open("GET", page, true);
-            xmlhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-            xmlhttp.send();
-        }
-
-        function ver_materia_otra_carrera(codigo_carrera, codigo_materia) {
-            page = SERVICE_BUSCAR_MATERIAS;
-
-            parametros = "";
-            parametros += "codigo=" + codigo_materia
-            parametros += "&" + "carreras=" + codigo_carrera
-
-            do_request(page + "?" + parametros, function(state, result) {
-                var idMateria = result["materias"][0].id;
+        function ver_materia_otra_carrera(id_carrera, codigo_materia) {
+            var csrf_token = '{{ csrf_token() }}';
+            get_materias_con_filtro_service(csrf_token, codigo_materia, '', [id_carrera], function(state, result) {
+                var idMateria = result[0]["id_materia"];
                 var url = '/materias/' + idMateria;
                 window.location.href = url;
             }, function(state, result){
                 console.log(result);
-            })
+            });
         }
 
     </script>
@@ -61,7 +33,7 @@
 
             {% for otra_carrera in carreras %}
                 {% if otra_carrera["id_carrera"] != materia["carrera_id"] %}
-                    <a onclick="ver_materia_otra_carrera({{otra_carrera['codigo']}}, {{materia['codigo']}})">{{otra_carrera["descripcion"]}}</a>
+                    <a onclick="ver_materia_otra_carrera({{otra_carrera['id_carrera']}}, {{materia['codigo']}})">{{otra_carrera["descripcion"]}}</a>
                 {% endif %}
             {% endfor %}
 

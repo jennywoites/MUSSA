@@ -1,121 +1,92 @@
 {% extends "common/page_base.html" %}
 
 {% block content %}
-    <div class="container">
+
+    <script type='text/javascript' src="/js/services.js"></script>
 
     <script>
 
-SERVICE_BUSCAR_MATERIAS = '/api/BuscarMaterias'
+        function generar_tabla_de_resultados(materias) {
+            if (!materias || materias.length == 0)
+                return "<p>No se encontraron resultados</p>";
 
-SUCCESS = 200
-
-function do_request(page, onSucces, onError){    
-    xmlhttp = new XMLHttpRequest();
-
-    xmlhttp.onreadystatechange = function() {
-        if (this.status == 0 || this.readyState != 4)
-            return;
-
-        if ( this.status != SUCCESS ) {
-            onError(this.status, this.responseText);
-        }
-        else { 
-            json_result = (this.responseText == "") ? {} : JSON.parse(this.responseText)
-            onSucces(this.status, json_result);
-        }
-    }
-
-    xmlhttp.open("GET", page, true);
-    xmlhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-    xmlhttp.send();
-}
-
-    function generar_tabla_de_resultados(result) {
-        if (!result || result["materias"].length == 0)
-            return "<p>No se encontraron resultados</p>";
-
-        html = "";
-        html += "<div class='table-responsive'>";
-        html += "<table class='table'>";
-        html += "<tr>";
-        html += "<th>Código</th>";
-        html += "<th>Materia</th>";
-        html += "<th>Carrera</th>";
-        html += "<th>Acciones</th>";
-        html += "</tr>";
-        html += "</thead>";
-
-        html += "<tbody>";
-
-        materias = result["materias"]
-        for (i = 0; i<materias.length; i++) {
-            materia = materias[i];
-
+            html = "";
+            html += "<div class='table-responsive'>";
+            html += "<table class='table'>";
             html += "<tr>";
-            html += "<td>" + materia["codigo"] + "</td>";
-            html += "<td>" + materia["nombre"] + "</td>";
-            html += "<td>" + materia["carrera"] + "</td>";
-            html += "<td>" + "<a href='/materias/" + materia["id"] + "'><span class='glyphicon glyphicon-search'></span></a>" + "</td>";
+            html += "<th>Código</th>";
+            html += "<th>Materia</th>";
+            html += "<th>Carrera</th>";
+            html += "<th>Acciones</th>";
             html += "</tr>";
-        }
+            html += "</thead>";
 
-        html += "</tbody>";
-        html += "</table>";          
-        html += "</div>";
+            html += "<tbody>";
 
-        return html;
-    }
+            for (i = 0; i<materias.length; i++) {
+                materia = materias[i];
 
-    function obtener_parametros_de_busqueda() {
-        parametros = "";
-
-        codigo = $("#codigo_materia").val();
-        if (codigo != "")
-            parametros += "codigo=" + codigo
-
-        nombre = $("#nombre_materia").val()
-        if (nombre != "")
-            parametros += (parametros != "") ? ("&" + "nombre=" + nombre) : ("nombre=" + nombre)
-
-        carreras = ""
-        checkbox = $("input:checkbox[name^='carrera-']")
-        checkbox.each(function(index, e){
-            if ( checkbox[index].checked ) {
-                carreras += (carreras != "") ? ("," + checkbox[index].value) : checkbox[index].value
+                html += "<tr>";
+                html += "<td>" + materia["codigo"] + "</td>";
+                html += "<td>" + materia["nombre"] + "</td>";
+                html += "<td>" + materia["carrera"] + "</td>";
+                html += "<td>" + "<a href='/materias/" + materia["id_materia"] + "'><span class='glyphicon glyphicon-search'></span></a>" + "</td>";
+                html += "</tr>";
             }
-        })
 
-        if (carreras != "")
-            parametros += (parametros != "") ? ("&" + "carreras=" + carreras) : ("carreras=" + carreras)
+            html += "</tbody>";
+            html += "</table>";
+            html += "</div>";
 
-        return parametros;
-    }
-
-    function search_materias() {
-        page = SERVICE_BUSCAR_MATERIAS;
-        parametros = obtener_parametros_de_busqueda();
-
-        do_request(page + "?" + parametros, function(state, result) {
-            content = generar_tabla_de_resultados(result);
-            $("#search_results").html(content);
-        }, function(state, result){
-            content = "<p>Ha ocurrido un problema. Por favor intentá nuevamente</p>";
-            $("#search_results").html(content);
-        })
-    }
-
-    function change_checkbox_carreras(checkbox) {
-        if (checkbox.name == "check_todas_las_carreras") {
-            checkbox_carrera = $("input:checkbox[name^='carrera-']")
-            checkbox_carrera.each(function(index, e){
-                checkbox_carrera[index].checked = checkbox.checked;
-            })
-        } else {
-            $("input:checkbox[name^='check_todas_las_carreras']")[0].checked = false;
+            return html;
         }
-    }
+
+        function obtener_parametro_ids_carreras() {
+            carreras = []
+            checkbox = $("input:checkbox[name^='carrera-']")
+            checkbox.each(function(index, e){
+                if ( checkbox[index].checked ) {
+                    carreras.push(checkbox[index].value)
+                }
+            })
+            return carreras;
+        }
+
+        function search_materias() {
+            $('#loader').show();
+
+            var csrf_token = '{{ csrf_token() }}';
+            var codigo = $("#codigo_materia").val();
+            var nombre = $("#nombre_materia").val();
+            var ids_carreras = obtener_parametro_ids_carreras();
+
+            get_materias_con_filtro_service(csrf_token, codigo, nombre, ids_carreras, function(state, result) {
+                content = generar_tabla_de_resultados(result);
+                $("#search_results").html(content);
+                $('#loader').hide();
+            }, function(state, result){
+                content = "<p>Ha ocurrido un problema. Por favor intentá nuevamente</p>";
+                $("#search_results").html(content);
+                $('#loader').hide();
+            });
+        }
+
+        function change_checkbox_carreras(checkbox) {
+            if (checkbox.name == "check_todas_las_carreras") {
+                checkbox_carrera = $("input:checkbox[name^='carrera-']")
+                checkbox_carrera.each(function(index, e){
+                    checkbox_carrera[index].checked = checkbox.checked;
+                })
+            } else {
+                $("input:checkbox[name^='check_todas_las_carreras']")[0].checked = false;
+            }
+        }
 
     </script>
+
+    <div class="container">
+
+        <div id="loader" class="loading col-lg-1 col-centered" hidden></div>
 
         <h2>{%trans%}Buscar Materias{%endtrans%}</h2>
 
@@ -131,7 +102,6 @@ function do_request(page, onSucces, onError){
             </div>
 
             <div class="form-group">
-                <!-- JENNY: Revisar si no es mejor enviar el id de carrera en lugar del codigo de carrera en caso de que haya de mas de un plan -->
                 <label>Carreras:</label>
 
                 <div class="checkbox" id="check_todas_las_carreras">
@@ -143,7 +113,7 @@ function do_request(page, onSucces, onError){
                 {% for carrera in carreras %}
                     <div class="checkbox" id="carrera-{{carrera.codigo}}">
                         <label>
-                            <input type="checkbox" name="carrera-{{carrera['codigo']}}" onchange="change_checkbox_carreras(this)" value="{{carrera['codigo']}}">{{ carrera['codigo'] }} - {{ carrera['nombre'] }}
+                            <input type="checkbox" name="carrera-{{carrera['codigo']}}" onchange="change_checkbox_carreras(this)" value="{{carrera['id_carrera']}}">{{ carrera['codigo'] }} - {{ carrera['nombre'] }}
                         </label>
                     </div>
                 {% endfor %}
@@ -161,6 +131,5 @@ function do_request(page, onSucces, onError){
         <div id="search_results"></div>
 
     </div>
-
 
 {% endblock %}

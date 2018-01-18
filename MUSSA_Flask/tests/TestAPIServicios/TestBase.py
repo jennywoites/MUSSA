@@ -92,6 +92,9 @@ class TestBase(TestCase):
     def get_url_get_materia(self, idMateria):
         return ClienteAPI().get_url_get_materia(idMateria)
 
+    def get_url_get_materias(self):
+        return ClienteAPI().get_url_get_materias()
+
     def get_url_materias_correlativas(self, idMateria):
         return ClienteAPI().get_url_materias_correlativas(idMateria)
 

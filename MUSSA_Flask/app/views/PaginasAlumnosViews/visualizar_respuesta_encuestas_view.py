@@ -1,12 +1,12 @@
 from flask import render_template
 from flask_user import login_required
-from flask import request, url_for
+from flask import request, url_for, redirect
 from app.views.base_view import main_blueprint
 from app.views.Utils.invocaciones_de_servicios import *
 from app.DAO.EncuestasDAO import *
 from app.utils import frange, get_numero_dos_digitos, DIAS
 from app.ClienteAPI.ClienteAPI import ClienteAPI
-
+from app.API_Rest.codes import *
 
 @main_blueprint.route('/encuestas/visualizar_encuesta/general/<int:idEncuestaAlumno>', methods=['GET'])
 @login_required
@@ -43,26 +43,11 @@ def visualizar_encuesta(idEncuestaAlumno, cookie, num_categoria):
     preguntas = invocar_servicio_obtener_preguntas_encuesta(cookie, [num_categoria])
     encuesta = invocar_obtener_encuesta_alumno(cookie, idEncuestaAlumno)
 
-    encuesta_esta_completa = invocar_encuesta_alumno_esta_completa(cookie, idEncuestaAlumno)
+    if not encuesta["finalizada"]:
+        return redirect(url_for('main.historial_encuestas_page'), code=REDIRECTION_FOUND)
 
     respuestas = invocar_obtener_respuestas_encuesta_alumno(cookie, idEncuestaAlumno, preguntas)
     convertir_true_false(respuestas)
-
-    posibles_correlativas = invocar_servicio_buscar_materias(cookie, encuesta["codigo_carrera"])
-    for i in range(len(posibles_correlativas)):
-        if posibles_correlativas[i]["id"] == encuesta["materia_id"]:
-            break
-    posibles_correlativas.pop(i)
-
-    docentes = ClienteAPI().obtener_docentes_del_curso(cookie, encuesta["id_curso"])
-
-    HORA_MIN = 7
-    HORA_MAX = 23
-    horarios = []
-    for i in frange(HORA_MIN, HORA_MAX + 0.5, 0.5):
-        hora = int(i)
-        minutos = "00" if hora == i else "30"
-        horarios.append("{}:{}".format(get_numero_dos_digitos(hora), minutos))
 
     titulos = [
         {'url': 'main.visualizar_encuesta_general_page', 'titulo': 'General'},
@@ -102,11 +87,6 @@ def visualizar_encuesta(idEncuestaAlumno, cookie, num_categoria):
                            paso_activo=num_categoria,
                            preguntas=preguntas,
                            respuestas=respuestas,
-                           dias=DIAS,
-                           hora_desde=horarios[:-1],
-                           hora_hasta=horarios[1:],
-                           posibles_correlativas=posibles_correlativas,
-                           docentes=docentes,
                            anterior_siguiente=anterior_siguiente)
 
 

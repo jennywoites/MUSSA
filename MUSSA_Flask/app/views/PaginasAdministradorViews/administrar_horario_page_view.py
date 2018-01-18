@@ -15,21 +15,23 @@ def administrar_horarios_page():
     MAX_TIEMPO = 5
 
     cursos = ClienteAPI().obtener_todos_los_cursos_existentes(request.cookies)
+    cursos = cursos if cursos else []
 
     hoy = datetime.now().year
     anios = [x for x in range(hoy, hoy - MAX_TIEMPO, -1)]
     return render_template('pages/administrar_horarios_page.html',
-        cursos=cursos,
-        anios=anios)
+                           cursos=cursos,
+                           anios=anios
+                           )
 
 
-@main_blueprint.route('/admin/administrar_horarios/uploader', methods = ['POST'])
+@main_blueprint.route('/admin/administrar_horarios/uploader', methods=['POST'])
 @roles_accepted('admin')
 def administrar_horarios_upload_file():
     f = request.files['file']
     cuatrimestre = request.form['numero_cuatrimestre']
     anio = request.form['anio']
-    ruta = 'app/tmp/' + secure_filename('Horarios_' + anio + "_" + cuatrimestre + "C.pdf") 
+    ruta = 'app/tmp/' + secure_filename('Horarios_' + anio + "_" + cuatrimestre + "C.pdf")
     f.save(ruta)
 
     csrf_token = request.form['csrf_token']

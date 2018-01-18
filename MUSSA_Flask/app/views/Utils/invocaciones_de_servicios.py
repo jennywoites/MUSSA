@@ -123,16 +123,6 @@ def invocar_obtener_encuesta_alumno(cookie, id_encuesta):
     return json.loads(encuestas_response.text)["encuestas"].pop()
 
 
-def invocar_servicio_buscar_materias(cookie, carrera):
-    parametros = {}
-    parametros["carreras"] = carrera
-
-    materias_response = requests.get(BUSCAR_MATERIAS_SERVICE, params=parametros, cookies=cookie)
-    escribir_resultado_servicio('Buscar Materias', materias_response)
-
-    return json.loads(materias_response.text)["materias"]
-
-
 def invocar_obtener_respuestas_encuesta_alumno(cookie, id_encuesta, preguntas):
     parametros = {}
     parametros["id_encuesta"] = id_encuesta
