@@ -1,6 +1,5 @@
 if __name__ == '__main__':
     import sys
-
     sys.path.append("../..")
 
 from tests.TestAPIServicios.TestBase import TestBase
@@ -182,6 +181,7 @@ class TestObtenerRespuestasEncuestaAlumnoParaPreguntasEspecificas(TestBase):
         acciones[tipo_encuesta](respuesta_encuesta)
 
     RESPUESTA_PUNTAJE = 5
+
     def generar_respuesta_puntaje(self, respuesta_encuesta):
         db.session.add(RespuestaEncuestaPuntaje(
             rta_encuesta_alumno_id=respuesta_encuesta.id,
@@ -324,7 +324,7 @@ class TestObtenerRespuestasEncuestaAlumnoParaPreguntasEspecificas(TestBase):
 
     def generar_respuesta_tematicas(self, respuesta_encuesta):
         for tema in self.RESPUESTAS_TEMATICAS:
-            tematica = TematicaMateria(tematica=tema)
+            tematica = TematicaMateria(tematica=tema, verificada=True)
             db.session.add(tematica)
             db.session.commit()
 
@@ -431,8 +431,8 @@ class TestObtenerRespuestasEncuestaAlumnoParaPreguntasEspecificas(TestBase):
             encontrado = False
             for horario in respuestas_encuestas['8']["horarios"]:
                 if (horario["dia"] == horario_guardado["dia"] and
-                        horario["hora_desde"] == horario_guardado["hora_desde"] and
-                        horario["hora_hasta"] == horario_guardado["hora_hasta"]):
+                            horario["hora_desde"] == horario_guardado["hora_desde"] and
+                            horario["hora_hasta"] == horario_guardado["hora_hasta"]):
                     encontrado = True
             assert (encontrado)
 
