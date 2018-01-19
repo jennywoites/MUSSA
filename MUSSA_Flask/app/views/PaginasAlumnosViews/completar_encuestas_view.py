@@ -40,7 +40,7 @@ def completar_encuesta_docentes_page(idEncuestaAlumno):
 
 
 def completar_encuesta(idEncuestaAlumno, cookie, num_categoria):
-    preguntas = invocar_servicio_obtener_preguntas_encuesta(cookie, [num_categoria])
+    preguntas = ClienteAPI().obtener_preguntas_encuesta(cookie, [num_categoria])
     encuesta = invocar_obtener_encuesta_alumno(cookie, idEncuestaAlumno)
 
     if encuesta["finalizada"]:

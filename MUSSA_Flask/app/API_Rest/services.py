@@ -6,9 +6,6 @@ ADMIN = "admin/"
 
 BASE_URL = HTTP + IP + PUERTO + BASE_API
 
-# No requiere autenticacion
-OBTENER_PREGUNTAS_ENCUESTA_SERVICE = BASE_URL + "ObtenerPreguntasEncuesta"
-
 # Requiere estar logueado
 OBTENER_PADRON_ALUMNO_SERVICE = BASE_URL + "ObtenerPadronAlumno"
 MODIFICAR_PADRON_ALUMNO_SERVICE = BASE_URL + "ModificarPadronAlumno"

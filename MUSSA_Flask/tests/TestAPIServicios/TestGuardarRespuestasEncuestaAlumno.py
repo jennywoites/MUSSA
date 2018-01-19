@@ -423,7 +423,8 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
 
         client = self.loguear_usuario()
 
-        response = client.get(OBTENER_PREGUNTAS_ENCUESTA_SERVICE, query_string={"categorias": paso_actual})
+        parametros = {"categorias": json.dumps([paso_actual])}
+        response = client.get(self.get_url_preguntas_encuesta(), query_string=parametros)
         preguntas = json.loads(response.get_data(as_text=True))["preguntas"]
 
         encuesta = EncuestaAlumno.query.first()
@@ -445,7 +446,8 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
 
         client = self.loguear_usuario()
 
-        response = client.get(OBTENER_PREGUNTAS_ENCUESTA_SERVICE, query_string={"categorias": paso_actual})
+        parametros = {"categorias": json.dumps([paso_actual])}
+        response = client.get(self.get_url_preguntas_encuesta(), query_string=parametros)
         preguntas = json.loads(response.get_data(as_text=True))["preguntas"]
 
         encuesta = EncuestaAlumno.query.first()
@@ -466,7 +468,8 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
 
         client = self.loguear_usuario()
 
-        response = client.get(OBTENER_PREGUNTAS_ENCUESTA_SERVICE, query_string={"categorias": paso_actual})
+        parametros = {"categorias": json.dumps([paso_actual])}
+        response = client.get(self.get_url_preguntas_encuesta(), query_string=parametros)
         preguntas = json.loads(response.get_data(as_text=True))["preguntas"]
 
         encuesta = EncuestaAlumno.query.first()
@@ -487,7 +490,8 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
 
         client = self.loguear_usuario()
 
-        response = client.get(OBTENER_PREGUNTAS_ENCUESTA_SERVICE, query_string={"categorias": paso_actual})
+        parametros = {"categorias": json.dumps([paso_actual])}
+        response = client.get(self.get_url_preguntas_encuesta(), query_string=parametros)
         preguntas = json.loads(response.get_data(as_text=True))["preguntas"]
 
         encuesta = EncuestaAlumno.query.first()
@@ -508,7 +512,8 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
 
         client = self.loguear_usuario()
 
-        response = client.get(OBTENER_PREGUNTAS_ENCUESTA_SERVICE, query_string={"categorias": paso_actual})
+        parametros = {"categorias": json.dumps([paso_actual])}
+        response = client.get(self.get_url_preguntas_encuesta(), query_string=parametros)
         preguntas = json.loads(response.get_data(as_text=True))["preguntas"]
 
         encuesta = EncuestaAlumno.query.first()
@@ -529,7 +534,8 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
 
         client = self.loguear_usuario()
 
-        response = client.get(OBTENER_PREGUNTAS_ENCUESTA_SERVICE, query_string={"categorias": paso_actual})
+        parametros = {"categorias": json.dumps([paso_actual])}
+        response = client.get(self.get_url_preguntas_encuesta(), query_string=parametros)
         preguntas = json.loads(response.get_data(as_text=True))["preguntas"]
         preguntas = [preguntas[0], preguntas[3], preguntas[8], preguntas[10], preguntas[12], preguntas[13]]
 
@@ -551,7 +557,8 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
 
         client = self.loguear_usuario()
 
-        response = client.get(OBTENER_PREGUNTAS_ENCUESTA_SERVICE, query_string={"categorias": paso_actual})
+        parametros = {"categorias": json.dumps([paso_actual])}
+        response = client.get(self.get_url_preguntas_encuesta(), query_string=parametros)
         preguntas = json.loads(response.get_data(as_text=True))["preguntas"]
         preguntas = [preguntas[0], preguntas[3], preguntas[8], preguntas[10], preguntas[12], preguntas[13]]
 
@@ -569,7 +576,8 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
 
         client = self.loguear_usuario()
 
-        response = client.get(OBTENER_PREGUNTAS_ENCUESTA_SERVICE, query_string={"categorias": paso_actual})
+        parametros = {"categorias": json.dumps([paso_actual])}
+        response = client.get(self.get_url_preguntas_encuesta(), query_string=parametros)
         preguntas = json.loads(response.get_data(as_text=True))["preguntas"]
 
         encuesta = EncuestaAlumno.query.first()
@@ -606,7 +614,8 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
 
         client = self.loguear_usuario()
 
-        response = client.get(OBTENER_PREGUNTAS_ENCUESTA_SERVICE, query_string={"categorias": paso_actual})
+        parametros = {"categorias": json.dumps([paso_actual])}
+        response = client.get(self.get_url_preguntas_encuesta(), query_string=parametros)
         preguntas = json.loads(response.get_data(as_text=True))["preguntas"]
         preguntas = [preguntas[0], preguntas[3], preguntas[6]]
 
@@ -644,7 +653,8 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
 
         client = self.loguear_usuario()
 
-        response = client.get(OBTENER_PREGUNTAS_ENCUESTA_SERVICE, query_string={"categorias": paso_actual})
+        parametros = {"categorias": json.dumps([paso_actual])}
+        response = client.get(self.get_url_preguntas_encuesta(), query_string=parametros)
         preguntas = json.loads(response.get_data(as_text=True))["preguntas"]
 
         encuesta = EncuestaAlumno.query.first()
@@ -698,7 +708,8 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
 
         client = self.loguear_usuario()
 
-        response = client.get(OBTENER_PREGUNTAS_ENCUESTA_SERVICE, query_string={"categorias": paso_actual})
+        parametros = {"categorias": json.dumps([paso_actual])}
+        response = client.get(self.get_url_preguntas_encuesta(), query_string=parametros)
         preguntas = json.loads(response.get_data(as_text=True))["preguntas"]
 
         encuesta = EncuestaAlumno.query.first()
@@ -751,7 +762,8 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
 
         client = self.loguear_usuario()
 
-        response = client.get(OBTENER_PREGUNTAS_ENCUESTA_SERVICE, query_string={"categorias": paso_actual})
+        parametros = {"categorias": json.dumps([paso_actual])}
+        response = client.get(self.get_url_preguntas_encuesta(), query_string=parametros)
         preguntas = json.loads(response.get_data(as_text=True))["preguntas"]
 
         encuesta = EncuestaAlumno.query.first()
@@ -806,7 +818,8 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
 
         client = self.loguear_usuario()
 
-        response = client.get(OBTENER_PREGUNTAS_ENCUESTA_SERVICE, query_string={"categorias": paso_actual})
+        parametros = {"categorias": json.dumps([paso_actual])}
+        response = client.get(self.get_url_preguntas_encuesta(), query_string=parametros)
         preguntas = json.loads(response.get_data(as_text=True))["preguntas"]
 
         encuesta = EncuestaAlumno.query.first()
@@ -860,7 +873,8 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
 
         client = self.loguear_usuario()
 
-        response = client.get(OBTENER_PREGUNTAS_ENCUESTA_SERVICE, query_string={"categorias": paso_actual})
+        parametros = {"categorias": json.dumps([paso_actual])}
+        response = client.get(self.get_url_preguntas_encuesta(), query_string=parametros)
         preguntas = json.loads(response.get_data(as_text=True))["preguntas"]
 
         encuesta = EncuestaAlumno.query.first()
@@ -904,7 +918,8 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
 
         client = self.loguear_usuario()
 
-        response = client.get(OBTENER_PREGUNTAS_ENCUESTA_SERVICE, query_string={"categorias": paso_actual})
+        parametros = {"categorias": json.dumps([paso_actual])}
+        response = client.get(self.get_url_preguntas_encuesta(), query_string=parametros)
         preguntas = json.loads(response.get_data(as_text=True))["preguntas"]
 
         encuesta = EncuestaAlumno.query.first()
@@ -941,7 +956,8 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
 
         client = self.loguear_usuario()
 
-        response = client.get(OBTENER_PREGUNTAS_ENCUESTA_SERVICE, query_string={"categorias": paso_actual})
+        parametros = {"categorias": json.dumps([paso_actual])}
+        response = client.get(self.get_url_preguntas_encuesta(), query_string=parametros)
         preguntas = json.loads(response.get_data(as_text=True))["preguntas"]
         preguntas = [preguntas[2]]
 
@@ -984,7 +1000,8 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
 
         client = self.loguear_usuario()
 
-        response = client.get(OBTENER_PREGUNTAS_ENCUESTA_SERVICE, query_string={"categorias": paso_actual})
+        parametros = {"categorias": json.dumps([paso_actual])}
+        response = client.get(self.get_url_preguntas_encuesta(), query_string=parametros)
         preguntas = json.loads(response.get_data(as_text=True))["preguntas"]
         preguntas = [preguntas[2]]
 
@@ -1007,7 +1024,8 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
 
         client = self.loguear_usuario()
 
-        response = client.get(OBTENER_PREGUNTAS_ENCUESTA_SERVICE, query_string={"categorias": paso_actual})
+        parametros = {"categorias": json.dumps([paso_actual])}
+        response = client.get(self.get_url_preguntas_encuesta(), query_string=parametros)
         preguntas = json.loads(response.get_data(as_text=True))["preguntas"]
         preguntas = [preguntas[2]]
 
@@ -1030,7 +1048,8 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
 
         client = self.loguear_usuario()
 
-        response = client.get(OBTENER_PREGUNTAS_ENCUESTA_SERVICE, query_string={"categorias": paso_actual})
+        parametros = {"categorias": json.dumps([paso_actual])}
+        response = client.get(self.get_url_preguntas_encuesta(), query_string=parametros)
         preguntas = json.loads(response.get_data(as_text=True))["preguntas"]
         preguntas = [preguntas[2]]
 
@@ -1073,7 +1092,8 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
 
         client = self.loguear_usuario()
 
-        response = client.get(OBTENER_PREGUNTAS_ENCUESTA_SERVICE, query_string={"categorias": paso_actual})
+        parametros = {"categorias": json.dumps([paso_actual])}
+        response = client.get(self.get_url_preguntas_encuesta(), query_string=parametros)
         preguntas = json.loads(response.get_data(as_text=True))["preguntas"]
         preguntas = [preguntas[2]]
 
@@ -1128,7 +1148,8 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
 
         client = self.loguear_usuario()
 
-        response = client.get(OBTENER_PREGUNTAS_ENCUESTA_SERVICE, query_string={"categorias": paso_actual})
+        parametros = {"categorias": json.dumps([paso_actual])}
+        response = client.get(self.get_url_preguntas_encuesta(), query_string=parametros)
         preguntas = json.loads(response.get_data(as_text=True))["preguntas"]
         preguntas = [preguntas[2]]
 
@@ -1151,7 +1172,8 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
 
         client = self.loguear_usuario()
 
-        response = client.get(OBTENER_PREGUNTAS_ENCUESTA_SERVICE, query_string={"categorias": paso_actual})
+        parametros = {"categorias": json.dumps([paso_actual])}
+        response = client.get(self.get_url_preguntas_encuesta(), query_string=parametros)
         preguntas = json.loads(response.get_data(as_text=True))["preguntas"]
         preguntas = [preguntas[2]]
 
@@ -1174,7 +1196,8 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
 
         client = self.loguear_usuario()
 
-        response = client.get(OBTENER_PREGUNTAS_ENCUESTA_SERVICE, query_string={"categorias": paso_actual})
+        parametros = {"categorias": json.dumps([paso_actual])}
+        response = client.get(self.get_url_preguntas_encuesta(), query_string=parametros)
         preguntas = json.loads(response.get_data(as_text=True))["preguntas"]
         preguntas = [preguntas[2]]
 
@@ -1205,7 +1228,8 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
 
         client = self.loguear_usuario()
 
-        response = client.get(OBTENER_PREGUNTAS_ENCUESTA_SERVICE, query_string={"categorias": paso_actual})
+        parametros = {"categorias": json.dumps([paso_actual])}
+        response = client.get(self.get_url_preguntas_encuesta(), query_string=parametros)
         preguntas = json.loads(response.get_data(as_text=True))["preguntas"]
         preguntas = [preguntas[2]]
 
@@ -1228,7 +1252,8 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
 
         client = self.loguear_usuario()
 
-        response = client.get(OBTENER_PREGUNTAS_ENCUESTA_SERVICE, query_string={"categorias": paso_actual})
+        parametros = {"categorias": json.dumps([paso_actual])}
+        response = client.get(self.get_url_preguntas_encuesta(), query_string=parametros)
         preguntas = json.loads(response.get_data(as_text=True))["preguntas"]
         preguntas = [preguntas[2]]
 
@@ -1251,7 +1276,8 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
 
         client = self.loguear_usuario()
 
-        response = client.get(OBTENER_PREGUNTAS_ENCUESTA_SERVICE, query_string={"categorias": paso_actual})
+        parametros = {"categorias": json.dumps([paso_actual])}
+        response = client.get(self.get_url_preguntas_encuesta(), query_string=parametros)
         preguntas = json.loads(response.get_data(as_text=True))["preguntas"]
         preguntas = [preguntas[2]]
 
@@ -1274,7 +1300,8 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
 
         client = self.loguear_usuario()
 
-        response = client.get(OBTENER_PREGUNTAS_ENCUESTA_SERVICE, query_string={"categorias": paso_actual})
+        parametros = {"categorias": json.dumps([paso_actual])}
+        response = client.get(self.get_url_preguntas_encuesta(), query_string=parametros)
         preguntas = json.loads(response.get_data(as_text=True))["preguntas"]
         preguntas = [preguntas[7]]
 
@@ -1317,7 +1344,8 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
 
         client = self.loguear_usuario()
 
-        response = client.get(OBTENER_PREGUNTAS_ENCUESTA_SERVICE, query_string={"categorias": paso_actual})
+        parametros = {"categorias": json.dumps([paso_actual])}
+        response = client.get(self.get_url_preguntas_encuesta(), query_string=parametros)
         preguntas = json.loads(response.get_data(as_text=True))["preguntas"]
         preguntas = [preguntas[7]]
 
@@ -1360,7 +1388,8 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
 
         client = self.loguear_usuario()
 
-        response = client.get(OBTENER_PREGUNTAS_ENCUESTA_SERVICE, query_string={"categorias": paso_actual})
+        parametros = {"categorias": json.dumps([paso_actual])}
+        response = client.get(self.get_url_preguntas_encuesta(), query_string=parametros)
         preguntas = json.loads(response.get_data(as_text=True))["preguntas"]
         preguntas = [preguntas[7]]
 
@@ -1384,7 +1413,8 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
 
         client = self.loguear_usuario()
 
-        response = client.get(OBTENER_PREGUNTAS_ENCUESTA_SERVICE, query_string={"categorias": paso_actual})
+        parametros = {"categorias": json.dumps([paso_actual])}
+        response = client.get(self.get_url_preguntas_encuesta(), query_string=parametros)
         preguntas = json.loads(response.get_data(as_text=True))["preguntas"]
         preguntas = [preguntas[7]]
 
@@ -1408,7 +1438,8 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
 
         client = self.loguear_usuario()
 
-        response = client.get(OBTENER_PREGUNTAS_ENCUESTA_SERVICE, query_string={"categorias": paso_actual})
+        parametros = {"categorias": json.dumps([paso_actual])}
+        response = client.get(self.get_url_preguntas_encuesta(), query_string=parametros)
         preguntas = json.loads(response.get_data(as_text=True))["preguntas"]
         preguntas = [preguntas[7]]
 
@@ -1432,7 +1463,8 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
 
         client = self.loguear_usuario()
 
-        response = client.get(OBTENER_PREGUNTAS_ENCUESTA_SERVICE, query_string={"categorias": paso_actual})
+        parametros = {"categorias": json.dumps([paso_actual])}
+        response = client.get(self.get_url_preguntas_encuesta(), query_string=parametros)
         preguntas = json.loads(response.get_data(as_text=True))["preguntas"]
         preguntas = [preguntas[7]]
 
@@ -1456,7 +1488,8 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
 
         client = self.loguear_usuario()
 
-        response = client.get(OBTENER_PREGUNTAS_ENCUESTA_SERVICE, query_string={"categorias": paso_actual})
+        parametros = {"categorias": json.dumps([paso_actual])}
+        response = client.get(self.get_url_preguntas_encuesta(), query_string=parametros)
         preguntas = json.loads(response.get_data(as_text=True))["preguntas"]
         preguntas = [preguntas[7]]
 
@@ -1480,7 +1513,8 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
 
         client = self.loguear_usuario()
 
-        response = client.get(OBTENER_PREGUNTAS_ENCUESTA_SERVICE, query_string={"categorias": paso_actual})
+        parametros = {"categorias": json.dumps([paso_actual])}
+        response = client.get(self.get_url_preguntas_encuesta(), query_string=parametros)
         preguntas = json.loads(response.get_data(as_text=True))["preguntas"]
         preguntas = [preguntas[11]]
 
@@ -1533,7 +1567,8 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
 
         client = self.loguear_usuario()
 
-        response = client.get(OBTENER_PREGUNTAS_ENCUESTA_SERVICE, query_string={"categorias": paso_actual})
+        parametros = {"categorias": json.dumps([paso_actual])}
+        response = client.get(self.get_url_preguntas_encuesta(), query_string=parametros)
         preguntas = json.loads(response.get_data(as_text=True))["preguntas"]
         preguntas = [preguntas[3]]
 
@@ -1587,7 +1622,8 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
 
         client = self.loguear_usuario()
 
-        response = client.get(OBTENER_PREGUNTAS_ENCUESTA_SERVICE, query_string={"categorias": paso_actual})
+        parametros = {"categorias": json.dumps([paso_actual])}
+        response = client.get(self.get_url_preguntas_encuesta(), query_string=parametros)
         preguntas = json.loads(response.get_data(as_text=True))["preguntas"]
         preguntas = [preguntas[11]]
 
@@ -1634,7 +1670,8 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
 
         client = self.loguear_usuario()
 
-        response = client.get(OBTENER_PREGUNTAS_ENCUESTA_SERVICE, query_string={"categorias": paso_actual})
+        parametros = {"categorias": json.dumps([paso_actual])}
+        response = client.get(self.get_url_preguntas_encuesta(), query_string=parametros)
         preguntas = json.loads(response.get_data(as_text=True))["preguntas"]
         preguntas = [preguntas[3]]
 
@@ -1681,7 +1718,8 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
 
         client = self.loguear_usuario()
 
-        response = client.get(OBTENER_PREGUNTAS_ENCUESTA_SERVICE, query_string={"categorias": paso_actual})
+        parametros = {"categorias": json.dumps([paso_actual])}
+        response = client.get(self.get_url_preguntas_encuesta(), query_string=parametros)
         preguntas = json.loads(response.get_data(as_text=True))["preguntas"]
         preguntas = [preguntas[11]]
 
@@ -1729,7 +1767,8 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
 
         client = self.loguear_usuario()
 
-        response = client.get(OBTENER_PREGUNTAS_ENCUESTA_SERVICE, query_string={"categorias": paso_actual})
+        parametros = {"categorias": json.dumps([paso_actual])}
+        response = client.get(self.get_url_preguntas_encuesta(), query_string=parametros)
         preguntas = json.loads(response.get_data(as_text=True))["preguntas"]
         preguntas = [preguntas[3]]
 
@@ -1777,7 +1816,8 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
 
         client = self.loguear_usuario()
 
-        response = client.get(OBTENER_PREGUNTAS_ENCUESTA_SERVICE, query_string={"categorias": paso_actual})
+        parametros = {"categorias": json.dumps([paso_actual])}
+        response = client.get(self.get_url_preguntas_encuesta(), query_string=parametros)
         preguntas = json.loads(response.get_data(as_text=True))["preguntas"]
         preguntas = [preguntas[3]]
 
@@ -1817,7 +1857,8 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
 
         client = self.loguear_usuario()
 
-        response = client.get(OBTENER_PREGUNTAS_ENCUESTA_SERVICE, query_string={"categorias": paso_actual})
+        parametros = {"categorias": json.dumps([paso_actual])}
+        response = client.get(self.get_url_preguntas_encuesta(), query_string=parametros)
         preguntas = json.loads(response.get_data(as_text=True))["preguntas"]
         preguntas = [preguntas[11]]
 
@@ -1857,7 +1898,8 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
 
         client = self.loguear_usuario()
 
-        response = client.get(OBTENER_PREGUNTAS_ENCUESTA_SERVICE, query_string={"categorias": paso_actual})
+        parametros = {"categorias": json.dumps([paso_actual])}
+        response = client.get(self.get_url_preguntas_encuesta(), query_string=parametros)
         preguntas = json.loads(response.get_data(as_text=True))["preguntas"]
         preguntas = [preguntas[11]]
 
@@ -1928,7 +1970,8 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
 
         client = self.loguear_usuario()
 
-        response = client.get(OBTENER_PREGUNTAS_ENCUESTA_SERVICE, query_string={"categorias": paso_actual})
+        parametros = {"categorias": json.dumps([paso_actual])}
+        response = client.get(self.get_url_preguntas_encuesta(), query_string=parametros)
         preguntas = json.loads(response.get_data(as_text=True))["preguntas"]
 
         encuesta = EncuestaAlumno.query.first()
@@ -1974,7 +2017,8 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
 
         client = self.loguear_usuario()
 
-        response = client.get(OBTENER_PREGUNTAS_ENCUESTA_SERVICE, query_string={"categorias": paso_actual})
+        parametros = {"categorias": json.dumps([paso_actual])}
+        response = client.get(self.get_url_preguntas_encuesta(), query_string=parametros)
         preguntas = json.loads(response.get_data(as_text=True))["preguntas"]
 
         encuesta = EncuestaAlumno.query.first()
@@ -2020,7 +2064,8 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
 
         client = self.loguear_usuario()
 
-        response = client.get(OBTENER_PREGUNTAS_ENCUESTA_SERVICE, query_string={"categorias": paso_actual})
+        parametros = {"categorias": json.dumps([paso_actual])}
+        response = client.get(self.get_url_preguntas_encuesta(), query_string=parametros)
         preguntas = json.loads(response.get_data(as_text=True))["preguntas"]
         preguntas = [preguntas[0]]
 
@@ -2063,7 +2108,8 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
 
         client = self.loguear_usuario()
 
-        response = client.get(OBTENER_PREGUNTAS_ENCUESTA_SERVICE, query_string={"categorias": paso_actual})
+        parametros = {"categorias": json.dumps([paso_actual])}
+        response = client.get(self.get_url_preguntas_encuesta(), query_string=parametros)
         preguntas = json.loads(response.get_data(as_text=True))["preguntas"]
         preguntas = [preguntas[0]]
 
@@ -2118,7 +2164,8 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
 
         client = self.loguear_usuario()
 
-        response = client.get(OBTENER_PREGUNTAS_ENCUESTA_SERVICE, query_string={"categorias": paso_actual})
+        parametros = {"categorias": json.dumps([paso_actual])}
+        response = client.get(self.get_url_preguntas_encuesta(), query_string=parametros)
         preguntas = json.loads(response.get_data(as_text=True))["preguntas"]
         preguntas = [preguntas[0]]
 
@@ -2141,7 +2188,8 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
 
         client = self.loguear_usuario()
 
-        response = client.get(OBTENER_PREGUNTAS_ENCUESTA_SERVICE, query_string={"categorias": paso_actual})
+        parametros = {"categorias": json.dumps([paso_actual])}
+        response = client.get(self.get_url_preguntas_encuesta(), query_string=parametros)
         preguntas = json.loads(response.get_data(as_text=True))["preguntas"]
         preguntas = [preguntas[0]]
 
@@ -2164,7 +2212,8 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
 
         client = self.loguear_usuario()
 
-        response = client.get(OBTENER_PREGUNTAS_ENCUESTA_SERVICE, query_string={"categorias": paso_actual})
+        parametros = {"categorias": json.dumps([paso_actual])}
+        response = client.get(self.get_url_preguntas_encuesta(), query_string=parametros)
         preguntas = json.loads(response.get_data(as_text=True))["preguntas"]
         preguntas = [preguntas[0]]
 
@@ -2187,7 +2236,8 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
 
         client = self.loguear_usuario()
 
-        response = client.get(OBTENER_PREGUNTAS_ENCUESTA_SERVICE, query_string={"categorias": paso_actual})
+        parametros = {"categorias": json.dumps([paso_actual])}
+        response = client.get(self.get_url_preguntas_encuesta(), query_string=parametros)
         preguntas = json.loads(response.get_data(as_text=True))["preguntas"]
         preguntas = [preguntas[0]]
 
@@ -2210,7 +2260,8 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
 
         client = self.loguear_usuario()
 
-        response = client.get(OBTENER_PREGUNTAS_ENCUESTA_SERVICE, query_string={"categorias": paso_actual})
+        parametros = {"categorias": json.dumps([paso_actual])}
+        response = client.get(self.get_url_preguntas_encuesta(), query_string=parametros)
         preguntas = json.loads(response.get_data(as_text=True))["preguntas"]
         preguntas = [preguntas[0]]
 
@@ -2233,7 +2284,8 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
 
         client = self.loguear_usuario()
 
-        response = client.get(OBTENER_PREGUNTAS_ENCUESTA_SERVICE, query_string={"categorias": paso_actual})
+        parametros = {"categorias": json.dumps([paso_actual])}
+        response = client.get(self.get_url_preguntas_encuesta(), query_string=parametros)
         preguntas = json.loads(response.get_data(as_text=True))["preguntas"]
         preguntas = [preguntas[6]]
 
@@ -2303,7 +2355,8 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
 
         client = self.loguear_usuario()
 
-        response = client.get(OBTENER_PREGUNTAS_ENCUESTA_SERVICE, query_string={"categorias": paso_actual})
+        parametros = {"categorias": json.dumps([paso_actual])}
+        response = client.get(self.get_url_preguntas_encuesta(), query_string=parametros)
         preguntas = json.loads(response.get_data(as_text=True))["preguntas"]
         preguntas = [preguntas[6]]
 
@@ -2331,7 +2384,8 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
 
         client = self.loguear_usuario()
 
-        response = client.get(OBTENER_PREGUNTAS_ENCUESTA_SERVICE, query_string={"categorias": paso_actual})
+        parametros = {"categorias": json.dumps([paso_actual])}
+        response = client.get(self.get_url_preguntas_encuesta(), query_string=parametros)
         preguntas = json.loads(response.get_data(as_text=True))["preguntas"]
         preguntas = [preguntas[6]]
 
@@ -2359,7 +2413,8 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
 
         client = self.loguear_usuario()
 
-        response = client.get(OBTENER_PREGUNTAS_ENCUESTA_SERVICE, query_string={"categorias": paso_actual})
+        parametros = {"categorias": json.dumps([paso_actual])}
+        response = client.get(self.get_url_preguntas_encuesta(), query_string=parametros)
         preguntas = json.loads(response.get_data(as_text=True))["preguntas"]
         preguntas = [preguntas[6]]
 

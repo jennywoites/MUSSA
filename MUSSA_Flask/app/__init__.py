@@ -136,14 +136,8 @@ def add_resources_api_rest(api):
                 modulo = importlib.import_module(paquete)
                 api.add_resource(modulo.CLASE, *modulo.URLS_SERVICIOS)
 
-    add_resources_publicos(api)
     add_resources_usuarios(api)
     add_resources_administrador(api)
-
-
-def add_resources_publicos(api):
-    from app.API_Rest.Services.ObtenerPreguntasEncuestaService import ObtenerPreguntasEncuesta
-    api.add_resource(ObtenerPreguntasEncuesta, '/api/ObtenerPreguntasEncuesta')
 
 
 def add_resources_usuarios(api):

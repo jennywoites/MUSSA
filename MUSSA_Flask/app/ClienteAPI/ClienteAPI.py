@@ -91,6 +91,10 @@ class ClienteAPI:
         """URL: '/api/curso/all'"""
         return self.BASE_URL + '/curso/all'
 
+    def get_url_preguntas_encuesta(self):
+        """URL: '/api/encuesta/preguntas'"""
+        return self.BASE_URL + '/encuesta/preguntas'
+
     ################################################
     ##              Servicios DOCENTE             ##
     ################################################
@@ -161,12 +165,14 @@ class ClienteAPI:
         url_servicio = self.get_url_get_materias()
 
         parametros = {}
-        if codigo_materia: parametros["codigo_materia"] = codigo_materia
-        if nombre: parametros["nombre"] = nombre
-        if ids_carreras: parametros["ids_carreras"] = json.dumps(ids_carreras)
+        if codigo_materia:
+            parametros["codigo_materia"] = codigo_materia
+        if nombre:
+            parametros["nombre"] = nombre
+        if ids_carreras:
+            parametros["ids_carreras"] = json.dumps(ids_carreras)
 
         return self.invocar_get(url_servicio, cookie, parametros)["materias"]
-
 
     ################################################
     ##              Servicios CURSO               ##
@@ -184,13 +190,31 @@ class ClienteAPI:
         url_servicio = self.get_url_all_cursos()
 
         parametros = {}
-        if nombre_curso: parametros["nombre_curso"] = nombre_curso
-        if codigo_materia: parametros["codigo_materia"] = codigo_materia
-        if id_carrera: parametros["id_carrera"] = id_carrera
-        if filtrar_cursos: parametros["filtrar_cursos"] = filtrar_cursos
+        if nombre_curso:
+            parametros["nombre_curso"] = nombre_curso
+        if codigo_materia:
+            parametros["codigo_materia"] = codigo_materia
+        if id_carrera:
+            parametros["id_carrera"] = id_carrera
+        if filtrar_cursos:
+            parametros["filtrar_cursos"] = filtrar_cursos
 
         response = self.invocar_get(url_servicio, cookie, parametros)
         return response["cursos"]
 
     def obtener_todos_los_cursos_existentes(self, cookie, nombre_curso='', codigo_materia='', id_carrera=''):
         return self.obtener_cursos_con_filtros(cookie, nombre_curso, codigo_materia, id_carrera, filtrar_cursos=False)
+
+    ################################################
+    ##            Servicios ENCUESTA              ##
+    ################################################
+
+    def obtener_preguntas_encuesta(self, cookie, l_categorias=[]):
+        url_servicio = self.get_url_preguntas_encuesta()
+
+        parametros = {}
+        if l_categorias:
+            parametros["categorias"] = json.dumps(l_categorias)
+
+        response = self.invocar_get(url_servicio, cookie, parametros)
+        return response["preguntas"]
