@@ -19,6 +19,8 @@ from tests.TestAPIServicios.TestMateriaServices.TestObtenerMateriasCorrelativas 
 
 from tests.TestAPIServicios.TestTematicaServices.TestObtenerTematicasMaterias import TestObtenerTematicasMaterias
 
+from tests.TestAPIServicios.TestEncuestaServices.TestObtenerPreguntasEncuesta import TestObtenerPreguntasEncuesta
+
 #################################################
 from tests.TestAPIServicios.TestAgregarMateriaAlumno import TestAgregarMateriaAlumno
 from tests.TestAPIServicios.TestGuardarRespuestasEncuestaAlumno import TestGuardarRespuestasEncuestaAlumno
@@ -27,7 +29,6 @@ from tests.TestAPIServicios.TestModificarPadronAlumno import TestModificarPadron
 from tests.TestAPIServicios.TestObtenerEncuestasAlumno import TestObtenerEncuestasAlumno
 from tests.TestAPIServicios.TestObtenerMateriasAlumno import TestObtenerMateriasAlumno
 from tests.TestAPIServicios.TestObtenerPadronAlumno import TestObtenerPadronAlumno
-from tests.TestAPIServicios.TestObtenerPreguntasEncuesta import TestObtenerPreguntasEncuesta
 from tests.TestAPIServicios.TestObtenerRespuestasEncuestaAlumnoParaPreguntasEspecificas import TestObtenerRespuestasEncuestaAlumnoParaPreguntasEspecificas
 
 # Ejecutar todos los tests
