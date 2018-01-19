@@ -10,8 +10,8 @@ from app import db
 
 import logging
 
+
 class ObtenerCarrerasAlumno(Resource):
-    
     @login_required
     def get(self):
         args = request.args
@@ -33,7 +33,7 @@ class ObtenerCarrerasAlumno(Resource):
 
         carreras_result = []
         for carrera_alumno in carreras:
-            carrera = Carrera.query.filter_by(id=carrera_alumno.carrera_id).first()
+            carrera = Carrera.query.get(carrera_alumno.carrera_id)
             carreras_result.append({
                 'id': carrera.id,
                 'codigo': carrera.codigo,

@@ -92,19 +92,6 @@ def invocar_agregar_materia_alumno(csrf_token, cookie, parametros):
     return json.loads(agregar_materia_alumno_response.text)
 
 
-def invocar_servicio_obtener_preguntas_encuesta(cookie, categorias):
-    parametros = {}
-    l_categorias = ""
-    for categoria in categorias:
-        l_categorias += str(categoria) + ";"
-    parametros["categorias"] = l_categorias[:-1]
-
-    preguntas_response = requests.get(OBTENER_PREGUNTAS_ENCUESTA_SERVICE, params=parametros, cookies=cookie)
-    escribir_resultado_servicio('Obtener preguntas encuesta', preguntas_response)
-
-    return json.loads(preguntas_response.text)["preguntas"]
-
-
 def invocar_obtener_encuestas_alumno(cookie, finalizadas):
     parametros = {}
     parametros["finalizadas"] = finalizadas

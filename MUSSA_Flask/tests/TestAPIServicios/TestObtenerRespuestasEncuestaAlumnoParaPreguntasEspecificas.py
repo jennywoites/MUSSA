@@ -383,7 +383,7 @@ class TestObtenerRespuestasEncuestaAlumnoParaPreguntasEspecificas(TestBase):
 
         encuesta = EncuestaAlumno.query.first()
 
-        response = client.get(OBTENER_PREGUNTAS_ENCUESTA_SERVICE)
+        response = client.get(self.get_url_preguntas_encuesta())
         preguntas = json.loads(response.get_data(as_text=True))["preguntas"]
 
         self.crear_respuestas_alumno(encuesta, preguntas)
@@ -401,7 +401,7 @@ class TestObtenerRespuestasEncuestaAlumnoParaPreguntasEspecificas(TestBase):
 
         encuesta = EncuestaAlumno.query.first()
 
-        response = client.get(OBTENER_PREGUNTAS_ENCUESTA_SERVICE)
+        response = client.get(self.get_url_preguntas_encuesta())
         preguntas = json.loads(response.get_data(as_text=True))["preguntas"]
 
         self.crear_respuestas_alumno(encuesta, preguntas)
@@ -440,7 +440,7 @@ class TestObtenerRespuestasEncuestaAlumnoParaPreguntasEspecificas(TestBase):
 
         encuesta = EncuestaAlumno.query.first()
 
-        response = client.get(OBTENER_PREGUNTAS_ENCUESTA_SERVICE)
+        response = client.get(self.get_url_preguntas_encuesta())
         preguntas = json.loads(response.get_data(as_text=True))["preguntas"]
 
         self.crear_respuestas_alumno(encuesta, preguntas)

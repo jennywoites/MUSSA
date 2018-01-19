@@ -10,6 +10,7 @@ from app.DAO.MateriasDAO import *
 from app.models.respuestas_encuesta_models import EncuestaAlumno
 from app.models.alumno_models import Alumno, MateriasAlumno
 from app.models.carreras_models import Carrera, Materia, TipoMateria
+from app.models.horarios_models import Curso
 import json
 from datetime import datetime
 
@@ -74,6 +75,25 @@ class TestObtenerEncuestasAlumno(TestBase):
         "forma_aprobacion_materia": "Examen"
     }
 
+    FECHA = datetime.now()
+    HORARIO_1 = {
+        "id": 1,
+        "dia": "Lunes",
+        "hora_desde": "7.5",
+        "hora_hasta": "11",
+        "hora_desde_reloj": "07:30",
+        "hora_hasta_reloj": "11:00"
+    }
+    CURSO = {
+        "codigo_materia": "1572",
+        "codigo": "1572-CursoA",
+        "se_dicta_primer_cuatrimestre": True,
+        "se_dicta_segundo_cuatrimestre": True,
+        "cantidad_encuestas_completas": 0,
+        "puntaje_total_encuestas": 0,
+        "fecha_actualizacion": FECHA
+    }
+
     ENCUESTA = {
         "alumno_id": 1,
         "materia_alumno_id": MATERIA_FINAL_DESAPROBADA["id"],
@@ -126,13 +146,30 @@ class TestObtenerEncuestasAlumno(TestBase):
         db.session.add(materia)
         db.session.commit()
 
-        self.agregar_materia_alumno(alumno, materia_dict, materia, carrera, estado)
-        self.agregar_materia_alumno(admin, materia_dict, materia, carrera, estado)
+        curso = self.agregar_curso(self.CURSO)
 
-    def agregar_materia_alumno(self, alumno, materia_dict, materia, carrera, estado):
+        self.agregar_materia_alumno(alumno, materia_dict, materia, curso, carrera, estado)
+        self.agregar_materia_alumno(admin, materia_dict, materia, curso, carrera, estado)
+
+    def agregar_curso(self, datos):
+        curso = Curso(
+            codigo_materia=datos["codigo_materia"],
+            codigo=datos["codigo"],
+            se_dicta_primer_cuatrimestre=datos["se_dicta_primer_cuatrimestre"],
+            se_dicta_segundo_cuatrimestre=datos["se_dicta_segundo_cuatrimestre"],
+            cantidad_encuestas_completas=datos["cantidad_encuestas_completas"],
+            puntaje_total_encuestas=datos["puntaje_total_encuestas"],
+            fecha_actualizacion=datos["fecha_actualizacion"],
+        )
+        db.session.add(curso)
+        db.session.commit()
+        return curso
+
+    def agregar_materia_alumno(self, alumno, materia_dict, materia, curso, carrera, estado):
         materia_alumno = MateriasAlumno(
             alumno_id=alumno.id,
             materia_id=materia.id,
+            curso_id=curso.id,
             carrera_id=carrera.id,
             estado_id=estado.id,
         )

@@ -79,4 +79,4 @@ class ObtenerEncuestasAlumno(Resource):
         if not id_encuesta:
             return True
 
-        return (id_encuesta.isdigit() and EncuestaAlumno.query.filter_by(id=id_encuesta).first())
+        return (id_encuesta.isdigit() and EncuestaAlumno.query.get(id_encuesta))

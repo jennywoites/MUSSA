@@ -10,8 +10,8 @@ from app import db
 
 import logging
 
+
 class EliminarCarreraAlumno(Resource):
-    
     @login_required
     def post(self):
         args = request.form
@@ -28,7 +28,8 @@ class EliminarCarreraAlumno(Resource):
 
         if self.carrera_no_fue_agregada(alumno.id, q_id_carrera):
             logging.error('El alumno no tiene esta carrera agregada')
-            return {'Error': 'No es posible eliminar la carrera ya que no pertenece al alumno.'}, CLIENT_ERROR_BAD_REQUEST
+            return {
+                       'Error': 'No es posible eliminar la carrera ya que no pertenece al alumno.'}, CLIENT_ERROR_BAD_REQUEST
 
         AlumnosCarreras.query.filter_by(alumno_id=alumno.id).filter_by(carrera_id=q_id_carrera).delete()
         db.session.commit()
@@ -40,17 +41,14 @@ class EliminarCarreraAlumno(Resource):
 
         return result
 
-
     def es_valido(self, id_carrera):
-        return len(Carrera.query.filter_by(id=id_carrera).all()) == 1
-
+        return Carrera.query.get(id_carrera)
 
     def carrera_no_fue_agregada(self, id_alumno, id_carrera):
         query = AlumnosCarreras.query.filter_by(alumno_id=id_alumno).filter_by(carrera_id=id_carrera)
         return len(query.all()) == 0
 
-
     def eliminar_materias_carrera(self, id_alumno, id_carrera):
-        query = MateriasAlumno.query.filter_by(alumno_id=id_alumno).filter_by(carrera_id = id_carrera)
+        query = MateriasAlumno.query.filter_by(alumno_id=id_alumno).filter_by(carrera_id=id_carrera)
         query.delete()
         db.session.commit()

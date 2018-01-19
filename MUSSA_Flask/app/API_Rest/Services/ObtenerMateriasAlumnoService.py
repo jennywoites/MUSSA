@@ -44,9 +44,9 @@ class ObtenerMateriasAlumno(Resource):
 
         materias_result = []
         for materia_alumno in materias:
-            materia_carrera = Materia.query.filter_by(id=materia_alumno.materia_id).first()
-            carrera = Carrera.query.filter_by(id=materia_alumno.carrera_id).first()
-            estado = EstadoMateria.query.filter_by(id=materia_alumno.estado_id).first().estado
+            materia_carrera = Materia.query.get(materia_alumno.materia_id)
+            carrera = Carrera.query.get(materia_alumno.carrera_id)
+            estado = EstadoMateria.query.get(materia_alumno.estado_id).estado
 
             calificacion = materia_alumno.calificacion if materia_alumno.calificacion else "-"
 
@@ -70,10 +70,10 @@ class ObtenerMateriasAlumno(Resource):
 
             curso = "Sin designar"
             if materia_alumno.curso_id:
-                curso_elegido = Curso.query.filter_by(id=materia_alumno.curso_id).first()
+                curso_elegido = Curso.query.get(materia_alumno.curso_id)
                 docentes = ""
                 for curso_docente in CursosDocente.query.filter_by(curso_id=curso_elegido.id).all():
-                    docente = Docente.query.filter_by(id=curso_docente.docente_id).first()
+                    docente = Docente.query.get(curso_docente.docente_id)
                     docentes += docente.obtener_nombre_completo() + "-"
                 curso = "{}: {}".format(curso_elegido.codigo, docentes[:-1])
 

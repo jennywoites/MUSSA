@@ -44,7 +44,7 @@ def obtener_carreras_response(curso, idCarrera=None):
         query = query.filter_by(carrera_id=idCarrera)
 
     for carrera in query.all():
-        carrera_db = Carrera.query.filter_by(id=carrera.carrera_id).first()
+        carrera_db = Carrera.query.get(carrera.carrera_id)
         carreras_response.append(generarJSON_carrera(carrera_db))
 
     return carreras_response

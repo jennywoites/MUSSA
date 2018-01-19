@@ -42,7 +42,7 @@ class ModificarCurso(Resource):
             logging.error('El servicio Modificar Curso recibió uno o más argumentos inválidos')
             return {'Error': 'Uno o más argumentos no son válidos'}, CLIENT_ERROR_BAD_REQUEST
 
-        curso = Curso.query.filter_by(id=q_id_curso).first()
+        curso = Curso.query.get(q_id_curso)
 
         self.eliminar_horarios_viejos(q_id_curso)
         self.eliminar_carreras_asociadas_viejas(q_id_curso)
@@ -156,7 +156,7 @@ class ModificarCurso(Resource):
         if not es_un_id:
             return False
 
-        return (len(Curso.query.filter_by(id=id_curso).all()) == 1)
+        return Curso.query.get(id_curso)
 
     def argumentos_son_validos(self, carreras, docentes, horarios):
         return (self.carreras_son_validas(carreras) and
@@ -166,16 +166,14 @@ class ModificarCurso(Resource):
     def carreras_son_validas(self, carreras):
         carreras = carreras.split(";")
         for carrera in carreras:
-            if (not self.esta_formado_solo_por_numeros(carrera) or
-                    not len((Carrera.query.filter_by(id=carrera).all())) > 0):
+            if not self.esta_formado_solo_por_numeros(carrera) or not Carrera.query.get(carrera):
                 return False
         return True
 
     def docentes_son_validos(self, docentes):
         ids_docentes = docentes.split(";")
         for id_docente in ids_docentes:
-            if (not id_docente.isdigit() or
-                    not Docente.query.filter_by(id=id_docente).first()):
+            if not id_docente.isdigit() or not Docente.query.get(id_docente):
                 return False
 
         return True

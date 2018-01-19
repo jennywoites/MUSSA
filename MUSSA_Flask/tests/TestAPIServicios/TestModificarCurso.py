@@ -226,7 +226,7 @@ class TestModificarCurso(TestBase):
 
     def se_encuentra_el_horario(self, horario, l_horarios):
         for h_por_curso in l_horarios:
-            l_horario = Horario.query.filter_by(id=h_por_curso.horario_id).first()
+            l_horario = Horario.query.get(h_por_curso.horario_id)
             if (horario["dia"].upper() == l_horario.dia and
                         horario["hora_desde"] == l_horario.hora_desde and
                         horario["hora_hasta"] == l_horario.hora_hasta):
@@ -263,9 +263,7 @@ class TestModificarCurso(TestBase):
         response = client.get(MODIFICAR_CURSO_SERVICE, query_string=parametros)
         assert (response.status_code == SUCCESS_OK)
 
-        curso = Curso.query.filter_by(id=self.CURSO["id"]).first()
-
-        assert (curso.id == self.CURSO["id"])
+        curso = Curso.query.get(self.CURSO["id"])
 
         carreras = CarreraPorCurso.query.filter_by(curso_id=self.CURSO["id"]).all()
         assert (len(carreras) == 1)
@@ -366,9 +364,7 @@ class TestModificarCurso(TestBase):
         response = client.get(MODIFICAR_CURSO_SERVICE, query_string=parametros)
         assert (response.status_code == SUCCESS_OK)
 
-        curso = Curso.query.filter_by(id=self.CURSO["id"]).first()
-
-        assert (curso.id == self.CURSO["id"])
+        curso = Curso.query.get(self.CURSO["id"])
 
         carreras = CarreraPorCurso.query.filter_by(curso_id=self.CURSO["id"]).all()
         assert (len(carreras) == 2)
@@ -401,9 +397,7 @@ class TestModificarCurso(TestBase):
         response = client.get(MODIFICAR_CURSO_SERVICE, query_string=parametros)
         assert (response.status_code == SUCCESS_OK)
 
-        curso = Curso.query.filter_by(id=self.CURSO["id"]).first()
-
-        assert (curso.id == self.CURSO["id"])
+        curso = Curso.query.get(self.CURSO["id"])
 
         carreras = CarreraPorCurso.query.filter_by(curso_id=self.CURSO["id"]).all()
         assert (len(carreras) == 2)
@@ -436,9 +430,7 @@ class TestModificarCurso(TestBase):
         response = client.get(MODIFICAR_CURSO_SERVICE, query_string=parametros)
         assert (response.status_code == SUCCESS_OK)
 
-        curso = Curso.query.filter_by(id=self.CURSO["id"]).first()
-
-        assert (curso.id == self.CURSO["id"])
+        curso = Curso.query.get(self.CURSO["id"])
 
         carreras = CarreraPorCurso.query.filter_by(curso_id=self.CURSO["id"]).all()
         assert (len(carreras) == 2)
@@ -467,13 +459,10 @@ class TestModificarCurso(TestBase):
         parametros["horarios"] = self.obtener_horarios_formateados(self.CURSO["horarios"])
 
         client = self.loguear_administrador()
-        # response = client.post(MODIFICAR_CURSO_SERVICE, data=parametros)
         response = client.get(MODIFICAR_CURSO_SERVICE, query_string=parametros)
         assert (response.status_code == SUCCESS_OK)
 
-        curso = Curso.query.filter_by(id=self.CURSO["id"]).first()
-
-        assert (curso.id == self.CURSO["id"])
+        curso = Curso.query.get(self.CURSO["id"])
 
         carreras = CarreraPorCurso.query.filter_by(curso_id=self.CURSO["id"]).all()
         assert (len(carreras) == 2)
@@ -506,9 +495,7 @@ class TestModificarCurso(TestBase):
         response = client.get(MODIFICAR_CURSO_SERVICE, query_string=parametros)
         assert (response.status_code == SUCCESS_OK)
 
-        curso = Curso.query.filter_by(id=self.CURSO["id"]).first()
-
-        assert (curso.id == self.CURSO["id"])
+        curso = Curso.query.get(self.CURSO["id"])
 
         carreras = CarreraPorCurso.query.filter_by(curso_id=self.CURSO["id"]).all()
         assert (len(carreras) == 2)
@@ -595,9 +582,7 @@ class TestModificarCurso(TestBase):
         response = client.get(MODIFICAR_CURSO_SERVICE, query_string=parametros)
         assert (response.status_code == SUCCESS_OK)
 
-        curso = Curso.query.filter_by(id=self.CURSO["id"]).first()
-
-        assert (curso.id == self.CURSO["id"])
+        curso = Curso.query.get(self.CURSO["id"])
 
         carreras = CarreraPorCurso.query.filter_by(curso_id=self.CURSO["id"]).all()
         assert (len(carreras) == 2)
@@ -630,9 +615,7 @@ class TestModificarCurso(TestBase):
         response = client.get(MODIFICAR_CURSO_SERVICE, query_string=parametros)
         assert (response.status_code == SUCCESS_OK)
 
-        curso = Curso.query.filter_by(id=self.CURSO["id"]).first()
-
-        assert (curso.id == self.CURSO["id"])
+        curso = Curso.query.get(self.CURSO["id"])
 
         carreras = CarreraPorCurso.query.filter_by(curso_id=self.CURSO["id"]).all()
         assert (len(carreras) == 2)
@@ -665,9 +648,7 @@ class TestModificarCurso(TestBase):
         response = client.get(MODIFICAR_CURSO_SERVICE, query_string=parametros)
         assert (response.status_code == SUCCESS_OK)
 
-        curso = Curso.query.filter_by(id=self.CURSO["id"]).first()
-
-        assert (curso.id == self.CURSO["id"])
+        curso = Curso.query.get(self.CURSO["id"])
 
         carreras = CarreraPorCurso.query.filter_by(curso_id=self.CURSO["id"]).all()
         assert (len(carreras) == 2)
@@ -700,9 +681,7 @@ class TestModificarCurso(TestBase):
         response = client.get(MODIFICAR_CURSO_SERVICE, query_string=parametros)
         assert (response.status_code == SUCCESS_OK)
 
-        curso = Curso.query.filter_by(id=self.CURSO["id"]).first()
-
-        assert (curso.id == self.CURSO["id"])
+        curso = Curso.query.get(self.CURSO["id"])
 
         carreras = CarreraPorCurso.query.filter_by(curso_id=self.CURSO["id"]).all()
         assert (len(carreras) == 2)
@@ -735,9 +714,7 @@ class TestModificarCurso(TestBase):
         response = client.get(MODIFICAR_CURSO_SERVICE, query_string=parametros)
         assert (response.status_code == SUCCESS_OK)
 
-        curso = Curso.query.filter_by(id=self.CURSO["id"]).first()
-
-        assert (curso.id == self.CURSO["id"])
+        curso = Curso.query.get(self.CURSO["id"])
 
         carreras = CarreraPorCurso.query.filter_by(curso_id=self.CURSO["id"]).all()
         assert (len(carreras) == 2)
@@ -770,9 +747,7 @@ class TestModificarCurso(TestBase):
         response = client.get(MODIFICAR_CURSO_SERVICE, query_string=parametros)
         assert (response.status_code == SUCCESS_OK)
 
-        curso = Curso.query.filter_by(id=self.CURSO["id"]).first()
-
-        assert (curso.id == self.CURSO["id"])
+        curso = Curso.query.get(self.CURSO["id"])
 
         carreras = CarreraPorCurso.query.filter_by(curso_id=self.CURSO["id"]).all()
         assert (len(carreras) == 2)
@@ -805,9 +780,7 @@ class TestModificarCurso(TestBase):
         response = client.get(MODIFICAR_CURSO_SERVICE, query_string=parametros)
         assert (response.status_code == SUCCESS_OK)
 
-        curso = Curso.query.filter_by(id=self.CURSO["id"]).first()
-
-        assert (curso.id == self.CURSO["id"])
+        curso = Curso.query.get(self.CURSO["id"])
 
         carreras = CarreraPorCurso.query.filter_by(curso_id=self.CURSO["id"]).all()
         assert (len(carreras) == 2)
@@ -840,9 +813,7 @@ class TestModificarCurso(TestBase):
         response = client.get(MODIFICAR_CURSO_SERVICE, query_string=parametros)
         assert (response.status_code == SUCCESS_OK)
 
-        curso = Curso.query.filter_by(id=self.CURSO["id"]).first()
-
-        assert (curso.id == self.CURSO["id"])
+        curso = Curso.query.get(self.CURSO["id"])
 
         carreras = CarreraPorCurso.query.filter_by(curso_id=self.CURSO["id"]).all()
         assert (len(carreras) == 2)
@@ -875,9 +846,7 @@ class TestModificarCurso(TestBase):
         response = client.get(MODIFICAR_CURSO_SERVICE, query_string=parametros)
         assert (response.status_code == SUCCESS_OK)
 
-        curso = Curso.query.filter_by(id=self.CURSO["id"]).first()
-
-        assert (curso.id == self.CURSO["id"])
+        curso = Curso.query.get(self.CURSO["id"])
 
         carreras = CarreraPorCurso.query.filter_by(curso_id=self.CURSO["id"]).all()
         assert (len(carreras) == 2)
@@ -969,9 +938,7 @@ class TestModificarCurso(TestBase):
         response = client.get(MODIFICAR_CURSO_SERVICE, query_string=parametros)
         assert (response.status_code == SUCCESS_OK)
 
-        curso = Curso.query.filter_by(id=self.CURSO["id"]).first()
-
-        assert (curso.id == self.CURSO["id"])
+        curso = Curso.query.get(self.CURSO["id"])
 
         carreras = CarreraPorCurso.query.filter_by(curso_id=self.CURSO["id"]).all()
         assert (len(carreras) == 2)
@@ -1004,9 +971,7 @@ class TestModificarCurso(TestBase):
         response = client.get(MODIFICAR_CURSO_SERVICE, query_string=parametros)
         assert (response.status_code == SUCCESS_OK)
 
-        curso = Curso.query.filter_by(id=self.CURSO["id"]).first()
-
-        assert (curso.id == self.CURSO["id"])
+        curso = Curso.query.get(self.CURSO["id"])
 
         carreras = CarreraPorCurso.query.filter_by(curso_id=self.CURSO["id"]).all()
         assert (len(carreras) == 2)

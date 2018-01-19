@@ -33,7 +33,7 @@ class TestBase(TestCase):
 
         extension_path = []
         path_actual = os.getcwd()
-        while(not (len(extension_path) > 0 and extension_path[0] == 'tests')):
+        while (not (len(extension_path) > 0 and extension_path[0] == 'tests')):
             path_separado = os.path.split(path_actual)
             extension_path.insert(0, path_separado[-1])
             path_actual = path_separado[0]
@@ -106,3 +106,6 @@ class TestBase(TestCase):
 
     def get_url_obtener_todas_las_tematicas(self):
         return ClienteAPI().get_url_obtener_todas_las_tematicas()
+
+    def get_url_preguntas_encuesta(self):
+        return ClienteAPI().get_url_preguntas_encuesta()

@@ -20,7 +20,7 @@ def generarJSON_materia(materia):
         "creditos": materia.creditos,
         "creditos_minimos_para_cursarla": materia.creditos_minimos_para_cursarla,
         "tipo_materia_id": materia.tipo_materia_id,
-        "tipo_materia": TipoMateria.query.filter_by(id=materia.tipo_materia_id).first().descripcion,
+        "tipo_materia": TipoMateria.query.get(materia.tipo_materia_id).descripcion,
         "carrera_id": materia.carrera.id,
         "carrera": materia.carrera.get_descripcion_carrera()
     }

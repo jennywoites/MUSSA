@@ -102,14 +102,13 @@ class AgregarMateriaAlumno(Resource):
         return self.guardar_y_devolver_success()
 
     def son_ids_validos(self, id_carrera, id_materia, id_curso, estado, alumno_id):
-        if not id_carrera.isdigit() or not Carrera.query.filter_by(id=id_carrera).first():
+        if not id_carrera.isdigit() or not Carrera.query.get(id_carrera):
             return False
 
         if not id_materia.isdigit() or not MateriasAlumno.query.filter_by(materia_id=id_materia).first():
             return False
 
-        if ((id_curso != "-1" and not id_curso.isdigit()) or
-                (id_curso != "-1" and not Curso.query.filter_by(id=id_curso).first())):
+        if (id_curso != "-1" and not id_curso.isdigit()) or (id_curso != "-1" and not Curso.query.get(id_curso)):
             return False
 
         if not EstadoMateria.query.filter_by(estado=estado).first():
@@ -188,10 +187,10 @@ class AgregarMateriaAlumno(Resource):
         if not encuesta:
             encuesta = self.crear_encuesta(materia_alumno)
 
-        curso = Curso.query.filter_by(id=materia_alumno.curso_id).first()
+        curso = Curso.query.get(materia_alumno.curso_id)
         docentes = ""
         for cdoc in CursosDocente.query.filter_by(curso_id=materia_alumno.curso_id).all():
-            docente = Docente.query.filter_by(id=cdoc.docente_id).first()
+            docente = Docente.query.get(cdoc.docente_id)
             docentes += docente.obtener_nombre_completo() + "-"
         encuesta.curso = "{}: {}".format(curso.codigo, docentes[:-1])
 

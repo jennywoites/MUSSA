@@ -62,7 +62,7 @@ class ObtenerRespuestasEncuestaAlumnoParaPreguntasEspecificas(Resource):
 
         ids_preguntas = args["ids_preguntas"].split(";")
         for id_pregunta in ids_preguntas:
-            if not id_pregunta.isdigit() or not PreguntaEncuesta.query.filter_by(id=id_pregunta).first():
+            if not id_pregunta.isdigit() or not PreguntaEncuesta.query.get(id_pregunta):
                 return False
         return True
 
@@ -72,7 +72,7 @@ class ObtenerRespuestasEncuestaAlumnoParaPreguntasEspecificas(Resource):
         return EncuestaAlumno.query.filter_by(id=id_encuesta).filter_by(alumno_id=alumno.id).first()
 
     def generar_respuesta_pregunta(self, respuesta_encuesta):
-        tipo_encuesta = TipoEncuesta.query.filter_by(id=respuesta_encuesta.tipo_id).first().tipo
+        tipo_encuesta = TipoEncuesta.query.get(respuesta_encuesta.tipo_id).tipo
 
         acciones = {
             PUNTAJE_1_A_5: self.generar_respuesta_puntaje,
@@ -105,7 +105,7 @@ class ObtenerRespuestasEncuestaAlumnoParaPreguntasEspecificas(Resource):
         rtas = RespuestaEncuestaHorario.query.filter_by(rta_encuesta_alumno_id=respuesta_encuesta.id).all()
         horarios = []
         for rta in rtas:
-            horario = Horario.query.filter_by(id=rta.horario_id).first()
+            horario = Horario.query.get(rta.horario_id)
             horarios.append({
                 "dia": horario.dia,
                 "hora_desde": horario.hora_desde,
@@ -118,7 +118,7 @@ class ObtenerRespuestasEncuestaAlumnoParaPreguntasEspecificas(Resource):
         rtas = RespuestaEncuestaDocente.query.filter_by(rta_encuesta_alumno_id=respuesta_encuesta.id).all()
         comentarios_docentes = []
         for rta in rtas:
-            docente = Docente.query.filter_by(id=rta.docente_id).first()
+            docente = Docente.query.get(rta.docente_id)
             comentarios_docentes.append({
                 "id_docente": docente.id,
                 "apellido": docente.apellido,
@@ -133,7 +133,7 @@ class ObtenerRespuestasEncuestaAlumnoParaPreguntasEspecificas(Resource):
         rtas = RespuestaEncuestaCorrelativa.query.filter_by(rta_encuesta_alumno_id=respuesta_encuesta.id).all()
         materias_correlativas = []
         for rta in rtas:
-            materia = Materia.query.filter_by(id=rta.materia_correlativa_id).first()
+            materia = Materia.query.get(rta.materia_correlativa_id)
             materias_correlativas.append({
                 "id_materia": materia.id,
                 "codigo": materia.codigo,
@@ -154,7 +154,7 @@ class ObtenerRespuestasEncuestaAlumnoParaPreguntasEspecificas(Resource):
         rtas = RespuestaEncuestaTags.query.filter_by(rta_encuesta_alumno_id=respuesta_encuesta.id).all()
         palabras_clave = []
         for rta in rtas:
-            tag = PalabraClave.query.filter_by(id=rta.palabra_clave_id).first()
+            tag = PalabraClave.query.get(rta.palabra_clave_id)
             palabras_clave.append({
                 "id_palabra_clave": tag.id,
                 "palabra_clave": tag.palabra
@@ -166,7 +166,7 @@ class ObtenerRespuestasEncuestaAlumnoParaPreguntasEspecificas(Resource):
         rtas = RespuestaEncuestaTematica.query.filter_by(rta_encuesta_alumno_id=respuesta_encuesta.id).all()
         tematicas = []
         for rta in rtas:
-            tematica = TematicaMateria.query.filter_by(id=rta.tematica_id).first()
+            tematica = TematicaMateria.query.get(rta.tematica_id)
             tematicas.append({
                 "id_tematica": tematica.id,
                 "tematica": tematica.tematica
