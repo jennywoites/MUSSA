@@ -1,8 +1,6 @@
 from flask_restful import Resource
 from app.API_Rest.codes import *
 from flask import request
-
-from app.models.encuestas_models import *
 from app.DAO.EncuestasDAO import *
 
 import logging
@@ -28,7 +26,7 @@ class ObtenerPreguntasEncuesta(Resource):
         preguntas_result = []
         for encuesta in encuestas:
             datos = self.generar_estructura_base_encuesta(encuesta)
-            pregunta = PreguntaEncuesta.query.filter_by(id=encuesta.encuesta_id).first()
+            pregunta = PreguntaEncuesta.query.get(encuesta.encuesta_id)
             self.generar_datos_de_encuesta_completa(pregunta, datos)
             preguntas_result.append(datos)
 
@@ -75,13 +73,13 @@ class ObtenerPreguntasEncuesta(Resource):
         return {
             "pregunta_encuesta_id": encuesta.encuesta_id,
             "grupo_id": encuesta.grupo_id,
-            "grupo": GrupoEncuesta.query.filter_by(id=encuesta.grupo_id).first().grupo,
-            "excluir_si": ExcluirEncuestaSi.query.filter_by(id=encuesta.excluir_si_id).first().tipo,
+            "grupo": GrupoEncuesta.query.get(encuesta.grupo_id).grupo,
+            "excluir_si": ExcluirEncuestaSi.query.get(encuesta.excluir_si_id).tipo,
             "orden": encuesta.orden
         }
 
     def generar_datos_pregunta(self, pregunta, datos):
-        tipo_encuesta = TipoEncuesta.query.filter_by(id=pregunta.tipo_id).first()
+        tipo_encuesta = TipoEncuesta.query.get(pregunta.tipo_id)
 
         datos["pregunta_id"] = pregunta.id
         datos["pregunta"] = pregunta.pregunta
@@ -117,7 +115,7 @@ class ObtenerPreguntasEncuesta(Resource):
             return
 
         datos = {}
-        pregunta = PreguntaEncuesta.query.filter_by(id=id_encuesta).first()
+        pregunta = PreguntaEncuesta.query.get(id_encuesta)
         self.generar_datos_pregunta(pregunta, datos)
         self.generar_datos_de_encuesta_completa(pregunta, datos)
         lista_preguntas.append(datos)

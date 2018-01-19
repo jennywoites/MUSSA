@@ -18,9 +18,9 @@ def generarJSON_materias_docente(docente):
 
     cursos_del_docente = CursosDocente.query.filter_by(docente_id=docente.id).all()
     for c in cursos_del_docente:
-        curso = Curso.query.filter_by(id=c.curso_id).first()
+        curso = Curso.query.get(c.curso_id)
         materia = Materia.query.filter_by(codigo=curso.codigo_materia).first()
-        carrera = Carrera.query.filter_by(id=materia.carrera_id).first()
+        carrera = Carrera.query.get(materia.carrera_id)
         materias[materia.codigo] = {
             "nombre": materia.nombre,
             "id_carrera": materia.carrera_id,

@@ -12,8 +12,8 @@ from app.DAO.MateriasDAO import *
 
 import logging
 
+
 class AgregarCarreraAlumno(Resource):
-    
     @login_required
     def post(self):
         args = request.form
@@ -30,7 +30,8 @@ class AgregarCarreraAlumno(Resource):
 
         if self.carrera_ya_fue_agregada(alumno.id, q_id_carrera):
             logging.error('El alumno ya tiene esta carrera agregada')
-            return {'Error': 'No es posible agregar la carrera ya que fue agregada anteriormente.'}, CLIENT_ERROR_BAD_REQUEST
+            return {
+                       'Error': 'No es posible agregar la carrera ya que fue agregada anteriormente.'}, CLIENT_ERROR_BAD_REQUEST
 
         carrera_nueva = AlumnosCarreras(alumno_id=alumno.id, carrera_id=q_id_carrera)
 
@@ -44,15 +45,12 @@ class AgregarCarreraAlumno(Resource):
 
         return result
 
-
     def es_valido(self, id_carrera):
-        return len(Carrera.query.filter_by(id=id_carrera).all()) == 1
-
+        return Carrera.query.get(id_carrera)
 
     def carrera_ya_fue_agregada(self, id_alumno, id_carrera):
         query = AlumnosCarreras.query.filter_by(alumno_id=id_alumno).filter_by(carrera_id=id_carrera)
         return len(query.all()) > 0
-
 
     def agregar_materias_carrera(self, id_alumno, id_carrera):
         materias_carrera = Materia.query.filter_by(carrera_id=id_carrera).all()
@@ -60,10 +58,10 @@ class AgregarCarreraAlumno(Resource):
 
         for materia_carrera in materias_carrera:
             db.session.add(MateriasAlumno(
-                alumno_id = id_alumno,
-                materia_id = materia_carrera.id,
-                estado_id = estado_pendiente.id,
-                carrera_id = id_carrera
+                alumno_id=id_alumno,
+                materia_id=materia_carrera.id,
+                estado_id=estado_pendiente.id,
+                carrera_id=id_carrera
             ))
 
         db.session.commit()

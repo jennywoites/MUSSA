@@ -87,7 +87,7 @@ class GuardarRespuestasEncuestaAlumno(Resource):
 
     def eliminar_respuestas(self, respuestas_encuestas):
         for respuesta_encuesta in respuestas_encuestas:
-            tipo_encuesta = TipoEncuesta.query.filter_by(id=respuesta_encuesta.tipo_id).first().tipo
+            tipo_encuesta = TipoEncuesta.query.get(respuesta_encuesta.tipo_id).tipo
             acciones = {
                 PUNTAJE_1_A_5: self.eliminar_respuesta_puntaje,
                 TEXTO_LIBRE: self.eliminar_respuesta_texto_libre,
@@ -154,7 +154,7 @@ class GuardarRespuestasEncuestaAlumno(Resource):
 
     def actualizar_estado_paso_actual(self, id_encuesta, preguntas_categoria_actual, categoria):
         estados_pasos = EstadoPasosEncuestaAlumno.query.filter_by(encuesta_alumno_id=id_encuesta).first()
-        numero_paso = GrupoEncuesta.query.filter_by(id=categoria).first().numero_grupo
+        numero_paso = GrupoEncuesta.query.get(categoria).numero_grupo
 
         finalizado = len(preguntas_categoria_actual) == 0
 
@@ -169,7 +169,7 @@ class GuardarRespuestasEncuestaAlumno(Resource):
 
         preguntas_categoria_actual = {}
         for encuesta in encuestas:
-            pregunta = PreguntaEncuesta.query.filter_by(id=encuesta.encuesta_id).first()
+            pregunta = PreguntaEncuesta.query.get(encuesta.encuesta_id)
             preguntas_categoria_actual[pregunta.id] = pregunta
 
             if agregar_subpreguntas:
@@ -183,10 +183,10 @@ class GuardarRespuestasEncuestaAlumno(Resource):
 
         for pregunta_si_no in PreguntaEncuestaSiNo.query.filter_by(encuesta_id=pregunta.id).all():
             if pregunta_si_no.encuesta_id_si:
-                subpregunta = PreguntaEncuesta.query.filter_by(id=pregunta_si_no.encuesta_id_si).first()
+                subpregunta = PreguntaEncuesta.query.get(pregunta_si_no.encuesta_id_si)
                 preguntas_categoria_actual[subpregunta.id] = subpregunta
             if pregunta_si_no.encuesta_id_no:
-                subpregunta = PreguntaEncuesta.query.filter_by(id=pregunta_si_no.encuesta_id_no).first()
+                subpregunta = PreguntaEncuesta.query.get(pregunta_si_no.encuesta_id_no)
                 preguntas_categoria_actual[subpregunta.id] = subpregunta
 
     def respuesta_es_valida(self, respuesta, preguntas_categoria_actual, ids_respuestas, ids_respuestas_invalidas):
@@ -197,7 +197,7 @@ class GuardarRespuestasEncuestaAlumno(Resource):
             return False, 'Este servicio recibió un id de pregunta inválido'
 
         pregunta = preguntas_categoria_actual.pop(idPregunta)
-        tipo_encuesta = TipoEncuesta.query.filter_by(id=pregunta.tipo_id).first().tipo
+        tipo_encuesta = TipoEncuesta.query.get(pregunta.tipo_id).tipo
 
         es_valida, msj = self.validar_respuesta(tipo_encuesta, respuesta, ids_respuestas, ids_respuestas_invalidas)
         if not es_valida:
@@ -280,7 +280,7 @@ class GuardarRespuestasEncuestaAlumno(Resource):
         for docente in docentes:
             idDocente = docente["id_docente"]
 
-            if not Docente.query.filter_by(id=idDocente).first():
+            if not Docente.query.get(idDocente):
                 raise ValueError("El id de docente {} es invalido".format(idDocente))
 
             comentario = docente["comentario"]
@@ -323,7 +323,9 @@ class GuardarRespuestasEncuestaAlumno(Resource):
 
     def validar_respuesta_tags(self, respuesta, ids_respuestas_invalidas):
         palabras_clave = respuesta["palabras_clave"]
-        assert (0 < len(palabras_clave) <= self.MAX_CANTIDAD_PALABRAS_CLAVE), "La cantidad de palabras clave supera el máximo"
+        assert (
+            0 < len(
+                palabras_clave) <= self.MAX_CANTIDAD_PALABRAS_CLAVE), "La cantidad de palabras clave supera el máximo"
         for palabra in palabras_clave:
             self.validar_contenido_y_longitud_texto(1, self.MAX_CARACTERES_PALABRA_CLAVE_TAG, palabra)
 
@@ -433,10 +435,10 @@ class GuardarRespuestasEncuestaAlumno(Resource):
         preguntas = PreguntaEncuestaSiNo.query.filter_by(encuesta_id=respuesta_encuesta.pregunta_encuesta_id).all()
         for pregunta in preguntas:
             if datos_respuesta["respuesta"] and pregunta.encuesta_id_si:
-                subpregunta = PreguntaEncuesta.query.filter_by(id=pregunta.encuesta_id_si).first()
+                subpregunta = PreguntaEncuesta.query.get(pregunta.encuesta_id_si)
                 preguntas_categoria_actual[pregunta.encuesta_id_si] = subpregunta
             if not datos_respuesta["respuesta"] and pregunta.encuesta_id_no:
-                subpregunta = PreguntaEncuesta.query.filter_by(id=pregunta.encuesta_id_no).first()
+                subpregunta = PreguntaEncuesta.query.get(pregunta.encuesta_id_no)
                 preguntas_categoria_actual[pregunta.encuesta_id_no] = subpregunta
 
     def generar_respuesta_horario(self, respuesta_encuesta, datos_respuesta, preguntas_categoria_actual):
