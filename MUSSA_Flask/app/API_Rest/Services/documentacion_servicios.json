@@ -28,6 +28,10 @@
       "description": "Acceso a los docentes"
     },
     {
+      "name": "alumno",
+      "description": "Acceso a los alumnos"
+    },
+    {
       "name": "encuesta",
       "description": "Acceso a la estructura de encuestas. Las encuestas se dividen en tres secciones 1) 'encuesta' --> contiene las preguntas de las encuestas, las agrupaciones por categoría, etc; 2) 'respuestas alumno' --> contiene las respuestas del alumno para una determinada encuesta. Es accesible a través del alumno; 3) 'resultados encuesta' --> contiene las respuestas generales como resultados de las encuestas para un curso o un docente, es accesible a través de resultados encuesta."
     }
@@ -634,6 +638,26 @@
         }
       }
     },
+    "/alumno": {
+      "get": {
+        "tags": [
+          "alumno"
+        ],
+        "summary": "Devuelve el alumno asociado al usuario actual",
+        "description": "Devuelve el alumno asociado al usuario actual",
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/Alumno"
+            }
+          }
+        }
+      }
+    },
     "/encuesta/preguntas": {
       "get": {
         "tags": [
@@ -1156,6 +1180,16 @@
           "type": "string",
           "description": "Hora de finalización del horario.",
           "example": "12:00"
+        }
+      }
+    },
+    "Alumno": {
+      "type": "object",
+      "properties": {
+        "padron": {
+          "type": "string",
+          "description": "Padrón del alumno. Si el alumno no tiene un padrón asociado, devuelve un string vacío.",
+          "example": "93274"
         }
       }
     }

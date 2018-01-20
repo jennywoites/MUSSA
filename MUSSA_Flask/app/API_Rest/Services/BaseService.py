@@ -8,6 +8,7 @@ from app.models.alumno_models import Alumno
 from app.models.carreras_models import Materia
 from app import db
 from app.utils import DIAS, convertir_horario
+from flask_user import current_user
 
 
 class BaseService(Resource):
@@ -21,6 +22,18 @@ class BaseService(Resource):
     def obtener_parametro(self, nombre_parametro):
         datos = self.obtener_argumentos()
         return datos[nombre_parametro] if nombre_parametro in datos else None
+
+    def obtener_alumno_usuario_actual(self):
+        """
+        Obtiene el alumno para el usuario actual.
+        Si el alumno aún no fue creado lo crea.
+        """
+        alumno = Alumno.query.filter_by(user_id=current_user.id).first()
+        if not alumno:
+            alumno = Alumno(user_id=current_user.id)
+            db.session.add(alumno)
+            db.session.commit()
+        return alumno
 
     def generar_JSON_lista_datos(self, funcion_generadora_JSON, lista_datos):
         resultados_JSON = []
@@ -272,19 +285,6 @@ class BaseService(Resource):
 
         msj, codigo = ("El {} no existe".format(nombre_parametro), CLIENT_ERROR_NOT_FOUND) if not es_valido \
             else ("El {} existe".format(nombre_parametro), -1)
-
-        return es_valido, msj, codigo
-
-    def alumno_es_usuario_actual(self, nombre_parametro, valor, es_obligatorio):
-        """
-        Devuelve True si el id enviado como valor corresponde al id de alumno del usuario actual
-        False en caso contrario.
-        """
-        alumno = Alumno.query.filter_by(user_id=current_user.id).first()
-        es_valido = (alumno.id == valor)
-
-        msj, codigo = ('El alumno pertenece al usuario actual', -1) if es_valido \
-            else ('El id de alumno no pertenece al usuario actual', CLIENT_ERROR_UNAUTHORIZED)
 
         return es_valido, msj, codigo
 

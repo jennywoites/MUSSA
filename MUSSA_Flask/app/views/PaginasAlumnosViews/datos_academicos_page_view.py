@@ -13,8 +13,10 @@ import functools
 @login_required
 def datos_academicos_page():
     cookie = request.cookies
-    padron = invocar_obtener_padron_alumno(cookie)
-    carreras = ClienteAPI().obtener_todas_las_carreras(cookie)
+    cliente = ClienteAPI()
+
+    padron = cliente.obtener_alumno(cookie)["padron"]
+    carreras = cliente.obtener_todas_las_carreras(cookie)
 
     mis_carreras = invocar_obtener_carreras_alumno(cookie)
     carreras_nuevas = filtrar_carreras_no_cursadas(carreras, mis_carreras)

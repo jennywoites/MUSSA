@@ -109,3 +109,6 @@ class TestBase(TestCase):
 
     def get_url_preguntas_encuesta(self):
         return ClienteAPI().get_url_preguntas_encuesta()
+
+    def get_url_get_alumno(self):
+        return ClienteAPI().get_url_get_alumno()

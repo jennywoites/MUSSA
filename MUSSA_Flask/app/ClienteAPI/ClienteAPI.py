@@ -95,6 +95,10 @@ class ClienteAPI:
         """URL: '/api/encuesta/preguntas'"""
         return self.BASE_URL + '/encuesta/preguntas'
 
+    def get_url_get_alumno(self):
+        """URL: '/api/alumno'"""
+        return self.BASE_URL + '/alumno'
+
     ################################################
     ##              Servicios DOCENTE             ##
     ################################################
@@ -231,3 +235,11 @@ class ClienteAPI:
 
         response = self.invocar_get(url_servicio, cookie, parametros)
         return response["preguntas"]
+
+    ################################################
+    ##            Servicios ALUMNO                ##
+    ################################################
+
+    def obtener_alumno(self, cookie):
+        url_servicio = self.get_url_get_alumno()
+        return self.invocar_get(url_servicio, cookie)["alumno"]

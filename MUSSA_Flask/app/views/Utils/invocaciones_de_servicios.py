@@ -22,12 +22,6 @@ def invocar_guardar_horarios_desde_PDF(csrf_token, cookie, ruta, anio, cuatrimes
     return json.loads(horarios_response.text)
 
 
-def invocar_obtener_padron_alumno(cookie):
-    padron_response = requests.get(OBTENER_PADRON_ALUMNO_SERVICE, cookies=cookie)
-    escribir_resultado_servicio('Obtener Padron Alumno', padron_response)
-    return json.loads(padron_response.text)["padron"]
-
-
 def invocar_agregar_carrera_alumno(csrf_token, cookie, id_carrera):
     parametros = {}
     parametros["id_carrera"] = id_carrera
