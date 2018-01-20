@@ -654,6 +654,42 @@
             "schema": {
               "$ref": "#/definitions/Alumno"
             }
+          },
+          "401": {
+            "description": "La información de autorización no fue enviada o es inválida."
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "alumno"
+        ],
+        "summary": "Modifica el alumno asociado con el usuario actual",
+        "description": "Modifica el alumno asociado con el usuario actual",
+        "produces": [
+          "application/json"
+        ],
+        "consumes": [
+          "multipart/form-data"
+        ],
+        "parameters": [
+          {
+            "in": "formData",
+            "name": "padron",
+            "required": true,
+            "type": "string",
+            "description": "Padrón del alumno."
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "OK. Sin datos."
+          },
+          "400": {
+            "description": "El padrón no tiene un formato válido o ya existe otro usuario con ese padrón asociado."
+          },
+          "401": {
+            "description": "La información de autorización no fue enviada o es inválida."
           }
         }
       }

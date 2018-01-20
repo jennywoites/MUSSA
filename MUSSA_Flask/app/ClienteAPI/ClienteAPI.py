@@ -243,3 +243,9 @@ class ClienteAPI:
     def obtener_alumno(self, cookie):
         url_servicio = self.get_url_get_alumno()
         return self.invocar_get(url_servicio, cookie)["alumno"]
+
+    def modificar_alumno(self, cookie, padron=''):
+        url_servicio = self.get_url_get_alumno()
+        parametros = {}
+        parametros["padron"] = padron
+        return self.invocar_post(url_servicio, cookie, parametros)

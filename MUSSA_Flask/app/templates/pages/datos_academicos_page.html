@@ -1,10 +1,10 @@
 {% extends "common/page_base.html" %}
 
 {% block content %}
-    
-    <div class="container">
-    
-        <script>
+
+    <script type='text/javascript' src="/js/services.js"></script>
+
+    <script>
 
         $(function() {
             var boton = document.getElementById("agregar_materia_button");
@@ -22,14 +22,11 @@
             msj += ". Esto borrará todas las materias asociadas. "
             msj += "Esta acción no se puede deshacer. ¿Querés continuar?"
 
-            confirmar=confirm(msj); 
+            confirmar=confirm(msj);
             if (confirmar) {
                 redirect_to(url);
             }
         }
-
-        SERVICE_MODIFICAR_PADRON = '/api/ModificarPadronAlumno'
-        SUCCESS = 200
 
         function padron_es_valido(padron) {
             return (padron != "") && (padron.match(/^[0-9]+$/) != null) && (5<=padron.length && padron.length<=7)
@@ -47,46 +44,18 @@
                 error_label.style["display"] = "";
                 return false;
             }
-            
-            param = {"padron": padron};
 
-            do_request('GET', SERVICE_MODIFICAR_PADRON, param, function(state, result) {
+            modificar_alumno_service('{{ csrf_token() }}', padron, function(state, result) {
                 error_label.style["display"] = "none";
                 ok_label.style["display"] = "";
             }, function(state, result) {
                 error_label.style["display"] = "";
                 ok_label.style["display"] = "none";
-            })
+            });
         }
 
-        function do_request(method, page, parametros, onSucces, onError) {
-            var method = method || "GET";
-
-            xmlhttp = new XMLHttpRequest();
-
-            xmlhttp.onreadystatechange = function() {
-                if (this.status == 0 || this.readyState != 4)
-                    return;
-
-                if ( this.status != SUCCESS ) {
-                    onError(this.status, this.responseText);
-                }
-                else { 
-                    json_result = (this.responseText == "") ? {} : JSON.parse(this.responseText)
-                    onSucces(this.status, json_result);
-                }
-            }
-
-            var encoded_params = jQuery.param(parametros)
-            var url = page + '?' + encoded_params
-            xmlhttp.open(method, url, true);
-            xmlhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-            xmlhttp.withCredentials = true;
-            xmlhttp.send();
-        }
-
-        function filtrar_materias_por_carrera() {            
-            var carrera_elegida = document.getElementById("carrera_mostrar_materias");            
+        function filtrar_materias_por_carrera() {
+            var carrera_elegida = document.getElementById("carrera_mostrar_materias");
             var id_carrera = carrera_elegida[carrera_elegida.selectedIndex].id;
 
             var rows = document.getElementById("materias_alumno_table").rows;
@@ -116,7 +85,9 @@
             tabla_vacia_label.hidden = !no_hay_datos;
         }
 
-        </script>
+    </script>
+
+    <div class="container">
 
         <h2>{%trans%}Registro Académico{%endtrans%}</h2>
         

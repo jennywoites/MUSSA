@@ -189,6 +189,25 @@ class BaseService(Resource):
     def mensaje_campo_no_obligatorio(self, nombre_parametro):
         return True, 'El ' + nombre_parametro + ' no existe pero no es obligatorio', -1
 
+    def padron_es_valido(self, nombre_parametro, padron, es_obligatorio, id_alumno):
+        msj_valido = 'El padron {} es valido'.format(padron)
+        msj_invalido = 'El padron {} no es valido'.format(padron)
+
+        if not padron and es_obligatorio:
+            return False, msj_invalido, CLIENT_ERROR_NOT_FOUND
+
+        if not padron:
+            return True, msj_valido, -1
+
+        LONGITUD_MINIMA_PADRON = 5
+        LONGITUD_MAXIMA_PADRON = 7
+        if not padron.isdigit() or not (LONGITUD_MINIMA_PADRON <= len(padron) <= LONGITUD_MAXIMA_PADRON):
+            return False, msj_invalido, CLIENT_ERROR_BAD_REQUEST
+
+        msj_invalido = 'El padron {} ya existe'.format(padron)
+        es_valido = (len(Alumno.query.filter_by(padron=padron).filter(Alumno.id.isnot(id_alumno)).all()) == 0)
+        return (True, msj_valido, -1) if es_valido else (False, msj_invalido, CLIENT_ERROR_BAD_REQUEST)
+
     def id_es_valido(self, nombre_parametro, id_a_validar, es_obligatorio):
         if not id_a_validar and not es_obligatorio:
             return self.mensaje_campo_no_obligatorio(nombre_parametro)

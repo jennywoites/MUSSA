@@ -167,12 +167,25 @@ function modificar_curso_service(token, idCurso, ids_carreras, primer_cuatrimest
  horarios, onSuccess, onError) {
     var url_servicio = BASE_URL + '/curso/' + idCurso;
 
+    parametros = {};
+    parametros["ids_carreras"] = JSON.stringify(ids_carreras);
+    parametros["primer_cuatrimestre"] = primer_cuatrimestre;
+    parametros["segundo_cuatrimestre"] = segundo_cuatrimestre;
+    parametros["ids_docentes"] = JSON.stringify(ids_docentes);
+    parametros["horarios"] = JSON.stringify(horarios);
+
+    do_request('POST', url_servicio, token, parametros, onSuccess, onError);
+}
+
+//*********************************************************//
+//                  Servicios Alumno                       //
+//*********************************************************//
+
+function modificar_alumno_service(token, padron, onSuccess, onError) {
+    var url_servicio = BASE_URL + '/alumno';
+
     parametros = {}
-    parametros["ids_carreras"] = JSON.stringify(ids_carreras)
-    parametros["primer_cuatrimestre"] = primer_cuatrimestre
-    parametros["segundo_cuatrimestre"] = segundo_cuatrimestre
-    parametros["ids_docentes"] = JSON.stringify(ids_docentes)
-    parametros["horarios"] = JSON.stringify(horarios)
+    parametros["padron"] = padron;
 
     do_request('POST', url_servicio, token, parametros, onSuccess, onError);
 }
