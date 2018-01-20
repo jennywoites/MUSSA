@@ -4,16 +4,13 @@ if __name__ == '__main__':
     sys.path.append("../..")
 
 from tests.TestAPIServicios.TestBase import TestBase
-
 from app import db
 from app.models.horarios_models import Curso, Horario, HorarioPorCurso, CarreraPorCurso
 from app.models.carreras_models import Carrera
 from app.models.docentes_models import Docente, CursosDocente
-
 import datetime
-
-from app.API_Rest.services import *
 from app.API_Rest.codes import *
+import json
 
 
 class TestModificarCurso(TestBase):
@@ -197,26 +194,26 @@ class TestModificarCurso(TestBase):
         db.session.commit()
 
     def obtener_carreras_formateadas(self, l_carreras):
-        carreras = ""
+        carreras = []
         for c in l_carreras:
-            carreras += str(c["id"]) + ";"
-        return carreras[:-1]
+            carreras.append(c["id"])
+        return json.dumps(carreras)
 
     def obtener_docentes_formateados(self, docentes):
-        doc_formateado = ""
+        doc_formateado = []
         for docente in docentes:
-            doc_formateado += str(docente["id"]) + ";"
-        return doc_formateado[:-1]
+            doc_formateado.append(docente["id"])
+        return json.dumps(doc_formateado)
 
     def obtener_horarios_formateados(self, horarios):
-        f_horarios = ""
+        f_horarios = []
         for horario in horarios:
-            f_horario = "dia:" + horario["dia"] + ","
-            f_horario += "hora_desde:" + horario["hora_desde_reloj"] + ","
-            f_horario += "hora_hasta:" + horario["hora_hasta_reloj"] + ";"
-            f_horarios += f_horario
-
-        return f_horarios[:-1]
+            f_horarios.append({
+                "dia": horario["dia"],
+                "hora_desde": horario["hora_desde_reloj"],
+                "hora_hasta": horario["hora_hasta_reloj"]
+            })
+        return json.dumps(f_horarios)
 
     def se_encuentra_la_carrera(self, carrera, l_carreras):
         for l_carrera in l_carreras:
@@ -239,28 +236,24 @@ class TestModificarCurso(TestBase):
 
     def test_invocar_al_servicio_sin_estar_logueado(self):
         client = self.app.test_client()
-        # response = client.post(MODIFICAR_CURSO_SERVICE)
-        response = client.get(MODIFICAR_CURSO_SERVICE)
+        response = client.post(self.get_url_get_curso(self.CURSO["id"]))
         assert (response.status_code == REDIRECTION_FOUND)
 
     def test_invocar_al_servicio_logueado_como_usuario(self):
         client = self.loguear_usuario()
-        # response = client.post(MODIFICAR_CURSO_SERVICE)
-        response = client.get(MODIFICAR_CURSO_SERVICE)
+        response = client.post(self.get_url_get_curso(self.CURSO["id"]))
         assert (response.status_code == REDIRECTION_FOUND)
 
     def test_modificar_curso_una_carrera_con_todos_parametros_validos_lo_modifica(self):
         parametros = {}
-        parametros["id_curso"] = self.CURSO["id"]
-        parametros["carreras"] = self.obtener_carreras_formateadas([self.CARRERA_1])
+        parametros["ids_carreras"] = self.obtener_carreras_formateadas([self.CARRERA_1])
         parametros["primer_cuatrimestre"] = self.CURSO["se_dicta_primer_cuatrimestre"]
         parametros["segundo_cuatrimestre"] = self.CURSO["se_dicta_segundo_cuatrimestre"]
-        parametros["docentes"] = self.obtener_docentes_formateados([self.DOCENTE_1])
+        parametros["ids_docentes"] = self.obtener_docentes_formateados([self.DOCENTE_1])
         parametros["horarios"] = self.obtener_horarios_formateados(self.CURSO["horarios"])
 
         client = self.loguear_administrador()
-        # response = client.post(MODIFICAR_CURSO_SERVICE, data=parametros)
-        response = client.get(MODIFICAR_CURSO_SERVICE, query_string=parametros)
+        response = client.post(self.get_url_get_curso(self.CURSO["id"]), data=parametros)
         assert (response.status_code == SUCCESS_OK)
 
         curso = Curso.query.get(self.CURSO["id"])
@@ -281,87 +274,51 @@ class TestModificarCurso(TestBase):
         for horario in self.CURSO["horarios"]:
             assert (self.se_encuentra_el_horario(horario, horarios))
 
-    def test_modificar_curso_con_carreras_existentes_malos_separadores_da_error(self):
-        parametros = {}
-        parametros["id_curso"] = self.CURSO["id"]
-        parametros["carreras"] = "1:2"
-        parametros["primer_cuatrimestre"] = self.CURSO["se_dicta_primer_cuatrimestre"]
-        parametros["segundo_cuatrimestre"] = self.CURSO["se_dicta_segundo_cuatrimestre"]
-        parametros["docentes"] = self.obtener_docentes_formateados([self.DOCENTE_1])
-        parametros["horarios"] = self.obtener_horarios_formateados(self.CURSO["horarios"])
-
-        client = self.loguear_administrador()
-        # response = client.post(MODIFICAR_CURSO_SERVICE, data=parametros)
-        response = client.get(MODIFICAR_CURSO_SERVICE, query_string=parametros)
-        assert (response.status_code == CLIENT_ERROR_BAD_REQUEST)
-
-    def test_modificar_curso_con_formato_valido_carreras_inexistentes_malos_separadores_da_error(self):
-        parametros = {}
-        parametros["id_curso"] = self.CURSO["id"]
-        parametros["carreras"] = "4;5"
-        parametros["primer_cuatrimestre"] = self.CURSO["se_dicta_primer_cuatrimestre"]
-        parametros["segundo_cuatrimestre"] = self.CURSO["se_dicta_segundo_cuatrimestre"]
-        parametros["docentes"] = self.obtener_docentes_formateados([self.DOCENTE_1])
-        parametros["horarios"] = self.obtener_horarios_formateados(self.CURSO["horarios"])
-
-        client = self.loguear_administrador()
-        # response = client.post(MODIFICAR_CURSO_SERVICE, data=parametros)
-        response = client.get(MODIFICAR_CURSO_SERVICE, query_string=parametros)
-        assert (response.status_code == CLIENT_ERROR_BAD_REQUEST)
-
     def test_modificar_curso_sin_enviar_parametro_carrera_da_error(self):
         parametros = {}
-        parametros["id_curso"] = self.CURSO["id"]
         parametros["primer_cuatrimestre"] = self.CURSO["se_dicta_primer_cuatrimestre"]
         parametros["segundo_cuatrimestre"] = self.CURSO["se_dicta_segundo_cuatrimestre"]
-        parametros["docentes"] = self.obtener_docentes_formateados([self.DOCENTE_1])
+        parametros["ids_docentes"] = self.obtener_docentes_formateados([self.DOCENTE_1])
         parametros["horarios"] = self.obtener_horarios_formateados(self.CURSO["horarios"])
 
         client = self.loguear_administrador()
-        # response = client.post(MODIFICAR_CURSO_SERVICE, data=parametros)
-        response = client.get(MODIFICAR_CURSO_SERVICE, query_string=parametros)
+        response = client.post(self.get_url_get_curso(self.CURSO["id"]), data=parametros)
         assert (response.status_code == CLIENT_ERROR_BAD_REQUEST)
 
     def test_modificar_curso_con_parametro_carrera_vacio_da_error(self):
         parametros = {}
-        parametros["id_curso"] = self.CURSO["id"]
-        parametros["carreras"] = ""
+        parametros["ids_carreras"] = ""
         parametros["primer_cuatrimestre"] = self.CURSO["se_dicta_primer_cuatrimestre"]
         parametros["segundo_cuatrimestre"] = self.CURSO["se_dicta_segundo_cuatrimestre"]
-        parametros["docentes"] = self.obtener_docentes_formateados([self.DOCENTE_1])
+        parametros["ids_docentes"] = self.obtener_docentes_formateados([self.DOCENTE_1])
         parametros["horarios"] = self.obtener_horarios_formateados(self.CURSO["horarios"])
 
         client = self.loguear_administrador()
-        # response = client.post(MODIFICAR_CURSO_SERVICE, data=parametros)
-        response = client.get(MODIFICAR_CURSO_SERVICE, query_string=parametros)
+        response = client.post(self.get_url_get_curso(self.CURSO["id"]), data=parametros)
         assert (response.status_code == CLIENT_ERROR_BAD_REQUEST)
 
     def test_modificar_curso_con_parametro_carrera_invalido_da_error(self):
         parametros = {}
-        parametros["id_curso"] = self.CURSO["id"]
-        parametros["carreras"] = "dasop99;902"
+        parametros["ids_carreras"] = "dasop99;902"
         parametros["primer_cuatrimestre"] = self.CURSO["se_dicta_primer_cuatrimestre"]
         parametros["segundo_cuatrimestre"] = self.CURSO["se_dicta_segundo_cuatrimestre"]
-        parametros["docentes"] = self.obtener_docentes_formateados([self.DOCENTE_1])
+        parametros["ids_docentes"] = self.obtener_docentes_formateados([self.DOCENTE_1])
         parametros["horarios"] = self.obtener_horarios_formateados(self.CURSO["horarios"])
 
         client = self.loguear_administrador()
-        # response = client.post(MODIFICAR_CURSO_SERVICE, data=parametros)
-        response = client.get(MODIFICAR_CURSO_SERVICE, query_string=parametros)
+        response = client.post(self.get_url_get_curso(self.CURSO["id"]), data=parametros)
         assert (response.status_code == CLIENT_ERROR_BAD_REQUEST)
 
     def test_modificar_curso_dos_carreras_con_todos_parametros_validos_lo_modifica(self):
         parametros = {}
-        parametros["id_curso"] = self.CURSO["id"]
-        parametros["carreras"] = self.obtener_carreras_formateadas([self.CARRERA_1, self.CARRERA_3])
+        parametros["ids_carreras"] = self.obtener_carreras_formateadas([self.CARRERA_1, self.CARRERA_3])
         parametros["primer_cuatrimestre"] = self.CURSO["se_dicta_primer_cuatrimestre"]
         parametros["segundo_cuatrimestre"] = self.CURSO["se_dicta_segundo_cuatrimestre"]
-        parametros["docentes"] = self.obtener_docentes_formateados([self.DOCENTE_1])
+        parametros["ids_docentes"] = self.obtener_docentes_formateados([self.DOCENTE_1])
         parametros["horarios"] = self.obtener_horarios_formateados(self.CURSO["horarios"])
 
         client = self.loguear_administrador()
-        # response = client.post(MODIFICAR_CURSO_SERVICE, data=parametros)
-        response = client.get(MODIFICAR_CURSO_SERVICE, query_string=parametros)
+        response = client.post(self.get_url_get_curso(self.CURSO["id"]), data=parametros)
         assert (response.status_code == SUCCESS_OK)
 
         curso = Curso.query.get(self.CURSO["id"])
@@ -385,16 +342,14 @@ class TestModificarCurso(TestBase):
 
     def test_modificar_curso_se_dicta_solo_el_primer_cuatrimestre_lo_modifica(self):
         parametros = {}
-        parametros["id_curso"] = self.CURSO["id"]
-        parametros["carreras"] = self.obtener_carreras_formateadas(self.CURSO["carreras"])
+        parametros["ids_carreras"] = self.obtener_carreras_formateadas(self.CURSO["carreras"])
         parametros["primer_cuatrimestre"] = True
         parametros["segundo_cuatrimestre"] = False
-        parametros["docentes"] = self.obtener_docentes_formateados([self.DOCENTE_1])
+        parametros["ids_docentes"] = self.obtener_docentes_formateados([self.DOCENTE_1])
         parametros["horarios"] = self.obtener_horarios_formateados(self.CURSO["horarios"])
 
         client = self.loguear_administrador()
-        # response = client.post(MODIFICAR_CURSO_SERVICE, data=parametros)
-        response = client.get(MODIFICAR_CURSO_SERVICE, query_string=parametros)
+        response = client.post(self.get_url_get_curso(self.CURSO["id"]), data=parametros)
         assert (response.status_code == SUCCESS_OK)
 
         curso = Curso.query.get(self.CURSO["id"])
@@ -418,16 +373,14 @@ class TestModificarCurso(TestBase):
 
     def test_modificar_curso_se_dicta_solo_el_segundo_cuatrimestre_lo_modifica(self):
         parametros = {}
-        parametros["id_curso"] = self.CURSO["id"]
-        parametros["carreras"] = self.obtener_carreras_formateadas(self.CURSO["carreras"])
+        parametros["ids_carreras"] = self.obtener_carreras_formateadas(self.CURSO["carreras"])
         parametros["primer_cuatrimestre"] = False
         parametros["segundo_cuatrimestre"] = True
-        parametros["docentes"] = self.obtener_docentes_formateados([self.DOCENTE_1])
+        parametros["ids_docentes"] = self.obtener_docentes_formateados([self.DOCENTE_1])
         parametros["horarios"] = self.obtener_horarios_formateados(self.CURSO["horarios"])
 
         client = self.loguear_administrador()
-        # response = client.post(MODIFICAR_CURSO_SERVICE, data=parametros)
-        response = client.get(MODIFICAR_CURSO_SERVICE, query_string=parametros)
+        response = client.post(self.get_url_get_curso(self.CURSO["id"]), data=parametros)
         assert (response.status_code == SUCCESS_OK)
 
         curso = Curso.query.get(self.CURSO["id"])
@@ -451,15 +404,14 @@ class TestModificarCurso(TestBase):
 
     def test_modificar_curso_se_dicta_ambos_cuatrimestres_lo_modifica(self):
         parametros = {}
-        parametros["id_curso"] = self.CURSO["id"]
-        parametros["carreras"] = self.obtener_carreras_formateadas(self.CURSO["carreras"])
+        parametros["ids_carreras"] = self.obtener_carreras_formateadas(self.CURSO["carreras"])
         parametros["primer_cuatrimestre"] = True
         parametros["segundo_cuatrimestre"] = True
-        parametros["docentes"] = self.obtener_docentes_formateados([self.DOCENTE_1])
+        parametros["ids_docentes"] = self.obtener_docentes_formateados([self.DOCENTE_1])
         parametros["horarios"] = self.obtener_horarios_formateados(self.CURSO["horarios"])
 
         client = self.loguear_administrador()
-        response = client.get(MODIFICAR_CURSO_SERVICE, query_string=parametros)
+        response = client.post(self.get_url_get_curso(self.CURSO["id"]), data=parametros)
         assert (response.status_code == SUCCESS_OK)
 
         curso = Curso.query.get(self.CURSO["id"])
@@ -483,16 +435,14 @@ class TestModificarCurso(TestBase):
 
     def test_modificar_curso_no_se_dicta_ningun_cuatrimestre_lo_modifica(self):
         parametros = {}
-        parametros["id_curso"] = self.CURSO["id"]
-        parametros["carreras"] = self.obtener_carreras_formateadas(self.CURSO["carreras"])
+        parametros["ids_carreras"] = self.obtener_carreras_formateadas(self.CURSO["carreras"])
         parametros["primer_cuatrimestre"] = False
         parametros["segundo_cuatrimestre"] = False
-        parametros["docentes"] = self.obtener_docentes_formateados([self.DOCENTE_1])
+        parametros["ids_docentes"] = self.obtener_docentes_formateados([self.DOCENTE_1])
         parametros["horarios"] = self.obtener_horarios_formateados(self.CURSO["horarios"])
 
         client = self.loguear_administrador()
-        # response = client.post(MODIFICAR_CURSO_SERVICE, data=parametros)
-        response = client.get(MODIFICAR_CURSO_SERVICE, query_string=parametros)
+        response = client.post(self.get_url_get_curso(self.CURSO["id"]), data=parametros)
         assert (response.status_code == SUCCESS_OK)
 
         curso = Curso.query.get(self.CURSO["id"])
@@ -516,70 +466,60 @@ class TestModificarCurso(TestBase):
 
     def test_modificar_curso_booleano_valores_se_dicta_primer_cuatrimestre_invalido_da_error(self):
         parametros = {}
-        parametros["id_curso"] = self.CURSO["id"]
-        parametros["carreras"] = self.obtener_carreras_formateadas(self.CURSO["carreras"])
+        parametros["ids_carreras"] = self.obtener_carreras_formateadas(self.CURSO["carreras"])
         parametros["primer_cuatrimestre"] = "Pepe"
         parametros["segundo_cuatrimestre"] = False
-        parametros["docentes"] = self.obtener_docentes_formateados([self.DOCENTE_1])
+        parametros["ids_docentes"] = self.obtener_docentes_formateados([self.DOCENTE_1])
         parametros["horarios"] = self.obtener_horarios_formateados(self.CURSO["horarios"])
 
         client = self.loguear_administrador()
-        # response = client.post(MODIFICAR_CURSO_SERVICE, data=parametros)
-        response = client.get(MODIFICAR_CURSO_SERVICE, query_string=parametros)
+        response = client.post(self.get_url_get_curso(self.CURSO["id"]), data=parametros)
         assert (response.status_code == CLIENT_ERROR_BAD_REQUEST)
 
     def test_modificar_curso_no_se_envia_primer_cuatrimestre_invalido_da_error(self):
         parametros = {}
-        parametros["id_curso"] = self.CURSO["id"]
-        parametros["carreras"] = self.obtener_carreras_formateadas(self.CURSO["carreras"])
+        parametros["ids_carreras"] = self.obtener_carreras_formateadas(self.CURSO["carreras"])
         parametros["segundo_cuatrimestre"] = False
-        parametros["docentes"] = self.obtener_docentes_formateados([self.DOCENTE_1])
+        parametros["ids_docentes"] = self.obtener_docentes_formateados([self.DOCENTE_1])
         parametros["horarios"] = self.obtener_horarios_formateados(self.CURSO["horarios"])
 
         client = self.loguear_administrador()
-        # response = client.post(MODIFICAR_CURSO_SERVICE, data=parametros)
-        response = client.get(MODIFICAR_CURSO_SERVICE, query_string=parametros)
+        response = client.post(self.get_url_get_curso(self.CURSO["id"]), data=parametros)
         assert (response.status_code == CLIENT_ERROR_BAD_REQUEST)
 
     def test_modificar_curso_no_se_envia_segundo_cuatrimestre_invalido_da_error(self):
         parametros = {}
-        parametros["id_curso"] = self.CURSO["id"]
-        parametros["carreras"] = self.obtener_carreras_formateadas(self.CURSO["carreras"])
+        parametros["ids_carreras"] = self.obtener_carreras_formateadas(self.CURSO["carreras"])
         parametros["primer_cuatrimestre"] = True
-        parametros["docentes"] = self.obtener_docentes_formateados([self.DOCENTE_1])
+        parametros["ids_docentes"] = self.obtener_docentes_formateados([self.DOCENTE_1])
         parametros["horarios"] = self.obtener_horarios_formateados(self.CURSO["horarios"])
 
         client = self.loguear_administrador()
-        # response = client.post(MODIFICAR_CURSO_SERVICE, data=parametros)
-        response = client.get(MODIFICAR_CURSO_SERVICE, query_string=parametros)
+        response = client.post(self.get_url_get_curso(self.CURSO["id"]), data=parametros)
         assert (response.status_code == CLIENT_ERROR_BAD_REQUEST)
 
     def test_modificar_curso_booleano_valores_se_dicta_segundo_cuatrimestre_invalido_da_error(self):
         parametros = {}
-        parametros["id_curso"] = self.CURSO["id"]
-        parametros["carreras"] = self.obtener_carreras_formateadas(self.CURSO["carreras"])
+        parametros["ids_carreras"] = self.obtener_carreras_formateadas(self.CURSO["carreras"])
         parametros["primer_cuatrimestre"] = True
         parametros["segundo_cuatrimestre"] = "90asdj"
-        parametros["docentes"] = self.obtener_docentes_formateados([self.DOCENTE_1])
+        parametros["ids_docentes"] = self.obtener_docentes_formateados([self.DOCENTE_1])
         parametros["horarios"] = self.obtener_horarios_formateados(self.CURSO["horarios"])
 
         client = self.loguear_administrador()
-        # response = client.post(MODIFICAR_CURSO_SERVICE, data=parametros)
-        response = client.get(MODIFICAR_CURSO_SERVICE, query_string=parametros)
+        response = client.post(self.get_url_get_curso(self.CURSO["id"]), data=parametros)
         assert (response.status_code == CLIENT_ERROR_BAD_REQUEST)
 
     def test_modificar_curso_se_dicta_solo_el_primer_cuatrimestre_lo_modifica(self):
         parametros = {}
-        parametros["id_curso"] = self.CURSO["id"]
-        parametros["carreras"] = self.obtener_carreras_formateadas(self.CURSO["carreras"])
+        parametros["ids_carreras"] = self.obtener_carreras_formateadas(self.CURSO["carreras"])
         parametros["primer_cuatrimestre"] = True
         parametros["segundo_cuatrimestre"] = False
-        parametros["docentes"] = self.obtener_docentes_formateados([self.DOCENTE_1])
+        parametros["ids_docentes"] = self.obtener_docentes_formateados([self.DOCENTE_1])
         parametros["horarios"] = self.obtener_horarios_formateados(self.CURSO["horarios"])
 
         client = self.loguear_administrador()
-        # response = client.post(MODIFICAR_CURSO_SERVICE, data=parametros)
-        response = client.get(MODIFICAR_CURSO_SERVICE, query_string=parametros)
+        response = client.post(self.get_url_get_curso(self.CURSO["id"]), data=parametros)
         assert (response.status_code == SUCCESS_OK)
 
         curso = Curso.query.get(self.CURSO["id"])
@@ -603,16 +543,14 @@ class TestModificarCurso(TestBase):
 
     def test_modificar_curso_se_dicta_solo_el_segundo_cuatrimestre_lo_modifica(self):
         parametros = {}
-        parametros["id_curso"] = self.CURSO["id"]
-        parametros["carreras"] = self.obtener_carreras_formateadas(self.CURSO["carreras"])
+        parametros["ids_carreras"] = self.obtener_carreras_formateadas(self.CURSO["carreras"])
         parametros["primer_cuatrimestre"] = False
         parametros["segundo_cuatrimestre"] = True
-        parametros["docentes"] = self.obtener_docentes_formateados([self.DOCENTE_1])
+        parametros["ids_docentes"] = self.obtener_docentes_formateados([self.DOCENTE_1])
         parametros["horarios"] = self.obtener_horarios_formateados(self.CURSO["horarios"])
 
         client = self.loguear_administrador()
-        # response = client.post(MODIFICAR_CURSO_SERVICE, data=parametros)
-        response = client.get(MODIFICAR_CURSO_SERVICE, query_string=parametros)
+        response = client.post(self.get_url_get_curso(self.CURSO["id"]), data=parametros)
         assert (response.status_code == SUCCESS_OK)
 
         curso = Curso.query.get(self.CURSO["id"])
@@ -636,16 +574,14 @@ class TestModificarCurso(TestBase):
 
     def test_modificar_curso_se_dicta_ambos_cuatrimestres_lo_modifica(self):
         parametros = {}
-        parametros["id_curso"] = self.CURSO["id"]
-        parametros["carreras"] = self.obtener_carreras_formateadas(self.CURSO["carreras"])
+        parametros["ids_carreras"] = self.obtener_carreras_formateadas(self.CURSO["carreras"])
         parametros["primer_cuatrimestre"] = True
         parametros["segundo_cuatrimestre"] = True
-        parametros["docentes"] = self.obtener_docentes_formateados([self.DOCENTE_1])
+        parametros["ids_docentes"] = self.obtener_docentes_formateados([self.DOCENTE_1])
         parametros["horarios"] = self.obtener_horarios_formateados(self.CURSO["horarios"])
 
         client = self.loguear_administrador()
-        # response = client.post(MODIFICAR_CURSO_SERVICE, data=parametros)
-        response = client.get(MODIFICAR_CURSO_SERVICE, query_string=parametros)
+        response = client.post(self.get_url_get_curso(self.CURSO["id"]), data=parametros)
         assert (response.status_code == SUCCESS_OK)
 
         curso = Curso.query.get(self.CURSO["id"])
@@ -669,16 +605,14 @@ class TestModificarCurso(TestBase):
 
     def test_modificar_curso_no_se_dicta_ningun_cuatrimestre_lo_modifica(self):
         parametros = {}
-        parametros["id_curso"] = self.CURSO["id"]
-        parametros["carreras"] = self.obtener_carreras_formateadas(self.CURSO["carreras"])
+        parametros["ids_carreras"] = self.obtener_carreras_formateadas(self.CURSO["carreras"])
         parametros["primer_cuatrimestre"] = False
         parametros["segundo_cuatrimestre"] = False
-        parametros["docentes"] = self.obtener_docentes_formateados([self.DOCENTE_1])
+        parametros["ids_docentes"] = self.obtener_docentes_formateados([self.DOCENTE_1])
         parametros["horarios"] = self.obtener_horarios_formateados(self.CURSO["horarios"])
 
         client = self.loguear_administrador()
-        # response = client.post(MODIFICAR_CURSO_SERVICE, data=parametros)
-        response = client.get(MODIFICAR_CURSO_SERVICE, query_string=parametros)
+        response = client.post(self.get_url_get_curso(self.CURSO["id"]), data=parametros)
         assert (response.status_code == SUCCESS_OK)
 
         curso = Curso.query.get(self.CURSO["id"])
@@ -702,16 +636,14 @@ class TestModificarCurso(TestBase):
 
     def test_modificar_curso_se_dicta_solo_el_primer_cuatrimestre_con_texto_booleano_lo_modifica(self):
         parametros = {}
-        parametros["id_curso"] = self.CURSO["id"]
-        parametros["carreras"] = self.obtener_carreras_formateadas(self.CURSO["carreras"])
+        parametros["ids_carreras"] = self.obtener_carreras_formateadas(self.CURSO["carreras"])
         parametros["primer_cuatrimestre"] = 'true'
         parametros["segundo_cuatrimestre"] = 'false'
-        parametros["docentes"] = self.obtener_docentes_formateados([self.DOCENTE_1])
+        parametros["ids_docentes"] = self.obtener_docentes_formateados([self.DOCENTE_1])
         parametros["horarios"] = self.obtener_horarios_formateados(self.CURSO["horarios"])
 
         client = self.loguear_administrador()
-        # response = client.post(MODIFICAR_CURSO_SERVICE, data=parametros)
-        response = client.get(MODIFICAR_CURSO_SERVICE, query_string=parametros)
+        response = client.post(self.get_url_get_curso(self.CURSO["id"]), data=parametros)
         assert (response.status_code == SUCCESS_OK)
 
         curso = Curso.query.get(self.CURSO["id"])
@@ -735,16 +667,14 @@ class TestModificarCurso(TestBase):
 
     def test_modificar_curso_se_dicta_solo_el_segundo_cuatrimestre_con_texto_booleano_lo_modifica(self):
         parametros = {}
-        parametros["id_curso"] = self.CURSO["id"]
-        parametros["carreras"] = self.obtener_carreras_formateadas(self.CURSO["carreras"])
+        parametros["ids_carreras"] = self.obtener_carreras_formateadas(self.CURSO["carreras"])
         parametros["primer_cuatrimestre"] = 'false'
         parametros["segundo_cuatrimestre"] = 'true'
-        parametros["docentes"] = self.obtener_docentes_formateados([self.DOCENTE_1])
+        parametros["ids_docentes"] = self.obtener_docentes_formateados([self.DOCENTE_1])
         parametros["horarios"] = self.obtener_horarios_formateados(self.CURSO["horarios"])
 
         client = self.loguear_administrador()
-        # response = client.post(MODIFICAR_CURSO_SERVICE, data=parametros)
-        response = client.get(MODIFICAR_CURSO_SERVICE, query_string=parametros)
+        response = client.post(self.get_url_get_curso(self.CURSO["id"]), data=parametros)
         assert (response.status_code == SUCCESS_OK)
 
         curso = Curso.query.get(self.CURSO["id"])
@@ -768,16 +698,14 @@ class TestModificarCurso(TestBase):
 
     def test_modificar_curso_se_dicta_ambos_cuatrimestres_con_texto_booleano_lo_modifica(self):
         parametros = {}
-        parametros["id_curso"] = self.CURSO["id"]
-        parametros["carreras"] = self.obtener_carreras_formateadas(self.CURSO["carreras"])
+        parametros["ids_carreras"] = self.obtener_carreras_formateadas(self.CURSO["carreras"])
         parametros["primer_cuatrimestre"] = 'true'
         parametros["segundo_cuatrimestre"] = 'true'
-        parametros["docentes"] = self.obtener_docentes_formateados([self.DOCENTE_1])
+        parametros["ids_docentes"] = self.obtener_docentes_formateados([self.DOCENTE_1])
         parametros["horarios"] = self.obtener_horarios_formateados(self.CURSO["horarios"])
 
         client = self.loguear_administrador()
-        # response = client.post(MODIFICAR_CURSO_SERVICE, data=parametros)
-        response = client.get(MODIFICAR_CURSO_SERVICE, query_string=parametros)
+        response = client.post(self.get_url_get_curso(self.CURSO["id"]), data=parametros)
         assert (response.status_code == SUCCESS_OK)
 
         curso = Curso.query.get(self.CURSO["id"])
@@ -801,16 +729,14 @@ class TestModificarCurso(TestBase):
 
     def test_modificar_curso_no_se_dicta_ningun_cuatrimestre_con_texto_booleano_lo_modifica(self):
         parametros = {}
-        parametros["id_curso"] = self.CURSO["id"]
-        parametros["carreras"] = self.obtener_carreras_formateadas(self.CURSO["carreras"])
+        parametros["ids_carreras"] = self.obtener_carreras_formateadas(self.CURSO["carreras"])
         parametros["primer_cuatrimestre"] = 'false'
         parametros["segundo_cuatrimestre"] = 'false'
-        parametros["docentes"] = self.obtener_docentes_formateados([self.DOCENTE_1])
+        parametros["ids_docentes"] = self.obtener_docentes_formateados([self.DOCENTE_1])
         parametros["horarios"] = self.obtener_horarios_formateados(self.CURSO["horarios"])
 
         client = self.loguear_administrador()
-        # response = client.post(MODIFICAR_CURSO_SERVICE, data=parametros)
-        response = client.get(MODIFICAR_CURSO_SERVICE, query_string=parametros)
+        response = client.post(self.get_url_get_curso(self.CURSO["id"]), data=parametros)
         assert (response.status_code == SUCCESS_OK)
 
         curso = Curso.query.get(self.CURSO["id"])
@@ -834,16 +760,14 @@ class TestModificarCurso(TestBase):
 
     def test_modificar_curso_docentes_lo_modifica(self):
         parametros = {}
-        parametros["id_curso"] = self.CURSO["id"]
-        parametros["carreras"] = self.obtener_carreras_formateadas(self.CURSO["carreras"])
+        parametros["ids_carreras"] = self.obtener_carreras_formateadas(self.CURSO["carreras"])
         parametros["primer_cuatrimestre"] = self.CURSO["se_dicta_primer_cuatrimestre"]
         parametros["segundo_cuatrimestre"] = self.CURSO["se_dicta_segundo_cuatrimestre"]
-        parametros["docentes"] = self.obtener_docentes_formateados([self.DOCENTE_2])
+        parametros["ids_docentes"] = self.obtener_docentes_formateados([self.DOCENTE_2])
         parametros["horarios"] = self.obtener_horarios_formateados(self.CURSO["horarios"])
 
         client = self.loguear_administrador()
-        # response = client.post(MODIFICAR_CURSO_SERVICE, data=parametros)
-        response = client.get(MODIFICAR_CURSO_SERVICE, query_string=parametros)
+        response = client.post(self.get_url_get_curso(self.CURSO["id"]), data=parametros)
         assert (response.status_code == SUCCESS_OK)
 
         curso = Curso.query.get(self.CURSO["id"])
@@ -871,71 +795,49 @@ class TestModificarCurso(TestBase):
 
     def test_modificar_curso_no_enviar_docentes_da_error(self):
         parametros = {}
-        parametros["id_curso"] = self.CURSO["id"]
-        parametros["carreras"] = self.obtener_carreras_formateadas(self.CURSO["carreras"])
+        parametros["ids_carreras"] = self.obtener_carreras_formateadas(self.CURSO["carreras"])
         parametros["primer_cuatrimestre"] = 'false'
         parametros["segundo_cuatrimestre"] = 'false'
         parametros["horarios"] = self.obtener_horarios_formateados(self.CURSO["horarios"])
 
         client = self.loguear_administrador()
-        # response = client.post(MODIFICAR_CURSO_SERVICE, data=parametros)
-        response = client.get(MODIFICAR_CURSO_SERVICE, query_string=parametros)
+        response = client.post(self.get_url_get_curso(self.CURSO["id"]), data=parametros)
         assert (response.status_code == CLIENT_ERROR_BAD_REQUEST)
 
     def test_modificar_curso_enviar_docentes_con_ids_inexistentes_da_error(self):
         parametros = {}
-        parametros["id_curso"] = self.CURSO["id"]
-        parametros["carreras"] = self.obtener_carreras_formateadas(self.CURSO["carreras"])
+        parametros["ids_carreras"] = self.obtener_carreras_formateadas(self.CURSO["carreras"])
         parametros["primer_cuatrimestre"] = 'false'
         parametros["segundo_cuatrimestre"] = 'false'
         parametros["horarios"] = self.obtener_horarios_formateados(self.CURSO["horarios"])
-        parametros["docentes"] = "58;69"
+        parametros["ids_docentes"] = json.dumps([58,69])
 
         client = self.loguear_administrador()
-        # response = client.post(MODIFICAR_CURSO_SERVICE, data=parametros)
-        response = client.get(MODIFICAR_CURSO_SERVICE, query_string=parametros)
-        assert (response.status_code == CLIENT_ERROR_BAD_REQUEST)
+        response = client.post(self.get_url_get_curso(self.CURSO["id"]), data=parametros)
+        assert (response.status_code == CLIENT_ERROR_NOT_FOUND)
 
     def test_modificar_curso_enviar_docentes_con_ids_invalidos_da_error(self):
         parametros = {}
-        parametros["id_curso"] = self.CURSO["id"]
-        parametros["carreras"] = self.obtener_carreras_formateadas(self.CURSO["carreras"])
+        parametros["ids_carreras"] = self.obtener_carreras_formateadas(self.CURSO["carreras"])
         parametros["primer_cuatrimestre"] = 'false'
         parametros["segundo_cuatrimestre"] = 'false'
         parametros["horarios"] = self.obtener_horarios_formateados(self.CURSO["horarios"])
-        parametros["docentes"] = "58a;7s"
+        parametros["ids_docentes"] = "58a;7s"
 
         client = self.loguear_administrador()
-        # response = client.post(MODIFICAR_CURSO_SERVICE, data=parametros)
-        response = client.get(MODIFICAR_CURSO_SERVICE, query_string=parametros)
-        assert (response.status_code == CLIENT_ERROR_BAD_REQUEST)
-
-    def test_modificar_curso_enviar_docentes_con_ids_validos_y_separador_invalido_da_error(self):
-        parametros = {}
-        parametros["id_curso"] = self.CURSO["id"]
-        parametros["carreras"] = self.obtener_carreras_formateadas(self.CURSO["carreras"])
-        parametros["primer_cuatrimestre"] = 'false'
-        parametros["segundo_cuatrimestre"] = 'false'
-        parametros["horarios"] = self.obtener_horarios_formateados(self.CURSO["horarios"])
-        parametros["docentes"] = "1-2"
-
-        client = self.loguear_administrador()
-        # response = client.post(MODIFICAR_CURSO_SERVICE, data=parametros)
-        response = client.get(MODIFICAR_CURSO_SERVICE, query_string=parametros)
+        response = client.post(self.get_url_get_curso(self.CURSO["id"]), data=parametros)
         assert (response.status_code == CLIENT_ERROR_BAD_REQUEST)
 
     def test_modificar_horarios_validos_agregar_un_horario_nuevo_lo_modifica(self):
         parametros = {}
-        parametros["id_curso"] = self.CURSO["id"]
-        parametros["carreras"] = self.obtener_carreras_formateadas(self.CURSO["carreras"])
+        parametros["ids_carreras"] = self.obtener_carreras_formateadas(self.CURSO["carreras"])
         parametros["primer_cuatrimestre"] = self.CURSO["se_dicta_primer_cuatrimestre"]
         parametros["segundo_cuatrimestre"] = self.CURSO["se_dicta_segundo_cuatrimestre"]
-        parametros["docentes"] = self.obtener_docentes_formateados([self.DOCENTE_1])
+        parametros["ids_docentes"] = self.obtener_docentes_formateados([self.DOCENTE_1])
         parametros["horarios"] = self.obtener_horarios_formateados(self.CURSO["horarios"] + [self.HORARIO_3])
 
         client = self.loguear_administrador()
-        # response = client.post(MODIFICAR_CURSO_SERVICE, data=parametros)
-        response = client.get(MODIFICAR_CURSO_SERVICE, query_string=parametros)
+        response = client.post(self.get_url_get_curso(self.CURSO["id"]), data=parametros)
         assert (response.status_code == SUCCESS_OK)
 
         curso = Curso.query.get(self.CURSO["id"])
@@ -959,16 +861,14 @@ class TestModificarCurso(TestBase):
 
     def test_modificar_horarios_validos_solo_horarios_nuevos_lo_modifica(self):
         parametros = {}
-        parametros["id_curso"] = self.CURSO["id"]
-        parametros["carreras"] = self.obtener_carreras_formateadas(self.CURSO["carreras"])
+        parametros["ids_carreras"] = self.obtener_carreras_formateadas(self.CURSO["carreras"])
         parametros["primer_cuatrimestre"] = self.CURSO["se_dicta_primer_cuatrimestre"]
         parametros["segundo_cuatrimestre"] = self.CURSO["se_dicta_segundo_cuatrimestre"]
-        parametros["docentes"] = self.obtener_docentes_formateados([self.DOCENTE_1])
+        parametros["ids_docentes"] = self.obtener_docentes_formateados([self.DOCENTE_1])
         parametros["horarios"] = self.obtener_horarios_formateados([self.HORARIO_3, self.HORARIO_4])
 
         client = self.loguear_administrador()
-        # response = client.post(MODIFICAR_CURSO_SERVICE, data=parametros)
-        response = client.get(MODIFICAR_CURSO_SERVICE, query_string=parametros)
+        response = client.post(self.get_url_get_curso(self.CURSO["id"]), data=parametros)
         assert (response.status_code == SUCCESS_OK)
 
         curso = Curso.query.get(self.CURSO["id"])
@@ -990,73 +890,76 @@ class TestModificarCurso(TestBase):
         for horario in [self.HORARIO_3, self.HORARIO_4]:
             assert (self.se_encuentra_el_horario(horario, horarios))
 
-    def test_modificar_curso_horario_invalido_da_error(self):
+    def test_modificar_curso_horario_dia_invalido_da_error(self):
         parametros = {}
-        parametros["id_curso"] = self.CURSO["id"]
-        parametros["carreras"] = self.obtener_carreras_formateadas(self.CURSO["carreras"])
+        parametros["ids_carreras"] = self.obtener_carreras_formateadas(self.CURSO["carreras"])
         parametros["primer_cuatrimestre"] = self.CURSO["se_dicta_primer_cuatrimestre"]
         parametros["segundo_cuatrimestre"] = self.CURSO["se_dicta_segundo_cuatrimestre"]
-        parametros["docentes"] = self.obtener_docentes_formateados([self.DOCENTE_1])
-        parametros["horarios"] = "sd54fs5"
+        parametros["ids_docentes"] = self.obtener_docentes_formateados([self.DOCENTE_1])
+        parametros["horarios"] = json.dumps([{"dia": "fruta", "hora_desde": "07:30", "hora_hasta": "12:00"}])
 
         client = self.loguear_administrador()
-        # response = client.post(MODIFICAR_CURSO_SERVICE, data=parametros)
-        response = client.get(MODIFICAR_CURSO_SERVICE, query_string=parametros)
+        response = client.post(self.get_url_get_curso(self.CURSO["id"]), data=parametros)
+        assert (response.status_code == CLIENT_ERROR_BAD_REQUEST)
+
+    def test_modificar_curso_horario_hora_desde_invalido_da_error(self):
+        parametros = {}
+        parametros["ids_carreras"] = self.obtener_carreras_formateadas(self.CURSO["carreras"])
+        parametros["primer_cuatrimestre"] = self.CURSO["se_dicta_primer_cuatrimestre"]
+        parametros["segundo_cuatrimestre"] = self.CURSO["se_dicta_segundo_cuatrimestre"]
+        parametros["ids_docentes"] = self.obtener_docentes_formateados([self.DOCENTE_1])
+        parametros["horarios"] = json.dumps([{"dia": "LUNES", "hora_desde": "07,0", "hora_hasta": "12:00"}])
+
+        client = self.loguear_administrador()
+        response = client.post(self.get_url_get_curso(self.CURSO["id"]), data=parametros)
+        assert (response.status_code == CLIENT_ERROR_BAD_REQUEST)
+
+    def test_modificar_curso_horario_dia_invalido_da_error(self):
+        parametros = {}
+        parametros["ids_carreras"] = self.obtener_carreras_formateadas(self.CURSO["carreras"])
+        parametros["primer_cuatrimestre"] = self.CURSO["se_dicta_primer_cuatrimestre"]
+        parametros["segundo_cuatrimestre"] = self.CURSO["se_dicta_segundo_cuatrimestre"]
+        parametros["ids_docentes"] = self.obtener_docentes_formateados([self.DOCENTE_1])
+        parametros["horarios"] = json.dumps([{"dia": "LUNES", "hora_desde": "07:30", "hora_hasta": "adad0"}])
+
+        client = self.loguear_administrador()
+        response = client.post(self.get_url_get_curso(self.CURSO["id"]), data=parametros)
         assert (response.status_code == CLIENT_ERROR_BAD_REQUEST)
 
     def test_modificar_curso_no_enviar_horario_da_error(self):
         parametros = {}
-        parametros["id_curso"] = self.CURSO["id"]
-        parametros["carreras"] = self.obtener_carreras_formateadas(self.CURSO["carreras"])
+        parametros["ids_carreras"] = self.obtener_carreras_formateadas(self.CURSO["carreras"])
         parametros["primer_cuatrimestre"] = self.CURSO["se_dicta_primer_cuatrimestre"]
         parametros["segundo_cuatrimestre"] = self.CURSO["se_dicta_segundo_cuatrimestre"]
-        parametros["docentes"] = self.obtener_docentes_formateados([self.DOCENTE_1])
+        parametros["ids_docentes"] = self.obtener_docentes_formateados([self.DOCENTE_1])
 
         client = self.loguear_administrador()
-        # response = client.post(MODIFICAR_CURSO_SERVICE, data=parametros)
-        response = client.get(MODIFICAR_CURSO_SERVICE, query_string=parametros)
-        assert (response.status_code == CLIENT_ERROR_BAD_REQUEST)
-
-    def test_modificar_curso_no_enviar_id_curso_da_error(self):
-        parametros = {}
-        parametros["carreras"] = self.obtener_carreras_formateadas(self.CURSO["carreras"])
-        parametros["primer_cuatrimestre"] = self.CURSO["se_dicta_primer_cuatrimestre"]
-        parametros["segundo_cuatrimestre"] = self.CURSO["se_dicta_segundo_cuatrimestre"]
-        parametros["docentes"] = self.obtener_docentes_formateados([self.DOCENTE_1])
-        parametros["horarios"] = self.obtener_horarios_formateados(self.CURSO["horarios"])
-
-        client = self.loguear_administrador()
-        # response = client.post(MODIFICAR_CURSO_SERVICE, data=parametros)
-        response = client.get(MODIFICAR_CURSO_SERVICE, query_string=parametros)
+        response = client.post(self.get_url_get_curso(self.CURSO["id"]), data=parametros)
         assert (response.status_code == CLIENT_ERROR_BAD_REQUEST)
 
     def test_modificar_curso_id_curso_invalido_da_error(self):
         parametros = {}
-        parametros["id_curso"] = "sd9"
-        parametros["carreras"] = self.obtener_carreras_formateadas(self.CURSO["carreras"])
+        parametros["ids_carreras"] = self.obtener_carreras_formateadas(self.CURSO["carreras"])
         parametros["primer_cuatrimestre"] = self.CURSO["se_dicta_primer_cuatrimestre"]
         parametros["segundo_cuatrimestre"] = self.CURSO["se_dicta_segundo_cuatrimestre"]
-        parametros["docentes"] = self.obtener_docentes_formateados([self.DOCENTE_1])
+        parametros["ids_docentes"] = self.obtener_docentes_formateados([self.DOCENTE_1])
         parametros["horarios"] = self.obtener_horarios_formateados(self.CURSO["horarios"])
 
         client = self.loguear_administrador()
-        # response = client.post(MODIFICAR_CURSO_SERVICE, data=parametros)
-        response = client.get(MODIFICAR_CURSO_SERVICE, query_string=parametros)
-        assert (response.status_code == CLIENT_ERROR_BAD_REQUEST)
+        response = client.post(self.get_url_get_curso("sd9"), data=parametros)
+        assert (response.status_code == CLIENT_ERROR_NOT_FOUND)
 
     def test_modificar_curso_id_curso_valido_inexistente_da_error(self):
         parametros = {}
-        parametros["id_curso"] = "15"
-        parametros["carreras"] = self.obtener_carreras_formateadas(self.CURSO["carreras"])
+        parametros["ids_carreras"] = self.obtener_carreras_formateadas(self.CURSO["carreras"])
         parametros["primer_cuatrimestre"] = self.CURSO["se_dicta_primer_cuatrimestre"]
         parametros["segundo_cuatrimestre"] = self.CURSO["se_dicta_segundo_cuatrimestre"]
-        parametros["docentes"] = self.obtener_docentes_formateados([self.DOCENTE_1])
+        parametros["ids_docentes"] = self.obtener_docentes_formateados([self.DOCENTE_1])
         parametros["horarios"] = self.obtener_horarios_formateados(self.CURSO["horarios"])
 
         client = self.loguear_administrador()
-        # response = client.post(MODIFICAR_CURSO_SERVICE, data=parametros)
-        response = client.get(MODIFICAR_CURSO_SERVICE, query_string=parametros)
-        assert (response.status_code == CLIENT_ERROR_BAD_REQUEST)
+        response = client.post(self.get_url_get_curso(15), data=parametros)
+        assert (response.status_code == CLIENT_ERROR_NOT_FOUND)
 
 
 if __name__ == '__main__':

@@ -285,6 +285,120 @@
             "description": "El ID de curso no existe."
           }
         }
+      },
+      "post": {
+        "tags": [
+          "curso"
+        ],
+        "summary": "Modifica el curso del id correspondiente",
+        "description": "Modifica los datos del curso del id correspondiente",
+        "produces": [
+          "application/json"
+        ],
+        "consumes": [
+          "multipart/form-data"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "idCurso",
+            "required": true,
+            "type": "integer",
+            "description": "El ID del curso a modificar."
+          },
+          {
+            "in": "formData",
+            "name": "ids_carreras",
+            "required": true,
+            "type": "array",
+            "description": "Lista de ids de carreras en las que el curso está habilitado.",
+            "items": {
+              "type": "integer"
+            }
+          },
+          {
+            "in": "formData",
+            "name": "primer_cuatrimestre",
+            "required": true,
+            "type": "boolean",
+            "description": "Indica si el curso se encuentra habilitado para los primeros cuatrimestres. True en caso de estar habilitado, False en caso contrario."
+          },
+          {
+            "in": "formData",
+            "name": "segundo_cuatrimestre",
+            "required": true,
+            "type": "boolean",
+            "description": "Indica si el curso se encuentra habilitado para los segundos cuatrimestres. True en caso de estar habilitado, False en caso contrario."
+          },
+          {
+            "in": "formData",
+            "name": "ids_docentes",
+            "required": true,
+            "type": "array",
+            "description": "Lista de ids de docentes que dictan el curso.",
+            "items": {
+              "type": "integer"
+            }
+          },
+          {
+            "in": "formData",
+            "name": "horarios",
+            "required": true,
+            "description": "Lista de horarios que componen la oferta completa del curso. EL horario en el que se dicta el curso es la sumatoria de su oferta horaria.",
+            "type": "array",
+            "items": {
+              "$ref": "#/definitions/HorarioReloj"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "BAD REQUEST. Uno o más parámetros no cumplen con las condiciones requeridas."
+          },
+          "401": {
+            "description": "La información de autorización no fue enviada o es inválida."
+          },
+          "404": {
+            "description": "El curso del ID especificado no fue encontrado."
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "curso"
+        ],
+        "summary": "Elimina un curso",
+        "description": "Elimina un curso",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "idCurso",
+            "required": true,
+            "type": "integer",
+            "minimum": 1,
+            "description": "El ID del curso a buscar."
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "OK. No se devuelven datos"
+          },
+          "400": {
+            "description": "BAD REQUEST. El ID del curso debe ser un entero y mayor que 0."
+          },
+          "401": {
+            "description": "La información de autorización no fue enviada o es inválida."
+          },
+          "404": {
+            "description": "El curso del ID especificado no fue encontrado."
+          }
+        }
       }
     },
     "/tematica/{idTematica}": {
@@ -1022,6 +1136,26 @@
           "type": "string",
           "description": "Descripción del tipo de pregunta",
           "example": "Texto Libre"
+        }
+      }
+    },
+    "HorarioReloj": {
+      "type": "object",
+      "properties": {
+        "dia": {
+          "type": "string",
+          "description": "Dia de la semana (LUNES; MARTES; MIERCOLES; JUEVES; VIERNES; SABADO)",
+          "example": "LUNES"
+        },
+        "hora_desde": {
+          "type": "string",
+          "description": "Hora de inicio del horario.",
+          "example": "07:30"
+        },
+        "hora_hasta": {
+          "type": "string",
+          "description": "Hora de finalización del horario.",
+          "example": "12:00"
         }
       }
     }

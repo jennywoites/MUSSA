@@ -7,6 +7,7 @@ from flask_user import current_user
 from app.models.alumno_models import Alumno
 from app.models.carreras_models import Materia
 from app import db
+from app.utils import DIAS, convertir_horario
 
 
 class BaseService(Resource):
@@ -74,8 +75,35 @@ class BaseService(Resource):
         Devuelve una lista decodificada.
         Si el campo no existe devuelve una lista vacía
         """
-        l_valores = self.obtener_parametro(nombre_campo)
-        return json.loads(l_valores) if l_valores else []
+        try:
+            l_valores = self.obtener_parametro(nombre_campo)
+            lista_decodificada = json.loads(l_valores)
+            return lista_decodificada
+        except:
+            return []
+
+    def obtener_lista_de_horarios(self, nombre_campo):
+        """
+        Devuelve una lista de horarios decodificada.
+        Para cada hora reloj, la transforma en el horario
+        decimal correspondiente. Si no puede trasnformarlo,
+        lo deja en None.
+        Si el campo no existe devuelve una lusta vacía.
+        """
+        l_horarios = self.obtener_lista(nombre_campo)
+        for horario in l_horarios:
+            horario["dia"] = horario["dia"].upper()
+            horario["hora_desde"] = self.aux_convertir_horario(horario["hora_desde"])
+            horario["hora_hasta"] = self.aux_convertir_horario(horario["hora_hasta"])
+
+        return l_horarios
+
+    def aux_convertir_horario(self, horario_a_convertir):
+        try:
+            nuevo_horario = convertir_horario(*horario_a_convertir.split(":"))
+            return nuevo_horario
+        except:
+            return None
 
     ##########################################################
     ##                      Validaciones                    ##
@@ -163,6 +191,22 @@ class BaseService(Resource):
 
         return es_valido, msj, codigo
 
+    def horario_es_valido(self, nombre_parametro, valor, es_obligatorio):
+        dia = valor["dia"]
+        hora_desde = valor["hora_desde"]
+        hora_hasta = valor["hora_hasta"]
+
+        if not dia in DIAS:
+            return False, 'El dia {} de {} no es un día válido'.format(dia, nombre_parametro), CLIENT_ERROR_BAD_REQUEST
+
+        es_valido = (hora_desde is not None and hora_hasta is not None)
+
+        msj, codigo = ('Las horas desde/hasta de {} contienen errores'.format(nombre_parametro),
+                       CLIENT_ERROR_BAD_REQUEST) if not es_valido else (
+            'El parametro {} está correcto'.format(nombre_parametro), -1)
+
+        return es_valido, msj, codigo
+
     def existe_id(self, nombre_parametro, id_clase, es_obligatorio, clase):
         if not id_clase and not es_obligatorio:
             return self.mensaje_campo_no_obligatorio(nombre_parametro)
@@ -179,7 +223,7 @@ class BaseService(Resource):
             return self.mensaje_campo_no_obligatorio(nombre_parametro)
 
         msj_base = "El valor booleano " + nombre_parametro
-        msj, codigo = (msj_base + ' no es válido', -1) if valor is None \
+        msj, codigo = (msj_base + ' no es válido', -1) if valor is not None \
             else (msj_base + ' es válido', CLIENT_ERROR_BAD_REQUEST)
 
         return valor is not None, msj, codigo
@@ -193,8 +237,8 @@ class BaseService(Resource):
 
         es_valido = (len_min <= len(valor) <= len_max)
         msj, codigo = ("El texto de {} debe tener al menos {} caracteres, y tener una logitud "
-                       "menor a {} caracteres".format(nombre_parametro, len_min, len_max), CLIENT_ERROR_BAD_REQUEST)\
-                        if not es_valido else ('El texto de ' + nombre_parametro + ' es valido.', -1)
+                       "menor a {} caracteres".format(nombre_parametro, len_min, len_max), CLIENT_ERROR_BAD_REQUEST) \
+            if not es_valido else ('El texto de ' + nombre_parametro + ' es valido.', -1)
 
         return es_valido, msj, codigo
 
