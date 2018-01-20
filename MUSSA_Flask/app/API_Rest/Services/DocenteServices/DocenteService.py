@@ -29,12 +29,6 @@ class DocenteService(BaseService):
 
         apellido = self.obtener_texto('apellido')
         nombre = self.obtener_texto('nombre')
-
-        if not nombre or not apellido:
-            msj = "Uno o más parámetros requeridos no fueron enviados"
-            self.logg_error(msj)
-            return {'Error': msj}, CLIENT_ERROR_BAD_REQUEST
-
         l_ids_cursos = self.obtener_lista('l_ids_cursos')
 
         parametros_son_validos, msj, codigo = self.validar_parametros(dict([

@@ -2,6 +2,7 @@
 
 {% block content %}
 
+    <script type='text/javascript' src="/js/services.js"></script>
     <script>
 
         $(function(){
@@ -139,75 +140,30 @@
             selector_docentes.options[indexTabla -1].hidden = false;
         }
 
-        //*****************************************************************************
-        SERVICE_MODIFICAR_CURSO = '/api/admin/ModificarCurso'
-        SUCCESS = 200
-
-        function do_request(method, page, parametros, onSucces, onError) {
-            var method = method || "GET";
-
-            xmlhttp = new XMLHttpRequest();
-
-            xmlhttp.onreadystatechange = function() {
-                if (this.status == 0 || this.readyState != 4)
-                    return;
-
-                if ( this.status != SUCCESS ) {
-                    onError(this.status, this.responseText);
-                }
-                else { 
-                    json_result = (this.responseText == "") ? {} : JSON.parse(this.responseText)
-                    onSucces(this.status, json_result);
-                }
-            }
-
-            var encoded_params = jQuery.param(parametros)
-            var url = page + '?' + encoded_params
-            xmlhttp.open(method, url, true);
-            xmlhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-            xmlhttp.withCredentials = true;
-            xmlhttp.send();
-        }
-
-        function obtener_parametros() {
-            var parametros = {};
-            parametros["id_curso"] = {{curso["id"]}};
-            parametros["carreras"] = obtener_carreras_seleccionadas();
-            parametros["primer_cuatrimestre"] = se_cursa_primer_cuatrimestre();
-            parametros["segundo_cuatrimestre"] = se_cursa_segundo_cuatrimestre();
-            parametros["docentes"] = obtener_docentes();
-            parametros["horarios"] = obtener_horarios();
-
-            return parametros;
-        }
-
         function obtener_horarios() {
-            l_horarios = "";
+            l_horarios = [];
             var horarios = document.getElementById("tabla_cursos_guardados").rows;
             for (var i=1; i<horarios.length; i++) {
                 horario = horarios[i].cells;
-                if (l_horarios != "")
-                    l_horarios += ";"
-
-                l_horarios += "{";
-                l_horarios += "dia:" + horario[0].innerText + ",";
-                l_horarios += "hora_desde:" + horario[1].innerText + ",";
-                l_horarios += "hora_hasta:" + horario[2].innerText;
-                l_horarios += "}"
+                l_horarios.push({
+                    "dia": horario[0].innerText,
+                    "hora_desde": horario[1].innerText,
+                    "hora_hasta": horario[2].innerText
+                })
             }
             return l_horarios;
         }
 
         function obtener_docentes() {
-            var ids = "";
+            var ids_docentes = [];
             var tabla = document.getElementById("tabla_docentes");
             for (var j=1; j<tabla.rows.length; j++) {
                 var docente_actual = tabla.rows[j];
                 if (!docente_actual.hidden) {
-                    ids += docente_actual.id + ";";
+                    ids_docentes.push(docente_actual.id);
                 }
             }
-            return ids.substring(0,ids.length-1);
+            return ids_docentes;
         }
 
         function no_hay_docentes_habilitados() {
@@ -221,24 +177,14 @@
             return true;
         }
 
-        function se_cursa_primer_cuatrimestre() {
-            return $("input:checkbox[name^='check_primer_cuatri']")[0].checked;
-        }
-
-        function se_cursa_segundo_cuatrimestre() {
-            return $("input:checkbox[name^='check_segundo_cuatri']")[0].checked;
-        }
-
         function obtener_carreras_seleccionadas() {
             var carreras = {{carreras|safe}};
-            var ids_carreras = []
+            var ids_carreras = [];
             for (var i=0; i<carreras.length; i++) {
                 var carrera = carreras[i];
                 var nombre_input = "input:checkbox[name^='carrera-" + carrera["codigo"] + "']";
                 if ($(nombre_input)[0].checked) {
-                    if (ids_carreras != "")
-                        ids_carreras += ";";
-                    ids_carreras += carrera["id_carrera"];
+                    ids_carreras.push(carrera["id_carrera"]);
                 }
             }
 
@@ -246,9 +192,11 @@
         }
 
         function guardarHorario() {
-            var param = obtener_parametros();
+            var ids_carreras = obtener_carreras_seleccionadas();
+            var ids_docentes = obtener_docentes();
+            var horarios = obtener_horarios();
 
-            if (param["carreras"].length == 0) {
+            if (ids_carreras.length == 0) {
                  document.getElementById("error_label_carrera_habilitada").style["display"] = "";
                  return false;
             } else {
@@ -262,7 +210,13 @@
                  document.getElementById("error_label_docentes_habilitados").style["display"] = "none";
             }
 
-            do_request('GET', SERVICE_MODIFICAR_CURSO, param, function(state, result) {
+            var csrf_token = '{{ csrf_token() }}';
+            var idCurso = {{curso["id_curso"]}};
+            var primer_cuatrimestre = $("input:checkbox[name^='check_primer_cuatri']")[0].checked;;
+            var segundo_cuatrimestre = $("input:checkbox[name^='check_segundo_cuatri']")[0].checked;
+
+            modificar_curso_service(csrf_token, idCurso, ids_carreras, primer_cuatrimestre, segundo_cuatrimestre,
+            ids_docentes, horarios, function(state, result) {
                 window.location.replace("{{ url_for('main.administrar_horarios_page') }}");
             }, function(state, result) {
                 var error_label = document.getElementById("error_al_guardar_label");

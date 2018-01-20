@@ -186,6 +186,3 @@ def add_resources_usuarios(api):
 def add_resources_administrador(api):
     from app.API_Rest.Services.GuardarHorariosDesdeArchivoPDFService import GuardarHorariosDesdeArchivoPDF
     api.add_resource(GuardarHorariosDesdeArchivoPDF, '/api/admin/GuardarHorariosDesdeArchivoPDF')
-
-    from app.API_Rest.Services.ModificarCursoService import ModificarCurso
-    api.add_resource(ModificarCurso, '/api/admin/ModificarCurso')

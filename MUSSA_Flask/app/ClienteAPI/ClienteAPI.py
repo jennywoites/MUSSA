@@ -186,6 +186,19 @@ class ClienteAPI:
         curso = self.get_curso(cookie, idCurso)
         return curso["datos_docentes"]
 
+    def modificar_curso(self, cookie, idCurso, ids_carreras, primer_cuatrimestre, segundo_cuatrimestre, ids_docentes,
+                        horarios):
+        url_servicio = self.get_url_get_curso(idCurso)
+
+        parametros = {}
+        parametros["ids_carreras"] = json.dumps(ids_carreras)
+        parametros["primer_cuatrimestre"] = primer_cuatrimestre
+        parametros["segundo_cuatrimestre"] = segundo_cuatrimestre
+        parametros["ids_docentes"] = json.dumps(ids_docentes)
+        parametros["horarios"] = json.dumps(horarios)
+
+        return self.invocar_post(url_servicio, cookie, parametros)
+
     def obtener_cursos_con_filtros(self, cookie, nombre_curso='', codigo_materia='', id_carrera='', filtrar_cursos=''):
         url_servicio = self.get_url_all_cursos()
 
