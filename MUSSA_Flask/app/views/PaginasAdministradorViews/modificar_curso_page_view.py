@@ -2,7 +2,6 @@ from flask import render_template
 from flask import request
 from flask_user import roles_accepted
 from app.views.base_view import main_blueprint
-from app.views.Utils.invocaciones_de_servicios import *
 from app.utils import frange, get_numero_dos_digitos, DIAS
 from app.ClienteAPI.ClienteAPI import ClienteAPI
 
@@ -15,10 +14,11 @@ HORA_MAX = 23
 def modificar_curso_page(idCurso):
     cookies = request.cookies
 
-    curso = ClienteAPI().get_curso(cookies, idCurso)
-    docentes_actuales = ClienteAPI().obtener_docentes_del_curso(cookies, idCurso)
-    docentes = ClienteAPI().obtener_todos_los_docentes(cookies)
-    carreras = ClienteAPI().obtener_todas_las_carreras(request.cookies)
+    cliente = ClienteAPI()
+    curso = cliente.get_curso(cookies, idCurso)
+    docentes_actuales = cliente.obtener_docentes_del_curso(cookies, idCurso)
+    docentes = cliente.obtener_todos_los_docentes(cookies)
+    carreras = cliente.obtener_todas_las_carreras(request.cookies)
 
     carreras_curso = []
     for carrera in carreras:
