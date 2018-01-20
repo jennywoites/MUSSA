@@ -4,9 +4,9 @@ from flask import request, url_for, redirect
 from app.views.base_view import main_blueprint
 from app.views.Utils.invocaciones_de_servicios import *
 from app.DAO.EncuestasDAO import *
-from app.utils import frange, get_numero_dos_digitos, DIAS
 from app.ClienteAPI.ClienteAPI import ClienteAPI
 from app.API_Rest.codes import *
+
 
 @main_blueprint.route('/encuestas/visualizar_encuesta/general/<int:idEncuestaAlumno>', methods=['GET'])
 @login_required
