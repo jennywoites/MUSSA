@@ -25,12 +25,12 @@ from tests.TestAPIServicios.TestEncuestaServices.TestObtenerPreguntasEncuesta im
 
 from tests.TestAPIServicios.TestAlumnoServices.TestObtenerPadronAlumno import TestObtenerPadronAlumno
 from tests.TestAPIServicios.TestAlumnoServices.TestModificarPadronAlumno import TestModificarPadronAlumno
+from tests.TestAPIServicios.TestAlumnoServices.TestObtenerMateriasAlumno import TestObtenerMateriasAlumno
 
 #################################################
 from tests.TestAPIServicios.TestAgregarMateriaAlumno import TestAgregarMateriaAlumno
 from tests.TestAPIServicios.TestGuardarRespuestasEncuestaAlumno import TestGuardarRespuestasEncuestaAlumno
 from tests.TestAPIServicios.TestObtenerEncuestasAlumno import TestObtenerEncuestasAlumno
-from tests.TestAPIServicios.TestObtenerMateriasAlumno import TestObtenerMateriasAlumno
 from tests.TestAPIServicios.TestObtenerRespuestasEncuestaAlumnoParaPreguntasEspecificas import \
     TestObtenerRespuestasEncuestaAlumnoParaPreguntasEspecificas
 

@@ -117,6 +117,9 @@
             {%- endwith %}
         {% endblock %}
 
+        <script type='text/javascript' src="/js/services.js"></script>
+        <div id="loader" class="loading col-lg-1 col-centered" hidden="true"></div>
+
         {% block content %}{% endblock %}
 
         {% block post_content %}{% endblock %}

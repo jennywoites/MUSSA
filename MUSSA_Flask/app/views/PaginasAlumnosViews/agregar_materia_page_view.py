@@ -13,7 +13,6 @@ def agregar_materia_page():
     cookie = request.cookies
 
     mis_carreras = invocar_obtener_carreras_alumno(cookie)
-    # materias = invocar_obtener_materias_alumno(cookie, [PENDIENTE])
 
     estados = []
     for estado in [EN_CURSO, FINAL_PENDIENTE, APROBADA, DESAPROBADA]:

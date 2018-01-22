@@ -190,6 +190,17 @@ function modificar_alumno_service(token, padron, onSuccess, onError) {
     do_request('POST', url_servicio, token, parametros, onSuccess, onError);
 }
 
+function obtener_materias_pendientes_services(token, id_carrera, onSuccess, onError) {
+    var url_servicio = BASE_URL + '/alumno/materia/pendientes';
+
+    parametros = {}
+    parametros["id_carrera"] = id_carrera;
+
+    do_request('GET', url_servicio, token, parametros, function(status, response) {
+        onSuccess(status, response["materias_alumno"]);
+    }, onError);
+}
+
 //////////////////////////////////////////////////////////////////////
 
 function fill_dropdown(dropdown_id, process_response, responseText){

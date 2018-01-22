@@ -174,24 +174,23 @@ class TestObtenerMateriasAlumno(TestBase):
                 return True
         return False
 
-
     def son_materias_iguales(self, materia_origen, materia_servicio):
-            if materia_origen["estado"] in [ESTADO_MATERIA[FINAL_PENDIENTE], ESTADO_MATERIA[APROBADA],
-                                            ESTADO_MATERIA[DESAPROBADA]]:
-                if not (materia_origen["aprobacion_cursada"] == materia_servicio["aprobacion_cursada"]):
-                    return False
+        if materia_origen["estado"] in [ESTADO_MATERIA[FINAL_PENDIENTE], ESTADO_MATERIA[APROBADA],
+                                        ESTADO_MATERIA[DESAPROBADA]]:
+            if not (materia_origen["aprobacion_cursada"] == materia_servicio["aprobacion_cursada"]):
+                return False
 
-            if materia_origen["estado"] in [ESTADO_MATERIA[APROBADA], ESTADO_MATERIA[DESAPROBADA]]:
-                if not (materia_origen["calificacion"] == materia_servicio["calificacion"] and
-                        materia_origen["acta_o_resolucion"] == materia_servicio["acta_o_resolucion"] and
-                        materia_origen["forma_aprobacion_materia"] == materia_servicio["forma_aprobacion_materia"] and
-                        materia_origen["fecha_aprobacion"] == materia_servicio["fecha_aprobacion"]):
-                    return False
+        if materia_origen["estado"] in [ESTADO_MATERIA[APROBADA], ESTADO_MATERIA[DESAPROBADA]]:
+            if not (materia_origen["calificacion"] == materia_servicio["calificacion"] and
+                            materia_origen["acta_o_resolucion"] == materia_servicio["acta_o_resolucion"] and
+                            materia_origen["forma_aprobacion_materia"] == materia_servicio[
+                            "forma_aprobacion_materia"] and
+                            materia_origen["fecha_aprobacion"] == materia_servicio["fecha_aprobacion"]):
+                return False
 
-            return (materia_origen["codigo"] == materia_servicio["codigo"] and
-                    materia_origen["nombre"] == materia_servicio["nombre"] and
-                    materia_origen["carrera"] == materia_servicio["carrera"])
-
+        return (materia_origen["codigo"] == materia_servicio["codigo"] and
+                materia_origen["nombre"] == materia_servicio["nombre"] and
+                materia_origen["carrera"] == materia_servicio["carrera"])
 
     ##########################################################
     ##                      Tests                           ##
@@ -199,147 +198,94 @@ class TestObtenerMateriasAlumno(TestBase):
 
     def test_obtener_materias_sin_estar_logueado_da_error(self):
         client = self.app.test_client()
-        response = client.get(OBTENER_MATERIAS_ALUMNO_SERVICE)
+        response = client.get(self.get_url_get_materias_alumno())
         assert (response.status_code == REDIRECTION_FOUND)
 
     def test_obtener_materias_logueado_con_administrador_esta_permitido(self):
         client = self.loguear_administrador()
-        response = client.get(OBTENER_MATERIAS_ALUMNO_SERVICE)
+        response = client.get(self.get_url_get_materias_alumno())
         assert (response.status_code == SUCCESS_OK)
 
     def test_obtener_materias_sin_parametros_devuelve_todas_las_materias(self):
         client = self.loguear_usuario()
 
-        response = client.get(OBTENER_MATERIAS_ALUMNO_SERVICE)
+        response = client.get(self.get_url_get_materias_alumno())
         assert (response.status_code == SUCCESS_OK)
 
-        materias = json.loads(response.get_data(as_text=True))["materias"]
+        materias = json.loads(response.get_data(as_text=True))["materias_alumno"]
         assert (len(materias) == 5)
 
     def test_obtener_materias_sin_parametros_devuelve_todas_las_materias(self):
         client = self.loguear_usuario()
 
-        response = client.get(OBTENER_MATERIAS_ALUMNO_SERVICE)
+        response = client.get(self.get_url_get_materias_alumno())
         assert (response.status_code == SUCCESS_OK)
 
-        materias = json.loads(response.get_data(as_text=True))["materias"]
-        assert (len(materias) == 5)
+        materias = json.loads(response.get_data(as_text=True))["materias_alumno"]
+        assert (len(materias) == 4)
 
-        self.se_encuentra_materia(self.MATERIA_PENDIENTE, materias)
         self.se_encuentra_materia(self.MATERIA_EN_CURSO, materias)
         self.se_encuentra_materia(self.MATERIA_FINAL_PENDIENTE, materias)
         self.se_encuentra_materia(self.MATERIA_FINAL_APROBADA, materias)
         self.se_encuentra_materia(self.MATERIA_FINAL_DESAPROBADA, materias)
 
-
-    def test_obtener_materias_por_id_devuelve_solo_la_materia_especificada(self):
+    def test_obtener_materias_pendientes_devuelve_solo_las_pendientes(self):
         client = self.loguear_usuario()
 
-        parametros = {}
-        parametros["id_materia_alumno"] = 1
-        response = client.get(OBTENER_MATERIAS_ALUMNO_SERVICE, query_string=parametros)
+        response = client.get(self.get_url_get_materias_pendientes_alumno())
         assert (response.status_code == SUCCESS_OK)
 
-        materias = json.loads(response.get_data(as_text=True))["materias"]
+        materias = json.loads(response.get_data(as_text=True))["materias_alumno"]
         assert (len(materias) == 1)
 
         self.se_encuentra_materia(self.MATERIA_PENDIENTE, materias)
 
-
     def test_obtener_materias_por_id_invalido_da_error(self):
         client = self.loguear_usuario()
 
-        parametros = {}
-        parametros["id_materia_alumno"] = "5sd"
-        response = client.get(OBTENER_MATERIAS_ALUMNO_SERVICE, query_string=parametros)
-        assert (response.status_code == CLIENT_ERROR_BAD_REQUEST)
-
+        response = client.get(self.get_url_get_materia_alumno("5sd"))
+        assert (response.status_code == CLIENT_ERROR_NOT_FOUND)
 
     def test_obtener_materias_por_id_inexistente_da_error(self):
         client = self.loguear_usuario()
 
-        parametros = {}
-        parametros["id_materia_alumno"] = 56
-        response = client.get(OBTENER_MATERIAS_ALUMNO_SERVICE, query_string=parametros)
-        assert (response.status_code == CLIENT_ERROR_BAD_REQUEST)
-
+        response = client.get(self.get_url_get_materia_alumno(56))
+        assert (response.status_code == CLIENT_ERROR_NOT_FOUND)
 
     def test_obtener_materias_por_id_existente_perteneciente_a_otro_usuario_da_error(self):
         client = self.loguear_usuario()
 
-        parametros = {}
-        parametros["id_materia_alumno"] = 2
-        response = client.get(OBTENER_MATERIAS_ALUMNO_SERVICE, query_string=parametros)
-        assert (response.status_code == CLIENT_ERROR_BAD_REQUEST)
-
+        response = client.get(self.get_url_get_materia_alumno(2))
+        assert (response.status_code == CLIENT_ERROR_NOT_FOUND)
 
     def test_obtener_materias_por_estados_devuelve_solo_materias_con_esos_estados(self):
         client = self.loguear_usuario()
 
         parametros = {}
-        parametros["estados"] = str(PENDIENTE) + ";" + str(APROBADA)
-        response = client.get(OBTENER_MATERIAS_ALUMNO_SERVICE, query_string=parametros)
+        parametros["estados"] = json.dumps([APROBADA, DESAPROBADA])
+        response = client.get(self.get_url_get_materias_alumno(), query_string=parametros)
         assert (response.status_code == SUCCESS_OK)
 
-        materias = json.loads(response.get_data(as_text=True))["materias"]
+        materias = json.loads(response.get_data(as_text=True))["materias_alumno"]
         assert (len(materias) == 2)
 
-        self.se_encuentra_materia(self.MATERIA_PENDIENTE, materias)
+        self.se_encuentra_materia(self.MATERIA_FINAL_DESAPROBADA, materias)
         self.se_encuentra_materia(self.MATERIA_FINAL_APROBADA, materias)
-
-
-    def test_obtener_materias_por_estados_con_id_especifico_que_tiene_el_estado_devuelve_esa_materia(self):
-        client = self.loguear_usuario()
-
-        parametros = {}
-        parametros["id_materia_alumno"] = 1
-        parametros["estados"] = PENDIENTE
-        response = client.get(OBTENER_MATERIAS_ALUMNO_SERVICE, query_string=parametros)
-        assert (response.status_code == SUCCESS_OK)
-
-        materias = json.loads(response.get_data(as_text=True))["materias"]
-        assert (len(materias) == 1)
-
-        self.se_encuentra_materia(self.MATERIA_PENDIENTE, materias)
-
-
-    def test_obtener_materias_por_estados_con_id_especifico_que_tiene_el_otro_estado_devuelve_una_lista_vacia(self):
-        client = self.loguear_usuario()
-
-        parametros = {}
-        parametros["id_materia_alumno"] = 1
-        parametros["estados"] = [APROBADA]
-        response = client.get(OBTENER_MATERIAS_ALUMNO_SERVICE, query_string=parametros)
-        assert (response.status_code == SUCCESS_OK)
-
-        materias = json.loads(response.get_data(as_text=True))["materias"]
-        assert (len(materias) == 0)
-
 
     def test_obtener_materias_por_estados_validos_pero_inexistentes_devuelve_error(self):
         client = self.loguear_usuario()
 
         parametros = {}
-        parametros["estados"] = "8;9"
-        response = client.get(OBTENER_MATERIAS_ALUMNO_SERVICE, query_string=parametros)
-        assert (response.status_code == CLIENT_ERROR_BAD_REQUEST)
-
-
-    def test_obtener_materias_por_estados_validos_separador_invalido_devuelve_error(self):
-        client = self.loguear_usuario()
-
-        parametros = {}
-        parametros["estados"] = "8-9"
-        response = client.get(OBTENER_MATERIAS_ALUMNO_SERVICE, query_string=parametros)
-        assert (response.status_code == CLIENT_ERROR_BAD_REQUEST)
-
+        parametros["estados"] = json.dumps([8, 9])
+        response = client.get(self.get_url_get_materias_alumno(), query_string=parametros)
+        assert (response.status_code == CLIENT_ERROR_NOT_FOUND)
 
     def test_obtener_materias_por_estados_invalidos_devuelve_error(self):
         client = self.loguear_usuario()
 
         parametros = {}
-        parametros["estados"] = "8;9s;90"
-        response = client.get(OBTENER_MATERIAS_ALUMNO_SERVICE, query_string=parametros)
+        parametros["estados"] = json.dumps(["9s", 90])
+        response = client.get(self.get_url_get_materias_alumno(), query_string=parametros)
         assert (response.status_code == CLIENT_ERROR_BAD_REQUEST)
 
 

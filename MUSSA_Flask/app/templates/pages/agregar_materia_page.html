@@ -2,7 +2,6 @@
 
 {% block content %}
 
-    <script type='text/javascript' src="/js/services.js"></script>
     <script>
 
         function validar_guardar() {
@@ -70,6 +69,7 @@
         }
 
         function filtrar_materias_segun_carrera() {
+            $('#loader').show();
             var carrera_element = document.getElementById("carrera");
             var id_carrera = carrera_element[carrera_element.selectedIndex].id;
             var valor_seleccionado = carrera_element.value;
@@ -92,14 +92,7 @@
             estado_element.selectedIndex = 0;
             mostrar_ocultar_datos_materia_aprobada();
 
-            var csrf_token = '{{ csrf_token() }}';
-            var ids_carreras = [id_carrera];
-
-            debugger;
-            //TODO: Modificar el servicio por el que obtiene las materias pendientes del alumno
-            // en lugar del que obtiene todas las materias en general
-
-            get_materias_con_filtro_service(csrf_token, '', '', ids_carreras, function(state, result) {
+            obtener_materias_pendientes_services('{{ csrf_token() }}', id_carrera, function(state, result) {
                 for (var i=0; i<result.length; i++) {
                     var materia = result[i];
                     var opt = document.createElement('option');
@@ -110,8 +103,10 @@
                     var materia_element = document.getElementById("materia");
                     materia_element.appendChild(opt);
                 }
+                $('#loader').hide();
             }, function(state, result) {
                 console.log(result);
+                $('#loader').hide();
             })
         }
 
@@ -144,6 +139,7 @@
         }
 
         function habilitar_curso_y_estado() {
+            $('#loader').show();
             var materia_element = document.getElementById("materia");
             materia_element[0].style["display"] = "none";
 
@@ -169,8 +165,10 @@
                     var selector_curso = document.getElementById("curso");
                     selector_curso.appendChild(opt);
                 }
+                $('#loader').hide();
             }, function(state, result) {
                 console.log(result);
+                $('#loader').hide();
             });
 
             var estado_element = document.getElementById("estado");

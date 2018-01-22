@@ -12,11 +12,12 @@ from app.ClienteAPI.ClienteAPI import ClienteAPI
 @login_required
 def editar_materia_page(idMateria):
     cookies = request.cookies
-    materia = invocar_obtener_materia_alumno(cookies, idMateria)[0]
+    cliente = ClienteAPI()
 
-    cursos = ClienteAPI().obtener_cursos_con_filtros(cookies, codigo_materia=materia["codigo"],
+    materia = cliente.obtener_materia_alumno(cookies, idMateria)
+
+    cursos = cliente.obtener_cursos_con_filtros(cookies, codigo_materia=materia["codigo"],
                                                      id_carrera=materia["id_carrera"], filtrar_cursos=True)
-
     for i in range(len(cursos)):
         texto = ""
         for carrera in cursos[i]["carreras"]:
@@ -46,7 +47,7 @@ def editar_materia_page(idMateria):
 @main_blueprint.route('/datos_academicos/editar_materia_save/<int:idMateria>', methods=['POST'])
 @login_required
 def editar_materia_page_save(idMateria):
-    materia = invocar_obtener_materia_alumno(request.cookies, idMateria)[0]
+    materia = ClienteAPI().obtener_materia_alumno(request.cookies, idMateria)
 
     parametros = {
         'id_carrera': materia["id_carrera"],

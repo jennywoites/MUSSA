@@ -99,6 +99,18 @@ class ClienteAPI:
         """URL: '/api/alumno'"""
         return self.BASE_URL + '/alumno'
 
+    def get_url_get_materia_alumno(self, idMateriaAlumno):
+        """URL: '/api/alumno/materia/<int:idMateriaAlumno>'"""
+        return self.BASE_URL + '/alumno/materia/' + str(idMateriaAlumno)
+
+    def get_url_get_materias_alumno(self):
+        """URL: '/api/alumno/materia/all'"""
+        return self.BASE_URL + '/alumno/materia/all'
+
+    def get_url_get_materias_pendientes_alumno(self):
+        """URL: '/api/alumno/materia/pendientes'"""
+        return self.BASE_URL + '/alumno/materia/pendientes'
+
     ################################################
     ##              Servicios DOCENTE             ##
     ################################################
@@ -249,3 +261,24 @@ class ClienteAPI:
         parametros = {}
         parametros["padron"] = padron
         return self.invocar_post(url_servicio, cookie, parametros)
+
+    def obtener_materia_alumno(self, cookie, idMateriaAlumno):
+        url_servicio = self.get_url_get_materia_alumno(idMateriaAlumno)
+        return self.invocar_get(url_servicio, cookie)["materia_alumno"]
+
+    def obtener_materias_alumno(self, cookie, estados=[]):
+        url_servicio = self.get_url_get_materias_alumno()
+
+        parametros = {}
+        parametros["estados"] = json.dumps(estados)
+
+        return self.invocar_get(url_servicio, cookie, parametros)["materias_alumno"]
+
+    def obtener_materias_pendientes(self, cookie, id_carrera=None):
+        url_servicio = self.get_url_get_materias_pendientes_alumno()
+
+        parametros = {}
+        if id_carrera:
+            parametros["id_carrera"] = id_carrera
+
+        return self.invocar_get(url_servicio, cookie, parametros)["materias_alumno"]

@@ -3,8 +3,7 @@ import logging
 from flask import request
 from app.API_Rest.codes import *
 import json
-from flask_user import current_user
-from app.models.alumno_models import Alumno
+from app.models.alumno_models import Alumno, MateriasAlumno
 from app.models.carreras_models import Materia
 from app import db
 from app.utils import DIAS, convertir_horario
@@ -307,6 +306,22 @@ class BaseService(Resource):
 
         return es_valido, msj, codigo
 
+    def materia_pertenece_al_alumno(self, nombre_parametro, valor, es_obligatorio):
+        msj_no_enviado = 'El campo {} no fue enviado'.format(nombre_parametro)
+        if not valor and es_obligatorio:
+            return False, msj_no_enviado, CLIENT_ERROR_NOT_FOUND
+
+        if not valor:
+            return True, msj_no_enviado, -1
+
+        id_materia_alumno = str(valor)
+        alumno = self.obtener_alumno_usuario_actual()
+        es_valido = (id_materia_alumno.isdigit() and
+                     len(MateriasAlumno.query.filter_by(alumno_id=alumno.id).filter_by(id=id_materia_alumno).all()) > 0)
+        return (True, 'El {} pertenece al alumno actual'.format(nombre_parametro), -1) if es_valido \
+            else (False, '{} {} no pertenece al alumno actual'.format(nombre_parametro, valor), CLIENT_ERROR_NOT_FOUND)
+
+
     ##########################################################
     ##             Servicios Base de las Entidades          ##
     ##########################################################
@@ -369,6 +384,17 @@ class BaseService(Resource):
             self.FUNCIONES_VALIDACION: [
                 (self.es_numero_valido, []),
                 (self.existe_elemento_que_comienza_con_el_valor, [Materia, Materia.codigo])
+            ]
+        })
+
+    def get_validaciones_materia_alumno(self, nombreParametro, valor, obligatorio):
+        return (nombreParametro, {
+            self.PARAMETRO: valor,
+            self.ES_OBLIGATORIO: obligatorio,
+            self.FUNCIONES_VALIDACION: [
+                (self.id_es_valido, []),
+                (self.existe_id, [MateriasAlumno]),
+                (self.materia_pertenece_al_alumno, [])
             ]
         })
 

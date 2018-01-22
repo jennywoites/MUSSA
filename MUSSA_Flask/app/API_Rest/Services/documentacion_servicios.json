@@ -694,6 +694,129 @@
         }
       }
     },
+    "/alumno/materia/{idMateriaAlumno}": {
+      "get": {
+        "tags": [
+          "alumno"
+        ],
+        "summary": "Devuelve la materia del alumno por id",
+        "description": "Devuelve la materia del alumno por id. La materia puede estar en cualquiera de sus estados, incluido el estado pendiente.",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "idMateriaAlumno",
+            "required": true,
+            "type": "integer",
+            "description": "El ID de la materia alumno a buscar."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/MateriaAlumno"
+            }
+          },
+          "400": {
+            "description": "BAD REQUEST. El ID de la materia alumno debe ser un entero y mayor que 0."
+          },
+          "401": {
+            "description": "La información de autorización no fue enviada o es inválida."
+          },
+          "404": {
+            "description": "La materia alumno del ID especificado no fue encontrada o no pertenece al alumno del usuario actual."
+          }
+        }
+      }
+    },
+    "/alumno/materia/all": {
+      "get": {
+        "tags": [
+          "alumno"
+        ],
+        "summary": "Devuelve todas las materias que tiene registradas el alumno filtradas por estados",
+        "description": "Devuelve todas las materias que tiene registradas el alumno filtradas por estados",
+        "produces": [
+          "application/json"
+        ],
+        "consumes": [
+          "multipart/form-data"
+        ],
+        "parameters": [
+          {
+            "in": "formData",
+            "name": "estados",
+            "required": false,
+            "type": "array",
+            "description": "Lista de códigos de estados que pueden tener las materias que se desean obtener. Si la lista está vacía devuelve todas las materias que tiene registradas el alumno. Los estados posibles son: [EN_CURSO = 1, FINAL_PENDIENTE = 2, APROBADA = 4, DESAPROBADA = 5]",
+            "items": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/ListaMateriasAlumno"
+            }
+          },
+          "400": {
+            "description": "BAD REQUEST. Los estados no cumplen con el formato correcto."
+          },
+          "401": {
+            "description": "La información de autorización no fue enviada o es inválida."
+          },
+          "404": {
+            "description": "Uno o más estados solicitados no existen."
+          }
+        }
+      }
+    },
+    "/alumno/materia/pendientes": {
+      "get": {
+        "tags": [
+          "alumno"
+        ],
+        "summary": "Devuelve todas las materias que el alumno tiene como pendientes para cursar",
+        "description": "Devuelve todas las materias que el alumno tiene como pendientes para cursar (no es necesario que curse todas pero son todas las que tiene disponibles, tenga o no las correlativas necesarias aprobadas)",
+        "produces": [
+          "application/json"
+        ],
+        "consumes": [
+          "multipart/form-data"
+        ],
+        "parameters": [
+          {
+            "in": "formData",
+            "name": "id_carrera",
+            "required": false,
+            "type": "integer",
+            "description": "Id de la carrera por el que se desea filtrar. Si no se envia no se filtra por carrera."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/ListaMateriasAlumno"
+            }
+          },
+          "400": {
+            "description": "BAD REQUEST. El id de carrera no es válido."
+          },
+          "401": {
+            "description": "La información de autorización no fue enviada o es inválida."
+          },
+          "404": {
+            "description": "El id de carrera no existe."
+          }
+        }
+      }
+    },
     "/encuesta/preguntas": {
       "get": {
         "tags": [
@@ -1226,6 +1349,93 @@
           "type": "string",
           "description": "Padrón del alumno. Si el alumno no tiene un padrón asociado, devuelve un string vacío.",
           "example": "93274"
+        }
+      }
+    },
+    "ListaMateriasAlumno": {
+      "type": "object",
+      "properties": {
+        "materias_alumno": {
+          "type": "array",
+          "description": "Lista de materias alumno",
+          "items": {
+            "$ref": "#definitions/MateriaAlumno"
+          }
+        }
+      }
+    },
+    "MateriaAlumno": {
+      "type": "object",
+      "properties": {
+        "id_materia_alumno": {
+          "type": "integer",
+          "description": "Id de la materia alumno",
+          "example": 1
+        },
+        "id_materia": {
+          "type": "integer",
+          "description": "Id de la materia",
+          "example": 5
+        },
+        "codigo": {
+          "type": "string",
+          "description": "Código de la materia",
+          "example": 7540
+        },
+        "nombre": {
+          "type": "string",
+          "description": "Nombre de la materia",
+          "example": "Algoritmos y Programación I"
+        },
+        "id_carrera": {
+          "type": "integer",
+          "description": "Id de la carrera a la que pertenece la materia",
+          "example": 1
+        },
+        "carrera": {
+          "type": "string",
+          "description": "Nombre de la carrera",
+          "example": "10 - Ingeniería en Informática (Plan 1986)"
+        },
+        "id_curso": {
+          "type": "integer",
+          "description": "Id del curso en el que está/estuvo inscripto el alumno para esa materia. Si no hay un curso designado, el valor es -1.",
+          "example": 7
+        },
+        "curso": {
+          "type": "string",
+          "description": "Nombre del curso. Si no hay un curso elegido es \"Sin designar\"",
+          "example": "2A | Wachenchauzer-Essaya"
+        },
+        "estado": {
+          "type": "string",
+          "description": "Descripción del estado de la materia",
+          "example": "Aprobada"
+        },
+        "aprobacion_cursada": {
+          "type": "string",
+          "description": "Si corresponde, indica el cuatrimestre y año en que fue aprobada la cursada de la materia (regularizada).",
+          "example": "1C / 2016"
+        },
+        "calificacion": {
+          "type": "string",
+          "description": "Si corresponde, calificación final de la materia.",
+          "example": "8"
+        },
+        "fecha_aprobacion": {
+          "type": "string",
+          "description": "Si corresponde, fecha en la que fue aprobada/desaprobada la materia (ya sea por final, coloquio, etc)",
+          "example": "20/08/2017"
+        },
+        "acta_o_resolucion": {
+          "type": "string",
+          "description": "Si corresponde, acta o resolución en la que fue asentada la aprobación/desaprobación de la materia.",
+          "example": "89565-556"
+        },
+        "forma_aprobacion_materia": {
+          "type": "string",
+          "description": "Si corresponde, forma en la que fue aprobada/desaprobada la materia.",
+          "example": "Examen"
         }
       }
     }
