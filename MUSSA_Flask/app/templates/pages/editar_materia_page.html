@@ -152,7 +152,7 @@
 
         <div class="alert alert-danger" id="error_formulario" hidden="true"></div>
 
-        <form action="{{ url_for('main.editar_materia_page_save', idMateria=materia['id']) }}" method="POST">
+        <form action="{{ url_for('main.editar_materia_page_save', idMateria=materia['id_materia_alumno']) }}" method="POST">
             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
 
             <div class="form-group">
@@ -175,7 +175,7 @@
                 <select class="form-control" id="curso" name="curso" onchange="mostrar_ocultar_texto_sin_curso()">
                     <option id="curso_opcion_0" value="-1">Sin curso determinado</option>
                     {% for curso in cursos %}
-                    <option id="curso_cod_materia_{{curso['codigo_materia']}}_carreras_{{curso['carreras']}}" value="{{curso['id']}}">{{curso['codigo_curso']}}: {{curso['docentes']}}</option>
+                    <option id="curso_cod_materia_{{curso['codigo_materia']}}_carreras_{{curso['carreras']}}" value="{{curso['id_curso']}}">{{curso['codigo_curso']}}: {{curso['docentes']}}</option>
                     {% endfor %}
                 </select>
             </div>

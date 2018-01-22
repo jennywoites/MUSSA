@@ -3,11 +3,11 @@ import logging
 from flask import request
 from app.API_Rest.codes import *
 import json
-from flask_user import current_user
-from app.models.alumno_models import Alumno
+from app.models.alumno_models import Alumno, MateriasAlumno
 from app.models.carreras_models import Materia
 from app import db
 from app.utils import DIAS, convertir_horario
+from flask_user import current_user
 
 
 class BaseService(Resource):
@@ -21,6 +21,18 @@ class BaseService(Resource):
     def obtener_parametro(self, nombre_parametro):
         datos = self.obtener_argumentos()
         return datos[nombre_parametro] if nombre_parametro in datos else None
+
+    def obtener_alumno_usuario_actual(self):
+        """
+        Obtiene el alumno para el usuario actual.
+        Si el alumno aún no fue creado lo crea.
+        """
+        alumno = Alumno.query.filter_by(user_id=current_user.id).first()
+        if not alumno:
+            alumno = Alumno(user_id=current_user.id)
+            db.session.add(alumno)
+            db.session.commit()
+        return alumno
 
     def generar_JSON_lista_datos(self, funcion_generadora_JSON, lista_datos):
         resultados_JSON = []
@@ -176,6 +188,25 @@ class BaseService(Resource):
     def mensaje_campo_no_obligatorio(self, nombre_parametro):
         return True, 'El ' + nombre_parametro + ' no existe pero no es obligatorio', -1
 
+    def padron_es_valido(self, nombre_parametro, padron, es_obligatorio, id_alumno):
+        msj_valido = 'El padron {} es valido'.format(padron)
+        msj_invalido = 'El padron {} no es valido'.format(padron)
+
+        if not padron and es_obligatorio:
+            return False, msj_invalido, CLIENT_ERROR_NOT_FOUND
+
+        if not padron:
+            return True, msj_valido, -1
+
+        LONGITUD_MINIMA_PADRON = 5
+        LONGITUD_MAXIMA_PADRON = 7
+        if not padron.isdigit() or not (LONGITUD_MINIMA_PADRON <= len(padron) <= LONGITUD_MAXIMA_PADRON):
+            return False, msj_invalido, CLIENT_ERROR_BAD_REQUEST
+
+        msj_invalido = 'El padron {} ya existe'.format(padron)
+        es_valido = (len(Alumno.query.filter_by(padron=padron).filter(Alumno.id.isnot(id_alumno)).all()) == 0)
+        return (True, msj_valido, -1) if es_valido else (False, msj_invalido, CLIENT_ERROR_BAD_REQUEST)
+
     def id_es_valido(self, nombre_parametro, id_a_validar, es_obligatorio):
         if not id_a_validar and not es_obligatorio:
             return self.mensaje_campo_no_obligatorio(nombre_parametro)
@@ -275,18 +306,21 @@ class BaseService(Resource):
 
         return es_valido, msj, codigo
 
-    def alumno_es_usuario_actual(self, nombre_parametro, valor, es_obligatorio):
-        """
-        Devuelve True si el id enviado como valor corresponde al id de alumno del usuario actual
-        False en caso contrario.
-        """
-        alumno = Alumno.query.filter_by(user_id=current_user.id).first()
-        es_valido = (alumno.id == valor)
+    def materia_pertenece_al_alumno(self, nombre_parametro, valor, es_obligatorio):
+        msj_no_enviado = 'El campo {} no fue enviado'.format(nombre_parametro)
+        if not valor and es_obligatorio:
+            return False, msj_no_enviado, CLIENT_ERROR_NOT_FOUND
 
-        msj, codigo = ('El alumno pertenece al usuario actual', -1) if es_valido \
-            else ('El id de alumno no pertenece al usuario actual', CLIENT_ERROR_UNAUTHORIZED)
+        if not valor:
+            return True, msj_no_enviado, -1
 
-        return es_valido, msj, codigo
+        id_materia_alumno = str(valor)
+        alumno = self.obtener_alumno_usuario_actual()
+        es_valido = (id_materia_alumno.isdigit() and
+                     len(MateriasAlumno.query.filter_by(alumno_id=alumno.id).filter_by(id=id_materia_alumno).all()) > 0)
+        return (True, 'El {} pertenece al alumno actual'.format(nombre_parametro), -1) if es_valido \
+            else (False, '{} {} no pertenece al alumno actual'.format(nombre_parametro, valor), CLIENT_ERROR_NOT_FOUND)
+
 
     ##########################################################
     ##             Servicios Base de las Entidades          ##
@@ -350,6 +384,17 @@ class BaseService(Resource):
             self.FUNCIONES_VALIDACION: [
                 (self.es_numero_valido, []),
                 (self.existe_elemento_que_comienza_con_el_valor, [Materia, Materia.codigo])
+            ]
+        })
+
+    def get_validaciones_materia_alumno(self, nombreParametro, valor, obligatorio):
+        return (nombreParametro, {
+            self.PARAMETRO: valor,
+            self.ES_OBLIGATORIO: obligatorio,
+            self.FUNCIONES_VALIDACION: [
+                (self.id_es_valido, []),
+                (self.existe_id, [MateriasAlumno]),
+                (self.materia_pertenece_al_alumno, [])
             ]
         })
 

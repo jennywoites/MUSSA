@@ -4,7 +4,6 @@
 
 <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.11.1/bootstrap-table.min.css">
 <script type='text/javascript' src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.11.1/bootstrap-table.min.js"></script>
-<script type='text/javascript' src="/js/services.js"></script>
 
 <!- Bootrstrap table ->
 <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.11.1/bootstrap-table.min.css">
@@ -27,6 +26,7 @@
 
 <script>
     $(window).on('load',(function(){
+        show_loading_mask();
         $(function() {
             $('#tabla_docentes').bootstrapTable({
                 data: [],
@@ -75,7 +75,7 @@
         }
 
         $('#tabla_docentes').bootstrapTable('load', docentes);
-        $('#loader').hide();
+        hide_loading_mask();
         $('#div_tabla').show();
     }
 
@@ -112,7 +112,6 @@
             type="button" onclick="javascript:void(0)">
             Agrupar seleccionados
     </button>
-    <div id="loader" class="loading col-lg-1 col-centered"></div>
     <div id="div_tabla" hidden="true">
     <table
           id="tabla_docentes"

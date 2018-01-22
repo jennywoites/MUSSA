@@ -22,12 +22,6 @@ def invocar_guardar_horarios_desde_PDF(csrf_token, cookie, ruta, anio, cuatrimes
     return json.loads(horarios_response.text)
 
 
-def invocar_obtener_padron_alumno(cookie):
-    padron_response = requests.get(OBTENER_PADRON_ALUMNO_SERVICE, cookies=cookie)
-    escribir_resultado_servicio('Obtener Padron Alumno', padron_response)
-    return json.loads(padron_response.text)["padron"]
-
-
 def invocar_agregar_carrera_alumno(csrf_token, cookie, id_carrera):
     parametros = {}
     parametros["id_carrera"] = id_carrera
@@ -56,33 +50,6 @@ def invocar_eliminar_materia_alumno(csrf_token, cookie, id_materia):
                                               cookies=cookie, headers={"X-CSRFToken": csrf_token})
     escribir_resultado_servicio('Eliminar Materia Alumno', eliminar_materia_response)
     return json.loads(eliminar_materia_response.text)
-
-
-def invocar_obtener_carreras_alumno(cookie):
-    carreras_response = requests.get(OBTENER_CARRERAS_ALUMNO_SERVICE, cookies=cookie)
-    escribir_resultado_servicio('Obtener Carreras Alumno', carreras_response)
-    return json.loads(carreras_response.text)["carreras"]
-
-
-def invocar_obtener_materias_alumno(cookie, estados):
-    parametros = {}
-    estados_text = ""
-    for estado in estados:
-        estados_text += str(estado) + ";"
-    parametros["estados"] = estados_text[:-1]
-
-    materias_alumno_response = requests.get(OBTENER_MATERIAS_ALUMNO_SERVICE, params=parametros, cookies=cookie)
-    escribir_resultado_servicio('Obtener Materias Alumno', materias_alumno_response)
-    return json.loads(materias_alumno_response.text)["materias"]
-
-
-def invocar_obtener_materia_alumno(cookie, idMateriaAlumno):
-    parametros = {}
-    parametros["id_materia_alumno"] = idMateriaAlumno
-
-    materias_alumno_response = requests.get(OBTENER_MATERIAS_ALUMNO_SERVICE, params=parametros, cookies=cookie)
-    escribir_resultado_servicio('Obtener Materias Alumno', materias_alumno_response)
-    return json.loads(materias_alumno_response.text)["materias"]
 
 
 def invocar_agregar_materia_alumno(csrf_token, cookie, parametros):

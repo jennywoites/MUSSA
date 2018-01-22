@@ -28,21 +28,21 @@ class TestObtenerPadronAlumno(TestBase):
 
     def test_obtener_padron_sin_estar_logueado_da_error(self):
         client = self.app.test_client()
-        response = client.get(OBTENER_PADRON_ALUMNO_SERVICE)
+        response = client.get(self.get_url_get_alumno())
         assert (response.status_code == REDIRECTION_FOUND)
 
     def test_obtener_padron_logueado_con_administrador_esta_permitido(self):
         client = self.loguear_administrador()
-        response = client.get(OBTENER_PADRON_ALUMNO_SERVICE)
+        response = client.get(self.get_url_get_alumno())
         assert (response.status_code == SUCCESS_OK)
 
     def test_obtener_padron_alumno_no_creado_de_usuario_valido(self):
         client = self.loguear_usuario()
 
-        response = client.get(OBTENER_PADRON_ALUMNO_SERVICE)
+        response = client.get(self.get_url_get_alumno())
         assert (response.status_code == SUCCESS_OK)
 
-        padron = json.loads(response.get_data(as_text=True))["padron"]
+        padron = json.loads(response.get_data(as_text=True))["alumno"]["padron"]
         assert (padron == "")
 
     def test_obtener_padron_alumno_con_padron_vacio(self):
@@ -51,10 +51,10 @@ class TestObtenerPadronAlumno(TestBase):
         db.session.commit()
 
         client = self.loguear_usuario()
-        response = client.get(OBTENER_PADRON_ALUMNO_SERVICE)
+        response = client.get(self.get_url_get_alumno())
         assert (response.status_code == SUCCESS_OK)
 
-        padron = json.loads(response.get_data(as_text=True))["padron"]
+        padron = json.loads(response.get_data(as_text=True))["alumno"]["padron"]
         assert (padron == "")
 
     def test_obtener_padron_alumno_con_padron_numerico(self):
@@ -64,16 +64,11 @@ class TestObtenerPadronAlumno(TestBase):
         db.session.commit()
 
         client = self.loguear_usuario()
-        response = client.get(OBTENER_PADRON_ALUMNO_SERVICE)
+        response = client.get(self.get_url_get_alumno())
         assert (response.status_code == SUCCESS_OK)
 
-        padron = json.loads(response.get_data(as_text=True))["padron"]
+        padron = json.loads(response.get_data(as_text=True))["alumno"]["padron"]
         assert (padron == PADRON)
-
-    def test_obtener_padron_con_parametros_da_error(self):
-        client = self.loguear_usuario()
-        response = client.get(OBTENER_PADRON_ALUMNO_SERVICE, query_string={"parametros": "sdaa"})
-        assert (response.status_code == CLIENT_ERROR_BAD_REQUEST)
 
 
 if __name__ == '__main__':

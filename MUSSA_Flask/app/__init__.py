@@ -141,23 +141,11 @@ def add_resources_api_rest(api):
 
 
 def add_resources_usuarios(api):
-    from app.API_Rest.Services.ObtenerPadronAlumnoService import ObtenerPadronAlumno
-    api.add_resource(ObtenerPadronAlumno, '/api/ObtenerPadronAlumno')
-
-    from app.API_Rest.Services.ModificarPadronAlumnoService import ModificarPadronAlumno
-    api.add_resource(ModificarPadronAlumno, '/api/ModificarPadronAlumno')
-
     from app.API_Rest.Services.AgregarCarreraAlumnoService import AgregarCarreraAlumno
     api.add_resource(AgregarCarreraAlumno, '/api/AgregarCarreraAlumno')
 
-    from app.API_Rest.Services.ObtenerCarrerasAlumnoService import ObtenerCarrerasAlumno
-    api.add_resource(ObtenerCarrerasAlumno, '/api/ObtenerCarrerasAlumno')
-
     from app.API_Rest.Services.EliminarCarreraAlumnoService import EliminarCarreraAlumno
     api.add_resource(EliminarCarreraAlumno, '/api/EliminarCarreraAlumno')
-
-    from app.API_Rest.Services.ObtenerMateriasAlumnoService import ObtenerMateriasAlumno
-    api.add_resource(ObtenerMateriasAlumno, '/api/ObtenerMateriasAlumno')
 
     from app.API_Rest.Services.AgregarMateriaAlumnoService import AgregarMateriaAlumno
     api.add_resource(AgregarMateriaAlumno, '/api/AgregarMateriaAlumno')

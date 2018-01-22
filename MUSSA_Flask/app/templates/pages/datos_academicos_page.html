@@ -1,10 +1,8 @@
 {% extends "common/page_base.html" %}
 
 {% block content %}
-    
-    <div class="container">
-    
-        <script>
+
+    <script>
 
         $(function() {
             var boton = document.getElementById("agregar_materia_button");
@@ -22,14 +20,11 @@
             msj += ". Esto borrará todas las materias asociadas. "
             msj += "Esta acción no se puede deshacer. ¿Querés continuar?"
 
-            confirmar=confirm(msj); 
+            confirmar=confirm(msj);
             if (confirmar) {
                 redirect_to(url);
             }
         }
-
-        SERVICE_MODIFICAR_PADRON = '/api/ModificarPadronAlumno'
-        SUCCESS = 200
 
         function padron_es_valido(padron) {
             return (padron != "") && (padron.match(/^[0-9]+$/) != null) && (5<=padron.length && padron.length<=7)
@@ -47,46 +42,18 @@
                 error_label.style["display"] = "";
                 return false;
             }
-            
-            param = {"padron": padron};
 
-            do_request('GET', SERVICE_MODIFICAR_PADRON, param, function(state, result) {
+            modificar_alumno_service('{{ csrf_token() }}', padron, function(state, result) {
                 error_label.style["display"] = "none";
                 ok_label.style["display"] = "";
             }, function(state, result) {
                 error_label.style["display"] = "";
                 ok_label.style["display"] = "none";
-            })
+            });
         }
 
-        function do_request(method, page, parametros, onSucces, onError) {
-            var method = method || "GET";
-
-            xmlhttp = new XMLHttpRequest();
-
-            xmlhttp.onreadystatechange = function() {
-                if (this.status == 0 || this.readyState != 4)
-                    return;
-
-                if ( this.status != SUCCESS ) {
-                    onError(this.status, this.responseText);
-                }
-                else { 
-                    json_result = (this.responseText == "") ? {} : JSON.parse(this.responseText)
-                    onSucces(this.status, json_result);
-                }
-            }
-
-            var encoded_params = jQuery.param(parametros)
-            var url = page + '?' + encoded_params
-            xmlhttp.open(method, url, true);
-            xmlhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-            xmlhttp.withCredentials = true;
-            xmlhttp.send();
-        }
-
-        function filtrar_materias_por_carrera() {            
-            var carrera_elegida = document.getElementById("carrera_mostrar_materias");            
+        function filtrar_materias_por_carrera() {
+            var carrera_elegida = document.getElementById("carrera_mostrar_materias");
             var id_carrera = carrera_elegida[carrera_elegida.selectedIndex].id;
 
             var rows = document.getElementById("materias_alumno_table").rows;
@@ -116,7 +83,9 @@
             tabla_vacia_label.hidden = !no_hay_datos;
         }
 
-        </script>
+    </script>
+
+    <div class="container">
 
         <h2>{%trans%}Registro Académico{%endtrans%}</h2>
         
@@ -191,7 +160,7 @@
                                 <td>{{carrera["nombre"]}}</td>
                                 <td>{{carrera["plan"]}}</td>
                                 <td>
-                                    <button type="button" class="btn btn-link" onclick="confirmar_eliminar_carrera({{carrera | safe}}, '{{ url_for('main.datos_academicos_eliminar_carrera_page', idCarrera=carrera['id'], token=csrf_token())}}')"><span class='glyphicon glyphicon-trash'></span></button>
+                                    <button type="button" class="btn btn-link" onclick="confirmar_eliminar_carrera({{carrera | safe}}, '{{ url_for('main.datos_academicos_eliminar_carrera_page', idCarrera=carrera['id_carrera'], token=csrf_token())}}')"><span class='glyphicon glyphicon-trash'></span></button>
                                 </td>
                             </tr>
 
@@ -221,7 +190,7 @@
                     <select class="form-control" id="carrera_mostrar_materias" name="carrera_mostrar_materias" onchange="filtrar_materias_por_carrera()">
                         <option id="todas_mis_carreras">Todas mis carreras</option>
                         {% for carrera in mis_carreras %}
-                            <option id="carrera_{{carrera['id']}}">{{carrera["codigo"]}} - {{carrera["nombre"]}} ({{carrera["plan"]}})</option>
+                            <option id="carrera_{{carrera['id_carrera']}}">{{carrera["codigo"]}} - {{carrera["nombre"]}} ({{carrera["plan"]}})</option>
                         {% endfor %}
                     </select>
                 </div>
@@ -253,6 +222,7 @@
                                 <td>{{materia["codigo"]}}</td>
                                 <td>{{materia["nombre"]}}</td>
                                 <td>{{materia["carrera"]}}</td>
+                                <td>{{materia["curso"]}}</td>
                                 <td>{{materia["estado"]}}</td>
                                 <td>{{materia["aprobacion_cursada"]}}</td>
                                 <td>{{materia["calificacion"]}}</td>
@@ -260,9 +230,9 @@
                                 <td>{{materia["acta_o_resolucion"]}}</td>
                                 <td>{{materia["forma_aprobacion_materia"]}}</td>
                                 <td>
-                                    <button type="button" class="btn btn-link" onclick="redirect_to('{{ url_for('main.editar_materia_page', idMateria=materia['id'])}}')"><span class='glyphicon glyphicon-pencil'></span></button>
+                                    <button type="button" class="btn btn-link" onclick="redirect_to('{{ url_for('main.editar_materia_page', idMateria=materia['id_materia_alumno'])}}')"><span class='glyphicon glyphicon-pencil'></span></button>
 
-                                    <button type="button" class="btn btn-link" onclick="redirect_to('{{ url_for('main.datos_academicos_eliminar_materia_page', idMateria=materia['id'], token=csrf_token())}}')">
+                                    <button type="button" class="btn btn-link" onclick="redirect_to('{{ url_for('main.datos_academicos_eliminar_materia_page', idMateria=materia['id_materia_alumno'], token=csrf_token())}}')">
                                         <span class='glyphicon glyphicon-trash'></span>
                                     </button>
                                 </td>

@@ -167,32 +167,36 @@ function modificar_curso_service(token, idCurso, ids_carreras, primer_cuatrimest
  horarios, onSuccess, onError) {
     var url_servicio = BASE_URL + '/curso/' + idCurso;
 
-    parametros = {}
-    parametros["ids_carreras"] = JSON.stringify(ids_carreras)
-    parametros["primer_cuatrimestre"] = primer_cuatrimestre
-    parametros["segundo_cuatrimestre"] = segundo_cuatrimestre
-    parametros["ids_docentes"] = JSON.stringify(ids_docentes)
-    parametros["horarios"] = JSON.stringify(horarios)
+    parametros = {};
+    parametros["ids_carreras"] = JSON.stringify(ids_carreras);
+    parametros["primer_cuatrimestre"] = primer_cuatrimestre;
+    parametros["segundo_cuatrimestre"] = segundo_cuatrimestre;
+    parametros["ids_docentes"] = JSON.stringify(ids_docentes);
+    parametros["horarios"] = JSON.stringify(horarios);
 
     do_request('POST', url_servicio, token, parametros, onSuccess, onError);
 }
 
-//////////////////////////////////////////////////////////////////////
+//*********************************************************//
+//                  Servicios Alumno                       //
+//*********************************************************//
 
-function fill_dropdown(dropdown_id, process_response, responseText){
-    process_data = process_response(responseText);
-    content = "";
-    for(var i=0; i<process_data.length; i++) {
-        current_data = process_data[i];
-        content += '<option';
-        if ("id" in current_data)
-            content += ' id="' + current_data["id"] + '"';
-        if ("value" in current_data)
-            content += ' value="' + current_data["value"] + '"';
-        content += ">";
-        if ("text" in current_data)
-            content += current_data["text"];
-        content += "</option>";
-    }
-    $("#" + dropdown_id).html(content);
+function modificar_alumno_service(token, padron, onSuccess, onError) {
+    var url_servicio = BASE_URL + '/alumno';
+
+    parametros = {}
+    parametros["padron"] = padron;
+
+    do_request('POST', url_servicio, token, parametros, onSuccess, onError);
+}
+
+function obtener_materias_pendientes_services(token, id_carrera, onSuccess, onError) {
+    var url_servicio = BASE_URL + '/alumno/materia/pendientes';
+
+    parametros = {}
+    parametros["id_carrera"] = id_carrera;
+
+    do_request('GET', url_servicio, token, parametros, function(status, response) {
+        onSuccess(status, response["materias_alumno"]);
+    }, onError);
 }

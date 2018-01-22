@@ -5,6 +5,7 @@ from app.views.base_view import main_blueprint
 from app.views.Utils.invocaciones_de_servicios import *
 from app.DAO.MateriasDAO import *
 from datetime import datetime
+from app.ClienteAPI.ClienteAPI import ClienteAPI
 
 
 @main_blueprint.route('/datos_academicos/agregar_materia', methods=['GET'])
@@ -12,8 +13,7 @@ from datetime import datetime
 def agregar_materia_page():
     cookie = request.cookies
 
-    mis_carreras = invocar_obtener_carreras_alumno(cookie)
-    # materias = invocar_obtener_materias_alumno(cookie, [PENDIENTE])
+    mis_carreras = ClienteAPI().obtener_carreras_alumno(cookie)
 
     estados = []
     for estado in [EN_CURSO, FINAL_PENDIENTE, APROBADA, DESAPROBADA]:
