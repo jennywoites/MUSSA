@@ -144,9 +144,6 @@ def add_resources_usuarios(api):
     from app.API_Rest.Services.AgregarCarreraAlumnoService import AgregarCarreraAlumno
     api.add_resource(AgregarCarreraAlumno, '/api/AgregarCarreraAlumno')
 
-    from app.API_Rest.Services.ObtenerCarrerasAlumnoService import ObtenerCarrerasAlumno
-    api.add_resource(ObtenerCarrerasAlumno, '/api/ObtenerCarrerasAlumno')
-
     from app.API_Rest.Services.EliminarCarreraAlumnoService import EliminarCarreraAlumno
     api.add_resource(EliminarCarreraAlumno, '/api/EliminarCarreraAlumno')
 

@@ -111,6 +111,10 @@ class ClienteAPI:
         """URL: '/api/alumno/materia/pendientes'"""
         return self.BASE_URL + '/alumno/materia/pendientes'
 
+    def get_url_get_carreras_alumno(self):
+        """URL: '/api/alumno/carrera/all'"""
+        return self.BASE_URL + '/alumno/carrera/all'
+
     ################################################
     ##              Servicios DOCENTE             ##
     ################################################
@@ -282,3 +286,7 @@ class ClienteAPI:
             parametros["id_carrera"] = id_carrera
 
         return self.invocar_get(url_servicio, cookie, parametros)["materias_alumno"]
+
+    def obtener_carreras_alumno(self, cookie):
+        url_servicio = self.get_url_get_carreras_alumno()
+        return self.invocar_get(url_servicio, cookie)["carreras"]

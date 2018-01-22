@@ -69,7 +69,7 @@
         }
 
         function filtrar_materias_segun_carrera() {
-            $('#loader').show();
+            show_loading_mask();
             var carrera_element = document.getElementById("carrera");
             var id_carrera = carrera_element[carrera_element.selectedIndex].id;
             var valor_seleccionado = carrera_element.value;
@@ -103,25 +103,25 @@
                     var materia_element = document.getElementById("materia");
                     materia_element.appendChild(opt);
                 }
-                $('#loader').hide();
+                hide_loading_mask();
             }, function(state, result) {
                 console.log(result);
-                $('#loader').hide();
+                hide_loading_mask();
             })
         }
 
         function limpiar_selector_materias(habilitado) {
-            limpiar_selector("materia", '', "Seleccione una materia", 'materia_opcion_0', habilitado);
+            limpiar_selector("materia", '', "Seleccione una materia", 'materia_opcion_0', habilitado, true);
 
             var texto_sin_curso = document.getElementById("texto_sin_curso");
             texto_sin_curso.hidden = true;
         }
 
         function limpiar_selector_cursos(habilitado) {
-            limpiar_selector("curso", -1, "Sin curso determinado", 'curso_opcion_0', habilitado);
+            limpiar_selector("curso", -1, "Sin curso determinado", 'curso_opcion_0', habilitado, false);
         }
 
-        function limpiar_selector(idSelector, valueOpt, textOpt, idOpt, habilitado) {
+        function limpiar_selector(idSelector, valueOpt, textOpt, idOpt, habilitado, deshabilitar_opcion) {
             var selector = document.getElementById(idSelector);
             selector.innerHTML = ''
 
@@ -133,13 +133,13 @@
 
             selector.disabled = false;
             selector.selectedIndex = 0;
-            selector[0].disabled = true;
+            selector[0].disabled = deshabilitar_opcion;
 
             selector.disabled = !habilitado;
         }
 
         function habilitar_curso_y_estado() {
-            $('#loader').show();
+            show_loading_mask();
             var materia_element = document.getElementById("materia");
             materia_element[0].style["display"] = "none";
 
@@ -165,10 +165,10 @@
                     var selector_curso = document.getElementById("curso");
                     selector_curso.appendChild(opt);
                 }
-                $('#loader').hide();
+                hide_loading_mask();
             }, function(state, result) {
                 console.log(result);
-                $('#loader').hide();
+                hide_loading_mask();
             });
 
             var estado_element = document.getElementById("estado");
@@ -212,7 +212,7 @@
                 <select class="form-control" id="carrera" name="carrera" onchange="filtrar_materias_segun_carrera()">
                     <option>Seleccione una carrera</option>
                     {% for carrera in carreras %}
-                        <option id="{{carrera['id']}}" value="{{carrera['id']}}">{{carrera["codigo"]}} - {{carrera["nombre"]}} ({{carrera["plan"]}})</option>
+                        <option id="{{carrera['id_carrera']}}" value="{{carrera['id_carrera']}}">{{carrera["codigo"]}} - {{carrera["nombre"]}} ({{carrera["plan"]}})</option>
                     {% endfor %}
                 </select>
             </div>

@@ -17,7 +17,7 @@ def datos_academicos_page():
     padron = cliente.obtener_alumno(cookie)["padron"]
     carreras = cliente.obtener_todas_las_carreras(cookie)
 
-    mis_carreras = invocar_obtener_carreras_alumno(cookie)
+    mis_carreras = cliente.obtener_carreras_alumno(cookie)
     carreras_nuevas = filtrar_carreras_no_cursadas(carreras, mis_carreras)
 
     mis_materias = cliente.obtener_materias_alumno(cookie)

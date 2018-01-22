@@ -160,7 +160,7 @@
                                 <td>{{carrera["nombre"]}}</td>
                                 <td>{{carrera["plan"]}}</td>
                                 <td>
-                                    <button type="button" class="btn btn-link" onclick="confirmar_eliminar_carrera({{carrera | safe}}, '{{ url_for('main.datos_academicos_eliminar_carrera_page', idCarrera=carrera['id'], token=csrf_token())}}')"><span class='glyphicon glyphicon-trash'></span></button>
+                                    <button type="button" class="btn btn-link" onclick="confirmar_eliminar_carrera({{carrera | safe}}, '{{ url_for('main.datos_academicos_eliminar_carrera_page', idCarrera=carrera['id_carrera'], token=csrf_token())}}')"><span class='glyphicon glyphicon-trash'></span></button>
                                 </td>
                             </tr>
 
@@ -190,7 +190,7 @@
                     <select class="form-control" id="carrera_mostrar_materias" name="carrera_mostrar_materias" onchange="filtrar_materias_por_carrera()">
                         <option id="todas_mis_carreras">Todas mis carreras</option>
                         {% for carrera in mis_carreras %}
-                            <option id="carrera_{{carrera['id']}}">{{carrera["codigo"]}} - {{carrera["nombre"]}} ({{carrera["plan"]}})</option>
+                            <option id="carrera_{{carrera['id_carrera']}}">{{carrera["codigo"]}} - {{carrera["nombre"]}} ({{carrera["plan"]}})</option>
                         {% endfor %}
                     </select>
                 </div>

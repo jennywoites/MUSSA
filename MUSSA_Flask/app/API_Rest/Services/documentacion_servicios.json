@@ -817,6 +817,29 @@
         }
       }
     },
+    "/alumno/carrera/all": {
+      "get": {
+        "tags": [
+          "alumno"
+        ],
+        "summary": "Devuelve todas las carreras en las que el alumno está inscripto",
+        "description": "Devuelve todas las carreras en las que el alumno está inscripto",
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/ListaCarreras"
+            }
+          },
+          "401": {
+            "description": "La información de autorización no fue enviada o es inválida."
+          }
+        }
+      }
+    },
     "/encuesta/preguntas": {
       "get": {
         "tags": [
