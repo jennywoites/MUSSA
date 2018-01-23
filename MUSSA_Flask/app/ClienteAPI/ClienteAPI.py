@@ -312,3 +312,10 @@ class ClienteAPI:
 
         return self.invocar_get(url_servicio, cookie, parametros)["encuestas"]
 
+    def finalizar_encuesta_alumno(self, cookie, idEncuestaAlumno):
+        url_servicio = self.get_url_get_encuesta_alumno(idEncuestaAlumno)
+
+        parametros = {}
+        parametros["finalizada"] = True
+
+        return self.invocar_post(url_servicio, cookie)

@@ -27,11 +27,10 @@ from tests.TestAPIServicios.TestAlumnoServices.TestObtenerPadronAlumno import Te
 from tests.TestAPIServicios.TestAlumnoServices.TestModificarPadronAlumno import TestModificarPadronAlumno
 from tests.TestAPIServicios.TestAlumnoServices.TestObtenerMateriasAlumno import TestObtenerMateriasAlumno
 from tests.TestAPIServicios.TestAlumnoServices.TestObtenerEncuestasAlumno import TestObtenerEncuestasAlumno
-
-#################################################
-from tests.TestAPIServicios.TestAgregarMateriaAlumno import TestAgregarMateriaAlumno
-from tests.TestAPIServicios.TestGuardarRespuestasEncuestaAlumno import TestGuardarRespuestasEncuestaAlumno
-from tests.TestAPIServicios.TestObtenerRespuestasEncuestaAlumnoParaPreguntasEspecificas import \
+from tests.TestAPIServicios.TestAlumnoServices.TestAgregarMateriaAlumno import TestAgregarMateriaAlumno
+from tests.TestAPIServicios.TestAlumnoServices.TestGuardarRespuestasEncuestaAlumno import \
+    TestGuardarRespuestasEncuestaAlumno
+from tests.TestAPIServicios.TestAlumnoServices.TestObtenerRespuestasEncuestaAlumnoParaPreguntasEspecificas import \
     TestObtenerRespuestasEncuestaAlumnoParaPreguntasEspecificas
 
 # Ejecutar todos los tests

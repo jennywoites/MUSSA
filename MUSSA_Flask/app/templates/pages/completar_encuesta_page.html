@@ -245,10 +245,9 @@
     }
 
     SERVICE_GUARDAR_RESPUESTAS_ENCUESTAS_ALUMNO = '/api/GuardarRespuestasEncuestaAlumno'
-    SERVICE_FINALIZAR_ENCUESTAS_ALUMNO = '/api/FinalizarEncuestaAlumno'
     SUCCESS = 200
 
-    function do_request(method, page, parametros, onSucces, onError) {
+    function do_request_2(method, page, parametros, onSucces, onError) {
         var method = method || "GET";
 
         xmlhttp = new XMLHttpRequest();
@@ -286,6 +285,7 @@
     function validarRespuestasParcialesYGuardarRespuestas(nextUrl) {
         var esGuardadoParcial = true;
         validarRespuestasYGuardarRespuestas(nextUrl, esGuardadoParcial, function(state, result) {
+            hide_loading_mask();
             window.location.replace(nextUrl);
         });
     }
@@ -293,22 +293,23 @@
     function validarRespuestasGuardarYFinalizarEncuesta() {
         var nextUrl = '{{ url_for('main.historial_encuestas_page') }}';
         var esGuardadoParcial = false;
-        validarRespuestasYGuardarRespuestas(nextUrl, esGuardadoParcial, function(state, result) {
-            var param = {};
-            param["id_encuesta"] = {{idEncuestaAlumno}};
 
+        validarRespuestasYGuardarRespuestas(nextUrl, esGuardadoParcial, function(state, result) {
             var error_al_finalizar = document.getElementById("div_error_finalizar_encuesta");
             error_al_finalizar.hidden = true;
 
-            do_request('POST', SERVICE_FINALIZAR_ENCUESTAS_ALUMNO, param, function(state, result) {
+            finalizar_encuesta_alumno_service('{{ csrf_token() }}', {{idEncuestaAlumno}}, function(state, result) {
                 window.location.replace(nextUrl);
+                hide_loading_mask();
             }, function(state, result) {
                 error_al_finalizar.hidden = false;
-            })
+                hide_loading_mask();
+            });
         });
     }
 
     function validarRespuestasYGuardarRespuestas(nextUrl, esGuardadoParcial, onSuccess) {
+        show_loading_mask();
         var preguntas = {{preguntas | safe}};
 
         var respuestas = [];
@@ -334,11 +335,12 @@
 
         var error_al_guardar = document.getElementById("div_error_guardado");
         error_al_guardar.hidden = true;
-        do_request('POST', SERVICE_GUARDAR_RESPUESTAS_ENCUESTAS_ALUMNO, param, function(state, result) {
+        do_request_2('POST', SERVICE_GUARDAR_RESPUESTAS_ENCUESTAS_ALUMNO, param, function(state, result) {
             onSuccess(state, result)
         }, function(state, result) {
-            $('html, body').animate({scrollTop:0}, 'slow');
+            scroll_arriba();
             error_al_guardar.hidden = false;
+            hide_loading_mask();
         })
     }
 

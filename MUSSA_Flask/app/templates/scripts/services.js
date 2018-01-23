@@ -37,6 +37,7 @@ function do_request(method, page, CSRF_token, parametros, onSucces, onError) {
         xmlhttp.send();
     } else {
         xmlhttp.setRequestHeader("X-CSRFToken", CSRF_token);
+        debugger;
         xmlhttp.send(encoded_params);
     }
 }
@@ -190,7 +191,7 @@ function modificar_alumno_service(token, padron, onSuccess, onError) {
     do_request('POST', url_servicio, token, parametros, onSuccess, onError);
 }
 
-function obtener_materias_pendientes_services(token, id_carrera, onSuccess, onError) {
+function obtener_materias_pendientes_service(token, id_carrera, onSuccess, onError) {
     var url_servicio = BASE_URL + '/alumno/materia/pendientes';
 
     parametros = {}
@@ -199,4 +200,13 @@ function obtener_materias_pendientes_services(token, id_carrera, onSuccess, onEr
     do_request('GET', url_servicio, token, parametros, function(status, response) {
         onSuccess(status, response["materias_alumno"]);
     }, onError);
+}
+
+function finalizar_encuesta_alumno_service(token, idEncuestaAlumno, onSuccess, onError) {
+    var url_servicio = BASE_URL + '/alumno/encuesta/' + idEncuestaAlumno;
+
+    parametros = {}
+    parametros["finalizada"] = true;
+
+    do_request('POST', url_servicio, token, parametros, onSuccess, onError);
 }

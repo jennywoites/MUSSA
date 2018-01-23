@@ -92,7 +92,7 @@
             estado_element.selectedIndex = 0;
             mostrar_ocultar_datos_materia_aprobada();
 
-            obtener_materias_pendientes_services('{{ csrf_token() }}', id_carrera, function(state, result) {
+            obtener_materias_pendientes_service('{{ csrf_token() }}', id_carrera, function(state, result) {
                 for (var i=0; i<result.length; i++) {
                     var materia = result[i];
                     var opt = document.createElement('option');

@@ -876,6 +876,52 @@
             "description": "La encuesta alumno del ID especificado no fue encontrada o no pertenece al alumno del usuario actual."
           }
         }
+      },
+      "post": {
+        "tags": [
+          "alumno"
+        ],
+        "summary": "Marca como finalizada la encuesta del id correspondiente.",
+        "description": "Marca como finalizada la encuesta del id correspondiente.",
+        "produces": [
+          "application/json"
+        ],
+        "consumes": [
+          "multipart/form-data"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "idEncuestaAlumno",
+            "required": true,
+            "type": "integer",
+            "description": "El ID de la encuesta de alumno a buscar."
+          },
+          {
+            "in": "formData",
+            "name": "finalizada",
+            "required": true,
+            "type": "boolean",
+            "description": "Enviar en True. La encuesta quedará como finalizada."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK. No hay datos."
+          },
+          "400": {
+            "description": "BAD REQUEST. El ID de la encuesta alumno debe ser un entero y mayor que 0. El campo finalizada debe ser un booleano."
+          },
+          "401": {
+            "description": "La información de autorización no fue enviada o es inválida."
+          },
+          "404": {
+            "description": "La encuesta alumno del ID especificado no fue encontrada o no pertenece al alumno del usuario actual."
+          },
+          "405": {
+            "description": "La encuesta alumno del ID especificado ya está finalizada."
+          }
+        }
       }
     },
     "/alumno/encuesta/all": {
