@@ -353,6 +353,6 @@ class ClienteAPI:
 
         return self.invocar_put(url_servicio, cookie, csrf_token, parametros)
 
-    def eliminar_carrera_alumno(self, cookie, idCarrera):
+    def eliminar_carrera_alumno(self, cookie, csrf_token, idCarrera):
         url_servicio = self.get_url_carrera_alumno(idCarrera)
-        return self.invocar_delete(url_servicio, cookie)
+        return self.invocar_delete(url_servicio, cookie, csrf_token)

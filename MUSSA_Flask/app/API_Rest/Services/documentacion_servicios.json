@@ -844,7 +844,42 @@
             "description": "OK. No hay contenido."
           },
           "400": {
-            "description": "BAD REQUEST. El id de carrera no es válido."
+            "description": "BAD REQUEST. El id de carrera no es válido o ya pertenece al alumno."
+          },
+          "401": {
+            "description": "La información de autorización no fue enviada o es inválida."
+          },
+          "404": {
+            "description": "El id de carrera no existe."
+          }
+        }
+      }
+    },
+    "/alumno/carrera/{idCarrera}": {
+      "put": {
+        "tags": [
+          "alumno"
+        ],
+        "summary": "Elimina la carrera segun el id. El alumno deja de estar inscripto en esa carrera.",
+        "description": "Elimina la carrera segun el id. El alumno deja de estar inscripto en esa carrera.",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "idCarrera",
+            "required": true,
+            "type": "integer",
+            "description": "Id de la carrera que se desea eliminar del alumno."
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "OK. No hay contenido."
+          },
+          "400": {
+            "description": "BAD REQUEST. El id de carrera no es válido o ya no pertenece al alumno."
           },
           "401": {
             "description": "La información de autorización no fue enviada o es inválida."

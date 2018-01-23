@@ -22,16 +22,6 @@ def invocar_guardar_horarios_desde_PDF(csrf_token, cookie, ruta, anio, cuatrimes
     return json.loads(horarios_response.text)
 
 
-def invocar_eliminar_carrera_alumno(csrf_token, cookie, id_carrera):
-    parametros = {}
-    parametros["id_carrera"] = id_carrera
-
-    eliminar_carrera_response = requests.post(ELIMINAR_CARRERA_ALUMNO_SERVICE, data=parametros,
-                                              cookies=cookie, headers={"X-CSRFToken": csrf_token})
-    escribir_resultado_servicio('Eliminar Carrera Alumno', eliminar_carrera_response)
-    return json.loads(eliminar_carrera_response.text)
-
-
 def invocar_eliminar_materia_alumno(csrf_token, cookie, id_materia):
     parametros = {}
     parametros["id_materia"] = id_materia

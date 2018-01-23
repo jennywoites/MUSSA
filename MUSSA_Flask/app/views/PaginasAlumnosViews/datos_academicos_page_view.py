@@ -60,9 +60,9 @@ def datos_academicos_agregar_carrera_page():
 @main_blueprint.route('/datos_academicos/eliminar_carrera/<int:idCarrera>/<string:token>', methods=['GET', 'POST'])
 @login_required
 def datos_academicos_eliminar_carrera_page(idCarrera, token):
-    response = invocar_eliminar_carrera_alumno(token, request.cookies, idCarrera)
+    response = ClienteAPI().eliminar_carrera_alumno(request.cookies, token, idCarrera)
 
-    if 'OK' in response:
+    if (response == SUCCESS_NO_CONTENT or response == SUCCESS_OK):
         flash(gettext('Se eliminó la carrera'), 'success')
     else:
         flash(response["Error"], 'error')

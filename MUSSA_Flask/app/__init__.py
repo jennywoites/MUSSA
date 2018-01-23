@@ -141,9 +141,6 @@ def add_resources_api_rest(api):
 
 
 def add_resources_usuarios(api):
-    from app.API_Rest.Services.EliminarCarreraAlumnoService import EliminarCarreraAlumno
-    api.add_resource(EliminarCarreraAlumno, '/api/EliminarCarreraAlumno')
-
     from app.API_Rest.Services.AgregarMateriaAlumnoService import AgregarMateriaAlumno
     api.add_resource(AgregarMateriaAlumno, '/api/AgregarMateriaAlumno')
 
