@@ -817,6 +817,44 @@
         }
       }
     },
+    "/alumno/carrera": {
+      "put": {
+        "tags": [
+          "alumno"
+        ],
+        "summary": "Agrega la carrera al alumno",
+        "description": "Habilita la carrera para el alumno (lo inscribe). Agrega todas las materias de la carrera como materias pendientes para el alumno. No es posible agregar una carrera que ya ha sido añadida anteriormente.",
+        "produces": [
+          "application/json"
+        ],
+        "consumes": [
+          "multipart/form-data"
+        ],
+        "parameters": [
+          {
+            "in": "formData",
+            "name": "idCarrera",
+            "required": true,
+            "type": "integer",
+            "description": "Id de la carrera que se desea registrar para el alumno."
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "OK. No hay contenido."
+          },
+          "400": {
+            "description": "BAD REQUEST. El id de carrera no es válido."
+          },
+          "401": {
+            "description": "La información de autorización no fue enviada o es inválida."
+          },
+          "404": {
+            "description": "El id de carrera no existe."
+          }
+        }
+      }
+    },
     "/alumno/carrera/all": {
       "get": {
         "tags": [

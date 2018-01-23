@@ -7,7 +7,6 @@ ADMIN = "admin/"
 BASE_URL = HTTP + IP + PUERTO + BASE_API
 
 # Requiere estar logueado
-AGREGAR_CARRERA_ALUMNO_SERVICE = BASE_URL + "AgregarCarreraAlumno"
 ELIMINAR_CARRERA_ALUMNO_SERVICE = BASE_URL + "EliminarCarreraAlumno"
 AGREGAR_MATERIA_ALUMNO_SERVICE = BASE_URL + "AgregarMateriaAlumno"
 ELIMINAR_MATERIA_ALUMNO_SERVICE = BASE_URL + "EliminarMateriaAlumno"

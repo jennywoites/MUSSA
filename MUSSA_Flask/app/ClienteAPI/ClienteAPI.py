@@ -42,6 +42,16 @@ class ClienteAPI:
         self.escribir_resultado_servicio(url_servicio, response)
         return response.json()
 
+    def invocar_put(self, url_servicio, cookies, csrf_token, parametros=None):
+        if parametros:
+            response = requests.put(url_servicio, data=parametros, cookies=cookies,
+                                     headers={"X-CSRFToken": csrf_token})
+        else:
+            response = requests.put(url_servicio, cookies=cookies, headers={"X-CSRFToken": csrf_token})
+
+        self.escribir_resultado_servicio(url_servicio, response)
+        return response.json()
+
     def invocar_delete(self, url_servicio, cookies, csrf_token):
         response = requests.delete(url_servicio, cookies=cookies, headers={"X-CSRFToken": csrf_token})
         self.escribir_resultado_servicio(url_servicio, response)
@@ -126,6 +136,13 @@ class ClienteAPI:
     def get_url_get_encuesta_alumno_esta_completa(self, idEncuestaAlumno):
         """URL: '/api/alumno/encuesta/<int:idEncuestaAlumno>/completa'"""
         return self.BASE_URL + '/alumno/encuesta/' + str(idEncuestaAlumno) + '/completa'
+
+    def get_url_carrera_alumno(self, idCarrera=None):
+        """URLs:
+        '/api/alumno/carrera',
+        '/api/alumno/carrera/<int:idCarrera>'
+        """
+        return self.BASE_URL + '/alumno/carrera' + ('/' + str(idCarrera) if idCarrera else '')
 
     ################################################
     ##              Servicios DOCENTE             ##
@@ -327,3 +344,15 @@ class ClienteAPI:
     def encuesta_alumno_esta_completa(self, cookie, idEncuestaAlumno):
         url_servicio = self.get_url_get_encuesta_alumno_esta_completa(idEncuestaAlumno)
         return self.invocar_get(url_servicio, cookie)["esta_completa"]
+
+    def agregar_carrera_alumno(self, cookie, csrf_token, idCarrera):
+        url_servicio = self.get_url_carrera_alumno()
+
+        parametros = {}
+        parametros["idCarrera"] = idCarrera
+
+        return self.invocar_put(url_servicio, cookie, csrf_token, parametros)
+
+    def eliminar_carrera_alumno(self, cookie, idCarrera):
+        url_servicio = self.get_url_carrera_alumno(idCarrera)
+        return self.invocar_delete(url_servicio, cookie)
