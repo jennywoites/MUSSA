@@ -115,6 +115,14 @@ class ClienteAPI:
         """URL: '/api/alumno/carrera/all'"""
         return self.BASE_URL + '/alumno/carrera/all'
 
+    def get_url_get_encuesta_alumno(self, idEncuestaAlumno):
+        """URL: '/api/alumno/encuesta/<int:idEncuestaAlumno>'"""
+        return self.BASE_URL + '/alumno/encuesta/' + str(idEncuestaAlumno)
+
+    def get_url_get_encuestas_alumno(self):
+        """URL: '/api/alumno/encuesta/all'"""
+        return self.BASE_URL + '/alumno/encuesta/all'
+
     ################################################
     ##              Servicios DOCENTE             ##
     ################################################
@@ -290,3 +298,17 @@ class ClienteAPI:
     def obtener_carreras_alumno(self, cookie):
         url_servicio = self.get_url_get_carreras_alumno()
         return self.invocar_get(url_servicio, cookie)["carreras"]
+
+    def obtener_encuesta_alumno(self, cookie, idEncuestaAlumno):
+        url_servicio = self.get_url_get_encuesta_alumno(idEncuestaAlumno)
+        return self.invocar_get(url_servicio, cookie)
+
+    def obtener_todas_las_encuestas_alumno(self, cookie, finalizada=None):
+        url_servicio = self.get_url_get_encuestas_alumno()
+
+        parametros = {}
+        if finalizada is not None:
+            parametros["finalizada"] = finalizada
+
+        return self.invocar_get(url_servicio, cookie, parametros)["encuestas"]
+

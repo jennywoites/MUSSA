@@ -37,7 +37,7 @@
                             <td>{{encuesta["carrera"]["descripcion"]}}</td>
                             <td>{{encuesta["fecha_aprobacion"]}}</td>
                             <td>
-                                <button type="button" class="btn btn-link" onclick="window.location.href='{{ url_for('main.completar_encuesta_general_page', idEncuestaAlumno=encuesta['id'])}}'"><span class='glyphicon glyphicon-pencil'></span></button>
+                                <button type="button" class="btn btn-link" onclick="window.location.href='{{ url_for('main.completar_encuesta_general_page', idEncuestaAlumno=encuesta['id_encuesta_alumno'])}}'"><span class='glyphicon glyphicon-pencil'></span></button>
                             </td>
                         </tr>
                     {% endfor %}
@@ -69,7 +69,7 @@
                         <td>{{encuesta["carrera"]["descripcion"]}}</td>
                         <td>{{encuesta["fecha_aprobacion"]}}</td>
                         <td>
-                            <button type="button" class="btn btn-link" onclick="window.location.href='{{ url_for('main.visualizar_encuesta_general_page', idEncuestaAlumno=encuesta['id'])}}'"><span class='glyphicon glyphicon-search'></span></button>
+                            <button type="button" class="btn btn-link" onclick="window.location.href='{{ url_for('main.visualizar_encuesta_general_page', idEncuestaAlumno=encuesta['id_encuesta_alumno'])}}'"><span class='glyphicon glyphicon-search'></span></button>
                         </td>
                     </tr>
                     {% endfor %}

@@ -121,3 +121,9 @@ class TestBase(TestCase):
 
     def get_url_get_materias_pendientes_alumno(self):
         return ClienteAPI().get_url_get_materias_pendientes_alumno()
+
+    def get_url_get_encuesta_alumno(self, idEncuestaAlumno):
+        return ClienteAPI().get_url_get_encuesta_alumno(idEncuestaAlumno)
+
+    def get_url_get_encuestas_alumno(self):
+        return ClienteAPI().get_url_get_encuestas_alumno()

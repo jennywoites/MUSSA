@@ -200,18 +200,18 @@ class TestObtenerEncuestasAlumno(TestBase):
 
     def test_obtener_encuestas_sin_estar_logueado_da_error(self):
         client = self.app.test_client()
-        response = client.get(OBTENER_ENCUESTAS_ALUMNO_SERVICE)
+        response = client.get(self.get_url_get_encuestas_alumno())
         assert (response.status_code == REDIRECTION_FOUND)
 
     def test_obtener_encuestas_logueado_con_administrador_esta_permitido(self):
         client = self.loguear_administrador()
-        response = client.get(OBTENER_ENCUESTAS_ALUMNO_SERVICE)
+        response = client.get(self.get_url_get_encuestas_alumno())
         assert (response.status_code == SUCCESS_OK)
 
     def test_obtener_encuestas_alumno_sin_encuestas(self):
         client = self.loguear_usuario()
 
-        response = client.get(OBTENER_ENCUESTAS_ALUMNO_SERVICE)
+        response = client.get(self.get_url_get_encuestas_alumno())
         assert (response.status_code == SUCCESS_OK)
 
         encuestas = json.loads(response.get_data(as_text=True))["encuestas"]
@@ -229,7 +229,7 @@ class TestObtenerEncuestasAlumno(TestBase):
 
         client = self.loguear_usuario()
 
-        response = client.get(OBTENER_ENCUESTAS_ALUMNO_SERVICE)
+        response = client.get(self.get_url_get_encuestas_alumno())
         assert (response.status_code == SUCCESS_OK)
 
         encuestas = json.loads(response.get_data(as_text=True))["encuestas"]

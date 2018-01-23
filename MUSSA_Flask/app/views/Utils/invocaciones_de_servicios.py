@@ -59,24 +59,6 @@ def invocar_agregar_materia_alumno(csrf_token, cookie, parametros):
     return json.loads(agregar_materia_alumno_response.text)
 
 
-def invocar_obtener_encuestas_alumno(cookie, finalizadas):
-    parametros = {}
-    parametros["finalizadas"] = finalizadas
-
-    encuestas_response = requests.get(OBTENER_ENCUESTAS_ALUMNO_SERVICE, params=parametros, cookies=cookie)
-    escribir_resultado_servicio('Obtener Encuestas Alumno', encuestas_response)
-    return json.loads(encuestas_response.text)["encuestas"]
-
-
-def invocar_obtener_encuesta_alumno(cookie, id_encuesta):
-    parametros = {}
-    parametros["id_encuesta"] = id_encuesta
-
-    encuestas_response = requests.get(OBTENER_ENCUESTAS_ALUMNO_SERVICE, params=parametros, cookies=cookie)
-    escribir_resultado_servicio('Obtener Encuestas Alumno', encuestas_response)
-    return json.loads(encuestas_response.text)["encuestas"].pop()
-
-
 def invocar_obtener_respuestas_encuesta_alumno(cookie, id_encuesta, preguntas):
     parametros = {}
     parametros["id_encuesta"] = id_encuesta
