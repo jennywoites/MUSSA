@@ -153,9 +153,6 @@ def add_resources_usuarios(api):
     from app.API_Rest.Services.EliminarMateriaAlumnoService import EliminarMateriaAlumno
     api.add_resource(EliminarMateriaAlumno, '/api/EliminarMateriaAlumno')
 
-    from app.API_Rest.Services.ObtenerEncuestasAlumnoService import ObtenerEncuestasAlumno
-    api.add_resource(ObtenerEncuestasAlumno, '/api/ObtenerEncuestasAlumno')
-
     from app.API_Rest.Services.ObtenerRespuestasEncuestaAlumnoParaPreguntasEspecificasService import \
         ObtenerRespuestasEncuestaAlumnoParaPreguntasEspecificas
     api.add_resource(ObtenerRespuestasEncuestaAlumnoParaPreguntasEspecificas,
@@ -163,12 +160,6 @@ def add_resources_usuarios(api):
 
     from app.API_Rest.Services.GuardarRespuestasEncuestaAlumnoService import GuardarRespuestasEncuestaAlumno
     api.add_resource(GuardarRespuestasEncuestaAlumno, '/api/GuardarRespuestasEncuestaAlumno')
-
-    from app.API_Rest.Services.EncuestaAlumnoEstaCompletaService import EncuestaAlumnoEstaCompletaService
-    api.add_resource(EncuestaAlumnoEstaCompletaService, '/api/EncuestaAlumnoEstaCompleta')
-
-    from app.API_Rest.Services.FinalizarEncuestaAlumnoService import FinalizarEncuestaAlumnoService
-    api.add_resource(FinalizarEncuestaAlumnoService, '/api/FinalizarEncuestaAlumno')
 
 
 def add_resources_administrador(api):

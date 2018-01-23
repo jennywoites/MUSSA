@@ -840,6 +840,166 @@
         }
       }
     },
+    "/alumno/encuesta/{idEncuestaAlumno}": {
+      "get": {
+        "tags": [
+          "alumno"
+        ],
+        "summary": "Devuelve la encuesta del alumno por id",
+        "description": "Devuelve la encuesta del alumno por id.",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "idEncuestaAlumno",
+            "required": true,
+            "type": "integer",
+            "description": "El ID de la encuesta de alumno a buscar."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/EncuestaAlumno"
+            }
+          },
+          "400": {
+            "description": "BAD REQUEST. El ID de la encuesta alumno debe ser un entero y mayor que 0."
+          },
+          "401": {
+            "description": "La información de autorización no fue enviada o es inválida."
+          },
+          "404": {
+            "description": "La encuesta alumno del ID especificado no fue encontrada o no pertenece al alumno del usuario actual."
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "alumno"
+        ],
+        "summary": "Marca como finalizada la encuesta del id correspondiente.",
+        "description": "Marca como finalizada la encuesta del id correspondiente.",
+        "produces": [
+          "application/json"
+        ],
+        "consumes": [
+          "multipart/form-data"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "idEncuestaAlumno",
+            "required": true,
+            "type": "integer",
+            "description": "El ID de la encuesta de alumno a buscar."
+          },
+          {
+            "in": "formData",
+            "name": "finalizada",
+            "required": true,
+            "type": "boolean",
+            "description": "Enviar en True. La encuesta quedará como finalizada."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK. No hay datos."
+          },
+          "400": {
+            "description": "BAD REQUEST. El ID de la encuesta alumno debe ser un entero y mayor que 0. El campo finalizada debe ser un booleano."
+          },
+          "401": {
+            "description": "La información de autorización no fue enviada o es inválida."
+          },
+          "404": {
+            "description": "La encuesta alumno del ID especificado no fue encontrada o no pertenece al alumno del usuario actual."
+          },
+          "405": {
+            "description": "La encuesta alumno del ID especificado ya está finalizada."
+          }
+        }
+      }
+    },
+    "/alumno/encuesta/{idEncuestaAlumno}/completa": {
+      "get": {
+        "tags": [
+          "alumno"
+        ],
+        "summary": "Devuelve true o false dependiendo de si todos los pasos de la encuesta del alumno por id están completos.",
+        "description": "Devuelve true o false dependiendo de si todos los pasos de la encuesta del alumno por id están completos.",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "idEncuestaAlumno",
+            "required": true,
+            "type": "integer",
+            "description": "El ID de la encuesta de alumno a buscar."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/EncuestaAlumnoEstaCompleta"
+            }
+          },
+          "400": {
+            "description": "BAD REQUEST. El ID de la encuesta alumno debe ser un entero y mayor que 0."
+          },
+          "401": {
+            "description": "La información de autorización no fue enviada o es inválida."
+          },
+          "404": {
+            "description": "La encuesta alumno del ID especificado no fue encontrada o no pertenece al alumno del usuario actual."
+          }
+        }
+      }
+    },
+    "/alumno/encuesta/all": {
+      "get": {
+        "tags": [
+          "alumno"
+        ],
+        "summary": "Devuelve todas las encuesta del alumno permitiendo filtrar aquellas que ya están o no finalizadas.",
+        "description": "Devuelve todas las encuesta del alumno permitiendo filtrar aquellas que ya están o no finalizadas.",
+        "produces": [
+          "application/json"
+        ],
+        "consumes": [
+          "multipart/form-data"
+        ],
+        "parameters": [
+          {
+            "in": "formData",
+            "name": "finalizada",
+            "required": false,
+            "type": "boolean",
+            "description": "Si se desea filtrar solo aquellas encuestas que están finalizadas enviar en True. Si se desea filtrar aquellas encuestas que no están finalizadas enviar en False. Si no se desea aplicar filtros no enviar el parámetro."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/ListaEncuestaAlumno"
+            }
+          },
+          "400": {
+            "description": "BAD REQUEST. El campo finalizada no es válido."
+          },
+          "401": {
+            "description": "La información de autorización no fue enviada o es inválida."
+          }
+        }
+      }
+    },
     "/encuesta/preguntas": {
       "get": {
         "tags": [
@@ -1459,6 +1619,77 @@
           "type": "string",
           "description": "Si corresponde, forma en la que fue aprobada/desaprobada la materia.",
           "example": "Examen"
+        }
+      }
+    },
+    "ListaEncuestaAlumno": {
+      "type": "object",
+      "properties": {
+        "encuestas": {
+          "type": "array",
+          "description": "Lista de encuestas alumno",
+          "items": {
+            "$ref": "#/definitions/EncuestaAlumno"
+          }
+        }
+      }
+    },
+    "EncuestaAlumno": {
+      "type": "object",
+      "properties": {
+        "id_encuesta_alumno": {
+          "type": "integer",
+          "description": "Id de la encuesta alumno",
+          "example": 1
+        },
+        "alumno_id": {
+          "type": "integer",
+          "description": "Id del alumno al que pertenece la encuesta",
+          "example": 2
+        },
+        "materia_alumno_id": {
+          "type": "integer",
+          "description": "Id de la materia alumno",
+          "example": 5
+        },
+        "carrera": {
+          "$ref": "#definitions/Carrera"
+        },
+        "materia": {
+          "$ref": "#definitions/Materia"
+        },
+        "curso": {
+          "$ref": "#definitions/Curso"
+        },
+        "cuatrimestre_aprobacion_cursada": {
+          "type": "integer",
+          "description": "Curso en el que fue aprobada la cursada de la materia a la que pertenece la encuesta",
+          "example": 1
+        },
+        "anio_aprobacion_cursada": {
+          "type": "integer",
+          "description": "Año en el que fue aprobada la cursada de la materia a la que pertence la encuesta",
+          "example": 2016
+        },
+        "fecha_aprobacion": {
+          "type": "string",
+          "description": "Descripcion de fecha y cuatrimestre en la que fue aprobada la materia a la que pertence la encuesta",
+          "example": "1C / 2016"
+        },
+        "finalizada": {
+          "type": "boolean",
+          "description": "Indica si la encuesta ya fue finalizada (no es posible seguir editandola porque ya han sido enviadas las respuestas para que sean públicas)",
+          "example": true
+        }
+      }
+    },
+    "EncuestaAlumnoEstaCompleta": {
+      "type": "object",
+      "properties": {
+        "esta_completa": {
+          "type": "boolean",
+          "description": "True si todos los pasos de la encuesta están completos, False en caso contrario.",
+          "example": true
         }
       }
     }

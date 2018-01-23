@@ -40,8 +40,9 @@ def visualizar_encuesta_docentes_page(idEncuestaAlumno):
 
 
 def visualizar_encuesta(idEncuestaAlumno, cookie, num_categoria):
-    preguntas = ClienteAPI().obtener_preguntas_encuesta(cookie, [num_categoria])
-    encuesta = invocar_obtener_encuesta_alumno(cookie, idEncuestaAlumno)
+    cliente = ClienteAPI()
+    preguntas = cliente.obtener_preguntas_encuesta(cookie, [num_categoria])
+    encuesta = cliente.obtener_encuesta_alumno(cookie, idEncuestaAlumno)
 
     if not encuesta["finalizada"]:
         return redirect(url_for('main.historial_encuestas_page'), code=REDIRECTION_FOUND)

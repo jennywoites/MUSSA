@@ -115,6 +115,18 @@ class ClienteAPI:
         """URL: '/api/alumno/carrera/all'"""
         return self.BASE_URL + '/alumno/carrera/all'
 
+    def get_url_get_encuesta_alumno(self, idEncuestaAlumno):
+        """URL: '/api/alumno/encuesta/<int:idEncuestaAlumno>'"""
+        return self.BASE_URL + '/alumno/encuesta/' + str(idEncuestaAlumno)
+
+    def get_url_get_encuestas_alumno(self):
+        """URL: '/api/alumno/encuesta/all'"""
+        return self.BASE_URL + '/alumno/encuesta/all'
+
+    def get_url_get_encuesta_alumno_esta_completa(self, idEncuestaAlumno):
+        """URL: '/api/alumno/encuesta/<int:idEncuestaAlumno>/completa'"""
+        return self.BASE_URL + '/alumno/encuesta/' + str(idEncuestaAlumno) + '/completa'
+
     ################################################
     ##              Servicios DOCENTE             ##
     ################################################
@@ -290,3 +302,28 @@ class ClienteAPI:
     def obtener_carreras_alumno(self, cookie):
         url_servicio = self.get_url_get_carreras_alumno()
         return self.invocar_get(url_servicio, cookie)["carreras"]
+
+    def obtener_encuesta_alumno(self, cookie, idEncuestaAlumno):
+        url_servicio = self.get_url_get_encuesta_alumno(idEncuestaAlumno)
+        return self.invocar_get(url_servicio, cookie)
+
+    def obtener_todas_las_encuestas_alumno(self, cookie, finalizada=None):
+        url_servicio = self.get_url_get_encuestas_alumno()
+
+        parametros = {}
+        if finalizada is not None:
+            parametros["finalizada"] = finalizada
+
+        return self.invocar_get(url_servicio, cookie, parametros)["encuestas"]
+
+    def finalizar_encuesta_alumno(self, cookie, idEncuestaAlumno):
+        url_servicio = self.get_url_get_encuesta_alumno(idEncuestaAlumno)
+
+        parametros = {}
+        parametros["finalizada"] = True
+
+        return self.invocar_post(url_servicio, cookie)
+
+    def encuesta_alumno_esta_completa(self, cookie, idEncuestaAlumno):
+        url_servicio = self.get_url_get_encuesta_alumno_esta_completa(idEncuestaAlumno)
+        return self.invocar_get(url_servicio, cookie)["esta_completa"]

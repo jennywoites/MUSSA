@@ -6,6 +6,10 @@ function hide_loading_mask() {
     $('#loader').hide();
 }
 
+function scroll_arriba() {
+    $('html, body').animate({scrollTop:0}, 'slow');
+}
+
 //////////////////////////////////////////////////////////////////////
 
 function fill_dropdown(dropdown_id, process_response, responseText){

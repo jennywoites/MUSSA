@@ -4,6 +4,7 @@ from flask import request
 from app.API_Rest.codes import *
 import json
 from app.models.alumno_models import Alumno, MateriasAlumno
+from app.models.respuestas_encuesta_models import EncuestaAlumno
 from app.models.carreras_models import Materia
 from app import db
 from app.utils import DIAS, convertir_horario
@@ -258,6 +259,16 @@ class BaseService(Resource):
             else (msj_base + ' es válido', CLIENT_ERROR_BAD_REQUEST)
 
         return valor is not None, msj, codigo
+
+    def encuesta_pertenece_al_alumno(self, nombreParametro, valor, esObligatorio):
+        if not valor and not esObligatorio:
+            return True, 'el campo {} no existe'.format(nombreParametro), -1
+
+        alumno = self.obtener_alumno_usuario_actual()
+        encuesta = EncuestaAlumno.query.get(valor)
+        es_valido = (encuesta.alumno_id == alumno.id)
+        msj = 'El campo {} de valor {} es '.format(nombreParametro, valor)
+        return (True, msj + 'valido', -1) if es_valido else (False, msj + 'invalido', CLIENT_ERROR_NOT_FOUND)
 
     def validar_contenido_y_longitud_texto(self, nombre_parametro, valor, es_obligatorio, len_min, len_max):
         if not es_obligatorio and valor is None:
