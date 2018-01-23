@@ -47,12 +47,12 @@ def completar_encuesta(idEncuestaAlumno, cookie, num_categoria):
     if encuesta["finalizada"]:
         return redirect(url_for('main.historial_encuestas_page'), code=REDIRECTION_FOUND)
 
-    encuesta_esta_completa = invocar_encuesta_alumno_esta_completa(cookie, idEncuestaAlumno)
+    encuesta_esta_completa = cliente.encuesta_alumno_esta_completa(cookie, idEncuestaAlumno)
 
     respuestas = invocar_obtener_respuestas_encuesta_alumno(cookie, idEncuestaAlumno, preguntas)
     convertir_true_false(respuestas)
 
-    posibles_correlativas = ClienteAPI().obtener_todas_las_materias(
+    posibles_correlativas = cliente.obtener_todas_las_materias(
         cookie,
         ids_carreras=[encuesta["carrera"]["id_carrera"]]
     )

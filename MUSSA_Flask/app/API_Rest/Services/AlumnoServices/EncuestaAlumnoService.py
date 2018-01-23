@@ -114,16 +114,6 @@ class EncuestaAlumnoService(BaseService):
             db.session.add(entrada)
             db.session.commit()
 
-    def encuesta_pertenece_al_alumno(self, nombreParametro, valor, esObligatorio):
-        if not valor and not esObligatorio:
-            return True, 'el campo {} no existe'.format(nombreParametro), -1
-
-        alumno = self.obtener_alumno_usuario_actual()
-        encuesta = EncuestaAlumno.query.get(valor)
-        es_valido = (encuesta.alumno_id == alumno.id)
-        msj = 'El campo {} de valor {} es '.format(nombreParametro, valor)
-        return (True, msj + 'valido', -1) if es_valido else (False, msj + 'invalido', CLIENT_ERROR_NOT_FOUND)
-
     def encuesta_no_esta_finalizada(self, nombreParametro, valor, esObligatorio):
         encuesta = EncuestaAlumno.query.get(valor)
         return (True, 'OK', -1) if not encuesta.finalizada \

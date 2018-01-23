@@ -161,9 +161,6 @@ def add_resources_usuarios(api):
     from app.API_Rest.Services.GuardarRespuestasEncuestaAlumnoService import GuardarRespuestasEncuestaAlumno
     api.add_resource(GuardarRespuestasEncuestaAlumno, '/api/GuardarRespuestasEncuestaAlumno')
 
-    from app.API_Rest.Services.EncuestaAlumnoEstaCompletaService import EncuestaAlumnoEstaCompletaService
-    api.add_resource(EncuestaAlumnoEstaCompletaService, '/api/EncuestaAlumnoEstaCompleta')
-
 
 def add_resources_administrador(api):
     from app.API_Rest.Services.GuardarHorariosDesdeArchivoPDFService import GuardarHorariosDesdeArchivoPDF

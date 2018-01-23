@@ -924,6 +924,44 @@
         }
       }
     },
+    "/alumno/encuesta/{idEncuestaAlumno}/completa": {
+      "get": {
+        "tags": [
+          "alumno"
+        ],
+        "summary": "Devuelve true o false dependiendo de si todos los pasos de la encuesta del alumno por id están completos.",
+        "description": "Devuelve true o false dependiendo de si todos los pasos de la encuesta del alumno por id están completos.",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "idEncuestaAlumno",
+            "required": true,
+            "type": "integer",
+            "description": "El ID de la encuesta de alumno a buscar."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/EncuestaAlumnoEstaCompleta"
+            }
+          },
+          "400": {
+            "description": "BAD REQUEST. El ID de la encuesta alumno debe ser un entero y mayor que 0."
+          },
+          "401": {
+            "description": "La información de autorización no fue enviada o es inválida."
+          },
+          "404": {
+            "description": "La encuesta alumno del ID especificado no fue encontrada o no pertenece al alumno del usuario actual."
+          }
+        }
+      }
+    },
     "/alumno/encuesta/all": {
       "get": {
         "tags": [
@@ -1641,6 +1679,16 @@
         "finalizada": {
           "type": "boolean",
           "description": "Indica si la encuesta ya fue finalizada (no es posible seguir editandola porque ya han sido enviadas las respuestas para que sean públicas)",
+          "example": true
+        }
+      }
+    },
+    "EncuestaAlumnoEstaCompleta": {
+      "type": "object",
+      "properties": {
+        "esta_completa": {
+          "type": "boolean",
+          "description": "True si todos los pasos de la encuesta están completos, False en caso contrario.",
           "example": true
         }
       }

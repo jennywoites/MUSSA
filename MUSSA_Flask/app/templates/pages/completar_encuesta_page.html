@@ -319,7 +319,7 @@
         div_error.hidden = !hay_preguntas_invalidas;
 
         if (hay_preguntas_invalidas) {
-            $('html, body').animate({scrollTop:0}, 'slow');
+            scroll_arriba();
             return false;
         }
 

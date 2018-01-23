@@ -75,10 +75,3 @@ def invocar_obtener_respuestas_encuesta_alumno(cookie, id_encuesta, preguntas):
                                        params=parametros, cookies=cookie)
     escribir_resultado_servicio('Obtener Respuestas Alumno para preguntas específicas', respuestas_response)
     return json.loads(respuestas_response.text)["respuestas_encuestas"]
-
-
-def invocar_encuesta_alumno_esta_completa(cookie, idEncuestaAlumno):
-    parametros = {"id_encuesta": idEncuestaAlumno}
-    response = requests.get(ENCUESTA_ALUMNO_ESTA_COMPLETA_SERVICE, params=parametros, cookies=cookie)
-    escribir_resultado_servicio('Encuesta Alumno está completa', response)
-    return json.loads(response.text)["esta_completa"]

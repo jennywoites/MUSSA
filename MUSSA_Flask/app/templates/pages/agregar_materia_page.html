@@ -56,7 +56,8 @@
             var acta_resolucion = document.getElementById("acta_resolucion").value;
             if (acta_resolucion == "") {
                 mostrar_error(true,"Debe ingresar el acta o resolución");
-                return false;                
+                scroll_arriba();
+                return false;
             }
 
             return true;

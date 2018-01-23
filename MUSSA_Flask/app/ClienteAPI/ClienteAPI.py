@@ -123,6 +123,10 @@ class ClienteAPI:
         """URL: '/api/alumno/encuesta/all'"""
         return self.BASE_URL + '/alumno/encuesta/all'
 
+    def get_url_get_encuesta_alumno_esta_completa(self, idEncuestaAlumno):
+        """URL: '/api/alumno/encuesta/<int:idEncuestaAlumno>/completa'"""
+        return self.BASE_URL + '/alumno/encuesta/' + str(idEncuestaAlumno) + '/completa'
+
     ################################################
     ##              Servicios DOCENTE             ##
     ################################################
@@ -319,3 +323,7 @@ class ClienteAPI:
         parametros["finalizada"] = True
 
         return self.invocar_post(url_servicio, cookie)
+
+    def encuesta_alumno_esta_completa(self, cookie, idEncuestaAlumno):
+        url_servicio = self.get_url_get_encuesta_alumno_esta_completa(idEncuestaAlumno)
+        return self.invocar_get(url_servicio, cookie)["esta_completa"]
