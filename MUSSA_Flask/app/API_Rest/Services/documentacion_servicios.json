@@ -878,6 +878,44 @@
         }
       }
     },
+    "/alumno/encuesta/all": {
+      "get": {
+        "tags": [
+          "alumno"
+        ],
+        "summary": "Devuelve todas las encuesta del alumno permitiendo filtrar aquellas que ya están o no finalizadas.",
+        "description": "Devuelve todas las encuesta del alumno permitiendo filtrar aquellas que ya están o no finalizadas.",
+        "produces": [
+          "application/json"
+        ],
+        "consumes": [
+          "multipart/form-data"
+        ],
+        "parameters": [
+          {
+            "in": "formData",
+            "name": "finalizada",
+            "required": false,
+            "type": "boolean",
+            "description": "Si se desea filtrar solo aquellas encuestas que están finalizadas enviar en True. Si se desea filtrar aquellas encuestas que no están finalizadas enviar en False. Si no se desea aplicar filtros no enviar el parámetro."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/ListaEncuestaAlumno"
+            }
+          },
+          "400": {
+            "description": "BAD REQUEST. El campo finalizada no es válido."
+          },
+          "401": {
+            "description": "La información de autorización no fue enviada o es inválida."
+          }
+        }
+      }
+    },
     "/encuesta/preguntas": {
       "get": {
         "tags": [
@@ -1497,6 +1535,18 @@
           "type": "string",
           "description": "Si corresponde, forma en la que fue aprobada/desaprobada la materia.",
           "example": "Examen"
+        }
+      }
+    },
+    "ListaEncuestaAlumno": {
+      "type": "object",
+      "properties": {
+        "encuestas": {
+          "type": "array",
+          "description": "Lista de encuestas alumno",
+          "items": {
+            "$ref": "#/definitions/EncuestaAlumno"
+          }
         }
       }
     },
