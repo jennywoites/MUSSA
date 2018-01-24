@@ -371,14 +371,13 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
         }
 
     def obtener_respuestas_guardadas_alumno(self, preguntas, encuesta, client):
-        ids_preguntas = ""
+        ids_preguntas = []
         for pregunta in preguntas:
-            ids_preguntas += str(pregunta["pregunta_id"]) + ";"
+            ids_preguntas.append(pregunta["pregunta_id"])
 
         parametros = {}
-        parametros["id_encuesta"] = encuesta.id
-        parametros["ids_preguntas"] = ids_preguntas[:-1]
-        response = client.get(OBTENER_RESPUESTAS_ALUMNO_PARA_PREGUNTAS_ESPECIFICAS_SERVICE, query_string=parametros)
+        parametros["ids_preguntas"] = json.dumps(ids_preguntas)
+        response = client.get(self.get_url_get_respuestas_encuesta_alumno(encuesta.id), query_string=parametros)
         return json.loads(response.get_data(as_text=True))["respuestas_encuestas"]
 
     def agregar_subpreguntas(self, preguntas):
@@ -404,8 +403,8 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
     def se_encuentra_el_horario(self, horario, l_horarios):
         for h in l_horarios:
             if (h["dia"] == horario["dia"].upper() and
-                        h["hora_desde"] == horario["hora_desde"] and
-                        h["hora_hasta"] == horario["hora_hasta"]):
+                        h["hora_desde"] == horario["hora_desde_reloj"] and
+                        h["hora_hasta"] == horario["hora_hasta_reloj"]):
                 return True
         return False
 

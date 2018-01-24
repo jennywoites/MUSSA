@@ -1,11 +1,10 @@
 if __name__ == '__main__':
     import sys
+
     sys.path.append("../..")
 
 from tests.TestAPIServicios.TestBase import TestBase
-from app.DAO.EncuestasDAO import *
 from app.DAO.MateriasDAO import *
-from app.API_Rest.services import *
 from app.API_Rest.codes import *
 from app.models.respuestas_encuesta_models import *
 from app.models.docentes_models import Docente
@@ -336,7 +335,7 @@ class TestObtenerRespuestasEncuestaAlumnoParaPreguntasEspecificas(TestBase):
 
     def test_obtener_respuestas_sin_estar_logueado_redirecciona_al_loguin(self):
         client = self.app.test_client()
-        response = client.get(OBTENER_RESPUESTAS_ALUMNO_PARA_PREGUNTAS_ESPECIFICAS_SERVICE)
+        response = client.get(self.get_url_get_respuestas_encuesta_alumno(1))
         assert (response.status_code == REDIRECTION_FOUND)
 
     def test_obtener_las_respuestas_de_preguntas_no_contestadas_devuelve_lista_vacia(self):
@@ -344,9 +343,7 @@ class TestObtenerRespuestasEncuestaAlumnoParaPreguntasEspecificas(TestBase):
 
         encuesta = EncuestaAlumno.query.first()
 
-        parametros = {}
-        parametros["id_encuesta"] = encuesta.id
-        response = client.get(OBTENER_RESPUESTAS_ALUMNO_PARA_PREGUNTAS_ESPECIFICAS_SERVICE, query_string=parametros)
+        response = client.get(self.get_url_get_respuestas_encuesta_alumno(encuesta.id))
         assert (response.status_code == SUCCESS_OK)
 
         respuestas_encuestas = json.loads(response.get_data(as_text=True))["respuestas_encuestas"]
@@ -357,26 +354,20 @@ class TestObtenerRespuestasEncuestaAlumnoParaPreguntasEspecificas(TestBase):
 
         encuesta = EncuestaAlumno.query.first()
 
-        parametros = {}
-        parametros["id_encuesta"] = encuesta.id
-        response = client.get(OBTENER_RESPUESTAS_ALUMNO_PARA_PREGUNTAS_ESPECIFICAS_SERVICE, query_string=parametros)
-        assert (response.status_code == CLIENT_ERROR_BAD_REQUEST)
+        response = client.get(self.get_url_get_respuestas_encuesta_alumno(encuesta.id))
+        assert (response.status_code == CLIENT_ERROR_NOT_FOUND)
 
     def test_obtener_las_respuestas_con_id_encuesta_inexistente_da_error(self):
         client = self.loguear_administrador()
 
-        parametros = {}
-        parametros["id_encuesta"] = 5
-        response = client.get(OBTENER_RESPUESTAS_ALUMNO_PARA_PREGUNTAS_ESPECIFICAS_SERVICE, query_string=parametros)
-        assert (response.status_code == CLIENT_ERROR_BAD_REQUEST)
+        response = client.get(self.get_url_get_respuestas_encuesta_alumno(5))
+        assert (response.status_code == CLIENT_ERROR_NOT_FOUND)
 
     def test_obtener_las_respuestas_con_id_encuesta_invalido_da_error(self):
         client = self.loguear_administrador()
 
-        parametros = {}
-        parametros["id_encuesta"] = "pepe"
-        response = client.get(OBTENER_RESPUESTAS_ALUMNO_PARA_PREGUNTAS_ESPECIFICAS_SERVICE, query_string=parametros)
-        assert (response.status_code == CLIENT_ERROR_BAD_REQUEST)
+        response = client.get(self.get_url_get_respuestas_encuesta_alumno("pepe"))
+        assert (response.status_code == CLIENT_ERROR_NOT_FOUND)
 
     def test_obtener_las_respuestas_de_todas_las_preguntas_con_respuestas_las_obtiene_a_todas(self):
         client = self.loguear_usuario()
@@ -388,9 +379,7 @@ class TestObtenerRespuestasEncuestaAlumnoParaPreguntasEspecificas(TestBase):
 
         self.crear_respuestas_alumno(encuesta, preguntas)
 
-        parametros = {}
-        parametros["id_encuesta"] = encuesta.id
-        response = client.get(OBTENER_RESPUESTAS_ALUMNO_PARA_PREGUNTAS_ESPECIFICAS_SERVICE, query_string=parametros)
+        response = client.get(self.get_url_get_respuestas_encuesta_alumno(encuesta.id))
         assert (response.status_code == SUCCESS_OK)
 
         respuestas_encuestas = json.loads(response.get_data(as_text=True))["respuestas_encuestas"]
@@ -407,9 +396,8 @@ class TestObtenerRespuestasEncuestaAlumnoParaPreguntasEspecificas(TestBase):
         self.crear_respuestas_alumno(encuesta, preguntas)
 
         parametros = {}
-        parametros["id_encuesta"] = encuesta.id
-        parametros["ids_preguntas"] = "3;8;7;11"
-        response = client.get(OBTENER_RESPUESTAS_ALUMNO_PARA_PREGUNTAS_ESPECIFICAS_SERVICE, query_string=parametros)
+        parametros["ids_preguntas"] = json.dumps([3, 8, 7, 11])
+        response = client.get(self.get_url_get_respuestas_encuesta_alumno(encuesta.id), query_string=parametros)
         assert (response.status_code == SUCCESS_OK)
 
         respuestas_encuestas = json.loads(response.get_data(as_text=True))["respuestas_encuestas"]
@@ -428,8 +416,8 @@ class TestObtenerRespuestasEncuestaAlumnoParaPreguntasEspecificas(TestBase):
             encontrado = False
             for horario in respuestas_encuestas['8']["horarios"]:
                 if (horario["dia"] == horario_guardado["dia"] and
-                            horario["hora_desde"] == horario_guardado["hora_desde"] and
-                            horario["hora_hasta"] == horario_guardado["hora_hasta"]):
+                            horario["hora_desde"] == horario_guardado["hora_desde_reloj"] and
+                            horario["hora_hasta"] == horario_guardado["hora_hasta_reloj"]):
                     encontrado = True
             assert (encontrado)
 
@@ -446,9 +434,8 @@ class TestObtenerRespuestasEncuestaAlumnoParaPreguntasEspecificas(TestBase):
         self.crear_respuestas_alumno(encuesta, preguntas)
 
         parametros = {}
-        parametros["id_encuesta"] = encuesta.id
-        parametros["ids_preguntas"] = ""
-        response = client.get(OBTENER_RESPUESTAS_ALUMNO_PARA_PREGUNTAS_ESPECIFICAS_SERVICE, query_string=parametros)
+        parametros["ids_preguntas"] = json.dumps([])
+        response = client.get(self.get_url_get_respuestas_encuesta_alumno(encuesta.id), query_string=parametros)
         assert (response.status_code == SUCCESS_OK)
 
         respuestas_encuestas = json.loads(response.get_data(as_text=True))["respuestas_encuestas"]
@@ -460,31 +447,18 @@ class TestObtenerRespuestasEncuestaAlumnoParaPreguntasEspecificas(TestBase):
         encuesta = EncuestaAlumno.query.first()
 
         parametros = {}
-        parametros["id_encuesta"] = encuesta.id
-        parametros["ids_preguntas"] = "41;59"
-        response = client.get(OBTENER_RESPUESTAS_ALUMNO_PARA_PREGUNTAS_ESPECIFICAS_SERVICE, query_string=parametros)
-        assert (response.status_code == CLIENT_ERROR_BAD_REQUEST)
-
-    def test_obtener_las_respuestas_con_ids_de_preguntas_existentes_separador_invalido_da_error(self):
-        client = self.loguear_administrador()
-
-        encuesta = EncuestaAlumno.query.first()
-
-        parametros = {}
-        parametros["id_encuesta"] = encuesta.id
-        parametros["ids_preguntas"] = "2-3-9"
-        response = client.get(OBTENER_RESPUESTAS_ALUMNO_PARA_PREGUNTAS_ESPECIFICAS_SERVICE, query_string=parametros)
-        assert (response.status_code == CLIENT_ERROR_BAD_REQUEST)
+        parametros["ids_preguntas"] = json.dumps([41, 59])
+        response = client.get(self.get_url_get_respuestas_encuesta_alumno(encuesta.id), query_string=parametros)
+        assert (response.status_code == CLIENT_ERROR_NOT_FOUND)
 
     def test_obtener_las_respuestas_con_ids_de_preguntas_invalidos_da_error(self):
-        client = self.loguear_administrador()
+        client = self.loguear_usuario()
 
         encuesta = EncuestaAlumno.query.first()
 
         parametros = {}
-        parametros["id_encuesta"] = encuesta.id
-        parametros["ids_preguntas"] = "5;pepe;3;!2"
-        response = client.get(OBTENER_RESPUESTAS_ALUMNO_PARA_PREGUNTAS_ESPECIFICAS_SERVICE, query_string=parametros)
+        parametros["ids_preguntas"] = json.dumps([5, "pepe", 3, "!2"])
+        response = client.get(self.get_url_get_respuestas_encuesta_alumno(encuesta.id), query_string=parametros)
         assert (response.status_code == CLIENT_ERROR_BAD_REQUEST)
 
 

@@ -1,6 +1,7 @@
 import logging
 import requests
 import json
+from app.DAO.EncuestasDAO import *
 
 
 class ClienteAPI:
@@ -45,7 +46,7 @@ class ClienteAPI:
     def invocar_put(self, url_servicio, cookies, csrf_token, parametros=None):
         if parametros:
             response = requests.put(url_servicio, data=parametros, cookies=cookies,
-                                     headers={"X-CSRFToken": csrf_token})
+                                    headers={"X-CSRFToken": csrf_token})
         else:
             response = requests.put(url_servicio, cookies=cookies, headers={"X-CSRFToken": csrf_token})
 
@@ -136,6 +137,10 @@ class ClienteAPI:
     def get_url_get_encuesta_alumno_esta_completa(self, idEncuestaAlumno):
         """URL: '/api/alumno/encuesta/<int:idEncuestaAlumno>/completa'"""
         return self.BASE_URL + '/alumno/encuesta/' + str(idEncuestaAlumno) + '/completa'
+
+    def get_url_get_respuestas_encuesta_alumno(self, idEncuestaAlumno):
+        """URL: '/api/alumno/encuesta/<int:idEncuestaAlumno>/respuestas'"""
+        return self.BASE_URL + '/alumno/encuesta/' + str(idEncuestaAlumno) + '/respuestas'
 
     def get_url_carrera_alumno(self, idCarrera=None):
         """URLs:
@@ -356,3 +361,18 @@ class ClienteAPI:
     def eliminar_carrera_alumno(self, cookie, csrf_token, idCarrera):
         url_servicio = self.get_url_carrera_alumno(idCarrera)
         return self.invocar_delete(url_servicio, cookie, csrf_token)
+
+    def obtener_respuestas_encuesta_alumno(self, cookie, idEncuestaAlumno, preguntas=[]):
+        url_servicio = self.get_url_get_respuestas_encuesta_alumno(idEncuestaAlumno)
+
+        parametros = {}
+        ids_preguntas = []
+        for pregunta in preguntas:
+            ids_preguntas.append(pregunta["pregunta_id"])
+            if pregunta["tipo_num"] == SI_NO:
+                for subpregunta in (pregunta["rta_si"] + pregunta["rta_no"]):
+                    ids_preguntas.append(subpregunta["pregunta_id"])
+        if ids_preguntas:
+            parametros["ids_preguntas"] = json.dumps(ids_preguntas)
+
+        return self.invocar_get(url_servicio, cookie, parametros)["respuestas_encuestas"]

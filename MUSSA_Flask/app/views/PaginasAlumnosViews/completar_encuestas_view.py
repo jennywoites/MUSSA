@@ -49,7 +49,7 @@ def completar_encuesta(idEncuestaAlumno, cookie, num_categoria):
 
     encuesta_esta_completa = cliente.encuesta_alumno_esta_completa(cookie, idEncuestaAlumno)
 
-    respuestas = invocar_obtener_respuestas_encuesta_alumno(cookie, idEncuestaAlumno, preguntas)
+    respuestas = cliente.obtener_respuestas_encuesta_alumno(cookie, idEncuestaAlumno, preguntas)
     convertir_true_false(respuestas)
 
     posibles_correlativas = cliente.obtener_todas_las_materias(
