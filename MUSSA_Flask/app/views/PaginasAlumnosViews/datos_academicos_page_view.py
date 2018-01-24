@@ -5,7 +5,7 @@ from app.ClienteAPI.ClienteAPI import ClienteAPI
 from app.views.base_view import main_blueprint
 from app.views.Utils.invocaciones_de_servicios import *
 from flask_babel import gettext
-from app.DAO.MateriasDAO import *
+from app.API_Rest.codes import *
 
 
 @main_blueprint.route('/datos_academicos', methods=['GET'])
@@ -49,9 +49,9 @@ def datos_academicos_agregar_carrera_page():
     id_carrera = request.form["carrera_a_agregar"]
     csrf_token = request.form['csrf_token']
 
-    response = invocar_agregar_carrera_alumno(csrf_token, request.cookies, id_carrera)
+    response = ClienteAPI().agregar_carrera_alumno(request.cookies, csrf_token, id_carrera)
 
-    if not 'OK' in response:
+    if not (response == SUCCESS_NO_CONTENT or response == SUCCESS_OK):
         flash(response["Error"], 'error')
 
     return redirect(url_for("main.datos_academicos_page"))
@@ -60,9 +60,9 @@ def datos_academicos_agregar_carrera_page():
 @main_blueprint.route('/datos_academicos/eliminar_carrera/<int:idCarrera>/<string:token>', methods=['GET', 'POST'])
 @login_required
 def datos_academicos_eliminar_carrera_page(idCarrera, token):
-    response = invocar_eliminar_carrera_alumno(token, request.cookies, idCarrera)
+    response = ClienteAPI().eliminar_carrera_alumno(request.cookies, token, idCarrera)
 
-    if 'OK' in response:
+    if (response == SUCCESS_NO_CONTENT or response == SUCCESS_OK):
         flash(gettext('Se eliminó la carrera'), 'success')
     else:
         flash(response["Error"], 'error')
@@ -73,9 +73,9 @@ def datos_academicos_eliminar_carrera_page(idCarrera, token):
 @main_blueprint.route('/datos_academicos/eliminar_materia/<int:idMateria>/<string:token>', methods=['GET', 'POST'])
 @login_required
 def datos_academicos_eliminar_materia_page(idMateria, token):
-    response = invocar_eliminar_materia_alumno(token, request.cookies, idMateria)
+    response = ClienteAPI().eliminar_materia_alumno(request.cookies, token, idMateria)
 
-    if 'OK' in response:
+    if (response == SUCCESS_NO_CONTENT or response == SUCCESS_OK):
         flash(gettext('Se eliminó la materia'), 'success')
     else:
         flash(response["Error"], 'error')

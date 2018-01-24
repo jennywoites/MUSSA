@@ -37,7 +37,6 @@ function do_request(method, page, CSRF_token, parametros, onSucces, onError) {
         xmlhttp.send();
     } else {
         xmlhttp.setRequestHeader("X-CSRFToken", CSRF_token);
-        debugger;
         xmlhttp.send(encoded_params);
     }
 }

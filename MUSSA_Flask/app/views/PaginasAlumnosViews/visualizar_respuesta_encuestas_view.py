@@ -47,7 +47,7 @@ def visualizar_encuesta(idEncuestaAlumno, cookie, num_categoria):
     if not encuesta["finalizada"]:
         return redirect(url_for('main.historial_encuestas_page'), code=REDIRECTION_FOUND)
 
-    respuestas = invocar_obtener_respuestas_encuesta_alumno(cookie, idEncuestaAlumno, preguntas)
+    respuestas = cliente.obtener_respuestas_encuesta_alumno(cookie, idEncuestaAlumno, preguntas)
     convertir_true_false(respuestas)
 
     titulos = [

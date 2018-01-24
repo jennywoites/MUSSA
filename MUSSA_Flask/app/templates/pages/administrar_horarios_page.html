@@ -25,7 +25,7 @@
 
     <h2>Cargar horarios de cuatrimestres</h2>
 
-    <form action="{{ url_for('main.administrar_horarios_upload_file') }}" method="POST"
+    <form onsubmit="show_loading_mask(); return true;" action="{{ url_for('main.administrar_horarios_upload_file') }}" method="POST"
     enctype="multipart/form-data">
         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
 

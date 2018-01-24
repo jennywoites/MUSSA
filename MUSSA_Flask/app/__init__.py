@@ -137,31 +137,11 @@ def add_resources_api_rest(api):
                 api.add_resource(modulo.CLASE, *modulo.URLS_SERVICIOS)
 
     add_resources_usuarios(api)
-    add_resources_administrador(api)
 
 
 def add_resources_usuarios(api):
-    from app.API_Rest.Services.AgregarCarreraAlumnoService import AgregarCarreraAlumno
-    api.add_resource(AgregarCarreraAlumno, '/api/AgregarCarreraAlumno')
-
-    from app.API_Rest.Services.EliminarCarreraAlumnoService import EliminarCarreraAlumno
-    api.add_resource(EliminarCarreraAlumno, '/api/EliminarCarreraAlumno')
-
     from app.API_Rest.Services.AgregarMateriaAlumnoService import AgregarMateriaAlumno
     api.add_resource(AgregarMateriaAlumno, '/api/AgregarMateriaAlumno')
 
-    from app.API_Rest.Services.EliminarMateriaAlumnoService import EliminarMateriaAlumno
-    api.add_resource(EliminarMateriaAlumno, '/api/EliminarMateriaAlumno')
-
-    from app.API_Rest.Services.ObtenerRespuestasEncuestaAlumnoParaPreguntasEspecificasService import \
-        ObtenerRespuestasEncuestaAlumnoParaPreguntasEspecificas
-    api.add_resource(ObtenerRespuestasEncuestaAlumnoParaPreguntasEspecificas,
-                     '/api/ObtenerRespuestasEncuestaAlumnoParaPreguntasEspecificas')
-
     from app.API_Rest.Services.GuardarRespuestasEncuestaAlumnoService import GuardarRespuestasEncuestaAlumno
     api.add_resource(GuardarRespuestasEncuestaAlumno, '/api/GuardarRespuestasEncuestaAlumno')
-
-
-def add_resources_administrador(api):
-    from app.API_Rest.Services.GuardarHorariosDesdeArchivoPDFService import GuardarHorariosDesdeArchivoPDF
-    api.add_resource(GuardarHorariosDesdeArchivoPDF, '/api/admin/GuardarHorariosDesdeArchivoPDF')

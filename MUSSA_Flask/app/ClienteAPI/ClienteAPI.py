@@ -1,6 +1,7 @@
 import logging
 import requests
 import json
+from app.DAO.EncuestasDAO import *
 
 
 class ClienteAPI:
@@ -38,6 +39,16 @@ class ClienteAPI:
                                      headers={"X-CSRFToken": csrf_token})
         else:
             response = requests.post(url_servicio, cookies=cookies, headers={"X-CSRFToken": csrf_token})
+
+        self.escribir_resultado_servicio(url_servicio, response)
+        return response.json()
+
+    def invocar_put(self, url_servicio, cookies, csrf_token, parametros=None):
+        if parametros:
+            response = requests.put(url_servicio, data=parametros, cookies=cookies,
+                                    headers={"X-CSRFToken": csrf_token})
+        else:
+            response = requests.put(url_servicio, cookies=cookies, headers={"X-CSRFToken": csrf_token})
 
         self.escribir_resultado_servicio(url_servicio, response)
         return response.json()
@@ -91,6 +102,10 @@ class ClienteAPI:
         """URL: '/api/curso/all'"""
         return self.BASE_URL + '/curso/all'
 
+    def get_url_horarios_curso_PDF(self):
+        """URL: '/api/curso/all/horarios/uploadPDF'"""
+        return self.BASE_URL + '/curso/all/horarios/uploadPDF'
+
     def get_url_preguntas_encuesta(self):
         """URL: '/api/encuesta/preguntas'"""
         return self.BASE_URL + '/encuesta/preguntas'
@@ -126,6 +141,17 @@ class ClienteAPI:
     def get_url_get_encuesta_alumno_esta_completa(self, idEncuestaAlumno):
         """URL: '/api/alumno/encuesta/<int:idEncuestaAlumno>/completa'"""
         return self.BASE_URL + '/alumno/encuesta/' + str(idEncuestaAlumno) + '/completa'
+
+    def get_url_get_respuestas_encuesta_alumno(self, idEncuestaAlumno):
+        """URL: '/api/alumno/encuesta/<int:idEncuestaAlumno>/respuestas'"""
+        return self.BASE_URL + '/alumno/encuesta/' + str(idEncuestaAlumno) + '/respuestas'
+
+    def get_url_carrera_alumno(self, idCarrera=None):
+        """URLs:
+        '/api/alumno/carrera',
+        '/api/alumno/carrera/<int:idCarrera>'
+        """
+        return self.BASE_URL + '/alumno/carrera' + ('/' + str(idCarrera) if idCarrera else '')
 
     ################################################
     ##              Servicios DOCENTE             ##
@@ -244,11 +270,20 @@ class ClienteAPI:
         if filtrar_cursos:
             parametros["filtrar_cursos"] = filtrar_cursos
 
-        response = self.invocar_get(url_servicio, cookie, parametros)
-        return response["cursos"]
+        return self.invocar_get(url_servicio, cookie, parametros)["cursos"]
 
     def obtener_todos_los_cursos_existentes(self, cookie, nombre_curso='', codigo_materia='', id_carrera=''):
         return self.obtener_cursos_con_filtros(cookie, nombre_curso, codigo_materia, id_carrera, filtrar_cursos=False)
+
+    def guardar_horarios_PDF(self, cookie, csrf_token, ruta, anio, cuatrimestre):
+        url_servicio = self.get_url_horarios_curso_PDF()
+
+        parametros = {}
+        parametros["ruta"] = ruta
+        parametros["anio"] = anio
+        parametros["cuatrimestre"] = cuatrimestre
+
+        return self.invocar_post(url_servicio, cookie, csrf_token, parametros)
 
     ################################################
     ##            Servicios ENCUESTA              ##
@@ -281,6 +316,10 @@ class ClienteAPI:
     def obtener_materia_alumno(self, cookie, idMateriaAlumno):
         url_servicio = self.get_url_get_materia_alumno(idMateriaAlumno)
         return self.invocar_get(url_servicio, cookie)["materia_alumno"]
+
+    def eliminar_materia_alumno(self, cookie, csrf_token, idMateriaAlumno):
+        url_servicio = self.get_url_get_materia_alumno(idMateriaAlumno)
+        return self.invocar_delete(url_servicio, cookie, csrf_token)
 
     def obtener_materias_alumno(self, cookie, estados=[]):
         url_servicio = self.get_url_get_materias_alumno()
@@ -327,3 +366,30 @@ class ClienteAPI:
     def encuesta_alumno_esta_completa(self, cookie, idEncuestaAlumno):
         url_servicio = self.get_url_get_encuesta_alumno_esta_completa(idEncuestaAlumno)
         return self.invocar_get(url_servicio, cookie)["esta_completa"]
+
+    def agregar_carrera_alumno(self, cookie, csrf_token, idCarrera):
+        url_servicio = self.get_url_carrera_alumno()
+
+        parametros = {}
+        parametros["idCarrera"] = idCarrera
+
+        return self.invocar_put(url_servicio, cookie, csrf_token, parametros)
+
+    def eliminar_carrera_alumno(self, cookie, csrf_token, idCarrera):
+        url_servicio = self.get_url_carrera_alumno(idCarrera)
+        return self.invocar_delete(url_servicio, cookie, csrf_token)
+
+    def obtener_respuestas_encuesta_alumno(self, cookie, idEncuestaAlumno, preguntas=[]):
+        url_servicio = self.get_url_get_respuestas_encuesta_alumno(idEncuestaAlumno)
+
+        parametros = {}
+        ids_preguntas = []
+        for pregunta in preguntas:
+            ids_preguntas.append(pregunta["pregunta_id"])
+            if pregunta["tipo_num"] == SI_NO:
+                for subpregunta in (pregunta["rta_si"] + pregunta["rta_no"]):
+                    ids_preguntas.append(subpregunta["pregunta_id"])
+        if ids_preguntas:
+            parametros["ids_preguntas"] = json.dumps(ids_preguntas)
+
+        return self.invocar_get(url_servicio, cookie, parametros)["respuestas_encuestas"]

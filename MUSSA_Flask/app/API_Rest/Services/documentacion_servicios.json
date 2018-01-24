@@ -405,6 +405,41 @@
         }
       }
     },
+    "/curso/all/horarios/uploadPDF": {
+      "get": {
+        "tags": [
+          "curso"
+        ],
+        "summary": "Carga los horarios del PDF en el sistema dando de alta los cursos correspondientes.",
+        "description": "Carga los horarios del PDF en el sistema dando de alta los cursos correspondientes. No es posible cargar horarios para la combinación cuatrimestre / año repetidos ni cargar una combinación cuya fecha sea anterior a la última cargada (ejemplo, no puede cargarse un horario del 1C del 2016 si ya hay un horario cargado del 2017).",
+        "produces": [
+          "application/json"
+        ],
+        "consumes": [
+          "multipart/form-data"
+        ],
+        "parameters": [
+          {
+            "in": "formData",
+            "name": "ruta",
+            "required": true,
+            "type": "string",
+            "description": "Ruta donde se encuentra el archivo PDF a ser cargado."
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "OK. No hay contenido"
+          },
+          "400": {
+            "description": "BAD REQUEST. Uno o más parámetros son inválidos."
+          },
+          "401": {
+            "description": "La información de autorización no fue enviada o es inválida."
+          }
+        }
+      }
+    },
     "/tematica/{idTematica}": {
       "get": {
         "tags": [
@@ -730,6 +765,39 @@
             "description": "La materia alumno del ID especificado no fue encontrada o no pertenece al alumno del usuario actual."
           }
         }
+      },
+      "delete": {
+        "tags": [
+          "alumno"
+        ],
+        "summary": "Elimina la materia del alumno por id",
+        "description": "Modifica la materia como PENDIENTE. De esta forma la materia deja de pertenecer al alumno como materia registrada y pasa a su pull de materias pendientes.",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "idMateriaAlumno",
+            "required": true,
+            "type": "integer",
+            "description": "El ID de la materia alumno a eliminar."
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "OK. No hay contenido."
+          },
+          "400": {
+            "description": "BAD REQUEST. El ID de la materia alumno debe ser un entero y mayor que 0."
+          },
+          "401": {
+            "description": "La información de autorización no fue enviada o es inválida."
+          },
+          "404": {
+            "description": "La materia alumno del ID especificado no fue encontrada o no pertenece al alumno del usuario actual."
+          }
+        }
       }
     },
     "/alumno/materia/all": {
@@ -807,6 +875,79 @@
           },
           "400": {
             "description": "BAD REQUEST. El id de carrera no es válido."
+          },
+          "401": {
+            "description": "La información de autorización no fue enviada o es inválida."
+          },
+          "404": {
+            "description": "El id de carrera no existe."
+          }
+        }
+      }
+    },
+    "/alumno/carrera": {
+      "put": {
+        "tags": [
+          "alumno"
+        ],
+        "summary": "Agrega la carrera al alumno",
+        "description": "Habilita la carrera para el alumno (lo inscribe). Agrega todas las materias de la carrera como materias pendientes para el alumno. No es posible agregar una carrera que ya ha sido añadida anteriormente.",
+        "produces": [
+          "application/json"
+        ],
+        "consumes": [
+          "multipart/form-data"
+        ],
+        "parameters": [
+          {
+            "in": "formData",
+            "name": "idCarrera",
+            "required": true,
+            "type": "integer",
+            "description": "Id de la carrera que se desea registrar para el alumno."
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "OK. No hay contenido."
+          },
+          "400": {
+            "description": "BAD REQUEST. El id de carrera no es válido o ya pertenece al alumno."
+          },
+          "401": {
+            "description": "La información de autorización no fue enviada o es inválida."
+          },
+          "404": {
+            "description": "El id de carrera no existe."
+          }
+        }
+      }
+    },
+    "/alumno/carrera/{idCarrera}": {
+      "put": {
+        "tags": [
+          "alumno"
+        ],
+        "summary": "Elimina la carrera segun el id. El alumno deja de estar inscripto en esa carrera.",
+        "description": "Elimina la carrera segun el id. El alumno deja de estar inscripto en esa carrera.",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "idCarrera",
+            "required": true,
+            "type": "integer",
+            "description": "Id de la carrera que se desea eliminar del alumno."
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "OK. No hay contenido."
+          },
+          "400": {
+            "description": "BAD REQUEST. El id de carrera no es válido o ya no pertenece al alumno."
           },
           "401": {
             "description": "La información de autorización no fue enviada o es inválida."
@@ -920,6 +1061,57 @@
           },
           "405": {
             "description": "La encuesta alumno del ID especificado ya está finalizada."
+          }
+        }
+      }
+    },
+    "/alumno/encuesta/{idEncuestaAlumno}/respuestas": {
+      "get": {
+        "tags": [
+          "alumno"
+        ],
+        "summary": "Devuelve todas las respuestas del alumno para una encuesta en particular. Se puede filtrar por ids de preguntas específicas si se desea en lugar de obtener todas las respuestas.",
+        "description": "Devuelve todas las respuestas del alumno para una encuesta en particular. Se puede filtrar por ids de preguntas específicas si se desea en lugar de obtener todas las respuestas.",
+        "produces": [
+          "application/json"
+        ],
+        "consumes": [
+          "multipart/form-data"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "idEncuestaAlumno",
+            "required": true,
+            "type": "integer",
+            "description": "El ID de la encuesta de alumno a buscar."
+          },
+          {
+            "in": "formData",
+            "name": "ids_preguntas",
+            "required": true,
+            "type": "array",
+            "description": "Ids de preguntas por las que se desa filtrar las respuestas de la encuesta del alumno.",
+            "items": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/ListaRespuestasEncuestaAlumno"
+            }
+          },
+          "400": {
+            "description": "BAD REQUEST. El ID de la encuesta alumno debe ser un entero y mayor que 0. Uno o más IDs de preguntas son inválidos."
+          },
+          "401": {
+            "description": "La información de autorización no fue enviada o es inválida."
+          },
+          "404": {
+            "description": "La encuesta alumno del ID especificado no fue encontrada o no pertenece al alumno del usuario actual. Uno o más ids de preguntas no existen."
           }
         }
       }
@@ -1690,6 +1882,223 @@
           "type": "boolean",
           "description": "True si todos los pasos de la encuesta están completos, False en caso contrario.",
           "example": true
+        }
+      }
+    },
+    "ListaRespuestasEncuestaAlumno": {
+      "type": "object",
+      "properties": {
+        "respuestas_encuestas": {
+          "type": "object",
+          "description": "Diccionario de respuestas de la encuesta del alumno. La clave del diccionario es el id de la pregunta y como respuesta tiene la estructura que corresponda a la respuesta. Depende del id de la pregunta el tipo de datos en la respuesta que se espera. En los ejemplos se coloca uno de cada tipo de respuesta posible.",
+          "additionalProperties": {
+            "$ref": "#/definitions/RespuestaEncuestaAlumno"
+          },
+          "example": {
+            "1": {
+              "puntaje": 5
+            },
+            "2": {
+              "texto": "Esto es un texto de respuesta"
+            },
+            "3": {
+              "respuesta": true
+            },
+            "4": {
+              "horarios": [
+                {
+                  "dia": "LUNES",
+                  "hora_desde": "07:30",
+                  "hora_hasta": "12:00"
+                }
+              ]
+            },
+            "5": {
+              "comentarios_docentes": {
+                "id_docente": 1,
+                "apellido": "Essaya",
+                "nombre": "Diego",
+                "nombre_completo": "Essaya, Diego",
+                "comentario": "Este es el texto del comentario realizado."
+              }
+            },
+            "6": {
+              "materias_correlativas": [
+                {
+                  "id_materia": 1,
+                  "codigo": "7540",
+                  "nombre": "Algoritmos  Programación I"
+                }
+              ]
+            },
+            "7": {
+              "estrellas": 3
+            },
+            "8": {
+              "numero": 25
+            },
+            "9": {
+              "palabras_clave": [
+                {
+                  "id_palabra_clave": 1,
+                  "palabra_clave": "ALGORITMOS"
+                }
+              ]
+            },
+            "10": {
+              "tematicas": [
+                {
+                  "id_tematica": 1,
+                  "tematica": "DATA MINING"
+                }
+              ]
+            }
+          }
+        }
+      }
+    },
+    "RespuestaEncuestaAlumno": {
+      "type": "object",
+      "properties": {
+        "puntaje": {
+          "type": "integer",
+          "description": "Puntaje para respuestas de tipo PUNTAJE_DE_1_A_5.",
+          "example": 5
+        },
+        "texto": {
+          "type": "string",
+          "description": "Texto para respuestas de tipo TEXTO_LIBRE.",
+          "example": "Este es un texto de respuesta."
+        },
+        "respuesta": {
+          "type": "boolean",
+          "description": "Respuesta True/False para respuestas de tipo SI_O_NO.",
+          "example": true
+        },
+        "horarios": {
+          "type": "array",
+          "description": "Lista de horarios para respuestas de tipo HORARIOS.",
+          "items": {
+            "$ref": "#definitions/Horario"
+          }
+        },
+        "comentarios_docentes": {
+          "type": "array",
+          "description": "Lista de comentarios y los ids de docentes para respuestas de tipo DOCENTES.",
+          "items": {
+            "$ref": "#definitions/ComentarioDocente"
+          }
+        },
+        "materias_correlativas": {
+          "type": "array",
+          "description": "Lista de comentarios y los ids de docentes para respuestas de tipo DOCENTES.",
+          "items": {
+            "$ref": "#definitions/Correlativa"
+          }
+        },
+        "estrellas": {
+          "type": "integer",
+          "description": "Estrellas para respuestas de tipo ESTRELLA.",
+          "example": 3
+        },
+        "numero": {
+          "type": "integer",
+          "description": "Numero para respuestas de tipo NUMERO.",
+          "example": 25
+        },
+        "palabras_clave": {
+          "type": "array",
+          "description": "Lista de palabras clave para respuestas de tipo TAG",
+          "items": {
+            "$ref": "#definitions/RespuestaPalabraClave"
+          }
+        },
+        "tematicas": {
+          "type": "array",
+          "description": "Lista de tematicas para respuestas de tipo TEMATICA",
+          "items": {
+            "$ref": "#definitions/RespuestaTematica"
+          }
+        }
+      }
+    },
+    "RespuestaPalabraClave": {
+      "type": "object",
+      "properties": {
+        "id_palabra_clave": {
+          "type": "integer",
+          "description": "ID de la palabra clave.",
+          "example": 1
+        },
+        "palabra_clave": {
+          "type": "string",
+          "description": "Descripción de la palabra clave",
+          "example": "ALGORITMOS"
+        }
+      }
+    },
+    "RespuestaTematica": {
+      "type": "object",
+      "properties": {
+        "id_tematica": {
+          "type": "integer",
+          "description": "ID de la temática.",
+          "example": 1
+        },
+        "tematica": {
+          "type": "string",
+          "description": "Descripción de la temática",
+          "example": "DATA MINING"
+        }
+      }
+    },
+    "ComentarioDocente": {
+      "type": "object",
+      "properties": {
+        "id_docente": {
+          "type": "integer",
+          "description": "Id del docente al que corresponde el comentario.",
+          "example": 1
+        },
+        "apellido": {
+          "type": "string",
+          "description": "Apellido del docente al que corresponde el comentario.",
+          "example": "Essaya"
+        },
+        "nombre": {
+          "type": "string",
+          "description": "Nombre del docente al que corresponde el comentario.",
+          "example": "Diego"
+        },
+        "nombre_completo": {
+          "type": "string",
+          "description": "Nombre completo del docente al que corresponde el comentario.",
+          "example": "Essaya, Diego"
+        },
+        "comentario": {
+          "type": "string",
+          "description": "Comentario que se realizó para el docente",
+          "example": "Este es el texto del comentario realizado."
+        }
+      }
+    },
+    "Correlativa": {
+      "type": "object",
+      "properties": {
+        "id_materia": {
+          "type": "integer",
+          "description": "Id de la materia",
+          "example": 1
+        },
+        "codigo": {
+          "type": "string",
+          "description": "Codigo de la materia",
+          "example": "7540"
+        },
+        "nombre": {
+          "type": "string",
+          "description": "Nombre de la materia",
+          "example": "Algoritmos y Programación I"
         }
       }
     }

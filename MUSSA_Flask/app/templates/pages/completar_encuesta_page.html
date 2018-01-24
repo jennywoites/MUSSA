@@ -183,17 +183,10 @@
             var horario = respuesta["horarios"][i];
             var idPregunta = pregunta["pregunta_encuesta_id"];
             var dia = horario["dia"];
-            var hora_desde = convertirAHoraReloj(horario["hora_desde"]);
-            var hora_hasta = convertirAHoraReloj(horario["hora_hasta"]);
+            var hora_desde = horario["hora_desde"];
+            var hora_hasta = horario["hora_hasta"];
             agregarHorarioATabla(dia, hora_desde, hora_hasta, idPregunta);
         }
-    }
-
-    function convertirAHoraReloj(horario) {
-        var minutos = (horario % 1 == 0) ? "00" : "30";
-        var horas = Math.floor(horario).toString();
-        horas = (horas.length == 1) ? ("0" + horas) : horas;
-        return horas + ":" + minutos;
     }
 
     function cargarRespuestaPuntaje1a5(pregunta, respuesta) {
