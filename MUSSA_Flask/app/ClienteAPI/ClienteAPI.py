@@ -304,6 +304,10 @@ class ClienteAPI:
         url_servicio = self.get_url_get_materia_alumno(idMateriaAlumno)
         return self.invocar_get(url_servicio, cookie)["materia_alumno"]
 
+    def eliminar_materia_alumno(self, cookie, csrf_token, idMateriaAlumno):
+        url_servicio = self.get_url_get_materia_alumno(idMateriaAlumno)
+        return self.invocar_delete(url_servicio, cookie, csrf_token)
+
     def obtener_materias_alumno(self, cookie, estados=[]):
         url_servicio = self.get_url_get_materias_alumno()
 

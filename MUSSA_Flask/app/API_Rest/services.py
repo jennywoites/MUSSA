@@ -8,7 +8,6 @@ BASE_URL = HTTP + IP + PUERTO + BASE_API
 
 # Requiere estar logueado
 AGREGAR_MATERIA_ALUMNO_SERVICE = BASE_URL + "AgregarMateriaAlumno"
-ELIMINAR_MATERIA_ALUMNO_SERVICE = BASE_URL + "EliminarMateriaAlumno"
 GUARDAR_RESPUESTAS_ENCUESTA_ALUMNO_SERVICE = BASE_URL + "GuardarRespuestasEncuestaAlumno"
 
 # Requiere ser administrador

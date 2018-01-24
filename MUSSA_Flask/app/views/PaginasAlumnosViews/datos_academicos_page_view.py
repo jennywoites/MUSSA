@@ -73,9 +73,9 @@ def datos_academicos_eliminar_carrera_page(idCarrera, token):
 @main_blueprint.route('/datos_academicos/eliminar_materia/<int:idMateria>/<string:token>', methods=['GET', 'POST'])
 @login_required
 def datos_academicos_eliminar_materia_page(idMateria, token):
-    response = invocar_eliminar_materia_alumno(token, request.cookies, idMateria)
+    response = ClienteAPI().eliminar_materia_alumno(request.cookies, token, idMateria)
 
-    if 'OK' in response:
+    if (response == SUCCESS_NO_CONTENT or response == SUCCESS_OK):
         flash(gettext('Se eliminó la materia'), 'success')
     else:
         flash(response["Error"], 'error')
