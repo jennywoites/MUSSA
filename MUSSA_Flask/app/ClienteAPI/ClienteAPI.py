@@ -102,6 +102,10 @@ class ClienteAPI:
         """URL: '/api/curso/all'"""
         return self.BASE_URL + '/curso/all'
 
+    def get_url_horarios_curso_PDF(self):
+        """URL: '/api/curso/all/horarios/uploadPDF'"""
+        return self.BASE_URL + '/curso/all/horarios/uploadPDF'
+
     def get_url_preguntas_encuesta(self):
         """URL: '/api/encuesta/preguntas'"""
         return self.BASE_URL + '/encuesta/preguntas'
@@ -266,11 +270,20 @@ class ClienteAPI:
         if filtrar_cursos:
             parametros["filtrar_cursos"] = filtrar_cursos
 
-        response = self.invocar_get(url_servicio, cookie, parametros)
-        return response["cursos"]
+        return self.invocar_get(url_servicio, cookie, parametros)["cursos"]
 
     def obtener_todos_los_cursos_existentes(self, cookie, nombre_curso='', codigo_materia='', id_carrera=''):
         return self.obtener_cursos_con_filtros(cookie, nombre_curso, codigo_materia, id_carrera, filtrar_cursos=False)
+
+    def guardar_horarios_PDF(self, cookie, csrf_token, ruta, anio, cuatrimestre):
+        url_servicio = self.get_url_horarios_curso_PDF()
+
+        parametros = {}
+        parametros["ruta"] = ruta
+        parametros["anio"] = anio
+        parametros["cuatrimestre"] = cuatrimestre
+
+        return self.invocar_post(url_servicio, cookie, csrf_token, parametros)
 
     ################################################
     ##            Servicios ENCUESTA              ##

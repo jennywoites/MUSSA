@@ -56,6 +56,9 @@ class BaseService(Resource):
     def logg_error(self, msj):
         logging.error(self.getNombreClaseServicio() + ': ' + msj)
 
+    def logg_info(self, msj):
+        logging.info(self.getNombreClaseServicio() + ': ' + msj)
+
     ##########################################################
     ##            Obtener Paramteros por Tipo               ##
     ##########################################################
@@ -331,7 +334,6 @@ class BaseService(Resource):
                      len(MateriasAlumno.query.filter_by(alumno_id=alumno.id).filter_by(id=id_materia_alumno).all()) > 0)
         return (True, 'El {} pertenece al alumno actual'.format(nombre_parametro), -1) if es_valido \
             else (False, '{} {} no pertenece al alumno actual'.format(nombre_parametro, valor), CLIENT_ERROR_NOT_FOUND)
-
 
     ##########################################################
     ##             Servicios Base de las Entidades          ##

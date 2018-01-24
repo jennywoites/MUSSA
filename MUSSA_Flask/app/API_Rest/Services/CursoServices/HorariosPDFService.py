@@ -1,57 +1,97 @@
-from flask_restful import Resource
+from app.API_Rest.Services.BaseService import BaseService
 from app.API_Rest.codes import *
-from flask import request
 from flask_user import roles_accepted
-
 from app import db
 from app.models.carreras_models import Carrera, Materia
 from app.models.horarios_models import Curso, Horario, HorarioPorCurso, CarreraPorCurso, HorariosYaCargados
 from app.models.docentes_models import Docente, CursosDocente
-
-import logging
-
 from app.API_Rest.GeneradorPlanCarreras.ParserHorarios import parsear_pdf
-
 import datetime
 
 
-class GuardarHorariosDesdeArchivoPDF(Resource):
+class HorariosPDFService(BaseService):
+    def getNombreClaseServicio(self):
+        return "Horarios PDF Service"
+
+    ##########################################
+    ##                Servicios             ##
+    ##########################################
+
     @roles_accepted('admin')
     def post(self):
-        logging.info('Se invoco al servicio Gurdar Horarios Desde Archivo PDF')
+        self.logg_parametros_recibidos()
 
-        args = request.form
+        ruta = self.obtener_texto("ruta")
+        cuatrimestre = self.obtener_parametro("cuatrimestre")
+        anio = self.obtener_parametro("anio")
 
-        q_ruta = args["ruta"] if "ruta" in args else None
-        q_cuatrimestre = args["cuatrimestre"] if "cuatrimestre" in args else None
-        q_anio = args["anio"] if "anio" in args else None
+        parametros_son_validos, msj, codigo = self.validar_parametros(dict([
+            ("ruta", {
+                self.PARAMETRO: ruta,
+                self.ES_OBLIGATORIO: True,
+                self.FUNCIONES_VALIDACION: [
+                    (self.validar_contenido_y_longitud_texto, [1, 250])
+                ]
+            }),
+            ("cuatrimestre", {
+                self.PARAMETRO: cuatrimestre,
+                self.ES_OBLIGATORIO: True,
+                self.FUNCIONES_VALIDACION: [
+                    (self.es_numero_valido, [])
+                ]
+            }),
+            ("anio", {
+                self.PARAMETRO: anio,
+                self.ES_OBLIGATORIO: True,
+                self.FUNCIONES_VALIDACION: [
+                    (self.es_numero_valido, []),
+                    (self.el_horario_no_fue_cargado, [cuatrimestre]),
+                    (self.no_hay_horarios_nuevos_cargados, [cuatrimestre])
+                ]
+            })
+        ]))
 
-        if not q_ruta or not q_cuatrimestre or not q_anio:
-            logging.error(
-                'El servicio Gurdar Horarios Desde Archivo PDF recibe la ruta del archivo, el cuatrimestre  el año al que pertenece')
-            return {
-                       'Error': 'Este servicio debe recibir la ruta del archivo, el cuatrimestre y el año al que pertenece'}, CLIENT_ERROR_BAD_REQUEST
+        if not parametros_son_validos:
+            self.logg_error(msj)
+            return {'Error': msj}, codigo
 
-        if self.horario_fue_cargado_anteriormente(q_anio, q_cuatrimestre):
-            logging.error('Este horario ya fue cargado anteriormente: {} - {}C'.format(q_anio, q_cuatrimestre))
-            return {'Error': 'Este horario ya fue cargado anteriormente'}, CLIENT_ERROR_CONFLICT
-
-        if self.ya_hay_horarios_nuevos_cargados(q_anio, q_cuatrimestre):
-            logging.error('Este es un horario viejo. Ya hay horarios nuevos cargados en el sistema.')
-            return {
-                       'Error': 'Este es un horario viejo. Ya hay horarios nuevos cargados en el sistema.'}, CLIENT_ERROR_CONFLICT
-
-        horarios_pdf = parsear_pdf(q_ruta)
+        horarios_pdf = parsear_pdf(ruta)
 
         fecha_actualizacion = datetime.datetime.now()
 
-        self.guardar_horarios_pdf(horarios_pdf, q_cuatrimestre, fecha_actualizacion)
+        self.guardar_horarios_pdf(horarios_pdf, cuatrimestre, fecha_actualizacion)
 
-        self.guardar_ultima_actualizacion_horarios(q_cuatrimestre, q_anio, fecha_actualizacion)
+        self.guardar_ultima_actualizacion_horarios(cuatrimestre, anio, fecha_actualizacion)
 
-        result = ({'OK': 'Los horarios fueron cargados correctamente'}, SUCCESS_OK)
-        logging.info('Gurdar Horarios Desde Archivo PDF devuelve como resultado: {}'.format(result))
+        result = SUCCESS_NO_CONTENT
+        self.logg_resultado(result)
+
         return result
+
+    def el_horario_no_fue_cargado(self, nombreParametro, anio, obligatorio, cuatrimestre):
+        horarios = HorariosYaCargados.query.filter_by(anio=anio).filter_by(cuatrimestre=cuatrimestre).all()
+        return (False, 'El horario ya fue cargado anteriormente', CLIENT_ERROR_BAD_REQUEST) if len(horarios) > 0 else \
+            (True, 'OK', -1)
+
+    def no_hay_horarios_nuevos_cargados(self, nombreParametro, anio, obligatorio, cuatrimestre):
+        query = HorariosYaCargados.query
+        query = query.order_by(HorariosYaCargados.anio.desc(), HorariosYaCargados.cuatrimestre.desc())
+        ultimo_horario_cargado = query.first()
+
+        rta_OK = (True, 'OK', -1)
+        if not ultimo_horario_cargado:
+            return rta_OK
+
+        if ultimo_horario_cargado.anio > anio:
+            return False, 'Ya hay un horario de un año mayor cargado', CLIENT_ERROR_BAD_REQUEST
+
+        if ultimo_horario_cargado.anio < anio:
+            return rta_OK
+
+        ultimo_horario_cuatri_mayor = ultimo_horario_cargado.cuatrimestre > cuatrimestre
+        return rta_OK if not ultimo_horario_cuatri_mayor else \
+            (False, 'Ya hay un horario de el año {} pero de un '
+                    'cuatrimestre posterior'.format(anio), CLIENT_ERROR_BAD_REQUEST)
 
     def guardar_horarios_pdf(self, horarios_pdf, cuatrimestre, fecha_actualizacion):
         carreras_en_sistema = []
@@ -61,7 +101,7 @@ class GuardarHorariosDesdeArchivoPDF(Resource):
         for horario_pdf in horarios_pdf:
             carreras = self.filtrar_solo_carreras_en_sistema(carreras_en_sistema, horario_pdf["Carreras"])
             if not carreras:
-                logging.info("Este horario no se procesa: {}".format(horario_pdf))
+                self.logg_info("Este horario no se procesa: {}".format(horario_pdf))
                 continue
             docentes = horario_pdf["Docentes"]
             nombre_curso = horario_pdf["Curso"]
@@ -181,27 +221,6 @@ class GuardarHorariosDesdeArchivoPDF(Resource):
                 carreras.append(carrera)
         return carreras
 
-    def horario_fue_cargado_anteriormente(self, anio, cuatrimestre):
-        query = HorariosYaCargados.query.filter_by(anio=anio).filter_by(cuatrimestre=cuatrimestre)
-        ya_cargados = query.all()
-        return len(ya_cargados) > 0
-
-    def ya_hay_horarios_nuevos_cargados(self, anio, cuatrimestre):
-        query = HorariosYaCargados.query
-        query = query.order_by(HorariosYaCargados.anio.desc(), HorariosYaCargados.cuatrimestre.desc())
-        ultimo_horario_cargado = query.first()
-
-        if not ultimo_horario_cargado:
-            return False
-
-        if ultimo_horario_cargado.anio > anio:
-            return True
-
-        if ultimo_horario_cargado.anio < anio:
-            return False
-
-        return ultimo_horario_cargado.cuatrimestre > cuatrimestre
-
     def guardar_ultima_actualizacion_horarios(self, cuatrimestre, anio, fecha_actualizacion):
         db.session.add(HorariosYaCargados(anio=anio, cuatrimestre=cuatrimestre))
 
@@ -230,3 +249,11 @@ class GuardarHorariosDesdeArchivoPDF(Resource):
                 docente_id=docente.id,
                 curso_id=curso.id
             ))
+
+
+#########################################
+CLASE = HorariosPDFService
+URLS_SERVICIOS = (
+    '/api/curso/all/horarios/uploadPDF',
+)
+#########################################

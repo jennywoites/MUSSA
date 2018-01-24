@@ -405,6 +405,41 @@
         }
       }
     },
+    "/curso/all/horarios/uploadPDF": {
+      "get": {
+        "tags": [
+          "curso"
+        ],
+        "summary": "Carga los horarios del PDF en el sistema dando de alta los cursos correspondientes.",
+        "description": "Carga los horarios del PDF en el sistema dando de alta los cursos correspondientes. No es posible cargar horarios para la combinación cuatrimestre / año repetidos ni cargar una combinación cuya fecha sea anterior a la última cargada (ejemplo, no puede cargarse un horario del 1C del 2016 si ya hay un horario cargado del 2017).",
+        "produces": [
+          "application/json"
+        ],
+        "consumes": [
+          "multipart/form-data"
+        ],
+        "parameters": [
+          {
+            "in": "formData",
+            "name": "ruta",
+            "required": true,
+            "type": "string",
+            "description": "Ruta donde se encuentra el archivo PDF a ser cargado."
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "OK. No hay contenido"
+          },
+          "400": {
+            "description": "BAD REQUEST. Uno o más parámetros son inválidos."
+          },
+          "401": {
+            "description": "La información de autorización no fue enviada o es inválida."
+          }
+        }
+      }
+    },
     "/tematica/{idTematica}": {
       "get": {
         "tags": [

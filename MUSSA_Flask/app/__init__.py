@@ -137,7 +137,6 @@ def add_resources_api_rest(api):
                 api.add_resource(modulo.CLASE, *modulo.URLS_SERVICIOS)
 
     add_resources_usuarios(api)
-    add_resources_administrador(api)
 
 
 def add_resources_usuarios(api):
@@ -146,8 +145,3 @@ def add_resources_usuarios(api):
 
     from app.API_Rest.Services.GuardarRespuestasEncuestaAlumnoService import GuardarRespuestasEncuestaAlumno
     api.add_resource(GuardarRespuestasEncuestaAlumno, '/api/GuardarRespuestasEncuestaAlumno')
-
-
-def add_resources_administrador(api):
-    from app.API_Rest.Services.GuardarHorariosDesdeArchivoPDFService import GuardarHorariosDesdeArchivoPDF
-    api.add_resource(GuardarHorariosDesdeArchivoPDF, '/api/admin/GuardarHorariosDesdeArchivoPDF')

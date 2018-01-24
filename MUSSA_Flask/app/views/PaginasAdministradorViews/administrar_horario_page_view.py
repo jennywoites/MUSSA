@@ -4,8 +4,8 @@ from flask_user import roles_accepted
 from werkzeug import secure_filename
 from app.ClienteAPI.ClienteAPI import ClienteAPI
 from app.views.base_view import main_blueprint
-from app.views.Utils.invocaciones_de_servicios import *
 from datetime import datetime
+from app.API_Rest.codes import *
 from flask_babel import gettext
 
 
@@ -35,9 +35,9 @@ def administrar_horarios_upload_file():
     f.save(ruta)
 
     csrf_token = request.form['csrf_token']
-    response = invocar_guardar_horarios_desde_PDF(csrf_token, request.cookies, ruta, anio, cuatrimestre)
+    response = ClienteAPI().guardar_horarios_PDF(request.cookies, csrf_token, ruta, anio, cuatrimestre)
 
-    if 'OK' in response:
+    if (response == SUCCESS_NO_CONTENT or response == SUCCESS_OK):
         flash(gettext('Los horarios han sido guardados satisfactoriamente'), 'success')
     else:
         flash(response["Error"], 'error')
