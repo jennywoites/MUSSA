@@ -237,44 +237,6 @@
         return boton;
     }
 
-    SERVICE_GUARDAR_RESPUESTAS_ENCUESTAS_ALUMNO = '/api/GuardarRespuestasEncuestaAlumno'
-    SUCCESS = 200
-
-    function do_request_2(method, page, parametros, onSucces, onError) {
-        var method = method || "GET";
-
-        xmlhttp = new XMLHttpRequest();
-
-        xmlhttp.onreadystatechange = function() {
-            if (this.status == 0 || this.readyState != 4)
-                return;
-
-            if ( this.status != SUCCESS ) {
-                onError(this.status, this.responseText);
-            }
-            else {
-                json_result = (this.responseText == "") ? {} : JSON.parse(this.responseText)
-                onSucces(this.status, json_result);
-            }
-        }
-
-        var encoded_params = jQuery.param(parametros)
-        var url = (method == 'GET') ? (page + '?' + encoded_params) : page;
-
-        var async = true;
-        xmlhttp.open(method, url, async);
-
-        xmlhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-        xmlhttp.withCredentials = true;
-
-        if (method == 'POST') {
-            xmlhttp.setRequestHeader("X-CSRFToken", "{{ csrf_token() }}");
-            xmlhttp.send(encoded_params);
-        } else {
-            xmlhttp.send();
-        }
-    }
-
     function validarRespuestasParcialesYGuardarRespuestas(nextUrl) {
         var esGuardadoParcial = true;
         validarRespuestasYGuardarRespuestas(nextUrl, esGuardadoParcial, function(state, result) {
@@ -321,20 +283,17 @@
             return true;
         }
 
-        var param = {};
-        param["respuestas"] = JSON.stringify(respuestas);
-        param["id_encuesta"] = {{idEncuestaAlumno}};
-        param["categoria"] = {{paso_activo}};
-
         var error_al_guardar = document.getElementById("div_error_guardado");
         error_al_guardar.hidden = true;
-        do_request_2('POST', SERVICE_GUARDAR_RESPUESTAS_ENCUESTAS_ALUMNO, param, function(state, result) {
+
+        guardar_respuestas_encuesta_alumno_service('{{ csrf_token() }}', {{idEncuestaAlumno}}, {{paso_activo}},
+        respuestas, function(state, result) {
             onSuccess(state, result)
         }, function(state, result) {
             scroll_arriba();
             error_al_guardar.hidden = false;
             hide_loading_mask();
-        })
+        });
     }
 
 
@@ -1287,6 +1246,7 @@
         mostrarOcultarSeleccionMasTematicas(idPregunta);
     }
 
+
 </script>
 
 <!--- Begin Botonera -->
@@ -1296,12 +1256,12 @@
             <ul class="nav nav-tabs" id="myTab">
                 <div class="liner"></div>
                 {% for i in range(titulos | length) %}
-                    <li>
-                        <a onclick="validarRespuestasParcialesYGuardarRespuestas('{{ url_for(titulos[i]['url'], idEncuestaAlumno=idEncuestaAlumno) }}')"
-                           title="{{titulos[i]['titulo']}}">
-                            <span class="round-tabs">{{i+1}}<i class="icon icon-profile-male"></i></span>
-                        </a>
-                    </li>
+                <li>
+                    <a onclick="validarRespuestasParcialesYGuardarRespuestas('{{ url_for(titulos[i]['url'], idEncuestaAlumno=idEncuestaAlumno) }}')"
+                       title="{{titulos[i]['titulo']}}">
+                        <span class="round-tabs">{{i+1}}<i class="icon icon-profile-male"></i></span>
+                    </a>
+                </li>
                 {% endfor %}
             </ul>
         </div>
@@ -1314,381 +1274,420 @@
 
     <div id="div_error_preguntas" hidden="true">
         <br>
-        <div class="alert alert-danger">Una o más preguntas contienen errores. Por favor, modifícalas antes de continuar con el siguiente paso.</div>
+        <div class="alert alert-danger">Una o más preguntas contienen errores. Por favor, modifícalas antes de continuar
+            con el siguiente paso.
+        </div>
     </div>
 
     <div id="div_error_guardado" hidden="true">
         <br>
-        <div class="alert alert-danger">Se produjo un error al guardar los datos de la página actual; es posible que una o más preguntas contengan errores. Por favor, modifícalas antes de continuar con el siguiente paso.</div>
+        <div class="alert alert-danger">Se produjo un error al guardar los datos de la página actual; es posible que una
+            o más preguntas contengan errores. Por favor, modifícalas antes de continuar con el siguiente paso.
+        </div>
     </div>
 
     <div>
-        <h2>{{encuesta["materia"]["codigo"]}} - {{encuesta["materia"]["nombre"]}} | Curso {{encuesta["curso"]["codigo_curso"]}} | {{encuesta["curso"]["docentes"]}}</h2>
+        <h2>{{encuesta["materia"]["codigo"]}} - {{encuesta["materia"]["nombre"]}} | Curso
+            {{encuesta["curso"]["codigo_curso"]}} | {{encuesta["curso"]["docentes"]}}</h2>
 
         <h3>Sección {{paso_activo+1}}: {{titulos[paso_activo]["titulo"]}}</h3>
     </div>
 
     {% for pregunta in preguntas %}
 
+    <br>
+
+    <label><span class="glyphicon glyphicon-chevron-right"></span> {{pregunta["pregunta"]}}</label>
+
+    <br>
+
+    {% if pregunta["tipo"] == "Puntaje de 1 a 5" %}
+
+    <br>
+    <table border="0" id="puntaje1a5-id-{{pregunta['pregunta_encuesta_id']}}" style="background-color: transparent;">
+        <tbody>
+        <tr>
+            <td>{{pregunta["texto_min"]}}</td>
+            {% for i in range(1,6) %}
+            <td><input type="radio" name="input_puntaje1a5-id-{{pregunta['pregunta_encuesta_id']}}" value="{{i}}"
+                       style="margin:10px;"></td>
+            {% endfor %}
+            <td>{{pregunta["texto_max"]}}</td>
+        </tr>
+        </tbody>
+    </table>
+
+    <div id="div_error_puntaje1a5-id-{{pregunta['pregunta_encuesta_id']}}" hidden="true">
+        <br>
+        <div class="alert alert-danger">Selecciona un puntaje</div>
+    </div>
+
+    {% elif pregunta["tipo"] == "Texto Libre" %}
+
+    <textarea class="form-control" rows="5" id="textolibre-id-{{pregunta['pregunta_encuesta_id']}}"></textarea>
+
+    <div id="div_error_textolibre-id-{{pregunta['pregunta_encuesta_id']}}" hidden="true">
+        <br>
+        <div class="alert alert-danger">El texto no puede estar vacío, o lleno solo con espacios y/o símbolos.</div>
+    </div>
+
+    {% elif pregunta["tipo"] == "Si o No" %}
+
+    <div class="radio" id="check-si-{{pregunta['pregunta_encuesta_id']}}">
+        <label><input type="radio" name="optradio-{{pregunta['pregunta_encuesta_id']}}"
+                      onclick="mostrarSubpreguntas(true, '{{pregunta['pregunta_encuesta_id']}}')">Si</label>
+    </div>
+    <div class="radio" id="check-no-{{pregunta['pregunta_encuesta_id']}}">
+        <label><input type="radio" name="optradio-{{pregunta['pregunta_encuesta_id']}}"
+                      onclick="mostrarSubpreguntas(false, '{{pregunta['pregunta_encuesta_id']}}')">No</label>
+    </div>
+
+    <div id="div_error_si_o_no-{{pregunta['pregunta_encuesta_id']}}" hidden="true">
+        <br>
+        <div class="alert alert-danger">Debe seleccionar una de las dos opciones.</div>
+    </div>
+
+    {% for subpregunta in pregunta["rta_si"] %}
+    <div id="div-subpregunta-si-pregunta-id-{{pregunta['pregunta_encuesta_id']}}" hidden="True">
         <br>
 
-        <label><span class="glyphicon glyphicon-chevron-right"></span>  {{pregunta["pregunta"]}}</label>
+        <label><span class="glyphicon glyphicon-chevron-right"></span> {{subpregunta["pregunta"]}}</label>
 
         <br>
+        <br>
 
-        {% if pregunta["tipo"] == "Puntaje de 1 a 5" %}
+        {% if subpregunta["tipo"] == "Texto Libre" %}
 
+        <textarea class="form-control" rows="5" id="subpregunta-si-{{subpregunta['pregunta_id']}}"></textarea>
+
+        <div id="div_error_subpregunta-si-{{subpregunta['pregunta_id']}}" hidden="true">
             <br>
-            <table border="0" id="puntaje1a5-id-{{pregunta['pregunta_encuesta_id']}}" style="background-color: transparent;">
-                <tbody>
-                    <tr>
-                        <td>{{pregunta["texto_min"]}}</td>
-                        {% for i in range(1,6) %}
-                            <td><input type="radio" name="input_puntaje1a5-id-{{pregunta['pregunta_encuesta_id']}}" value="{{i}}" style="margin:10px;"></td>
-                        {% endfor %}
-                        <td>{{pregunta["texto_max"]}}</td>
-                    </tr>
-                </tbody>
-            </table>
+            <div class="alert alert-danger">El texto no puede estar vacío, o lleno solo con espacios y/o símbolos.</div>
+        </div>
 
-            <div id="div_error_puntaje1a5-id-{{pregunta['pregunta_encuesta_id']}}" hidden="true">
-                <br>
-                <div class="alert alert-danger">Selecciona un puntaje</div>
-            </div>
+        {% endif %}
 
-        {% elif pregunta["tipo"] == "Texto Libre" %}
+    </div>
+    {% endfor %}
 
-            <textarea class="form-control" rows="5" id="textolibre-id-{{pregunta['pregunta_encuesta_id']}}"></textarea>
+    {% for subpregunta in pregunta["rta_no"] %}
+    <div id="div-subpregunta-no-pregunta-id-{{pregunta['pregunta_encuesta_id']}}" hidden="True">
+        <br>
 
-            <div id="div_error_textolibre-id-{{pregunta['pregunta_encuesta_id']}}" hidden="true">
-                <br>
-                <div class="alert alert-danger">El texto no puede estar vacío, o lleno solo con espacios y/o símbolos.</div>
-            </div>
+        <label><span class="glyphicon glyphicon-chevron-right"></span> {{subpregunta["pregunta"]}}</label>
 
-        {% elif pregunta["tipo"] == "Si o No" %}
+        <br>
+        <br>
 
-            <div class="radio" id="check-si-{{pregunta['pregunta_encuesta_id']}}">
-                <label><input type="radio" name="optradio-{{pregunta['pregunta_encuesta_id']}}" onclick="mostrarSubpreguntas(true, '{{pregunta['pregunta_encuesta_id']}}')">Si</label>
-            </div>
-            <div class="radio" id="check-no-{{pregunta['pregunta_encuesta_id']}}">
-                <label><input type="radio" name="optradio-{{pregunta['pregunta_encuesta_id']}}" onclick="mostrarSubpreguntas(false, '{{pregunta['pregunta_encuesta_id']}}')">No</label>
-            </div>
+        {% if subpregunta["tipo"] == "Texto Libre" %}
 
-            <div id="div_error_si_o_no-{{pregunta['pregunta_encuesta_id']}}" hidden="true">
-                <br>
-                <div class="alert alert-danger">Debe seleccionar una de las dos opciones.</div>
-            </div>
+        <textarea class="form-control" rows="5" id="subpregunta-no-{{subpregunta['pregunta_id']}}"></textarea>
 
-            {% for subpregunta in pregunta["rta_si"] %}
-                <div id="div-subpregunta-si-pregunta-id-{{pregunta['pregunta_encuesta_id']}}" hidden="True">
-                    <br>
-
-                    <label><span class="glyphicon glyphicon-chevron-right"></span>  {{subpregunta["pregunta"]}}</label>
-
-                    <br>
-                    <br>
-
-                    {% if subpregunta["tipo"] == "Texto Libre" %}
-
-                        <textarea class="form-control" rows="5" id="subpregunta-si-{{subpregunta['pregunta_id']}}"></textarea>
-
-                        <div id="div_error_subpregunta-si-{{subpregunta['pregunta_id']}}" hidden="true">
-                            <br>
-                            <div class="alert alert-danger">El texto no puede estar vacío, o lleno solo con espacios y/o símbolos.</div>
-                        </div>
-
-                    {% endif %}
-
-                </div>
-            {% endfor %}
-
-            {% for subpregunta in pregunta["rta_no"] %}
-                <div id="div-subpregunta-no-pregunta-id-{{pregunta['pregunta_encuesta_id']}}" hidden="True">
-                    <br>
-
-                    <label><span class="glyphicon glyphicon-chevron-right"></span>  {{subpregunta["pregunta"]}}</label>
-
-                    <br>
-                    <br>
-
-                    {% if subpregunta["tipo"] == "Texto Libre" %}
-
-                        <textarea class="form-control" rows="5" id="subpregunta-no-{{subpregunta['pregunta_id']}}"></textarea>
-
-                        <div id="div_error_subpregunta-no-{{subpregunta['pregunta_id']}}" hidden="true">
-                            <br>
-                            <div class="alert alert-danger">El texto no puede estar vacío, o lleno solo con espacios y/o símbolos.</div>
-                        </div>
-
-                    {% endif %}
-                </div>
-            {% endfor %}
-
-        {% elif pregunta["tipo"] == "Horario" %}
-
+        <div id="div_error_subpregunta-no-{{subpregunta['pregunta_id']}}" hidden="true">
             <br>
-            <div>
-                <div class="row">
-                    <div class="col-sm-2">
-                        <div class="form-group">
+            <div class="alert alert-danger">El texto no puede estar vacío, o lleno solo con espacios y/o símbolos.</div>
+        </div>
 
-                            <select class="form-control" id="horario-dia-{{pregunta['pregunta_encuesta_id']}}" name="dia">
-                                {% for dia in dias %}
-                                <option>{{dia}}</option>
-                                {% endfor %}
-                            </select>
+        {% endif %}
+    </div>
+    {% endfor %}
 
-                        </div>
-                    </div>
+    {% elif pregunta["tipo"] == "Horario" %}
 
-                    <div class="col-xs-1">
-                        <p>De:</p>
-                    </div>
-
-                    <div class="col-sm-2">
-                        <div class="form-group">
-                            <select class="form-control" id="hora_desde-{{pregunta['pregunta_encuesta_id']}}" name="hora_desde" onchange="actualizarHoraHasta('{{pregunta['pregunta_encuesta_id']}}')">
-                                {% for i in range(hora_desde | length) %}
-                                <option id="hora_desde_{{i}}">{{hora_desde[i]}}</option>
-                                {% endfor %}
-                            </select>
-                        </div>
-                    </div>
-
-                    <div class="col-xs-1">
-                        <p>A:</p>
-                    </div>
-
-                    <div class="col-sm-2">
-                        <div class="form-group">
-                            <select class="form-control" id="hora_hasta-{{pregunta['pregunta_encuesta_id']}}" name="hora_hasta">
-                                {% for i in range(hora_hasta | length) %}
-                                <option id="hora_hasta_{{i}}">{{hora_hasta[i]}}</option>
-                                {% endfor %}
-                            </select>
-                        </div>
-                    </div>
-
-                    <div class="col-sm-2">
-                        <div class="form-group">
-                            <button type="button" class="btn btn-mussa-default" onclick="agregarHorario('{{pregunta['pregunta_encuesta_id']}}')">Agregar horario</button>
-                        </div>
-                    </div>
-
-                </div>
-
-                <div class="alert alert-danger" id="error_label-{{pregunta['pregunta_encuesta_id']}}" style="display:none">
-                    Este horario es incompatible con los que han sido cargados previamente.
-                </div>
-
-            </div>
-
-            <br>
-
-            <div class="form-group" id="div-tabla-{{pregunta['pregunta_encuesta_id']}}" hidden="true">
-                <div class='table-responsive'>
-                    <table class='table table-hover' id="tabla_cursos_guardados-{{pregunta['pregunta_encuesta_id']}}">
-                        <tr>
-                            <th>Dia</th>
-                            <th>De</th>
-                            <th>A</th>
-                            <th>Eliminar</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
-            <div id="div_error_horario-id-{{pregunta['pregunta_encuesta_id']}}" hidden="true">
-                <br>
-                <div class="alert alert-danger">Debes seleccionar al menos un horario de cursada.</div>
-            </div>
-
-        {% elif pregunta["tipo"] == "Docente" %}
-
-            <div id="div_agregar_docentes_{{pregunta['pregunta_encuesta_id']}}">
-
+    <br>
+    <div>
+        <div class="row">
+            <div class="col-sm-2">
                 <div class="form-group">
-                    <select class="form-control" id="selector_docentes_{{pregunta['pregunta_encuesta_id']}}" name="selector_posibles_correlativas_{{pregunta['pregunta_encuesta_id']}}">
-                        {% for docente in docentes %}
-                            <option id="docente_{{docente['id_docente']}}_{{pregunta['pregunta_encuesta_id']}}" value="{{docente['id_docente']}}">{{docente["nombre_completo"]}}</option>
+
+                    <select class="form-control" id="horario-dia-{{pregunta['pregunta_encuesta_id']}}" name="dia">
+                        {% for dia in dias %}
+                        <option>{{dia}}</option>
+                        {% endfor %}
+                    </select>
+
+                </div>
+            </div>
+
+            <div class="col-xs-1">
+                <p>De:</p>
+            </div>
+
+            <div class="col-sm-2">
+                <div class="form-group">
+                    <select class="form-control" id="hora_desde-{{pregunta['pregunta_encuesta_id']}}" name="hora_desde"
+                            onchange="actualizarHoraHasta('{{pregunta['pregunta_encuesta_id']}}')">
+                        {% for i in range(hora_desde | length) %}
+                        <option id="hora_desde_{{i}}">{{hora_desde[i]}}</option>
                         {% endfor %}
                     </select>
                 </div>
-
-                <textarea class="form-control" rows="5" id="texto-docentes-{{pregunta['pregunta_encuesta_id']}}"></textarea>
-
-                <br>
-
-                <div class="alert alert-danger" id="error_label-docentes-{{pregunta['pregunta_encuesta_id']}}" style="display:none">
-                    El texto del comentario a agregar no puede estar vacío
-                </div>
-
-                <button type="button" class="btn btn-mussa-default" onclick="agregarComentarioDocente('{{pregunta['pregunta_encuesta_id']}}')">Agregar Comentario</button>
-
             </div>
 
-            <br>
-            <div class="form-group" id="div-tabla-docentes-{{pregunta['pregunta_encuesta_id']}}" hidden="true">
-                <div class='table-responsive'>
-                    <table class='table table-hover' id="tabla_docentes-{{pregunta['pregunta_encuesta_id']}}">
-                        <tr>
-                            <th hidden="true">Id Docente</th>
-                            <th>Docente</th>
-                            <th>Comentarios</th>
-                            <th>Acciones</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        </tbody>
-                    </table>
+            <div class="col-xs-1">
+                <p>A:</p>
+            </div>
+
+            <div class="col-sm-2">
+                <div class="form-group">
+                    <select class="form-control" id="hora_hasta-{{pregunta['pregunta_encuesta_id']}}" name="hora_hasta">
+                        {% for i in range(hora_hasta | length) %}
+                        <option id="hora_hasta_{{i}}">{{hora_hasta[i]}}</option>
+                        {% endfor %}
+                    </select>
                 </div>
             </div>
 
-            <div id="div_error_docente-id-{{pregunta['pregunta_encuesta_id']}}" hidden="true">
-                <br>
-                <div class="alert alert-danger">El comentario de los docentes ingresados no puede ser vacío. Por favor edita o elimina los docentes con comentarios vacíos o compuestos solo por espacios y/o símbolos.</div>
-            </div>
-
-
-        {% elif pregunta["tipo"] == "Correlativa" %}
-
-            <br>
-
-            <div class="row">
-                <div class="col-sm-7">
-                    <div class="form-group">
-                        <select class="form-control" id="selector_posibles_correlativas_{{pregunta['pregunta_encuesta_id']}}" name="selector_posibles_correlativas_{{pregunta['pregunta_encuesta_id']}}">
-                            {% for correlativa in posibles_correlativas %}
-                                <option id="materia_opcion_{{correlativa['id_materia']}}_{{pregunta['pregunta_encuesta_id']}}" value="{{correlativa['id_materia']}}">{{correlativa["codigo"]}} - {{correlativa["nombre"]}}</option>
-                            {% endfor %}
-                        </select>
-                    </div>
-                </div>
-                <div class="col-sm-2">
-                    <button class="btn btn-mussa-default" onclick="agregar_correlativa('{{pregunta['pregunta_encuesta_id']}}')">Agregar</button>
+            <div class="col-sm-2">
+                <div class="form-group">
+                    <button type="button" class="btn btn-mussa-default"
+                            onclick="agregarHorario('{{pregunta['pregunta_encuesta_id']}}')">Agregar horario
+                    </button>
                 </div>
             </div>
 
-            <br>
+        </div>
 
-            <div class="form-group" id="div_tabla_correlativas_{{pregunta['pregunta_encuesta_id']}}" hidden="true">
-                <div class='table-responsive'>
-                    <table class='table table-hover' id="tabla_correlativas_{{pregunta['pregunta_encuesta_id']}}">
-                        <tr>
-                            <th>Materia</th>
-                            <th>Eliminar</th>
-                            <th hidden="true">Id Materia</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
+        <div class="alert alert-danger" id="error_label-{{pregunta['pregunta_encuesta_id']}}" style="display:none">
+            Este horario es incompatible con los que han sido cargados previamente.
+        </div>
 
-        {% elif pregunta["tipo"] == "Estrellas" %}
+    </div>
 
-            <br>
-            <div class="ec-stars-wrapper" id="ec-stars-wrapper-{{pregunta['pregunta_encuesta_id']}}">
-                {% for i in range(1,6) %}
-                    <a href="#" data-value="{{i}}" onclick="setStarsValue({{i}},'ec-stars-wrapper-{{pregunta['pregunta_encuesta_id']}}')">&#9733;</a>
+    <br>
+
+    <div class="form-group" id="div-tabla-{{pregunta['pregunta_encuesta_id']}}" hidden="true">
+        <div class='table-responsive'>
+            <table class='table table-hover' id="tabla_cursos_guardados-{{pregunta['pregunta_encuesta_id']}}">
+                <tr>
+                    <th>Dia</th>
+                    <th>De</th>
+                    <th>A</th>
+                    <th>Eliminar</th>
+                </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div id="div_error_horario-id-{{pregunta['pregunta_encuesta_id']}}" hidden="true">
+        <br>
+        <div class="alert alert-danger">Debes seleccionar al menos un horario de cursada.</div>
+    </div>
+
+    {% elif pregunta["tipo"] == "Docente" %}
+
+    <div id="div_agregar_docentes_{{pregunta['pregunta_encuesta_id']}}">
+
+        <div class="form-group">
+            <select class="form-control" id="selector_docentes_{{pregunta['pregunta_encuesta_id']}}"
+                    name="selector_posibles_correlativas_{{pregunta['pregunta_encuesta_id']}}">
+                {% for docente in docentes %}
+                <option id="docente_{{docente['id_docente']}}_{{pregunta['pregunta_encuesta_id']}}"
+                        value="{{docente['id_docente']}}">{{docente["nombre_completo"]}}
+                </option>
                 {% endfor %}
+            </select>
+        </div>
+
+        <textarea class="form-control" rows="5" id="texto-docentes-{{pregunta['pregunta_encuesta_id']}}"></textarea>
+
+        <br>
+
+        <div class="alert alert-danger" id="error_label-docentes-{{pregunta['pregunta_encuesta_id']}}"
+             style="display:none">
+            El texto del comentario a agregar no puede estar vacío
+        </div>
+
+        <button type="button" class="btn btn-mussa-default"
+                onclick="agregarComentarioDocente('{{pregunta['pregunta_encuesta_id']}}')">Agregar Comentario
+        </button>
+
+    </div>
+
+    <br>
+    <div class="form-group" id="div-tabla-docentes-{{pregunta['pregunta_encuesta_id']}}" hidden="true">
+        <div class='table-responsive'>
+            <table class='table table-hover' id="tabla_docentes-{{pregunta['pregunta_encuesta_id']}}">
+                <tr>
+                    <th hidden="true">Id Docente</th>
+                    <th>Docente</th>
+                    <th>Comentarios</th>
+                    <th>Acciones</th>
+                </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div id="div_error_docente-id-{{pregunta['pregunta_encuesta_id']}}" hidden="true">
+        <br>
+        <div class="alert alert-danger">El comentario de los docentes ingresados no puede ser vacío. Por favor edita o
+            elimina los docentes con comentarios vacíos o compuestos solo por espacios y/o símbolos.
+        </div>
+    </div>
+
+
+    {% elif pregunta["tipo"] == "Correlativa" %}
+
+    <br>
+
+    <div class="row">
+        <div class="col-sm-7">
+            <div class="form-group">
+                <select class="form-control" id="selector_posibles_correlativas_{{pregunta['pregunta_encuesta_id']}}"
+                        name="selector_posibles_correlativas_{{pregunta['pregunta_encuesta_id']}}">
+                    {% for correlativa in posibles_correlativas %}
+                    <option id="materia_opcion_{{correlativa['id_materia']}}_{{pregunta['pregunta_encuesta_id']}}"
+                            value="{{correlativa['id_materia']}}">{{correlativa["codigo"]}} - {{correlativa["nombre"]}}
+                    </option>
+                    {% endfor %}
+                </select>
             </div>
-            <br>
+        </div>
+        <div class="col-sm-2">
+            <button class="btn btn-mussa-default" onclick="agregar_correlativa('{{pregunta['pregunta_encuesta_id']}}')">
+                Agregar
+            </button>
+        </div>
+    </div>
 
-            <div id="div_error_estrellas-id-{{pregunta['pregunta_encuesta_id']}}" hidden="true">
-                <br>
-                <div class="alert alert-danger">Debe seleccionar una puntuación de 1 a 5 estrellas.</div>
+    <br>
+
+    <div class="form-group" id="div_tabla_correlativas_{{pregunta['pregunta_encuesta_id']}}" hidden="true">
+        <div class='table-responsive'>
+            <table class='table table-hover' id="tabla_correlativas_{{pregunta['pregunta_encuesta_id']}}">
+                <tr>
+                    <th>Materia</th>
+                    <th>Eliminar</th>
+                    <th hidden="true">Id Materia</th>
+                </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    {% elif pregunta["tipo"] == "Estrellas" %}
+
+    <br>
+    <div class="ec-stars-wrapper" id="ec-stars-wrapper-{{pregunta['pregunta_encuesta_id']}}">
+        {% for i in range(1,6) %}
+        <a href="#" data-value="{{i}}"
+           onclick="setStarsValue({{i}},'ec-stars-wrapper-{{pregunta['pregunta_encuesta_id']}}')">&#9733;</a>
+        {% endfor %}
+    </div>
+    <br>
+
+    <div id="div_error_estrellas-id-{{pregunta['pregunta_encuesta_id']}}" hidden="true">
+        <br>
+        <div class="alert alert-danger">Debe seleccionar una puntuación de 1 a 5 estrellas.</div>
+    </div>
+
+    {% elif pregunta["tipo"] == "Numero" %}
+
+    <br>
+
+    <div class="row">
+        <div class="col-sm-2">
+            <input type="number" class="form-control" name="numero_{{pregunta['pregunta_encuesta_id']}}"
+                   id="numero_{{pregunta['pregunta_encuesta_id']}}" value="{{pregunta['numero_min']}}"
+                   min="{{pregunta['numero_min']}}" max="{{pregunta['numero_max']}}" step="1">
+        </div>
+    </div>
+
+    <br>
+
+    <div id="div_error_numero_{{pregunta['pregunta_encuesta_id']}}" hidden="true">
+        <br>
+        <div class="alert alert-danger">La cantidad de horas no puede superar las horas que tiene la semana.</div>
+    </div>
+
+    {% elif pregunta["tipo"] == "Tags / Palabras Clave" %}
+
+    <br>
+
+    <div class="row">
+        {% for i in range(1,4) %}
+        <div class="col-sm-3">
+            <div class="form-group has-feedback">
+                <input type="text" class="form-control" id="palabra-{{i}}-{{pregunta['pregunta_encuesta_id']}}"/>
+                <i class="glyphicon glyphicon-tag form-control-feedback"></i>
             </div>
+        </div>
+        {% endfor %}
+    </div>
 
-        {% elif pregunta["tipo"] == "Numero" %}
+    <br>
 
-            <br>
+    <div id="div_error_palabras_clave-{{pregunta['pregunta_encuesta_id']}}" hidden="true">
+        <br>
+        <div class="alert alert-danger">El texto no puede estar lleno con espacios y/o símbolos.</div>
+    </div>
 
-            <div class="row">
-                <div class="col-sm-2">
-                    <input type="number" class="form-control" name="numero_{{pregunta['pregunta_encuesta_id']}}" id="numero_{{pregunta['pregunta_encuesta_id']}}" value="{{pregunta['numero_min']}}" min="{{pregunta['numero_min']}}" max="{{pregunta['numero_max']}}" step="1">
+    {% elif pregunta["tipo"] == "Temática de la Materia" %}
+
+    <br>
+
+    <div id="div_permitir_agregar_mas_etiquetas_{{pregunta['pregunta_encuesta_id']}}">
+        <div class="row">
+            <div class="col-sm-3">
+                <div class="form-group">
+                    <select class="form-control" id="selector_tematica_{{pregunta['pregunta_encuesta_id']}}"
+                            name="selector_tematica_{{pregunta['pregunta_encuesta_id']}}"
+                            onchange="selector_tematica_change('{{pregunta['pregunta_encuesta_id']}}')">
+                        <option id="nueva_tematica_{{pregunta['pregunta_encuesta_id']}}" value="-1">Nueva Temática
+                        </option>
+                        {% for tematica in tematicas %}
+                        <option id="tematica_opcion_{{tematica['id_tematica']}}_{{pregunta['pregunta_encuesta_id']}}"
+                                value="{{tematica['id_tematica']}}">{{tematica["tematica"]}}
+                        </option>
+                        {% endfor %}
+                    </select>
                 </div>
             </div>
-
-            <br>
-
-            <div id="div_error_numero_{{pregunta['pregunta_encuesta_id']}}" hidden="true">
-                <br>
-                <div class="alert alert-danger">La cantidad de horas no puede superar las horas que tiene la semana.</div>
+            <div class="col-sm-3" id="div_texto_nueva_tematica_{{pregunta['pregunta_encuesta_id']}}">
+                <input type="text" class="form-control" id="texto_nueva_tematica_{{pregunta['pregunta_encuesta_id']}}"/>
             </div>
-
-        {% elif pregunta["tipo"] == "Tags / Palabras Clave" %}
-
-            <br>
-
-            <div class="row">
-                {% for i in range(1,4) %}
-                    <div class="col-sm-3">
-                        <div class="form-group has-feedback">
-                            <input type="text" class="form-control" id="palabra-{{i}}-{{pregunta['pregunta_encuesta_id']}}"/>
-                            <i class="glyphicon glyphicon-tag form-control-feedback"></i>
-                        </div>
-                    </div>
-                {% endfor %}
+            <div class="col-sm-2">
+                <button class="btn btn-mussa-default"
+                        onclick="agregar_tematica('{{pregunta['pregunta_encuesta_id']}}')">Agregar
+                </button>
             </div>
+        </div>
 
-            <br>
+        <div class="alert alert-danger" id="error_label_tematica_{{pregunta['pregunta_encuesta_id']}}"
+             style="display:none">
+            El texto de la temática no puede estar vacío
+        </div>
+    </div>
 
-            <div id="div_error_palabras_clave-{{pregunta['pregunta_encuesta_id']}}" hidden="true">
-                <br>
-                <div class="alert alert-danger">El texto no puede estar lleno con espacios y/o símbolos.</div>
-            </div>
+    <div class="row" id="tematicas_elegidas_{{pregunta['pregunta_encuesta_id']}}" hidden="true"></div>
 
-        {% elif pregunta["tipo"] == "Temática de la Materia" %}
+    <br>
 
-            <br>
-
-            <div id="div_permitir_agregar_mas_etiquetas_{{pregunta['pregunta_encuesta_id']}}">
-                <div class="row">
-                    <div class="col-sm-3">
-                        <div class="form-group">
-                            <select class="form-control" id="selector_tematica_{{pregunta['pregunta_encuesta_id']}}" name="selector_tematica_{{pregunta['pregunta_encuesta_id']}}" onchange="selector_tematica_change('{{pregunta['pregunta_encuesta_id']}}')">
-                                <option id="nueva_tematica_{{pregunta['pregunta_encuesta_id']}}" value="-1">Nueva Temática</option>
-                                {% for tematica in tematicas %}
-                                    <option id="tematica_opcion_{{tematica['id_tematica']}}_{{pregunta['pregunta_encuesta_id']}}" value="{{tematica['id_tematica']}}">{{tematica["tematica"]}}</option>
-                                {% endfor %}
-                            </select>
-                        </div>
-                    </div>
-                    <div class="col-sm-3" id="div_texto_nueva_tematica_{{pregunta['pregunta_encuesta_id']}}">
-                        <input type="text" class="form-control" id="texto_nueva_tematica_{{pregunta['pregunta_encuesta_id']}}"/>
-                    </div>
-                    <div class="col-sm-2">
-                        <button class="btn btn-mussa-default" onclick="agregar_tematica('{{pregunta['pregunta_encuesta_id']}}')">Agregar</button>
-                    </div>
-                </div>
-
-                <div class="alert alert-danger" id="error_label_tematica_{{pregunta['pregunta_encuesta_id']}}" style="display:none">
-                    El texto de la temática no puede estar vacío
-                </div>
-            </div>
-
-            <div class="row" id="tematicas_elegidas_{{pregunta['pregunta_encuesta_id']}}" hidden="true"></div>
-
-            <br>
-
-        {% endif %}
+    {% endif %}
 
     {% endfor %}
 
     <br>
 
     <div>
-        <div class = "pull-left" id="boton_anterior">
-            <button type="button" class="btn btn-default" style="background-color: transparent;border-color: transparent;font-size: 30px;color: #9634c1;"><span class='glyphicon glyphicon-arrow-left'></span></button>
+        <div class="pull-left" id="boton_anterior">
+            <button type="button" class="btn btn-default"
+                    style="background-color: transparent;border-color: transparent;font-size: 30px;color: #9634c1;">
+                <span class='glyphicon glyphicon-arrow-left'></span></button>
         </div>
 
-        <div class = "pull-right" id="boton_siguiente">
-            <button type="button" class="btn btn-default" style="background-color: transparent;border-color: transparent;font-size: 30px;color: #9634c1;"><span class='glyphicon glyphicon-arrow-right'></span></button>
+        <div class="pull-right" id="boton_siguiente">
+            <button type="button" class="btn btn-default"
+                    style="background-color: transparent;border-color: transparent;font-size: 30px;color: #9634c1;">
+                <span class='glyphicon glyphicon-arrow-right'></span></button>
         </div>
     </div>
 
@@ -1697,21 +1696,30 @@
     <br>
 
     <div>
-        <label style="font-style: italic; color: #A348CC;">Guardar el estado actual de la encuesta y continuar editándola luego.</label>
+        <label style="font-style: italic; color: #A348CC;">Guardar el estado actual de la encuesta y continuar
+            editándola luego.</label>
         <br>
-        <button type="button" class="btn btn-mussa-default" onclick="validarRespuestasParcialesYGuardarRespuestas('{{ url_for('main.historial_encuestas_page') }}')">Guardar y Volver</button>
+        <button type="button" class="btn btn-mussa-default"
+                onclick="validarRespuestasParcialesYGuardarRespuestas('{{ url_for('main.historial_encuestas_page') }}')">
+            Guardar y Volver
+        </button>
     </div>
 
     {% if encuesta_esta_completa %}
-        <br>
-        <label style="font-style: italic; color: #A348CC;">Al finalizar la encuesta las respuestas son enviadas. Una vez que la encuesta es finalizada ya no es posible volver a editarla.</label>
-        <br>
-        <button type="button" class="btn btn-mussa-default" onclick="validarRespuestasGuardarYFinalizarEncuesta()">Finalizar Encuesta</button>
+    <br>
+    <label style="font-style: italic; color: #A348CC;">Al finalizar la encuesta las respuestas son enviadas. Una vez que
+        la encuesta es finalizada ya no es posible volver a editarla.</label>
+    <br>
+    <button type="button" class="btn btn-mussa-default" onclick="validarRespuestasGuardarYFinalizarEncuesta()">Finalizar
+        Encuesta
+    </button>
 
-        <div id="div_error_finalizar_encuesta" hidden="true">
-            <br>
-            <div class="alert alert-danger">Se produjo un error al intentar finalizar la encuesta. Por favor inténtalo nuevamente.</div>
+    <div id="div_error_finalizar_encuesta" hidden="true">
+        <br>
+        <div class="alert alert-danger">Se produjo un error al intentar finalizar la encuesta. Por favor inténtalo
+            nuevamente.
         </div>
+    </div>
 
     {% endif %}
 

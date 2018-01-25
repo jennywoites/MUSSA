@@ -393,3 +393,12 @@ class ClienteAPI:
             parametros["ids_preguntas"] = json.dumps(ids_preguntas)
 
         return self.invocar_get(url_servicio, cookie, parametros)["respuestas_encuestas"]
+
+    def guardar_respuestas_encuesta_alumno(self, cookie, csrf_token, idEncuestaAlumno, categoria, respuestas):
+        url_servicio = self.get_url_get_respuestas_encuesta_alumno(idEncuestaAlumno)
+
+        parametros = {}
+        parametros["categoria"] = categoria
+        parametros["respuestas"] = json.dumps(respuestas)
+
+        return self.invocar_post(url_servicio, cookie, csrf_token, parametros)

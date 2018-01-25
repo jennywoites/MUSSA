@@ -209,3 +209,13 @@ function finalizar_encuesta_alumno_service(token, idEncuestaAlumno, onSuccess, o
 
     do_request('POST', url_servicio, token, parametros, onSuccess, onError);
 }
+
+function guardar_respuestas_encuesta_alumno_service(token, idEncuestaAlumno, categoria, respuestas, onSuccess, onError) {
+    var url_servicio = BASE_URL + '/alumno/encuesta/' + idEncuestaAlumno + '/respuestas';
+
+    parametros = {}
+    parametros["categoria"] = categoria;
+    parametros["respuestas"] = JSON.stringify(respuestas);
+
+    do_request('POST', url_servicio, token, parametros, onSuccess, onError);
+}

@@ -414,7 +414,7 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
 
     def test_guardar_respuestas_sin_estar_logueado_redirecciona_al_loguin(self):
         client = self.app.test_client()
-        response = client.post(GUARDAR_RESPUESTAS_ENCUESTA_ALUMNO_SERVICE)
+        response = client.post(self.get_url_guardar_respuestas_encuesta_alumno(1))
         assert (response.status_code == REDIRECTION_FOUND)
 
     def test_guardar_respuestas_encuestas_en_blanco_categoria_general_las_guarda_correctamente(self):
@@ -429,11 +429,10 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
         encuesta = EncuestaAlumno.query.first()
 
         parametros = {}
-        parametros["id_encuesta"] = encuesta.id
         parametros["categoria"] = paso_actual
         parametros["respuestas"] = self.crear_respuestas_alumno(preguntas, self.get_datos_respuestas_default())
 
-        response = client.post(GUARDAR_RESPUESTAS_ENCUESTA_ALUMNO_SERVICE, data=parametros)
+        response = client.post(self.get_url_guardar_respuestas_encuesta_alumno(encuesta.id), data=parametros)
         assert (response.status_code == SUCCESS_OK)
 
         respuestas = self.obtener_respuestas_guardadas_alumno(preguntas, encuesta, client)
@@ -452,10 +451,9 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
         encuesta = EncuestaAlumno.query.first()
 
         parametros = {}
-        parametros["id_encuesta"] = encuesta.id
         parametros["categoria"] = paso_actual
         parametros["respuestas"] = self.crear_respuestas_alumno(preguntas, self.get_datos_respuestas_default())
-        response = client.post(GUARDAR_RESPUESTAS_ENCUESTA_ALUMNO_SERVICE, data=parametros)
+        response = client.post(self.get_url_guardar_respuestas_encuesta_alumno(encuesta.id), data=parametros)
         assert (response.status_code == SUCCESS_OK)
 
         respuestas = self.obtener_respuestas_guardadas_alumno(preguntas, encuesta, client)
@@ -474,10 +472,9 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
         encuesta = EncuestaAlumno.query.first()
 
         parametros = {}
-        parametros["id_encuesta"] = encuesta.id
         parametros["categoria"] = paso_actual
         parametros["respuestas"] = self.crear_respuestas_alumno(preguntas, self.get_datos_respuestas_default())
-        response = client.post(GUARDAR_RESPUESTAS_ENCUESTA_ALUMNO_SERVICE, data=parametros)
+        response = client.post(self.get_url_guardar_respuestas_encuesta_alumno(encuesta.id), data=parametros)
         assert (response.status_code == SUCCESS_OK)
 
         respuestas = self.obtener_respuestas_guardadas_alumno(preguntas, encuesta, client)
@@ -496,10 +493,9 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
         encuesta = EncuestaAlumno.query.first()
 
         parametros = {}
-        parametros["id_encuesta"] = encuesta.id
         parametros["categoria"] = paso_actual
         parametros["respuestas"] = self.crear_respuestas_alumno(preguntas, self.get_datos_respuestas_default())
-        response = client.post(GUARDAR_RESPUESTAS_ENCUESTA_ALUMNO_SERVICE, data=parametros)
+        response = client.post(self.get_url_guardar_respuestas_encuesta_alumno(encuesta.id), data=parametros)
         assert (response.status_code == SUCCESS_OK)
 
         respuestas = self.obtener_respuestas_guardadas_alumno(preguntas, encuesta, client)
@@ -518,10 +514,9 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
         encuesta = EncuestaAlumno.query.first()
 
         parametros = {}
-        parametros["id_encuesta"] = encuesta.id
         parametros["categoria"] = paso_actual
         parametros["respuestas"] = self.crear_respuestas_alumno(preguntas, self.get_datos_respuestas_default())
-        response = client.post(GUARDAR_RESPUESTAS_ENCUESTA_ALUMNO_SERVICE, data=parametros)
+        response = client.post(self.get_url_guardar_respuestas_encuesta_alumno(encuesta.id), data=parametros)
         assert (response.status_code == SUCCESS_OK)
 
         respuestas = self.obtener_respuestas_guardadas_alumno(preguntas, encuesta, client)
@@ -541,10 +536,9 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
         encuesta = EncuestaAlumno.query.first()
 
         parametros = {}
-        parametros["id_encuesta"] = encuesta.id
         parametros["categoria"] = paso_actual
         parametros["respuestas"] = self.crear_respuestas_alumno(preguntas, self.get_datos_respuestas_default())
-        response = client.post(GUARDAR_RESPUESTAS_ENCUESTA_ALUMNO_SERVICE, data=parametros)
+        response = client.post(self.get_url_guardar_respuestas_encuesta_alumno(encuesta.id), data=parametros)
         assert (response.status_code == SUCCESS_OK)
 
         respuestas = self.obtener_respuestas_guardadas_alumno(preguntas, encuesta, client)
@@ -564,10 +558,9 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
         encuesta = EncuestaAlumno.query.first()
 
         parametros = {}
-        parametros["id_encuesta"] = encuesta.id
         parametros["categoria"] = GRUPO_ENCUESTA_EXAMENES
         parametros["respuestas"] = self.crear_respuestas_alumno(preguntas, self.get_datos_respuestas_default())
-        response = client.post(GUARDAR_RESPUESTAS_ENCUESTA_ALUMNO_SERVICE, data=parametros)
+        response = client.post(self.get_url_guardar_respuestas_encuesta_alumno(encuesta.id), data=parametros)
         assert (response.status_code == CLIENT_ERROR_BAD_REQUEST)
 
     def test_guardar_respuestas_completas_en_categoria_contenido_guarda_correctamente_y_el_paso_queda_finalizado(self):
@@ -590,10 +583,9 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
         assert (estados_pasos.estadoPaso5 == PASO_ENCUESTA_FINALIZADO)  # GRUPO_ENCUESTA_DOCENTES
 
         parametros = {}
-        parametros["id_encuesta"] = encuesta.id
         parametros["categoria"] = paso_actual
         parametros["respuestas"] = self.crear_respuestas_alumno(preguntas, self.get_datos_respuestas_default())
-        response = client.post(GUARDAR_RESPUESTAS_ENCUESTA_ALUMNO_SERVICE, data=parametros)
+        response = client.post(self.get_url_guardar_respuestas_encuesta_alumno(encuesta.id), data=parametros)
         assert (response.status_code == SUCCESS_OK)
 
         respuestas = self.obtener_respuestas_guardadas_alumno(preguntas, encuesta, client)
@@ -629,10 +621,9 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
         assert (estados_pasos.estadoPaso5 == PASO_ENCUESTA_FINALIZADO)  # GRUPO_ENCUESTA_DOCENTES
 
         parametros = {}
-        parametros["id_encuesta"] = encuesta.id
         parametros["categoria"] = paso_actual
         parametros["respuestas"] = self.crear_respuestas_alumno(preguntas, self.get_datos_respuestas_default())
-        response = client.post(GUARDAR_RESPUESTAS_ENCUESTA_ALUMNO_SERVICE, data=parametros)
+        response = client.post(self.get_url_guardar_respuestas_encuesta_alumno(encuesta.id), data=parametros)
         assert (response.status_code == SUCCESS_OK)
 
         respuestas = self.obtener_respuestas_guardadas_alumno(preguntas, encuesta, client)
@@ -667,10 +658,9 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
         assert (estados_pasos.estadoPaso5 == PASO_ENCUESTA_FINALIZADO)  # GRUPO_ENCUESTA_DOCENTES
 
         parametros = {}
-        parametros["id_encuesta"] = encuesta.id
         parametros["categoria"] = paso_actual
         parametros["respuestas"] = self.crear_respuestas_alumno(preguntas, self.get_datos_respuestas_default())
-        response = client.post(GUARDAR_RESPUESTAS_ENCUESTA_ALUMNO_SERVICE, data=parametros)
+        response = client.post(self.get_url_guardar_respuestas_encuesta_alumno(encuesta.id), data=parametros)
         assert (response.status_code == SUCCESS_OK)
 
         respuestas = self.obtener_respuestas_guardadas_alumno(preguntas, encuesta, client)
@@ -687,7 +677,7 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
 
         preguntas = [preguntas[0], preguntas[3], preguntas[6]]
         parametros["respuestas"] = self.crear_respuestas_alumno(preguntas, self.get_datos_respuestas_default())
-        response = client.post(GUARDAR_RESPUESTAS_ENCUESTA_ALUMNO_SERVICE, data=parametros)
+        response = client.post(self.get_url_guardar_respuestas_encuesta_alumno(encuesta.id), data=parametros)
         assert (response.status_code == SUCCESS_OK)
 
         respuestas = self.obtener_respuestas_guardadas_alumno(preguntas, encuesta, client)
@@ -722,10 +712,9 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
         assert (estados_pasos.estadoPaso5 == PASO_ENCUESTA_FINALIZADO)  # GRUPO_ENCUESTA_DOCENTES
 
         parametros = {}
-        parametros["id_encuesta"] = encuesta.id
         parametros["categoria"] = paso_actual
         parametros["respuestas"] = self.crear_respuestas_alumno(preguntas, self.get_datos_respuestas_default())
-        response = client.post(GUARDAR_RESPUESTAS_ENCUESTA_ALUMNO_SERVICE, data=parametros)
+        response = client.post(self.get_url_guardar_respuestas_encuesta_alumno(encuesta.id), data=parametros)
         assert (response.status_code == SUCCESS_OK)
 
         respuestas = self.obtener_respuestas_guardadas_alumno(preguntas, encuesta, client)
@@ -741,7 +730,7 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
         assert (estados_pasos.estadoPaso5 == PASO_ENCUESTA_FINALIZADO)  # GRUPO_ENCUESTA_DOCENTES
 
         parametros["respuestas"] = self.crear_respuestas_alumno(preguntas, self.get_datos_respuestas_default())
-        response = client.post(GUARDAR_RESPUESTAS_ENCUESTA_ALUMNO_SERVICE, data=parametros)
+        response = client.post(self.get_url_guardar_respuestas_encuesta_alumno(encuesta.id), data=parametros)
         assert (response.status_code == SUCCESS_OK)
 
         respuestas = self.obtener_respuestas_guardadas_alumno(preguntas, encuesta, client)
@@ -776,11 +765,10 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
         assert (estados_pasos.estadoPaso5 == PASO_ENCUESTA_FINALIZADO)  # GRUPO_ENCUESTA_DOCENTES
 
         parametros = {}
-        parametros["id_encuesta"] = encuesta.id
         parametros["categoria"] = paso_actual
         preguntas1 = [preguntas[0], preguntas[3], preguntas[6]]
         parametros["respuestas"] = self.crear_respuestas_alumno(preguntas1, self.get_datos_respuestas_default())
-        response = client.post(GUARDAR_RESPUESTAS_ENCUESTA_ALUMNO_SERVICE, data=parametros)
+        response = client.post(self.get_url_guardar_respuestas_encuesta_alumno(encuesta.id), data=parametros)
         assert (response.status_code == SUCCESS_OK)
 
         respuestas = self.obtener_respuestas_guardadas_alumno(preguntas, encuesta, client)
@@ -797,7 +785,7 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
 
         preguntas2 = [preguntas[0], preguntas[1]]
         parametros["respuestas"] = self.crear_respuestas_alumno(preguntas2, self.get_datos_respuestas_default())
-        response = client.post(GUARDAR_RESPUESTAS_ENCUESTA_ALUMNO_SERVICE, data=parametros)
+        response = client.post(self.get_url_guardar_respuestas_encuesta_alumno(encuesta.id), data=parametros)
         assert (response.status_code == SUCCESS_OK)
 
         respuestas = self.obtener_respuestas_guardadas_alumno(preguntas, encuesta, client)
@@ -832,11 +820,10 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
         assert (estados_pasos.estadoPaso5 == PASO_ENCUESTA_FINALIZADO)  # GRUPO_ENCUESTA_DOCENTES
 
         parametros = {}
-        parametros["id_encuesta"] = encuesta.id
         parametros["categoria"] = paso_actual
         preguntas1 = [preguntas[0], preguntas[3], preguntas[6]]
         parametros["respuestas"] = self.crear_respuestas_alumno(preguntas1, self.get_datos_respuestas_default())
-        response = client.post(GUARDAR_RESPUESTAS_ENCUESTA_ALUMNO_SERVICE, data=parametros)
+        response = client.post(self.get_url_guardar_respuestas_encuesta_alumno(encuesta.id), data=parametros)
         assert (response.status_code == SUCCESS_OK)
 
         respuestas = self.obtener_respuestas_guardadas_alumno(preguntas, encuesta, client)
@@ -852,7 +839,7 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
         assert (estados_pasos.estadoPaso5 == PASO_ENCUESTA_FINALIZADO)  # GRUPO_ENCUESTA_DOCENTES
 
         parametros["respuestas"] = self.crear_respuestas_alumno(preguntas, self.get_datos_respuestas_default())
-        response = client.post(GUARDAR_RESPUESTAS_ENCUESTA_ALUMNO_SERVICE, data=parametros)
+        response = client.post(self.get_url_guardar_respuestas_encuesta_alumno(encuesta.id), data=parametros)
         assert (response.status_code == SUCCESS_OK)
 
         respuestas = self.obtener_respuestas_guardadas_alumno(preguntas, encuesta, client)
@@ -887,7 +874,6 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
         assert (estados_pasos.estadoPaso5 == PASO_ENCUESTA_FINALIZADO)  # GRUPO_ENCUESTA_DOCENTES
 
         parametros = {}
-        parametros["id_encuesta"] = encuesta.id
         parametros["categoria"] = paso_actual
         parametros["respuestas"] = self.crear_respuestas_alumno(preguntas, {
             DOCENTE: {
@@ -897,7 +883,7 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
                 }]
             }
         })
-        response = client.post(GUARDAR_RESPUESTAS_ENCUESTA_ALUMNO_SERVICE, data=parametros)
+        response = client.post(self.get_url_guardar_respuestas_encuesta_alumno(encuesta.id), data=parametros)
         assert (response.status_code == SUCCESS_OK)
 
         respuestas = self.obtener_respuestas_guardadas_alumno(preguntas, encuesta, client)
@@ -932,10 +918,9 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
         assert (estados_pasos.estadoPaso5 == PASO_ENCUESTA_FINALIZADO)  # GRUPO_ENCUESTA_DOCENTES
 
         parametros = {}
-        parametros["id_encuesta"] = encuesta.id
         parametros["categoria"] = paso_actual
         parametros["respuestas"] = self.crear_respuestas_alumno(preguntas, {})
-        response = client.post(GUARDAR_RESPUESTAS_ENCUESTA_ALUMNO_SERVICE, data=parametros)
+        response = client.post(self.get_url_guardar_respuestas_encuesta_alumno(encuesta.id), data=parametros)
         assert (response.status_code == SUCCESS_OK)
 
         respuestas = self.obtener_respuestas_guardadas_alumno(preguntas, encuesta, client)
@@ -963,7 +948,6 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
         encuesta = EncuestaAlumno.query.first()
 
         parametros = {}
-        parametros["id_encuesta"] = encuesta.id
         parametros["categoria"] = paso_actual
 
         texto_inicial = "Este es un texto libre de hasta 250 caracteres"
@@ -972,7 +956,7 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
                 "texto": texto_inicial
             }
         })
-        response = client.post(GUARDAR_RESPUESTAS_ENCUESTA_ALUMNO_SERVICE, data=parametros)
+        response = client.post(self.get_url_guardar_respuestas_encuesta_alumno(encuesta.id), data=parametros)
         assert (response.status_code == SUCCESS_OK)
 
         respuestas = self.obtener_respuestas_guardadas_alumno(preguntas, encuesta, client)
@@ -986,7 +970,7 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
                 "texto": texto_nuevo
             }
         })
-        response = client.post(GUARDAR_RESPUESTAS_ENCUESTA_ALUMNO_SERVICE, data=parametros)
+        response = client.post(self.get_url_guardar_respuestas_encuesta_alumno(encuesta.id), data=parametros)
         assert (response.status_code == SUCCESS_OK)
 
         respuestas_nuevas = self.obtener_respuestas_guardadas_alumno(preguntas, encuesta, client)
@@ -1007,7 +991,6 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
         encuesta = EncuestaAlumno.query.first()
 
         parametros = {}
-        parametros["id_encuesta"] = encuesta.id
         parametros["categoria"] = paso_actual
 
         parametros["respuestas"] = self.crear_respuestas_alumno(preguntas, {
@@ -1015,7 +998,7 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
                 "texto": "                  "
             }
         })
-        response = client.post(GUARDAR_RESPUESTAS_ENCUESTA_ALUMNO_SERVICE, data=parametros)
+        response = client.post(self.get_url_guardar_respuestas_encuesta_alumno(encuesta.id), data=parametros)
         assert (response.status_code == CLIENT_ERROR_BAD_REQUEST)
 
     def test_guardar_respuesta_de_tipo_texto_con_texto_solo_con_simbolos_y_espacios_da_error(self):
@@ -1031,7 +1014,6 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
         encuesta = EncuestaAlumno.query.first()
 
         parametros = {}
-        parametros["id_encuesta"] = encuesta.id
         parametros["categoria"] = paso_actual
 
         parametros["respuestas"] = self.crear_respuestas_alumno(preguntas, {
@@ -1039,7 +1021,7 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
                 "texto": "  ?¿-+/*     !.   -        &$'()[] {},;."
             }
         })
-        response = client.post(GUARDAR_RESPUESTAS_ENCUESTA_ALUMNO_SERVICE, data=parametros)
+        response = client.post(self.get_url_guardar_respuestas_encuesta_alumno(encuesta.id), data=parametros)
         assert (response.status_code == CLIENT_ERROR_BAD_REQUEST)
 
     def test_guardar_respuesta_de_tipo_puntaje_ya_guardada_la_sobreescribe(self):
@@ -1055,7 +1037,6 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
         encuesta = EncuestaAlumno.query.first()
 
         parametros = {}
-        parametros["id_encuesta"] = encuesta.id
         parametros["categoria"] = paso_actual
 
         puntaje_inicial = 4
@@ -1064,7 +1045,7 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
                 "puntaje": puntaje_inicial
             }
         })
-        response = client.post(GUARDAR_RESPUESTAS_ENCUESTA_ALUMNO_SERVICE, data=parametros)
+        response = client.post(self.get_url_guardar_respuestas_encuesta_alumno(encuesta.id), data=parametros)
         assert (response.status_code == SUCCESS_OK)
 
         respuestas = self.obtener_respuestas_guardadas_alumno(preguntas, encuesta, client)
@@ -1078,7 +1059,7 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
                 "puntaje": puntaje_nuevo
             }
         })
-        response = client.post(GUARDAR_RESPUESTAS_ENCUESTA_ALUMNO_SERVICE, data=parametros)
+        response = client.post(self.get_url_guardar_respuestas_encuesta_alumno(encuesta.id), data=parametros)
         assert (response.status_code == SUCCESS_OK)
 
         respuestas_nuevas = self.obtener_respuestas_guardadas_alumno(preguntas, encuesta, client)
@@ -1099,7 +1080,6 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
         encuesta = EncuestaAlumno.query.first()
 
         parametros = {}
-        parametros["id_encuesta"] = encuesta.id
         parametros["categoria"] = paso_actual
 
         parametros["respuestas"] = self.crear_respuestas_alumno(preguntas, {
@@ -1107,7 +1087,7 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
                 "puntaje": 1
             }
         })
-        response = client.post(GUARDAR_RESPUESTAS_ENCUESTA_ALUMNO_SERVICE, data=parametros)
+        response = client.post(self.get_url_guardar_respuestas_encuesta_alumno(encuesta.id), data=parametros)
         assert (response.status_code == SUCCESS_OK)
 
         parametros["respuestas"] = self.crear_respuestas_alumno(preguntas, {
@@ -1115,7 +1095,7 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
                 "puntaje": 2
             }
         })
-        response = client.post(GUARDAR_RESPUESTAS_ENCUESTA_ALUMNO_SERVICE, data=parametros)
+        response = client.post(self.get_url_guardar_respuestas_encuesta_alumno(encuesta.id), data=parametros)
         assert (response.status_code == SUCCESS_OK)
 
         parametros["respuestas"] = self.crear_respuestas_alumno(preguntas, {
@@ -1123,7 +1103,7 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
                 "puntaje": 3
             }
         })
-        response = client.post(GUARDAR_RESPUESTAS_ENCUESTA_ALUMNO_SERVICE, data=parametros)
+        response = client.post(self.get_url_guardar_respuestas_encuesta_alumno(encuesta.id), data=parametros)
         assert (response.status_code == SUCCESS_OK)
 
         parametros["respuestas"] = self.crear_respuestas_alumno(preguntas, {
@@ -1131,7 +1111,7 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
                 "puntaje": 4
             }
         })
-        response = client.post(GUARDAR_RESPUESTAS_ENCUESTA_ALUMNO_SERVICE, data=parametros)
+        response = client.post(self.get_url_guardar_respuestas_encuesta_alumno(encuesta.id), data=parametros)
         assert (response.status_code == SUCCESS_OK)
 
         parametros["respuestas"] = self.crear_respuestas_alumno(preguntas, {
@@ -1139,7 +1119,7 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
                 "puntaje": 5
             }
         })
-        response = client.post(GUARDAR_RESPUESTAS_ENCUESTA_ALUMNO_SERVICE, data=parametros)
+        response = client.post(self.get_url_guardar_respuestas_encuesta_alumno(encuesta.id), data=parametros)
         assert (response.status_code == SUCCESS_OK)
 
     def test_guardar_respuesta_de_tipo_puntaje_0_da_error(self):
@@ -1155,7 +1135,6 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
         encuesta = EncuestaAlumno.query.first()
 
         parametros = {}
-        parametros["id_encuesta"] = encuesta.id
         parametros["categoria"] = paso_actual
 
         parametros["respuestas"] = self.crear_respuestas_alumno(preguntas, {
@@ -1163,7 +1142,7 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
                 "puntaje": 0
             }
         })
-        response = client.post(GUARDAR_RESPUESTAS_ENCUESTA_ALUMNO_SERVICE, data=parametros)
+        response = client.post(self.get_url_guardar_respuestas_encuesta_alumno(encuesta.id), data=parametros)
         assert (response.status_code == CLIENT_ERROR_BAD_REQUEST)
 
     def test_guardar_respuesta_de_tipo_puntaje_negativo_da_error(self):
@@ -1179,7 +1158,6 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
         encuesta = EncuestaAlumno.query.first()
 
         parametros = {}
-        parametros["id_encuesta"] = encuesta.id
         parametros["categoria"] = paso_actual
 
         parametros["respuestas"] = self.crear_respuestas_alumno(preguntas, {
@@ -1187,7 +1165,7 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
                 "puntaje": -1
             }
         })
-        response = client.post(GUARDAR_RESPUESTAS_ENCUESTA_ALUMNO_SERVICE, data=parametros)
+        response = client.post(self.get_url_guardar_respuestas_encuesta_alumno(encuesta.id), data=parametros)
         assert (response.status_code == CLIENT_ERROR_BAD_REQUEST)
 
     def test_guardar_respuesta_de_tipo_puntaje_mayor_a_cinco_da_error(self):
@@ -1203,7 +1181,6 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
         encuesta = EncuestaAlumno.query.first()
 
         parametros = {}
-        parametros["id_encuesta"] = encuesta.id
         parametros["categoria"] = paso_actual
 
         parametros["respuestas"] = self.crear_respuestas_alumno(preguntas, {
@@ -1211,7 +1188,7 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
                 "puntaje": 6
             }
         })
-        response = client.post(GUARDAR_RESPUESTAS_ENCUESTA_ALUMNO_SERVICE, data=parametros)
+        response = client.post(self.get_url_guardar_respuestas_encuesta_alumno(encuesta.id), data=parametros)
         assert (response.status_code == CLIENT_ERROR_BAD_REQUEST)
 
         parametros["respuestas"] = self.crear_respuestas_alumno(preguntas, {
@@ -1219,7 +1196,7 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
                 "puntaje": 10000
             }
         })
-        response = client.post(GUARDAR_RESPUESTAS_ENCUESTA_ALUMNO_SERVICE, data=parametros)
+        response = client.post(self.get_url_guardar_respuestas_encuesta_alumno(encuesta.id), data=parametros)
         assert (response.status_code == CLIENT_ERROR_BAD_REQUEST)
 
     def test_guardar_respuesta_de_tipo_puntaje_decimal_da_error(self):
@@ -1235,7 +1212,6 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
         encuesta = EncuestaAlumno.query.first()
 
         parametros = {}
-        parametros["id_encuesta"] = encuesta.id
         parametros["categoria"] = paso_actual
 
         parametros["respuestas"] = self.crear_respuestas_alumno(preguntas, {
@@ -1243,7 +1219,7 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
                 "puntaje": 4.5
             }
         })
-        response = client.post(GUARDAR_RESPUESTAS_ENCUESTA_ALUMNO_SERVICE, data=parametros)
+        response = client.post(self.get_url_guardar_respuestas_encuesta_alumno(encuesta.id), data=parametros)
         assert (response.status_code == CLIENT_ERROR_BAD_REQUEST)
 
     def test_guardar_respuesta_de_tipo_puntaje_vacio_da_error(self):
@@ -1259,7 +1235,6 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
         encuesta = EncuestaAlumno.query.first()
 
         parametros = {}
-        parametros["id_encuesta"] = encuesta.id
         parametros["categoria"] = paso_actual
 
         parametros["respuestas"] = self.crear_respuestas_alumno(preguntas, {
@@ -1267,7 +1242,7 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
                 "puntaje": ""
             }
         })
-        response = client.post(GUARDAR_RESPUESTAS_ENCUESTA_ALUMNO_SERVICE, data=parametros)
+        response = client.post(self.get_url_guardar_respuestas_encuesta_alumno(encuesta.id), data=parametros)
         assert (response.status_code == CLIENT_ERROR_BAD_REQUEST)
 
     def test_guardar_respuesta_de_tipo_puntaje_datos_invalidos_da_error(self):
@@ -1283,7 +1258,6 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
         encuesta = EncuestaAlumno.query.first()
 
         parametros = {}
-        parametros["id_encuesta"] = encuesta.id
         parametros["categoria"] = paso_actual
 
         parametros["respuestas"] = self.crear_respuestas_alumno(preguntas, {
@@ -1291,7 +1265,7 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
                 "puntaje": "pepe"
             }
         })
-        response = client.post(GUARDAR_RESPUESTAS_ENCUESTA_ALUMNO_SERVICE, data=parametros)
+        response = client.post(self.get_url_guardar_respuestas_encuesta_alumno(encuesta.id), data=parametros)
         assert (response.status_code == CLIENT_ERROR_BAD_REQUEST)
 
     def test_guardar_respuesta_de_tipo_numero_ya_guardada_la_sobreescribe(self):
@@ -1307,7 +1281,6 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
         encuesta = EncuestaAlumno.query.first()
 
         parametros = {}
-        parametros["id_encuesta"] = encuesta.id
         parametros["categoria"] = paso_actual
 
         numero_inicial = 15
@@ -1316,7 +1289,7 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
                 "numero": numero_inicial
             }
         })
-        response = client.post(GUARDAR_RESPUESTAS_ENCUESTA_ALUMNO_SERVICE, data=parametros)
+        response = client.post(self.get_url_guardar_respuestas_encuesta_alumno(encuesta.id), data=parametros)
         assert (response.status_code == SUCCESS_OK)
 
         respuestas = self.obtener_respuestas_guardadas_alumno(preguntas, encuesta, client)
@@ -1330,7 +1303,7 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
                 "numero": numero_nuevo
             }
         })
-        response = client.post(GUARDAR_RESPUESTAS_ENCUESTA_ALUMNO_SERVICE, data=parametros)
+        response = client.post(self.get_url_guardar_respuestas_encuesta_alumno(encuesta.id), data=parametros)
         assert (response.status_code == SUCCESS_OK)
 
         respuestas_nuevas = self.obtener_respuestas_guardadas_alumno(preguntas, encuesta, client)
@@ -1351,7 +1324,6 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
         encuesta = EncuestaAlumno.query.first()
 
         parametros = {}
-        parametros["id_encuesta"] = encuesta.id
         parametros["categoria"] = paso_actual
 
         numero = 0
@@ -1360,7 +1332,7 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
                 "numero": numero
             }
         })
-        response = client.post(GUARDAR_RESPUESTAS_ENCUESTA_ALUMNO_SERVICE, data=parametros)
+        response = client.post(self.get_url_guardar_respuestas_encuesta_alumno(encuesta.id), data=parametros)
         assert (response.status_code == SUCCESS_OK)
 
         respuestas = self.obtener_respuestas_guardadas_alumno(preguntas, encuesta, client)
@@ -1374,7 +1346,7 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
                 "numero": numero
             }
         })
-        response = client.post(GUARDAR_RESPUESTAS_ENCUESTA_ALUMNO_SERVICE, data=parametros)
+        response = client.post(self.get_url_guardar_respuestas_encuesta_alumno(encuesta.id), data=parametros)
         assert (response.status_code == SUCCESS_OK)
 
         respuestas = self.obtener_respuestas_guardadas_alumno(preguntas, encuesta, client)
@@ -1395,7 +1367,6 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
         encuesta = EncuestaAlumno.query.first()
 
         parametros = {}
-        parametros["id_encuesta"] = encuesta.id
         parametros["categoria"] = paso_actual
 
         parametros["respuestas"] = self.crear_respuestas_alumno(preguntas, {
@@ -1404,7 +1375,7 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
             }
         })
 
-        response = client.post(GUARDAR_RESPUESTAS_ENCUESTA_ALUMNO_SERVICE, data=parametros)
+        response = client.post(self.get_url_guardar_respuestas_encuesta_alumno(encuesta.id), data=parametros)
         assert (response.status_code == CLIENT_ERROR_BAD_REQUEST)
 
     def test_guardar_respuesta_de_tipo_numero_mayor_que_168_da_error(self):
@@ -1420,7 +1391,6 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
         encuesta = EncuestaAlumno.query.first()
 
         parametros = {}
-        parametros["id_encuesta"] = encuesta.id
         parametros["categoria"] = paso_actual
 
         parametros["respuestas"] = self.crear_respuestas_alumno(preguntas, {
@@ -1429,7 +1399,7 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
             }
         })
 
-        response = client.post(GUARDAR_RESPUESTAS_ENCUESTA_ALUMNO_SERVICE, data=parametros)
+        response = client.post(self.get_url_guardar_respuestas_encuesta_alumno(encuesta.id), data=parametros)
         assert (response.status_code == CLIENT_ERROR_BAD_REQUEST)
 
     def test_guardar_respuesta_de_tipo_numero_con_decimales_da_error(self):
@@ -1445,7 +1415,6 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
         encuesta = EncuestaAlumno.query.first()
 
         parametros = {}
-        parametros["id_encuesta"] = encuesta.id
         parametros["categoria"] = paso_actual
 
         parametros["respuestas"] = self.crear_respuestas_alumno(preguntas, {
@@ -1454,7 +1423,7 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
             }
         })
 
-        response = client.post(GUARDAR_RESPUESTAS_ENCUESTA_ALUMNO_SERVICE, data=parametros)
+        response = client.post(self.get_url_guardar_respuestas_encuesta_alumno(encuesta.id), data=parametros)
         assert (response.status_code == CLIENT_ERROR_BAD_REQUEST)
 
     def test_guardar_respuesta_de_tipo_numero_invalido_da_error(self):
@@ -1470,7 +1439,6 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
         encuesta = EncuestaAlumno.query.first()
 
         parametros = {}
-        parametros["id_encuesta"] = encuesta.id
         parametros["categoria"] = paso_actual
 
         parametros["respuestas"] = self.crear_respuestas_alumno(preguntas, {
@@ -1479,7 +1447,7 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
             }
         })
 
-        response = client.post(GUARDAR_RESPUESTAS_ENCUESTA_ALUMNO_SERVICE, data=parametros)
+        response = client.post(self.get_url_guardar_respuestas_encuesta_alumno(encuesta.id), data=parametros)
         assert (response.status_code == CLIENT_ERROR_BAD_REQUEST)
 
     def test_guardar_respuesta_de_tipo_numero_vacio_da_error(self):
@@ -1495,7 +1463,6 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
         encuesta = EncuestaAlumno.query.first()
 
         parametros = {}
-        parametros["id_encuesta"] = encuesta.id
         parametros["categoria"] = paso_actual
 
         parametros["respuestas"] = self.crear_respuestas_alumno(preguntas, {
@@ -1504,7 +1471,7 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
             }
         })
 
-        response = client.post(GUARDAR_RESPUESTAS_ENCUESTA_ALUMNO_SERVICE, data=parametros)
+        response = client.post(self.get_url_guardar_respuestas_encuesta_alumno(encuesta.id), data=parametros)
         assert (response.status_code == CLIENT_ERROR_BAD_REQUEST)
 
     def test_guardar_respuesta_de_tipo_si_con_subrespuesta_la_sobreescribe_con_otra_subrespuesta_si(self):
@@ -1522,7 +1489,6 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
         encuesta = EncuestaAlumno.query.first()
 
         parametros = {}
-        parametros["id_encuesta"] = encuesta.id
         parametros["categoria"] = paso_actual
 
         texto_si_primera_respuesta = "Texto si primera respuesta"
@@ -1534,7 +1500,7 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
                 "texto": texto_si_primera_respuesta
             }
         })
-        response = client.post(GUARDAR_RESPUESTAS_ENCUESTA_ALUMNO_SERVICE, data=parametros)
+        response = client.post(self.get_url_guardar_respuestas_encuesta_alumno(encuesta.id), data=parametros)
         assert (response.status_code == SUCCESS_OK)
 
         respuestas = self.obtener_respuestas_guardadas_alumno(preguntas, encuesta, client)
@@ -1552,7 +1518,7 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
                 "texto": texto_si_primera_segunda_respuesta
             }
         })
-        response = client.post(GUARDAR_RESPUESTAS_ENCUESTA_ALUMNO_SERVICE, data=parametros)
+        response = client.post(self.get_url_guardar_respuestas_encuesta_alumno(encuesta.id), data=parametros)
         assert (response.status_code == SUCCESS_OK)
 
         respuestas = self.obtener_respuestas_guardadas_alumno(preguntas, encuesta, client)
@@ -1576,7 +1542,6 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
         encuesta = EncuestaAlumno.query.first()
 
         parametros = {}
-        parametros["id_encuesta"] = encuesta.id
         parametros["categoria"] = paso_actual
 
         texto_no_primera_respuesta = "Texto si primera respuesta"
@@ -1588,7 +1553,7 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
                 "texto": texto_no_primera_respuesta
             }
         })
-        response = client.post(GUARDAR_RESPUESTAS_ENCUESTA_ALUMNO_SERVICE, data=parametros)
+        response = client.post(self.get_url_guardar_respuestas_encuesta_alumno(encuesta.id), data=parametros)
         assert (response.status_code == SUCCESS_OK)
 
         respuestas = self.obtener_respuestas_guardadas_alumno(preguntas, encuesta, client)
@@ -1606,7 +1571,7 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
                 "texto": texto_no_segunda_respuesta
             }
         })
-        response = client.post(GUARDAR_RESPUESTAS_ENCUESTA_ALUMNO_SERVICE, data=parametros)
+        response = client.post(self.get_url_guardar_respuestas_encuesta_alumno(encuesta.id), data=parametros)
         assert (response.status_code == SUCCESS_OK)
 
         respuestas = self.obtener_respuestas_guardadas_alumno(preguntas, encuesta, client)
@@ -1631,7 +1596,6 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
         encuesta = EncuestaAlumno.query.first()
 
         parametros = {}
-        parametros["id_encuesta"] = encuesta.id
         parametros["categoria"] = paso_actual
 
         texto_si_primera_respuesta = "Texto si primera respuesta"
@@ -1643,7 +1607,7 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
                 "texto": texto_si_primera_respuesta
             }
         })
-        response = client.post(GUARDAR_RESPUESTAS_ENCUESTA_ALUMNO_SERVICE, data=parametros)
+        response = client.post(self.get_url_guardar_respuestas_encuesta_alumno(encuesta.id), data=parametros)
         assert (response.status_code == SUCCESS_OK)
 
         respuestas = self.obtener_respuestas_guardadas_alumno(preguntas, encuesta, client)
@@ -1661,7 +1625,7 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
                 "texto": texto_si_primera_segunda_respuesta
             }
         })
-        response = client.post(GUARDAR_RESPUESTAS_ENCUESTA_ALUMNO_SERVICE, data=parametros)
+        response = client.post(self.get_url_guardar_respuestas_encuesta_alumno(encuesta.id), data=parametros)
         assert (response.status_code == CLIENT_ERROR_BAD_REQUEST)
 
     def test_guardar_respuesta_de_tipo_no_enviando_subrespuesta_si_sin_existir_subpregunta_si(self):
@@ -1679,7 +1643,6 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
         encuesta = EncuestaAlumno.query.first()
 
         parametros = {}
-        parametros["id_encuesta"] = encuesta.id
         parametros["categoria"] = paso_actual
 
         texto_no_primera_respuesta = "Texto si primera respuesta"
@@ -1691,7 +1654,7 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
                 "texto": texto_no_primera_respuesta
             }
         })
-        response = client.post(GUARDAR_RESPUESTAS_ENCUESTA_ALUMNO_SERVICE, data=parametros)
+        response = client.post(self.get_url_guardar_respuestas_encuesta_alumno(encuesta.id), data=parametros)
         assert (response.status_code == SUCCESS_OK)
 
         respuestas = self.obtener_respuestas_guardadas_alumno(preguntas, encuesta, client)
@@ -1709,7 +1672,7 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
                 "texto": texto_no_segunda_respuesta
             }
         })
-        response = client.post(GUARDAR_RESPUESTAS_ENCUESTA_ALUMNO_SERVICE, data=parametros)
+        response = client.post(self.get_url_guardar_respuestas_encuesta_alumno(encuesta.id), data=parametros)
         assert (response.status_code == CLIENT_ERROR_BAD_REQUEST)
 
     def test_guardar_respuesta_de_tipo_si_con_subrespuesta_la_sobreescribe_con_otra_subrespuesta_no(self):
@@ -1727,7 +1690,6 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
         encuesta = EncuestaAlumno.query.first()
 
         parametros = {}
-        parametros["id_encuesta"] = encuesta.id
         parametros["categoria"] = paso_actual
 
         texto_si_primera_respuesta = "Texto si primera respuesta"
@@ -1739,7 +1701,7 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
                 "texto": texto_si_primera_respuesta
             }
         })
-        response = client.post(GUARDAR_RESPUESTAS_ENCUESTA_ALUMNO_SERVICE, data=parametros)
+        response = client.post(self.get_url_guardar_respuestas_encuesta_alumno(encuesta.id), data=parametros)
         assert (response.status_code == SUCCESS_OK)
 
         respuestas = self.obtener_respuestas_guardadas_alumno(preguntas, encuesta, client)
@@ -1753,7 +1715,7 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
                 "respuesta": False
             }
         })
-        response = client.post(GUARDAR_RESPUESTAS_ENCUESTA_ALUMNO_SERVICE, data=parametros)
+        response = client.post(self.get_url_guardar_respuestas_encuesta_alumno(encuesta.id), data=parametros)
         assert (response.status_code == SUCCESS_OK)
 
         respuestas = self.obtener_respuestas_guardadas_alumno(preguntas, encuesta, client)
@@ -1776,7 +1738,6 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
         encuesta = EncuestaAlumno.query.first()
 
         parametros = {}
-        parametros["id_encuesta"] = encuesta.id
         parametros["categoria"] = paso_actual
 
         texto_no_primera_respuesta = "Texto si primera respuesta"
@@ -1788,7 +1749,7 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
                 "texto": texto_no_primera_respuesta
             }
         })
-        response = client.post(GUARDAR_RESPUESTAS_ENCUESTA_ALUMNO_SERVICE, data=parametros)
+        response = client.post(self.get_url_guardar_respuestas_encuesta_alumno(encuesta.id), data=parametros)
         assert (response.status_code == SUCCESS_OK)
 
         respuestas = self.obtener_respuestas_guardadas_alumno(preguntas, encuesta, client)
@@ -1802,7 +1763,7 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
                 "respuesta": True
             }
         })
-        response = client.post(GUARDAR_RESPUESTAS_ENCUESTA_ALUMNO_SERVICE, data=parametros)
+        response = client.post(self.get_url_guardar_respuestas_encuesta_alumno(encuesta.id), data=parametros)
         assert (response.status_code == SUCCESS_OK)
 
         respuestas = self.obtener_respuestas_guardadas_alumno(preguntas, encuesta, client)
@@ -1825,7 +1786,6 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
         encuesta = EncuestaAlumno.query.first()
 
         parametros = {}
-        parametros["id_encuesta"] = encuesta.id
         parametros["categoria"] = paso_actual
 
         texto_no_primera_respuesta = "Texto si primera respuesta"
@@ -1837,7 +1797,7 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
                 "texto": texto_no_primera_respuesta
             }
         })
-        response = client.post(GUARDAR_RESPUESTAS_ENCUESTA_ALUMNO_SERVICE, data=parametros)
+        response = client.post(self.get_url_guardar_respuestas_encuesta_alumno(encuesta.id), data=parametros)
         assert (response.status_code == SUCCESS_OK)
 
         parametros["respuestas"] = self.crear_respuestas_alumno(preguntas, {
@@ -1848,7 +1808,7 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
                 "texto": texto_no_primera_respuesta
             }
         })
-        response = client.post(GUARDAR_RESPUESTAS_ENCUESTA_ALUMNO_SERVICE, data=parametros)
+        response = client.post(self.get_url_guardar_respuestas_encuesta_alumno(encuesta.id), data=parametros)
         assert (response.status_code == SUCCESS_OK)
 
     def test_guardar_respuesta_de_tipo_si_con_true_formato_texto_es_valida(self):
@@ -1866,7 +1826,6 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
         encuesta = EncuestaAlumno.query.first()
 
         parametros = {}
-        parametros["id_encuesta"] = encuesta.id
         parametros["categoria"] = paso_actual
 
         texto_primera_respuesta = "Texto si primera respuesta"
@@ -1878,7 +1837,7 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
                 "texto": texto_primera_respuesta
             }
         })
-        response = client.post(GUARDAR_RESPUESTAS_ENCUESTA_ALUMNO_SERVICE, data=parametros)
+        response = client.post(self.get_url_guardar_respuestas_encuesta_alumno(encuesta.id), data=parametros)
         assert (response.status_code == SUCCESS_OK)
 
         parametros["respuestas"] = self.crear_respuestas_alumno(preguntas, {
@@ -1889,7 +1848,7 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
                 "texto": texto_primera_respuesta
             }
         })
-        response = client.post(GUARDAR_RESPUESTAS_ENCUESTA_ALUMNO_SERVICE, data=parametros)
+        response = client.post(self.get_url_guardar_respuestas_encuesta_alumno(encuesta.id), data=parametros)
         assert (response.status_code == SUCCESS_OK)
 
     def test_guardar_respuesta_de_tipo_si_no_con_datos_invalidos_da_error(self):
@@ -1907,7 +1866,6 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
         encuesta = EncuestaAlumno.query.first()
 
         parametros = {}
-        parametros["id_encuesta"] = encuesta.id
         parametros["categoria"] = paso_actual
 
         parametros["respuestas"] = self.crear_respuestas_alumno(preguntas, {
@@ -1918,7 +1876,7 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
                 "texto": "Texto respuesta"
             }
         })
-        response = client.post(GUARDAR_RESPUESTAS_ENCUESTA_ALUMNO_SERVICE, data=parametros)
+        response = client.post(self.get_url_guardar_respuestas_encuesta_alumno(encuesta.id), data=parametros)
         assert (response.status_code == CLIENT_ERROR_BAD_REQUEST)
 
         parametros["respuestas"] = self.crear_respuestas_alumno(preguntas, {
@@ -1929,7 +1887,7 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
                 "texto": "Texto respuesta"
             }
         })
-        response = client.post(GUARDAR_RESPUESTAS_ENCUESTA_ALUMNO_SERVICE, data=parametros)
+        response = client.post(self.get_url_guardar_respuestas_encuesta_alumno(encuesta.id), data=parametros)
         assert (response.status_code == CLIENT_ERROR_BAD_REQUEST)
 
     def crear_respuestas_correctas_completas_si_no(self, preguntas_original):
@@ -1984,11 +1942,10 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
         assert (estados_pasos.estadoPaso5 == PASO_ENCUESTA_FINALIZADO)  # GRUPO_ENCUESTA_DOCENTES
 
         parametros = {}
-        parametros["id_encuesta"] = encuesta.id
         parametros["categoria"] = paso_actual
         parametros["respuestas"] = self.crear_respuestas_alumno(preguntas, self.get_datos_respuestas_default())
 
-        response = client.post(GUARDAR_RESPUESTAS_ENCUESTA_ALUMNO_SERVICE, data=parametros)
+        response = client.post(self.get_url_guardar_respuestas_encuesta_alumno(encuesta.id), data=parametros)
         assert (response.status_code == SUCCESS_OK)
 
         estados_pasos = EstadoPasosEncuestaAlumno.query.filter_by(encuesta_alumno_id=encuesta.id).first()
@@ -2000,7 +1957,7 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
         assert (estados_pasos.estadoPaso5 == PASO_ENCUESTA_FINALIZADO)  # GRUPO_ENCUESTA_DOCENTES
 
         parametros["respuestas"] = self.crear_respuestas_correctas_completas_si_no(preguntas)
-        response = client.post(GUARDAR_RESPUESTAS_ENCUESTA_ALUMNO_SERVICE, data=parametros)
+        response = client.post(self.get_url_guardar_respuestas_encuesta_alumno(encuesta.id), data=parametros)
         assert (response.status_code == SUCCESS_OK)
 
         estados_pasos = EstadoPasosEncuestaAlumno.query.filter_by(encuesta_alumno_id=encuesta.id).first()
@@ -2031,11 +1988,10 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
         assert (estados_pasos.estadoPaso5 == PASO_ENCUESTA_FINALIZADO)  # GRUPO_ENCUESTA_DOCENTES
 
         parametros = {}
-        parametros["id_encuesta"] = encuesta.id
         parametros["categoria"] = paso_actual
 
         parametros["respuestas"] = self.crear_respuestas_correctas_completas_si_no(preguntas)
-        response = client.post(GUARDAR_RESPUESTAS_ENCUESTA_ALUMNO_SERVICE, data=parametros)
+        response = client.post(self.get_url_guardar_respuestas_encuesta_alumno(encuesta.id), data=parametros)
         assert (response.status_code == SUCCESS_OK)
 
         estados_pasos = EstadoPasosEncuestaAlumno.query.filter_by(encuesta_alumno_id=encuesta.id).first()
@@ -2047,7 +2003,7 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
         assert (estados_pasos.estadoPaso5 == PASO_ENCUESTA_FINALIZADO)  # GRUPO_ENCUESTA_DOCENTES
 
         parametros["respuestas"] = self.crear_respuestas_alumno(preguntas, self.get_datos_respuestas_default())
-        response = client.post(GUARDAR_RESPUESTAS_ENCUESTA_ALUMNO_SERVICE, data=parametros)
+        response = client.post(self.get_url_guardar_respuestas_encuesta_alumno(encuesta.id), data=parametros)
         assert (response.status_code == SUCCESS_OK)
 
         estados_pasos = EstadoPasosEncuestaAlumno.query.filter_by(encuesta_alumno_id=encuesta.id).first()
@@ -2071,7 +2027,6 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
         encuesta = EncuestaAlumno.query.first()
 
         parametros = {}
-        parametros["id_encuesta"] = encuesta.id
         parametros["categoria"] = paso_actual
 
         estrellas_inicial = 1
@@ -2080,7 +2035,7 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
                 "estrellas": estrellas_inicial
             }
         })
-        response = client.post(GUARDAR_RESPUESTAS_ENCUESTA_ALUMNO_SERVICE, data=parametros)
+        response = client.post(self.get_url_guardar_respuestas_encuesta_alumno(encuesta.id), data=parametros)
         assert (response.status_code == SUCCESS_OK)
 
         respuestas = self.obtener_respuestas_guardadas_alumno(preguntas, encuesta, client)
@@ -2094,7 +2049,7 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
                 "estrellas": estrellas_nuevo
             }
         })
-        response = client.post(GUARDAR_RESPUESTAS_ENCUESTA_ALUMNO_SERVICE, data=parametros)
+        response = client.post(self.get_url_guardar_respuestas_encuesta_alumno(encuesta.id), data=parametros)
         assert (response.status_code == SUCCESS_OK)
 
         respuestas_nuevas = self.obtener_respuestas_guardadas_alumno(preguntas, encuesta, client)
@@ -2115,7 +2070,6 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
         encuesta = EncuestaAlumno.query.first()
 
         parametros = {}
-        parametros["id_encuesta"] = encuesta.id
         parametros["categoria"] = paso_actual
 
         parametros["respuestas"] = self.crear_respuestas_alumno(preguntas, {
@@ -2123,7 +2077,7 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
                 "estrellas": 1
             }
         })
-        response = client.post(GUARDAR_RESPUESTAS_ENCUESTA_ALUMNO_SERVICE, data=parametros)
+        response = client.post(self.get_url_guardar_respuestas_encuesta_alumno(encuesta.id), data=parametros)
         assert (response.status_code == SUCCESS_OK)
 
         parametros["respuestas"] = self.crear_respuestas_alumno(preguntas, {
@@ -2131,7 +2085,7 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
                 "estrellas": 2
             }
         })
-        response = client.post(GUARDAR_RESPUESTAS_ENCUESTA_ALUMNO_SERVICE, data=parametros)
+        response = client.post(self.get_url_guardar_respuestas_encuesta_alumno(encuesta.id), data=parametros)
         assert (response.status_code == SUCCESS_OK)
 
         parametros["respuestas"] = self.crear_respuestas_alumno(preguntas, {
@@ -2139,7 +2093,7 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
                 "estrellas": 3
             }
         })
-        response = client.post(GUARDAR_RESPUESTAS_ENCUESTA_ALUMNO_SERVICE, data=parametros)
+        response = client.post(self.get_url_guardar_respuestas_encuesta_alumno(encuesta.id), data=parametros)
         assert (response.status_code == SUCCESS_OK)
 
         parametros["respuestas"] = self.crear_respuestas_alumno(preguntas, {
@@ -2147,7 +2101,7 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
                 "estrellas": 4
             }
         })
-        response = client.post(GUARDAR_RESPUESTAS_ENCUESTA_ALUMNO_SERVICE, data=parametros)
+        response = client.post(self.get_url_guardar_respuestas_encuesta_alumno(encuesta.id), data=parametros)
         assert (response.status_code == SUCCESS_OK)
 
         parametros["respuestas"] = self.crear_respuestas_alumno(preguntas, {
@@ -2155,7 +2109,7 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
                 "estrellas": 5
             }
         })
-        response = client.post(GUARDAR_RESPUESTAS_ENCUESTA_ALUMNO_SERVICE, data=parametros)
+        response = client.post(self.get_url_guardar_respuestas_encuesta_alumno(encuesta.id), data=parametros)
         assert (response.status_code == SUCCESS_OK)
 
     def test_guardar_respuesta_de_tipo_estrellas_permite_con_numero_negativo_da_error(self):
@@ -2171,7 +2125,6 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
         encuesta = EncuestaAlumno.query.first()
 
         parametros = {}
-        parametros["id_encuesta"] = encuesta.id
         parametros["categoria"] = paso_actual
 
         parametros["respuestas"] = self.crear_respuestas_alumno(preguntas, {
@@ -2179,7 +2132,7 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
                 "estrellas": -1
             }
         })
-        response = client.post(GUARDAR_RESPUESTAS_ENCUESTA_ALUMNO_SERVICE, data=parametros)
+        response = client.post(self.get_url_guardar_respuestas_encuesta_alumno(encuesta.id), data=parametros)
         assert (response.status_code == CLIENT_ERROR_BAD_REQUEST)
 
     def test_guardar_respuesta_de_tipo_estrellas_permite_con_numero_mayor_a_cinco_da_error(self):
@@ -2195,7 +2148,6 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
         encuesta = EncuestaAlumno.query.first()
 
         parametros = {}
-        parametros["id_encuesta"] = encuesta.id
         parametros["categoria"] = paso_actual
 
         parametros["respuestas"] = self.crear_respuestas_alumno(preguntas, {
@@ -2203,7 +2155,7 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
                 "estrellas": 6
             }
         })
-        response = client.post(GUARDAR_RESPUESTAS_ENCUESTA_ALUMNO_SERVICE, data=parametros)
+        response = client.post(self.get_url_guardar_respuestas_encuesta_alumno(encuesta.id), data=parametros)
         assert (response.status_code == CLIENT_ERROR_BAD_REQUEST)
 
     def test_guardar_respuesta_de_tipo_estrellas_permite_con_numero_con_decimales_da_error(self):
@@ -2219,7 +2171,6 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
         encuesta = EncuestaAlumno.query.first()
 
         parametros = {}
-        parametros["id_encuesta"] = encuesta.id
         parametros["categoria"] = paso_actual
 
         parametros["respuestas"] = self.crear_respuestas_alumno(preguntas, {
@@ -2227,7 +2178,7 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
                 "estrellas": 4.5
             }
         })
-        response = client.post(GUARDAR_RESPUESTAS_ENCUESTA_ALUMNO_SERVICE, data=parametros)
+        response = client.post(self.get_url_guardar_respuestas_encuesta_alumno(encuesta.id), data=parametros)
         assert (response.status_code == CLIENT_ERROR_BAD_REQUEST)
 
     def test_guardar_respuesta_de_tipo_estrellas_permite_con_datos_invalidos_da_error(self):
@@ -2243,7 +2194,6 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
         encuesta = EncuestaAlumno.query.first()
 
         parametros = {}
-        parametros["id_encuesta"] = encuesta.id
         parametros["categoria"] = paso_actual
 
         parametros["respuestas"] = self.crear_respuestas_alumno(preguntas, {
@@ -2251,7 +2201,7 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
                 "estrellas": 'pepe'
             }
         })
-        response = client.post(GUARDAR_RESPUESTAS_ENCUESTA_ALUMNO_SERVICE, data=parametros)
+        response = client.post(self.get_url_guardar_respuestas_encuesta_alumno(encuesta.id), data=parametros)
         assert (response.status_code == CLIENT_ERROR_BAD_REQUEST)
 
     def test_guardar_respuesta_de_tipo_estrellas_permite_con_numeros_como_texto_es_valido(self):
@@ -2267,7 +2217,6 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
         encuesta = EncuestaAlumno.query.first()
 
         parametros = {}
-        parametros["id_encuesta"] = encuesta.id
         parametros["categoria"] = paso_actual
 
         parametros["respuestas"] = self.crear_respuestas_alumno(preguntas, {
@@ -2275,7 +2224,7 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
                 "estrellas": '4'
             }
         })
-        response = client.post(GUARDAR_RESPUESTAS_ENCUESTA_ALUMNO_SERVICE, data=parametros)
+        response = client.post(self.get_url_guardar_respuestas_encuesta_alumno(encuesta.id), data=parametros)
         assert (response.status_code == SUCCESS_OK)
 
     def test_guardar_respuesta_de_tipo_horarios_ya_guardada_la_sobreescribe(self):
@@ -2291,7 +2240,6 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
         encuesta = EncuestaAlumno.query.first()
 
         parametros = {}
-        parametros["id_encuesta"] = encuesta.id
         parametros["categoria"] = paso_actual
 
         horarios_iniciales = [{
@@ -2314,7 +2262,7 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
                 "horarios": horarios_iniciales
             }
         })
-        response = client.post(GUARDAR_RESPUESTAS_ENCUESTA_ALUMNO_SERVICE, data=parametros)
+        response = client.post(self.get_url_guardar_respuestas_encuesta_alumno(encuesta.id), data=parametros)
         assert (response.status_code == SUCCESS_OK)
 
         respuestas = self.obtener_respuestas_guardadas_alumno(preguntas, encuesta, client)
@@ -2338,7 +2286,7 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
                 "horarios": horarios_nuevos
             }
         })
-        response = client.post(GUARDAR_RESPUESTAS_ENCUESTA_ALUMNO_SERVICE, data=parametros)
+        response = client.post(self.get_url_guardar_respuestas_encuesta_alumno(encuesta.id), data=parametros)
         assert (response.status_code == SUCCESS_OK)
 
         respuestas = self.obtener_respuestas_guardadas_alumno(preguntas, encuesta, client)
@@ -2362,7 +2310,6 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
         encuesta = EncuestaAlumno.query.first()
 
         parametros = {}
-        parametros["id_encuesta"] = encuesta.id
         parametros["categoria"] = paso_actual
         parametros["respuestas"] = self.crear_respuestas_alumno(preguntas, {
             HORARIO: {
@@ -2375,7 +2322,7 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
                 }]
             }
         })
-        response = client.post(GUARDAR_RESPUESTAS_ENCUESTA_ALUMNO_SERVICE, data=parametros)
+        response = client.post(self.get_url_guardar_respuestas_encuesta_alumno(encuesta.id), data=parametros)
         assert (response.status_code == CLIENT_ERROR_BAD_REQUEST)
 
     def test_guardar_respuesta_de_tipo_horarios_con_hora_desde_invalida_da_error(self):
@@ -2391,7 +2338,6 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
         encuesta = EncuestaAlumno.query.first()
 
         parametros = {}
-        parametros["id_encuesta"] = encuesta.id
         parametros["categoria"] = paso_actual
         parametros["respuestas"] = self.crear_respuestas_alumno(preguntas, {
             HORARIO: {
@@ -2404,7 +2350,7 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
                 }]
             }
         })
-        response = client.post(GUARDAR_RESPUESTAS_ENCUESTA_ALUMNO_SERVICE, data=parametros)
+        response = client.post(self.get_url_guardar_respuestas_encuesta_alumno(encuesta.id), data=parametros)
         assert (response.status_code == CLIENT_ERROR_BAD_REQUEST)
 
     def test_guardar_respuesta_de_tipo_horarios_con_hora_hasta_invalida_da_error(self):
@@ -2420,7 +2366,6 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
         encuesta = EncuestaAlumno.query.first()
 
         parametros = {}
-        parametros["id_encuesta"] = encuesta.id
         parametros["categoria"] = paso_actual
         parametros["respuestas"] = self.crear_respuestas_alumno(preguntas, {
             HORARIO: {
@@ -2433,7 +2378,7 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
                 }]
             }
         })
-        response = client.post(GUARDAR_RESPUESTAS_ENCUESTA_ALUMNO_SERVICE, data=parametros)
+        response = client.post(self.get_url_guardar_respuestas_encuesta_alumno(encuesta.id), data=parametros)
         assert (response.status_code == CLIENT_ERROR_BAD_REQUEST)
 
         # Test con:
