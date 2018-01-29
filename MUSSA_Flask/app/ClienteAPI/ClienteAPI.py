@@ -114,9 +114,11 @@ class ClienteAPI:
         """URL: '/api/alumno'"""
         return self.BASE_URL + '/alumno'
 
-    def get_url_get_materia_alumno(self, idMateriaAlumno):
-        """URL: '/api/alumno/materia/<int:idMateriaAlumno>'"""
-        return self.BASE_URL + '/alumno/materia/' + str(idMateriaAlumno)
+    def get_url_get_materia_alumno(self, idMateriaAlumno=None):
+        """URLs:
+        '/api/alumno/materia'
+        '/api/alumno/materia/<int:idMateriaAlumno>'"""
+        return self.BASE_URL + '/alumno/materia' + ("/" + str(idMateriaAlumno) if idMateriaAlumno else '')
 
     def get_url_get_materias_alumno(self):
         """URL: '/api/alumno/materia/all'"""
@@ -320,6 +322,55 @@ class ClienteAPI:
     def eliminar_materia_alumno(self, cookie, csrf_token, idMateriaAlumno):
         url_servicio = self.get_url_get_materia_alumno(idMateriaAlumno)
         return self.invocar_delete(url_servicio, cookie, csrf_token)
+
+    def agregar_materia_alumno(self, cookie, csrf_token, idMateriaAlumno, idCurso, estado, cuatrimestre_aprobacion='',
+                               anio_aprobacion='', fecha_aprobacion='', forma_aprobacion='', calificacion='',
+                               acta_resolucion=''):
+        url_servicio = self.get_url_get_materia_alumno()
+        return self.aux_modificar_materia_alumno(self.invocar_put, url_servicio, cookie, csrf_token, idMateriaAlumno,
+                                                 idCurso, estado, cuatrimestre_aprobacion, anio_aprobacion,
+                                                 fecha_aprobacion, forma_aprobacion, calificacion, acta_resolucion)
+
+    def modificar_materia_alumno(self, cookie, csrf_token, idMateriaAlumno, estado, cuatrimestre_aprobacion='',
+                                 anio_aprobacion='', fecha_aprobacion='', forma_aprobacion='', calificacion='',
+                                 acta_resolucion=''):
+
+        idCurso = None  # No se permite modificar el curso
+        url_servicio = self.get_url_get_materia_alumno(idMateriaAlumno)
+
+        return self.aux_modificar_materia_alumno(self.invocar_post, url_servicio, cookie, csrf_token, idMateriaAlumno,
+                                                 idCurso, estado, cuatrimestre_aprobacion, anio_aprobacion,
+                                                 fecha_aprobacion, forma_aprobacion, calificacion, acta_resolucion)
+
+    def aux_modificar_materia_alumno(self, funcion_a_invocar, url_servicio, cookie, csrf_token, idMateriaAlumno,
+                                     idCurso, estado, cuatrimestre_aprobacion='', anio_aprobacion='',
+                                     fecha_aprobacion='', forma_aprobacion='', calificacion='', acta_resolucion=''):
+        parametros = {}
+        parametros["idMateriaAlumno"] = idMateriaAlumno
+        parametros["estado"] = estado
+
+        if idCurso:
+            parametros["idCurso"] = idCurso
+
+        if cuatrimestre_aprobacion:
+            parametros["cuatrimestre_aprobacion"] = cuatrimestre_aprobacion
+
+        if anio_aprobacion:
+            parametros["anio_aprobacion"] = anio_aprobacion
+
+        if fecha_aprobacion:
+            parametros["fecha_aprobacion"] = fecha_aprobacion
+
+        if forma_aprobacion:
+            parametros["forma_aprobacion"] = forma_aprobacion
+
+        if calificacion:
+            parametros["calificacion"] = calificacion
+
+        if acta_resolucion:
+            parametros["acta_resolucion"] = acta_resolucion
+
+        return funcion_a_invocar(url_servicio, cookie, csrf_token, parametros)
 
     def obtener_materias_alumno(self, cookie, estados=[]):
         url_servicio = self.get_url_get_materias_alumno()

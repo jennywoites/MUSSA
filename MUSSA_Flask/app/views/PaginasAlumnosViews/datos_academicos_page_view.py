@@ -3,7 +3,6 @@ from flask import request, url_for, flash
 from flask_user import login_required
 from app.ClienteAPI.ClienteAPI import ClienteAPI
 from app.views.base_view import main_blueprint
-from app.views.Utils.invocaciones_de_servicios import *
 from flask_babel import gettext
 from app.API_Rest.codes import *
 

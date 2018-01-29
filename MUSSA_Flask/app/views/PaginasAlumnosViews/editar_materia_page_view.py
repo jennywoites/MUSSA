@@ -2,10 +2,10 @@ from flask import redirect, render_template
 from flask import request, url_for, flash
 from flask_user import login_required
 from app.views.base_view import main_blueprint
-from app.views.Utils.invocaciones_de_servicios import *
 from app.DAO.MateriasDAO import *
 from datetime import datetime
 from app.ClienteAPI.ClienteAPI import ClienteAPI
+from app.API_Rest.codes import *
 
 
 @main_blueprint.route('/datos_academicos/editar_materia/<int:idMateria>', methods=['GET'])
@@ -17,7 +17,7 @@ def editar_materia_page(idMateria):
     materia = cliente.obtener_materia_alumno(cookies, idMateria)
 
     cursos = cliente.obtener_cursos_con_filtros(cookies, codigo_materia=materia["codigo"],
-                                                     id_carrera=materia["id_carrera"], filtrar_cursos=True)
+                                                id_carrera=materia["id_carrera"], filtrar_cursos=True)
     for i in range(len(cursos)):
         texto = ""
         for carrera in cursos[i]["carreras"]:
@@ -25,8 +25,13 @@ def editar_materia_page(idMateria):
         cursos[i]["carreras"] = texto[:-1]
 
     estados = []
-    for estado in [EN_CURSO, FINAL_PENDIENTE, APROBADA, DESAPROBADA]:
-        estados.append(ESTADO_MATERIA[estado])
+    if materia["estado"] == ESTADO_MATERIA[EN_CURSO]:
+        estados = [ESTADO_MATERIA[EN_CURSO],
+                   ESTADO_MATERIA[FINAL_PENDIENTE],
+                   ESTADO_MATERIA[APROBADA],
+                   ESTADO_MATERIA[DESAPROBADA]]
+    if materia["estado"] == ESTADO_MATERIA[FINAL_PENDIENTE]:
+        estados = [ESTADO_MATERIA[FINAL_PENDIENTE], ESTADO_MATERIA[APROBADA], ESTADO_MATERIA[DESAPROBADA]]
 
     formas_aprobacion = []
     for forma in [EXAMEN, EXAMEN_EQUIVALENCIA, EQUIVALENCIA]:
@@ -47,24 +52,20 @@ def editar_materia_page(idMateria):
 @main_blueprint.route('/datos_academicos/editar_materia_save/<int:idMateria>', methods=['POST'])
 @login_required
 def editar_materia_page_save(idMateria):
-    materia = ClienteAPI().obtener_materia_alumno(request.cookies, idMateria)
+    response = ClienteAPI().modificar_materia_alumno(
+        cookie=request.cookies,
+        csrf_token=request.form["csrf_token"],
+        idMateriaAlumno=idMateria,
+        estado=request.form['estado'],
+        cuatrimestre_aprobacion=request.form['cuatrimestre_aprobacion'],
+        anio_aprobacion=request.form['anio_aprobacion'],
+        fecha_aprobacion=request.form['fecha_aprobacion'],
+        forma_aprobacion=request.form['forma_aprobacion'],
+        calificacion=request.form['calificacion'],
+        acta_resolucion=request.form['acta_resolucion']
+    )
 
-    parametros = {
-        'id_carrera': materia["id_carrera"],
-        'id_materia': materia["id_materia"],
-        'id_curso': request.form['curso'],
-        'estado': request.form['estado'],
-        'cuatrimestre_aprobacion': request.form['cuatrimestre_aprobacion'],
-        'anio_aprobacion': request.form['anio_aprobacion'],
-        'fecha_aprobacion': request.form['fecha_aprobacion'],
-        'forma_aprobacion': request.form['forma_aprobacion'],
-        'calificacion': request.form['calificacion'],
-        'acta_resolucion': request.form['acta_resolucion']
-    }
-
-    response = invocar_agregar_materia_alumno(request.form["csrf_token"], request.cookies, parametros)
-
-    if 'OK' in response:
+    if response == SUCCESS_NO_CONTENT or response == SUCCESS_OK:
         flash("Se gurdaron los cambios en la materia", 'success')
     else:
         flash(response["Error"], 'error')

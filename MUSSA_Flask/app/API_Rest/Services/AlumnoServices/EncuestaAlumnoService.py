@@ -114,9 +114,9 @@ class EncuestaAlumnoService(BaseService):
             db.session.add(entrada)
             db.session.commit()
 
-    def encuesta_no_esta_finalizada(self, nombreParametro, valor, esObligatorio):
+    def encuesta_no_esta_finalizada(self, nombre_parametro, valor, esObligatorio):
         encuesta = EncuestaAlumno.query.get(valor)
-        return (True, 'OK', -1) if not encuesta.finalizada \
+        return self.mensaje_OK(nombre_parametro) if not encuesta.finalizada \
             else (False, 'La encuesta ya se encuentra finalizada', CLIENT_ERROR_METHOD_NOT_ALLOWED)
 
 

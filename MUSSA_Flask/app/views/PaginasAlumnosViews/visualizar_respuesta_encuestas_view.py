@@ -2,7 +2,6 @@ from flask import render_template
 from flask_user import login_required
 from flask import request, url_for, redirect
 from app.views.base_view import main_blueprint
-from app.views.Utils.invocaciones_de_servicios import *
 from app.DAO.EncuestasDAO import *
 from app.ClienteAPI.ClienteAPI import ClienteAPI
 from app.API_Rest.codes import *

@@ -192,6 +192,9 @@ class BaseService(Resource):
     def mensaje_campo_no_obligatorio(self, nombre_parametro):
         return True, 'El ' + nombre_parametro + ' no existe pero no es obligatorio', -1
 
+    def mensaje_OK(self, nombreParametro):
+        return True, 'OK. El parametro {} es correcto', -1
+
     def padron_es_valido(self, nombre_parametro, padron, es_obligatorio, id_alumno):
         msj_valido = 'El padron {} es valido'.format(padron)
         msj_invalido = 'El padron {} no es valido'.format(padron)
@@ -218,7 +221,7 @@ class BaseService(Resource):
         id_a_validar = str(id_a_validar)
 
         if not id_a_validar.isdigit():
-            return False, 'El ' + nombre_parametro + 'no es un número entero', CLIENT_ERROR_BAD_REQUEST
+            return False, 'El ' + nombre_parametro + ' no es un número entero', CLIENT_ERROR_BAD_REQUEST
 
         es_valido = int(id_a_validar) > 0
         msj, codigo = ('El ' + nombre_parametro + ' debe ser mayor a 0', CLIENT_ERROR_BAD_REQUEST) if not es_valido \
@@ -295,6 +298,22 @@ class BaseService(Resource):
 
         msj, codigo = ("El {} no es un número".format(nombre_parametro), CLIENT_ERROR_BAD_REQUEST) if not es_valido \
             else ("El {} es un número válido".format(nombre_parametro), -1)
+
+        return es_valido, msj, codigo
+
+    def es_numero_entero_valido_entre_min_y_max(self, nombre_parametro, valor, es_obligatorio, min_valor, max_valor):
+        if not es_obligatorio and valor is None:
+            return self.mensaje_campo_no_obligatorio(nombre_parametro)
+
+        es_valido, msj, codigo = self.es_numero_valido(nombre_parametro, valor, es_obligatorio)
+        if not es_valido:
+            return es_valido, msj, codigo
+
+        numero = int(valor)
+        es_valido = (min_valor <= numero <= max_valor)
+
+        msj, codigo = ("El {} no está entre {} y {}".format(valor, min_valor, max_valor), CLIENT_ERROR_BAD_REQUEST) if\
+            not es_valido else ("OK", -1)
 
         return es_valido, msj, codigo
 

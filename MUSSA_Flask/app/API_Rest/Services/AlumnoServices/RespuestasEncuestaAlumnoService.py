@@ -125,7 +125,7 @@ class RespuestasEncuestaAlumnoService(BaseService):
                 self.logg_error('Se recibió una subrespuesta inválida')
                 return False, msj, CLIENT_ERROR_BAD_REQUEST
 
-        return True, 'OK', -1
+        return self.mensaje_OK('-')
 
     def eliminar_todas_las_respuestas_del_paso_actual(self, preguntas):
         for id_pregunta in preguntas:

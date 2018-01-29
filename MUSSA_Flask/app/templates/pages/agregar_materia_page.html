@@ -98,7 +98,7 @@
                     var materia = result[i];
                     var opt = document.createElement('option');
                     opt.id = materia["codigo"];
-                    opt.value = materia["id_materia"];
+                    opt.value = materia["id_materia_alumno"];
                     opt.innerHTML = materia["codigo"] + " - " + materia["nombre"];
 
                     var materia_element = document.getElementById("materia");
@@ -204,7 +204,7 @@
 
         <div class="alert alert-danger" id="error_formulario" hidden="true"></div>
 
-        <form action="{{ url_for('main.agregar_materia_page_save') }}" method="POST">
+        <form onsubmit="show_loading_mask(); return true;" action="{{ url_for('main.agregar_materia_page_save') }}" method="POST">
             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
 
             <div class="form-group">

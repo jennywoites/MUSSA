@@ -230,7 +230,9 @@
                                 <td>{{materia["acta_o_resolucion"]}}</td>
                                 <td>{{materia["forma_aprobacion_materia"]}}</td>
                                 <td>
-                                    <button type="button" class="btn btn-link" onclick="redirect_to('{{ url_for('main.editar_materia_page', idMateria=materia['id_materia_alumno'])}}')"><span class='glyphicon glyphicon-pencil'></span></button>
+                                    {% if (materia["estado"] != "Aprobada" and materia["estado"] != "Desaprobada"): %}
+                                        <button type="button" class="btn btn-link" onclick="redirect_to('{{ url_for('main.editar_materia_page', idMateria=materia['id_materia_alumno'])}}')"><span class='glyphicon glyphicon-pencil'></span></button>
+                                    {% endif %}
 
                                     <button type="button" class="btn btn-link" onclick="redirect_to('{{ url_for('main.datos_academicos_eliminar_materia_page', idMateria=materia['id_materia_alumno'], token=csrf_token())}}')">
                                         <span class='glyphicon glyphicon-trash'></span>

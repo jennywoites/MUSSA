@@ -135,10 +135,3 @@ def add_resources_api_rest(api):
                 paquete = '.'.join(['app', 'API_Rest', 'Services', archivo_o_directorio, nombre_paquete])
                 modulo = importlib.import_module(paquete)
                 api.add_resource(modulo.CLASE, *modulo.URLS_SERVICIOS)
-
-    add_resources_usuarios(api)
-
-
-def add_resources_usuarios(api):
-    from app.API_Rest.Services.AgregarMateriaAlumnoService import AgregarMateriaAlumno
-    api.add_resource(AgregarMateriaAlumno, '/api/AgregarMateriaAlumno')

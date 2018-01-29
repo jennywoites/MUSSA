@@ -2,7 +2,7 @@ from flask import render_template
 from flask_user import roles_accepted
 from app.forms import AgregarDocente
 from app.views.base_view import main_blueprint
-from app.views.Utils.invocaciones_de_servicios import *
+import json
 
 
 @main_blueprint.route('/admin/editar_docente/<int:idDocente>')

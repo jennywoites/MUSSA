@@ -116,7 +116,7 @@ class CarreraAlumnoService(BaseService):
 
         existe_carrera = AlumnosCarreras.query.filter_by(alumno_id=alumno.id).filter_by(carrera_id=id_carrera).first()
 
-        return (True, 'OK', -1) if existe_carrera \
+        return self.mensaje_OK(nombre_parametro) if existe_carrera \
             else (False, 'La carrera {} no pertenece al alumno'.format(id_carrera), CLIENT_ERROR_BAD_REQUEST)
 
     def carrera_no_fue_agregada_anteriormente(self, nombre_parametro, id_carrera, es_obligatorio):

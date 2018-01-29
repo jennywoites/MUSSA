@@ -14,7 +14,7 @@ def generarJSON_materia_alumno(materia_alumno):
     carrera = Carrera.query.get(materia_alumno.carrera_id)
 
     return {
-        'id_materia_alumno': materia_alumno.id, # ---< era id antes
+        'id_materia_alumno': materia_alumno.id,
         'id_materia': materia_carrera.id,
         'codigo': materia_carrera.codigo,
         'nombre': materia_carrera.nombre,

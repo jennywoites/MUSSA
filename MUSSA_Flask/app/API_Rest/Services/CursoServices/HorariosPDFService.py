@@ -68,28 +68,27 @@ class HorariosPDFService(BaseService):
 
         return result
 
-    def el_horario_no_fue_cargado(self, nombreParametro, anio, obligatorio, cuatrimestre):
+    def el_horario_no_fue_cargado(self, nombre_parametro, anio, obligatorio, cuatrimestre):
         horarios = HorariosYaCargados.query.filter_by(anio=anio).filter_by(cuatrimestre=cuatrimestre).all()
         return (False, 'El horario ya fue cargado anteriormente', CLIENT_ERROR_BAD_REQUEST) if len(horarios) > 0 else \
-            (True, 'OK', -1)
+            self.mensaje_OK(nombre_parametro)
 
-    def no_hay_horarios_nuevos_cargados(self, nombreParametro, anio, obligatorio, cuatrimestre):
+    def no_hay_horarios_nuevos_cargados(self, nombre_parametro, anio, obligatorio, cuatrimestre):
         query = HorariosYaCargados.query
         query = query.order_by(HorariosYaCargados.anio.desc(), HorariosYaCargados.cuatrimestre.desc())
         ultimo_horario_cargado = query.first()
 
-        rta_OK = (True, 'OK', -1)
         if not ultimo_horario_cargado:
-            return rta_OK
+            return self.mensaje_OK(nombre_parametro)
 
         if ultimo_horario_cargado.anio > anio:
             return False, 'Ya hay un horario de un año mayor cargado', CLIENT_ERROR_BAD_REQUEST
 
         if ultimo_horario_cargado.anio < anio:
-            return rta_OK
+            return self.mensaje_OK(nombre_parametro)
 
         ultimo_horario_cuatri_mayor = ultimo_horario_cargado.cuatrimestre > cuatrimestre
-        return rta_OK if not ultimo_horario_cuatri_mayor else \
+        return self.mensaje_OK(nombre_parametro) if not ultimo_horario_cuatri_mayor else \
             (False, 'Ya hay un horario de el año {} pero de un '
                     'cuatrimestre posterior'.format(anio), CLIENT_ERROR_BAD_REQUEST)
 
