@@ -4,6 +4,7 @@ from app.API_Rest.Services.BaseService import BaseService
 from app.models.carreras_models import Carrera, Materia
 from app.models.alumno_models import AlumnosCarreras, MateriasAlumno
 from app.DAO.MateriasDAO import *
+from app.API_Rest.Services.AlumnoServices.MateriaAlumnoService import MateriaAlumnoService
 
 
 class CarreraAlumnoService(BaseService):
@@ -93,8 +94,13 @@ class CarreraAlumnoService(BaseService):
         return result
 
     def eliminar_materias_carrera(self, id_alumno, id_carrera):
-        query = MateriasAlumno.query.filter_by(alumno_id=id_alumno).filter_by(carrera_id=id_carrera)
-        query.delete()
+        materias_alumno = MateriasAlumno.query.filter_by(alumno_id=id_alumno).filter_by(carrera_id=id_carrera).all()
+        servicio = MateriaAlumnoService()
+        for materia_alumno in materias_alumno:
+            servicio.eliminar_encuesta_asociada(materia_alumno)
+            db.session.commit()
+
+        MateriasAlumno.query.filter_by(alumno_id=id_alumno).filter_by(carrera_id=id_carrera).delete()
         db.session.commit()
 
     def agregar_materias_carrera(self, id_alumno, id_carrera):

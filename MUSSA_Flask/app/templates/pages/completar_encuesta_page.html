@@ -240,7 +240,6 @@
     function validarRespuestasParcialesYGuardarRespuestas(nextUrl) {
         var esGuardadoParcial = true;
         validarRespuestasYGuardarRespuestas(nextUrl, esGuardadoParcial, function(state, result) {
-            hide_loading_mask();
             window.location.replace(nextUrl);
         });
     }
@@ -255,7 +254,6 @@
 
             finalizar_encuesta_alumno_service('{{ csrf_token() }}', {{idEncuestaAlumno}}, function(state, result) {
                 window.location.replace(nextUrl);
-                hide_loading_mask();
             }, function(state, result) {
                 error_al_finalizar.hidden = false;
                 hide_loading_mask();

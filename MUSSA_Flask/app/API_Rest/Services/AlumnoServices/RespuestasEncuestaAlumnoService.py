@@ -95,7 +95,7 @@ class RespuestasEncuestaAlumnoService(BaseService):
             self.logg_error(msj)
             return {'Error': msj}, codigo
 
-        self.eliminar_todas_las_respuestas_del_paso_actual(self.obtener_preguntas_encuestas(categoria, True))
+        self.eliminar_todas_las_respuestas_del_paso_actual(self.obtener_preguntas_encuestas(categoria, True), idEncuestaAlumno)
 
         preguntas_categoria_actual = self.obtener_preguntas_encuestas(categoria)
         self.guardar_respuestas(respuestas, idEncuestaAlumno, preguntas_categoria_actual)
@@ -127,9 +127,10 @@ class RespuestasEncuestaAlumnoService(BaseService):
 
         return self.mensaje_OK('-')
 
-    def eliminar_todas_las_respuestas_del_paso_actual(self, preguntas):
+    def eliminar_todas_las_respuestas_del_paso_actual(self, preguntas, idEncuestaAlumno):
         for id_pregunta in preguntas:
-            respuestas_encuestas = RespuestaEncuestaAlumno.query.filter_by(pregunta_encuesta_id=id_pregunta).all()
+            respuestas_encuestas = RespuestaEncuestaAlumno.query.filter_by(encuesta_alumno_id=idEncuestaAlumno)\
+                .filter_by(pregunta_encuesta_id=id_pregunta).all()
             self.eliminar_respuestas(respuestas_encuestas)
 
     def eliminar_respuestas(self, respuestas_encuestas):

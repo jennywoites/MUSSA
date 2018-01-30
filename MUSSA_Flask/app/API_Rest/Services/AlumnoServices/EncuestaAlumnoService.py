@@ -4,8 +4,10 @@ from app.models.generadorJSON.respuestas_encuestas_generadorJSON import generarJ
 from app.models.respuestas_encuesta_models import EncuestaAlumno, RespuestaEncuestaTematica, RespuestaEncuestaTags
 from app.models.palabras_clave_models import PalabrasClaveParaMateria, TematicaPorMateria
 from app.models.alumno_models import MateriasAlumno
+from app.models.horarios_models import Curso
 from app.API_Rest.codes import *
-from app import db
+from app.models.respuestas_encuesta_models import RespuestaEncuestaAlumno, RespuestaEncuestaEstrellas
+from app.DAO.EncuestasDAO import *
 
 
 class EncuestaAlumnoService(BaseService):
@@ -88,30 +90,52 @@ class EncuestaAlumnoService(BaseService):
 
         self.agregarPalabrasClavesALasMaterias(encuesta, materiaAlumno.materia_id)
         self.agregarTematicasALasMaterias(encuesta, materiaAlumno.materia_id)
+        self.actualizar_puntaje_y_cantidad_encuestas_curso(encuesta, materiaAlumno.curso_id)
 
         result = SUCCESS_NO_CONTENT
         self.logg_resultado(result)
 
         return result
 
+    def actualizar_puntaje_y_cantidad_encuestas_curso(self, encuesta, id_curso):
+        curso = Curso.query.get(id_curso)
+        curso.puntaje_total_encuestas += encuesta.obtener_cantidad_estrellas_elegidas()
+        curso.cantidad_encuestas_completas += 1
+        db.session.commit()
+
+
     def agregarPalabrasClavesALasMaterias(self, encuesta, id_materia):
         respuestas = RespuestaEncuestaTags.query.filter_by(rta_encuesta_alumno_id=encuesta.id).all()
         for respuesta in respuestas:
-            entrada = PalabrasClaveParaMateria(
-                materia_id=id_materia,
-                palabra_clave_id=respuesta.palabra_clave_id
-            )
-            db.session.add(entrada)
+            entrada = PalabrasClaveParaMateria.query.filter_by(materia_id=id_materia)\
+                .filter_by(palabra_clave_id=respuesta.palabra_clave_id).first()
+
+            if not entrada:
+                entrada = PalabrasClaveParaMateria(
+                    materia_id=id_materia,
+                    palabra_clave_id=respuesta.palabra_clave_id,
+                    cantidad_encuestas_asociadas=0
+                )
+                db.session.add(entrada)
+
+            entrada.cantidad_encuestas_asociadas += 1
             db.session.commit()
 
     def agregarTematicasALasMaterias(self, encuesta, id_materia):
         respuestas = RespuestaEncuestaTematica.query.filter_by(rta_encuesta_alumno_id=encuesta.id).all()
         for respuesta in respuestas:
-            entrada = TematicaPorMateria(
-                materia_id=id_materia,
-                tematica_id=respuesta.tematica_id
-            )
-            db.session.add(entrada)
+            entrada = TematicaPorMateria.query.filter_by(materia_id=id_materia).\
+                filter_by(tematica_id=respuesta.tematica_id).first()
+
+            if not entrada:
+                entrada = TematicaPorMateria(
+                    materia_id=id_materia,
+                    tematica_id=respuesta.tematica_id,
+                    cantidad_encuestas_asociadas=0
+                )
+                db.session.add(entrada)
+
+            entrada.cantidad_encuestas_asociadas += 1
             db.session.commit()
 
     def encuesta_no_esta_finalizada(self, nombre_parametro, valor, esObligatorio):

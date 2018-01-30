@@ -4,12 +4,15 @@ from app.API_Rest.Services.BaseService import BaseService
 from app.models.generadorJSON.alumno_generadorJSON import generarJSON_materia_alumno
 from app.models.alumno_models import MateriasAlumno
 from app.models.carreras_models import Materia
-from app.models.respuestas_encuesta_models import EncuestaAlumno, EstadoPasosEncuestaAlumno
+from app.models.respuestas_encuesta_models import EncuestaAlumno, EstadoPasosEncuestaAlumno, RespuestaEncuestaTematica, \
+    RespuestaEncuestaTags, RespuestaEncuestaAlumno
+from app.models.palabras_clave_models import PalabrasClaveParaMateria, TematicaPorMateria
 from app.models.horarios_models import Curso
 from app.models.docentes_models import Docente, CursosDocente
 from app.DAO.MateriasDAO import *
 from datetime import date
 from datetime import datetime
+from app.API_Rest.Services.AlumnoServices.RespuestasEncuestaAlumnoService import RespuestasEncuestaAlumnoService
 
 
 class MateriaAlumnoService(BaseService):
@@ -112,6 +115,7 @@ class MateriaAlumnoService(BaseService):
 
         datos_materia = self.obtener_parametros_materia()
         datos_materia["idMateriaAlumno"] = idMateriaAlumno
+        datos_materia["idCurso"] = None  # No está permitido el cambio de curso
 
         parametros_son_validos, msj, codigo = self.validar_parametros(dict([
             ("idMateriaAlumno", {
@@ -172,6 +176,8 @@ class MateriaAlumnoService(BaseService):
 
         materia = MateriasAlumno.query.get(idMateriaAlumno)
 
+        self.eliminar_encuesta_asociada(materia)
+
         se_elimino_materia_actual = False
         if materia.estado_id == EstadoMateria.query.filter_by(estado=ESTADO_MATERIA[DESAPROBADA]).first().id:
             se_elimino_materia_actual = self.eliminar_correspondientes_desaprobadas(materia)
@@ -189,6 +195,80 @@ class MateriaAlumnoService(BaseService):
         self.logg_resultado(result)
 
         return result
+
+    def eliminar_encuesta_asociada(self, materia_alumno):
+        """
+        Elimina la encuesta y las respuestas asociadas a la materia alumno.
+        Si la encuesta estaba finalizada:
+        - Se actualizan los datos de cantidad y encuestas y puntaje correspondientes
+        para la materia asociada.
+        - Se actualizan los tags / palabras clave
+        - Se actualizan las temáticas    def actualizar_puntaje_y_cantidad_encuestas_curso(self, encuesta, id_curso):
+        """
+        encuesta = EncuestaAlumno.query.filter_by(materia_alumno_id=materia_alumno.id).first()
+        if not encuesta:
+            return
+
+        if encuesta.finalizada:
+            self.disminuir_estrellas_curso(materia_alumno, encuesta)
+            self.eliminarPalabrasClavesALasMaterias(materia_alumno.materia_id, encuesta)
+            self.eliminarTematicasALasMaterias(materia_alumno.materia_id, encuesta)
+
+        self.eliminar_encuesta_y_respuestas(encuesta)
+
+    def disminuir_estrellas_curso(self, materia_alumno, encuesta):
+        estrellas_encuesta = encuesta.obtener_cantidad_estrellas_elegidas()
+
+        curso = Curso.query.get(materia_alumno.curso_id)
+        curso.puntaje_total_encuestas -= estrellas_encuesta
+        curso.cantidad_encuestas_completas -= 1
+        db.session.commit()
+
+        self.logg_info("Se disminuyeron las estrellas del curso en {} estrellas".format(estrellas_encuesta))
+
+    def eliminarPalabrasClavesALasMaterias(self, id_materia, encuesta):
+        respuestas = RespuestaEncuestaTags.query.filter_by(rta_encuesta_alumno_id=encuesta.id).all()
+        for respuesta in respuestas:
+            entrada = PalabrasClaveParaMateria.query.filter_by(materia_id=id_materia) \
+                .filter_by(palabra_clave_id=respuesta.palabra_clave_id).first()
+            entrada.cantidad_encuestas_asociadas -= 1
+            db.session.commit()
+            self.logg_info("Se disminuyó la cantidad de encuestas asociadas con la palabra clave de"
+                           " id {} relacionada con la materia de id {}".format(respuesta.palabra_clave_id, id_materia))
+
+            if entrada.cantidad_encuestas_asociadas == 0:
+                PalabrasClaveParaMateria.query.filter_by(materia_id=id_materia) \
+                    .filter_by(palabra_clave_id=respuesta.palabra_clave_id).delete()
+                db.session.commit()
+                self.logg_info("Se elimino la palabra clave de id {} relacionada con la "
+                               "materia de id {}".format(respuesta.palabra_clave_id, id_materia))
+
+    def eliminarTematicasALasMaterias(self, id_materia, encuesta):
+        respuestas = RespuestaEncuestaTematica.query.filter_by(rta_encuesta_alumno_id=encuesta.id).all()
+        for respuesta in respuestas:
+            entrada = TematicaPorMateria.query.filter_by(materia_id=id_materia). \
+                filter_by(tematica_id=respuesta.tematica_id).first()
+            entrada.cantidad_encuestas_asociadas -= 1
+            db.session.commit()
+            self.logg_info("Se disminuyó la cantidad de encuestas asociadas con la tematica de"
+                           " id {} relacionada con la materia de id {}".format(respuesta.tematica_id, id_materia))
+
+            if entrada.cantidad_encuestas_asociadas == 0:
+                TematicaPorMateria.query.filter_by(materia_id=id_materia). \
+                    filter_by(tematica_id=respuesta.tematica_id).delete()
+                db.session.commit()
+                self.logg_info("Se elimino la tematica de id {} relacionada con la "
+                               "materia de id {}".format(respuesta.tematica_id, id_materia))
+
+    def eliminar_encuesta_y_respuestas(self, encuesta):
+        respuestas_encuestas = RespuestaEncuestaAlumno.query.filter_by(encuesta_alumno_id=encuesta.id).all()
+        servicio_respuesta_encuesta = RespuestasEncuestaAlumnoService()
+        servicio_respuesta_encuesta.eliminar_respuestas(respuestas_encuestas)
+        db.session.commit()
+
+        EncuestaAlumno.query.filter_by(id=encuesta.id).delete()
+        db.session.commit()
+        self.logg_info("Se eliminaron las respuestas asociadas a la encuesta")
 
     def datos_validacion_cuatrimestre(self, datos_materia):
         return ("cuatrimestre_aprobacion", {
@@ -286,7 +366,7 @@ class MateriaAlumnoService(BaseService):
             materia.curso_id = int(datos_materia["idCurso"])
             if datos_materia["estado"] in [ESTADO_MATERIA[FINAL_PENDIENTE], ESTADO_MATERIA[APROBADA],
                                            ESTADO_MATERIA[DESAPROBADA]]:
-                self.crear_o_actualizar_encuesta(materia)
+                self.crear_encuesta(materia)
 
         if datos_materia["cuatrimestre_aprobacion"]:
             materia.cuatrimestre_aprobacion_cursada = datos_materia["cuatrimestre_aprobacion"]
@@ -428,7 +508,6 @@ class MateriaAlumnoService(BaseService):
     def eliminar_correspondientes_desaprobadas(self, materia):
         se_elimino_materia_actual = False
 
-        estado_desaprobado = EstadoMateria.query.filter_by(estado=ESTADO_MATERIA[DESAPROBADA]).first()
         estado_pendiente = EstadoMateria.query.filter_by(estado=ESTADO_MATERIA[PENDIENTE]).first()
 
         query = MateriasAlumno.query.filter_by(alumno_id=materia.alumno_id)
@@ -473,31 +552,11 @@ class MateriaAlumnoService(BaseService):
         ))
         db.session.commit()
 
-    def crear_o_actualizar_encuesta(self, materia_alumno):
+    def crear_encuesta(self, materia_alumno):
         encuesta = EncuestaAlumno.query.filter_by(materia_alumno_id=materia_alumno.id).first()
-
-        # TODO: verificar si la encuesta se corresponde con el curso. Si no se corresponde, eliminar para crea una nueva.
-        # La encuesta vieja debe haber estado eliminada y finalizada. Revisar
-
-        if encuesta and encuesta.finalizada:  # No modificar encuestas finalizadas
+        if encuesta:  # Las encuestas no tiene datos que puedan ser actualizados
             return
 
-        if not encuesta:
-            encuesta = self.crear_encuesta(materia_alumno)
-
-        curso = Curso.query.get(materia_alumno.curso_id)
-        docentes = ""
-        for cdoc in CursosDocente.query.filter_by(curso_id=materia_alumno.curso_id).all():
-            docente = Docente.query.get(cdoc.docente_id)
-            docentes += docente.obtener_nombre_completo() + "-"
-        encuesta.curso = "{}: {}".format(curso.codigo, docentes[:-1])
-
-        encuesta.cuatrimestre_aprobacion_cursada = materia_alumno.cuatrimestre_aprobacion_cursada
-        encuesta.anio_aprobacion_cursada = materia_alumno.anio_aprobacion_cursada
-        encuesta.finalizada = False
-        db.session.commit()
-
-    def crear_encuesta(self, materia_alumno):
         encuesta = EncuestaAlumno(
             alumno_id=materia_alumno.alumno_id,
             materia_alumno_id=materia_alumno.id,
@@ -513,7 +572,17 @@ class MateriaAlumnoService(BaseService):
         db.session.add(estado_pasos)
         db.session.commit()
 
-        return encuesta
+        curso = Curso.query.get(materia_alumno.curso_id)
+        docentes = ""
+        for cdoc in CursosDocente.query.filter_by(curso_id=materia_alumno.curso_id).all():
+            docente = Docente.query.get(cdoc.docente_id)
+            docentes += docente.obtener_nombre_completo() + "-"
+        encuesta.curso = "{}: {}".format(curso.codigo, docentes[:-1])
+
+        encuesta.cuatrimestre_aprobacion_cursada = materia_alumno.cuatrimestre_aprobacion_cursada
+        encuesta.anio_aprobacion_cursada = materia_alumno.anio_aprobacion_cursada
+        encuesta.finalizada = False
+        db.session.commit()
 
 
 #########################################
