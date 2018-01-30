@@ -123,6 +123,41 @@
         <!-- Loadin Mask -->
         <div id="loader" class="loading col-lg-1 col-centered" hidden="true"></div>
 
+        <!-- Popup Modal -->
+        <script>
+            function show_modal(titulo, texto, textoAceptar, textoCancelar, onAccept) {
+                var modal = $("#genericModal");
+                modal.find('.modal-title').text(titulo);
+                document.getElementById('modalText').innerHTML = texto;
+                document.getElementById('confirm-modal-button').innerText = textoAceptar;
+                document.getElementById('cancel-modal-button').innerText = textoCancelar;
+                $('#confirm-modal-button').click(function() {
+                    onAccept(modal);
+                });
+                modal.modal('show');
+            }
+        </script>
+
+        <div class="modal fade" id="genericModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                        <h4 class="modal-title" id="modalTitle"></h4>
+                    </div>
+                    <div class="modal-body">
+                        <h4 id="modalText"></h4>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" id="cancel-modal-button" class="btn btn-secondary" data-dismiss="modal"></button>
+                        <button type="button" id="confirm-modal-button" class="btn btn-danger"></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         {% block content %}{% endblock %}
 
         {% block post_content %}{% endblock %}
