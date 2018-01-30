@@ -6,7 +6,6 @@ if __name__ == '__main__':
 from tests.TestAPIServicios.TestBase import TestBase
 from app.models.alumno_models import Alumno
 from app.DAO.MateriasDAO import *
-from app.API_Rest.services import *
 from app.API_Rest.codes import *
 import json
 

@@ -4,6 +4,7 @@ from app.API_Rest.Services.BaseService import BaseService
 from app.models.carreras_models import Carrera, Materia
 from app.models.alumno_models import AlumnosCarreras, MateriasAlumno
 from app.DAO.MateriasDAO import *
+from app.API_Rest.Services.AlumnoServices.MateriaAlumnoService import MateriaAlumnoService
 
 
 class CarreraAlumnoService(BaseService):
@@ -93,8 +94,13 @@ class CarreraAlumnoService(BaseService):
         return result
 
     def eliminar_materias_carrera(self, id_alumno, id_carrera):
-        query = MateriasAlumno.query.filter_by(alumno_id=id_alumno).filter_by(carrera_id=id_carrera)
-        query.delete()
+        materias_alumno = MateriasAlumno.query.filter_by(alumno_id=id_alumno).filter_by(carrera_id=id_carrera).all()
+        servicio = MateriaAlumnoService()
+        for materia_alumno in materias_alumno:
+            servicio.eliminar_encuesta_asociada(materia_alumno)
+            db.session.commit()
+
+        MateriasAlumno.query.filter_by(alumno_id=id_alumno).filter_by(carrera_id=id_carrera).delete()
         db.session.commit()
 
     def agregar_materias_carrera(self, id_alumno, id_carrera):
@@ -116,7 +122,7 @@ class CarreraAlumnoService(BaseService):
 
         existe_carrera = AlumnosCarreras.query.filter_by(alumno_id=alumno.id).filter_by(carrera_id=id_carrera).first()
 
-        return (True, 'OK', -1) if existe_carrera \
+        return self.mensaje_OK(nombre_parametro) if existe_carrera \
             else (False, 'La carrera {} no pertenece al alumno'.format(id_carrera), CLIENT_ERROR_BAD_REQUEST)
 
     def carrera_no_fue_agregada_anteriormente(self, nombre_parametro, id_carrera, es_obligatorio):

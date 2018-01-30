@@ -1,5 +1,5 @@
-from app import db
 from app.DAO.EncuestasDAO import *
+
 
 class EncuestaAlumno(db.Model):
     __tablename__ = 'encuesta_alumno'
@@ -17,6 +17,17 @@ class EncuestaAlumno(db.Model):
     def __str__(self):
         return "Alumno: {} - Materia: {} - Finalizada: {}".format(self.alumno_id, self.materia, self.finalizada)
 
+    def obtener_cantidad_estrellas_elegidas(self):
+        total_estrellas = 0
+
+        tipo_estrella = TipoEncuesta.query.filter_by(tipo=ESTRELLAS).first().id
+        query = RespuestaEncuestaAlumno.query.filter_by(encuesta_alumno_id=self.id)
+        for respuesta_encuesta in query.filter_by(tipo_id=tipo_estrella).all():
+            query2 = RespuestaEncuestaEstrellas.query.filter_by(rta_encuesta_alumno_id=respuesta_encuesta.id)
+            for rta_estrella in query2.all():
+                total_estrellas += rta_estrella.estrellas
+
+        return total_estrellas
 
 class RespuestaEncuestaAlumno(db.Model):
     __tablename__ = 'respuesta_encuesta_alumno'
@@ -82,6 +93,7 @@ class EstadoPasosEncuestaAlumno(db.Model):
             self.estadoPaso4 == PASO_ENCUESTA_FINALIZADO and
             self.estadoPaso5 == PASO_ENCUESTA_FINALIZADO
         )
+
 
 class RespuestaEncuestaPuntaje(db.Model):
     __tablename__ = 'rta_encuesta_puntaje'

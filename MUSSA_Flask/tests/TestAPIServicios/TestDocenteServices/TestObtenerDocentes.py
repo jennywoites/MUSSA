@@ -4,17 +4,12 @@ if __name__ == '__main__':
     sys.path.append("../..")
 
 from tests.TestAPIServicios.TestBase import TestBase
-
 from app import db
 from app.models.horarios_models import Curso, Horario, HorarioPorCurso, CarreraPorCurso
 from app.models.carreras_models import Carrera, TipoMateria, Materia
 from app.models.docentes_models import CursosDocente, Docente
-
 import json
-
 import datetime
-
-from app.API_Rest.services import *
 from app.API_Rest.codes import *
 
 

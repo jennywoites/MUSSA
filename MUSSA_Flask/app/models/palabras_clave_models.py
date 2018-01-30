@@ -18,6 +18,7 @@ class PalabrasClaveParaMateria(db.Model):
 
     materia_id = db.Column(db.Integer, db.ForeignKey('materia.id'))
     palabra_clave_id = db.Column(db.Integer, db.ForeignKey('palabra_clave.id'))
+    cantidad_encuestas_asociadas = db.Column(db.Integer, nullable=False, server_default='0')
 
     def __str__(self):
         return "La materia {} tiene como plabra clave: {}".format(self.materia_id, self.palabra_clave_id)
@@ -40,6 +41,7 @@ class TematicaPorMateria(db.Model):
 
     materia_id = db.Column(db.Integer, db.ForeignKey('materia.id'))
     tematica_id = db.Column(db.Integer, db.ForeignKey('tematica_materia.id'))
+    cantidad_encuestas_asociadas = db.Column(db.Integer, nullable=False, server_default='0')
 
     def __str__(self):
         return "La materia {} tiene como temática: {}".format(self.materia_id, self.tematica_id)

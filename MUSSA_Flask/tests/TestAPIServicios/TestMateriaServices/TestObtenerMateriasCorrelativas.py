@@ -7,7 +7,6 @@ from tests.TestAPIServicios.TestBase import TestBase
 from app import db
 from app.models.carreras_models import Materia, Carrera, TipoMateria, Correlativas
 import json
-from app.API_Rest.services import *
 from app.API_Rest.codes import *
 
 

@@ -14,6 +14,10 @@ def generarJSON_encuesta_alumno(encuesta_alumno):
     curso = Curso.query.get(materiaAlumno.curso_id)
     materia = Materia.query.get(materiaAlumno.materia_id)
 
+    fecha_aprobacion = '-' if (not encuesta_alumno.cuatrimestre_aprobacion_cursada or
+                              not encuesta_alumno.anio_aprobacion_cursada) else\
+        "{}C / {}".format(encuesta_alumno.cuatrimestre_aprobacion_cursada, encuesta_alumno.anio_aprobacion_cursada)
+
     return {
         "id_encuesta_alumno": encuesta_alumno.id,
         "alumno_id": encuesta_alumno.alumno_id,
@@ -23,8 +27,7 @@ def generarJSON_encuesta_alumno(encuesta_alumno):
         "curso": generarJSON_curso(curso),
         "cuatrimestre_aprobacion_cursada": encuesta_alumno.cuatrimestre_aprobacion_cursada,
         "anio_aprobacion_cursada": encuesta_alumno.anio_aprobacion_cursada,
-        "fecha_aprobacion": "{}C / {}".format(encuesta_alumno.cuatrimestre_aprobacion_cursada,
-                                              encuesta_alumno.anio_aprobacion_cursada),
+        "fecha_aprobacion": fecha_aprobacion,
         "finalizada": encuesta_alumno.finalizada
     }
 

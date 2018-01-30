@@ -4,7 +4,6 @@ if __name__ == '__main__':
     sys.path.append("../..")
 
 from tests.TestAPIServicios.TestBase import TestBase
-from app.API_Rest.services import *
 from app.API_Rest.codes import *
 from app.DAO.MateriasDAO import *
 from app.models.respuestas_encuesta_models import EncuestaAlumno

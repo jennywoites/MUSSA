@@ -2,10 +2,10 @@ from flask import redirect, render_template
 from flask import request, url_for, flash
 from flask_user import login_required
 from app.views.base_view import main_blueprint
-from app.views.Utils.invocaciones_de_servicios import *
 from app.DAO.MateriasDAO import *
 from datetime import datetime
 from app.ClienteAPI.ClienteAPI import ClienteAPI
+from app.API_Rest.codes import *
 
 
 @main_blueprint.route('/datos_academicos/agregar_materia', methods=['GET'])
@@ -37,22 +37,21 @@ def agregar_materia_page():
 @main_blueprint.route('/datos_academicos/agregar_materia_save', methods=['POST'])
 @login_required
 def agregar_materia_page_save():
-    parametros = {
-        'id_carrera': request.form['carrera'],
-        'id_materia': request.form['materia'],
-        'id_curso': request.form['curso'],
-        'estado': request.form['estado'],
-        'cuatrimestre_aprobacion': request.form['cuatrimestre_aprobacion'],
-        'anio_aprobacion': request.form['anio_aprobacion'],
-        'fecha_aprobacion': request.form['fecha_aprobacion'],
-        'forma_aprobacion': request.form['forma_aprobacion'],
-        'calificacion': request.form['calificacion'],
-        'acta_resolucion': request.form['acta_resolucion']
-    }
+    response = ClienteAPI().agregar_materia_alumno(
+        cookie=request.cookies,
+        csrf_token=request.form["csrf_token"],
+        idMateriaAlumno=request.form['materia'],
+        idCurso=request.form['curso'],
+        estado=request.form['estado'],
+        cuatrimestre_aprobacion=request.form['cuatrimestre_aprobacion'],
+        anio_aprobacion=request.form['anio_aprobacion'],
+        fecha_aprobacion=request.form['fecha_aprobacion'],
+        forma_aprobacion=request.form['forma_aprobacion'],
+        calificacion=request.form['calificacion'],
+        acta_resolucion=request.form['acta_resolucion']
+    )
 
-    response = invocar_agregar_materia_alumno(request.form["csrf_token"], request.cookies, parametros)
-
-    if 'OK' in response:
+    if response == SUCCESS_NO_CONTENT or response == SUCCESS_OK:
         flash("Se agregó la materia satisfactoriamente", 'success')
     else:
         flash(response["Error"], 'error')
