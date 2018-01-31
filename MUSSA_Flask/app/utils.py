@@ -4,6 +4,16 @@ DIAS = ["LUNES", "MARTES", "MIERCOLES", "JUEVES", "VIERNES", "SABADO"]
 ##                     
 #####################################################################
 
+def generar_lista_horarios():
+    HORA_MIN = 7
+    HORA_MAX = 23
+    horarios = []
+    for i in frange(HORA_MIN, HORA_MAX + 0.5, 0.5):
+        hora = int(i)
+        minutos = "00" if hora == i else "30"
+        horarios.append("{}:{}".format(get_numero_dos_digitos(hora), minutos))
+    return horarios
+
 def convertir_horario(horas, minutos):
     c_hora = int(horas)
     c_hora += 0.5 if int(minutos) == 30 else 0

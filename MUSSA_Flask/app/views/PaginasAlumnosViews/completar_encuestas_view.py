@@ -3,7 +3,7 @@ from flask_user import login_required
 from flask import request, url_for, redirect
 from app.views.base_view import main_blueprint
 from app.DAO.EncuestasDAO import *
-from app.utils import frange, get_numero_dos_digitos, DIAS
+from app.utils import DIAS, generar_lista_horarios
 from app.ClienteAPI.ClienteAPI import ClienteAPI
 from app.API_Rest.codes import *
 
@@ -63,13 +63,7 @@ def completar_encuesta(idEncuestaAlumno, cookie, num_categoria):
 
     docentes = ClienteAPI().obtener_docentes_del_curso(cookie, encuesta["curso"]["id_curso"])
 
-    HORA_MIN = 7
-    HORA_MAX = 23
-    horarios = []
-    for i in frange(HORA_MIN, HORA_MAX + 0.5, 0.5):
-        hora = int(i)
-        minutos = "00" if hora == i else "30"
-        horarios.append("{}:{}".format(get_numero_dos_digitos(hora), minutos))
+    horarios = generar_lista_horarios()
 
     tematicas = ClienteAPI().obtener_todas_las_tematicas(cookie)
 

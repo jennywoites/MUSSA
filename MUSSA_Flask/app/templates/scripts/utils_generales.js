@@ -10,6 +10,9 @@ function scroll_arriba() {
     $('html, body').animate({scrollTop:0}, 'slow');
 }
 
+function redirigir_a(url) {
+    window.location.replace(url);
+}
 //////////////////////////////////////////////////////////////////////
 
 function fill_dropdown(dropdown_id, process_response, responseText){

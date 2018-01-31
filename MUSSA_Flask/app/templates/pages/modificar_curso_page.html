@@ -216,7 +216,7 @@
 
             modificar_curso_service(csrf_token, idCurso, ids_carreras, primer_cuatrimestre, segundo_cuatrimestre,
             ids_docentes, horarios, function(state, result) {
-                window.location.replace("{{ url_for('main.administrar_horarios_page') }}");
+                redirigir_a("{{ url_for('main.administrar_horarios_page') }}");
             }, function(state, result) {
                 var error_label = document.getElementById("error_al_guardar_label");
                 error_label.style["display"] = "";

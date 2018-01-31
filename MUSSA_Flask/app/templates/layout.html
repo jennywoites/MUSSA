@@ -62,8 +62,14 @@
                         {% endif %}
                         <li><a href="/buscar_materias">Buscar materias</a></li>
                         {% if current_user.is_authenticated %}
-                            <li><a href="{{ url_for('main.datos_academicos_page') }}">Datos Académicos</a></li>
-                            <li><a href="{{ url_for('main.historial_encuestas_page') }}">Mis encuestas</a></li>
+                            <li class="dropdown">
+                            <li class="dropdown"><a class="dropdown-toggle" data-toggle="dropdown" href="#">Académico <span class="caret"></span></a>
+                                <ul class="dropdown-menu">
+                                    <li><a href="{{ url_for('main.datos_academicos_page') }}">Datos académicos</a></li>
+                                    <li><a href="{{ url_for('main.planes_de_estudios_page') }}">Mis planes de estudio</a></li>
+                                    <li><a href="{{ url_for('main.historial_encuestas_page') }}">Mis encuestas</a></li>
+                                </ul>
+                            </li>
                         {% endif %}
                         <li class="dropdown">
                         <li class="dropdown"><a class="dropdown-toggle" data-toggle="dropdown" href="#">Información <span class="caret"></span></a>

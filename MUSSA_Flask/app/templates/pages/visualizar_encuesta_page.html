@@ -239,7 +239,7 @@
     function getBotonFlecha(lado, url) {
         var boton = "<button type='button' class='btn btn-default' ";
         boton += "style='background-color: transparent;border-color: transparent;font-size: 30px;color: #9634c1;' ";
-        boton += "onclick=window.location.replace('" + url + "');>";
+        boton += "onclick=redirigir_a('" + url + "');>";
         boton += "<span class='glyphicon glyphicon-arrow-" + lado + "'></span></button>";
         return boton;
     }
@@ -440,7 +440,7 @@
                 <div class="liner"></div>
                 {% for i in range(titulos | length) %}
                 <li>
-                    <a onclick="window.location.replace('{{ url_for(titulos[i]['url'], idEncuestaAlumno=idEncuestaAlumno) }}')"
+                    <a onclick="redirigir_a('{{ url_for(titulos[i]['url'], idEncuestaAlumno=idEncuestaAlumno) }}')"
                        title="{{titulos[i]['titulo']}}">
                         <span class="round-tabs">{{i+1}}<i class="icon icon-profile-male"></i></span>
                     </a>

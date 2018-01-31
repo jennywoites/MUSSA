@@ -240,7 +240,7 @@
     function validarRespuestasParcialesYGuardarRespuestas(nextUrl) {
         var esGuardadoParcial = true;
         validarRespuestasYGuardarRespuestas(nextUrl, esGuardadoParcial, function(state, result) {
-            window.location.replace(nextUrl);
+            redirigir_a(nextUrl);
         });
     }
 
@@ -253,7 +253,7 @@
             error_al_finalizar.hidden = true;
 
             finalizar_encuesta_alumno_service('{{ csrf_token() }}', {{idEncuestaAlumno}}, function(state, result) {
-                window.location.replace(nextUrl);
+                redirigir_a(nextUrl);
             }, function(state, result) {
                 error_al_finalizar.hidden = false;
                 hide_loading_mask();
@@ -277,7 +277,7 @@
         }
 
         if ($.isEmptyObject(respuestas)) {
-            window.location.replace(nextUrl);
+            redirigir_a(nextUrl);
             return true;
         }
 
@@ -911,11 +911,11 @@
     }
 
     function convertirHorario(horario) {
-        hora = parseInt(horario.substring(0,2))
-        minutos = parseInt(horario.substring(3))
+        var hora = parseInt(horario.substring(0,2));
+        var minutos = parseInt(horario.substring(3));
         if (minutos == 30)
-            hora += 0.5
-        return hora
+            hora += 0.5;
+        return hora;
     }
 
     function horarioParaAgregarEsValido(dia, hora_desde, hora_hasta, idPregunta) {
