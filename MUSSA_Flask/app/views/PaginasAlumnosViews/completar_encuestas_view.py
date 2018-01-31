@@ -61,11 +61,11 @@ def completar_encuesta(idEncuestaAlumno, cookie, num_categoria):
             break
     posibles_correlativas.pop(i)
 
-    docentes = ClienteAPI().obtener_docentes_del_curso(cookie, encuesta["curso"]["id_curso"])
+    docentes = cliente.obtener_docentes_del_curso(cookie, encuesta["curso"]["id_curso"])
 
     horarios = generar_lista_horarios()
 
-    tematicas = ClienteAPI().obtener_todas_las_tematicas(cookie)
+    tematicas = cliente.obtener_todas_las_tematicas(cookie)
 
     titulos = [
         {'url': 'main.completar_encuesta_general_page', 'titulo': 'General'},

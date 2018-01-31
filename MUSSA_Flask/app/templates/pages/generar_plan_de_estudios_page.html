@@ -117,6 +117,79 @@
         return true;
     }
 
+    function agregar_tematica() {
+        var selector = document.getElementById("selector_tematica");
+        var opcionElegida = selector[selector.selectedIndex];
+
+        var idTema = opcionElegida.value;
+        var tematica = getCleanedString(opcionElegida.innerText);
+        opcionElegida.hidden = true;
+        var porcentaje = document.getElementById('porcentaje_tematica').value;
+
+        if (!porcentaje_es_valido(porcentaje))
+            return;
+
+        seleccionar_primer_opcion_no_oculta("selector_tematica");
+
+        var tabla_tematicas = document.getElementById("tabla_tematicas");
+        var tematicas = tabla_tematicas.rows;
+
+        var indice = tabla_tematicas.rows.length;
+        var row = tabla_tematicas.insertRow(indice);
+        var ultimo_id = tabla_tematicas.rows[indice-1].id
+        var numero_id = parseInt(ultimo_id.substr(ultimo_id.indexOf("_")+1)) + 1;
+        if (isNaN(numero_id))
+            numero_id = 0;
+
+        row.id = "tematica_" + numero_id;
+        row.insertCell(0).innerHTML = tematica;
+        row.insertCell(1).innerHTML = porcentaje + "%";
+        row.insertCell(2).innerHTML = '<button type="button" class="btn btn-default" onclick="eliminarTematica(' + numero_id + ')"><span class="glyphicon glyphicon-trash"></span></button></td>'
+
+        actualizar_porcentaje_restante();
+    }
+
+    function porcentaje_es_valido(valor) {
+        var actual = calcular_porcentaje_actual();
+        var error_label = document.getElementById('error_label_tematica')
+
+        var msj = "El porcentaje ingresado no es válido. El valor debe ser mayor a 0 y menor o igual que "
+        msj += (100 - actual) + "%"
+
+        var es_valido = (valor > 0 && valor <= (100 - actual));
+        error_label.innerText = msj
+
+        error_label.hidden = es_valido;
+        return es_valido;
+    }
+
+    function actualizar_porcentaje_restante() {
+        var tabla = document.getElementById("tabla_tematicas");
+        var nuevo_porcentaje = (100 - calcular_porcentaje_actual());
+        tabla.rows["tematica_0"].cells[1].innerText = nuevo_porcentaje + "%"
+
+        var div_selector = document.getElementById('div_seleccionar_tematicas');
+        div_selector.hidden = (nuevo_porcentaje == 0);
+    }
+
+    function calcular_porcentaje_actual() {
+        var tabla = document.getElementById("tabla_tematicas");
+        var porcentaje = 0;
+        for (var i=2; i<tabla.rows.length; i++) {
+            var texto = tabla.rows[i].cells[1].innerText;
+            porcentaje += parseInt(texto.substring(0,texto.indexOf("%")));
+        }
+        return porcentaje;
+    }
+
+    function eliminarTematica(idTematica) {
+        var tabla = document.getElementById("tabla_tematicas");
+        tabla.rows["tematica_" + idTematica].remove();
+        actualizar_porcentaje_restante();
+    }
+
+
+
 
 
 
@@ -134,7 +207,7 @@
     <br>
     <br>
 
-    <form>
+    <form onsubmit="return false;">
         <label>Carrera:</label>
         {% for carrera in carreras %}
         <div class="radio" id="carrera-{{carrera['id_carrera']}}">
@@ -196,6 +269,35 @@
                                    min="1" max="168" step="1">
                         </div>
                     </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-sm-6">
+                <div class="form-group">
+                    <label>
+                        Puntaje mínimo requerido para los cursos a seleccionar:
+                        <span class="glyphicon glyphicon-question-sign" aria-hidden="true" data-toggle="tooltip" title="Los cursos no puntuados tienen un puntaje de 0.
+                La restricción de puntaje no es tenida en cuenta en el caso de los cursos que se seleccionan manualmente.
+                Las materias que se elijan no tendrán un puntaje menor al seleccionado a menos que sean el único curso disponible en el caso de las obligatorias o que las electivas disponibles con esos puntajes no alcancen a cubrir el total de electivas requerido. En estos casos siempre se seleccionará en orden la de mayor puntaje con mayor cantidad de encuestas completas."></span>
+                    </label>
+                    <div class="row">
+                        <div class="col-sm-4">
+                            <input type="number" class="form-control" name="puntaje_minimo"
+                                   id="puntaje_minimo" value="0" min="0" max="5" step="1">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-sm-6">
+                <div class="form-group">
+                    <label>
+                        Cuatrimestre y año de inicio del plan:
+                        <span class="glyphicon glyphicon-question-sign" aria-hidden="true" data-toggle="tooltip"
+                              title="En qué momento se desea comenzar a cursar las primeras materias que surjan de este plan. Es necesario diferenciar entre primer y segundo cuatrimestre ya que no todas las materias se dictan en ambos cuatrimestres."></span>
+                    </label>
                 </div>
             </div>
         </div>
@@ -277,6 +379,61 @@
                 </table>
             </div>
         </div>
+
+        <label>Porcentaje de cada temática deseada con el que querés que sean elegidas las materias electivas:
+            <span class="glyphicon glyphicon-question-sign" aria-hidden="true" data-toggle="tooltip" title="Esto indica el porcentaje de créditos de materias electivas que deben ser de cada temática, no se tendrá en cuenta las temáticas de materias electivas o de materias seleccionadas especialmente para cursar.
+            Te recomendamos dejar un porcentaje libre para que la carrera no se alargue debido a incompatibilidad horaria de algunas de esas materias"></span>
+        </label>
+
+        <br>
+        <br>
+
+        <div class="row" id="div_seleccionar_tematicas">
+            <div class="col-sm-3">
+                <div class="form-group">
+                    <select class="form-control" id="selector_tematica" name="selector_tematica">
+                        {% for tematica in tematicas %}
+                        <option id="tematica_opcion_{{tematica['id_tematica']}}" value="{{tematica['id_tematica']}}">
+                            {{tematica["tematica"]}}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            <div class="col-sm-3">
+                <input type="number" class="form-control" name="porcentaje_tematica"
+                       id="porcentaje_tematica" min="0" max="100" step="1">
+            </div>
+            <div class="col-sm-2">
+                <button class="btn btn-mussa-default"
+                        onclick="agregar_tematica()">Agregar
+                </button>
+            </div>
+
+        </div>
+
+        <div class="alert alert-danger" id="error_label_tematica" hidden="true"></div>
+
+        <div class="form-group" id="div-tabla-tematicas">
+            <div class='table-responsive'>
+                <table class='table table-hover' id="tabla_tematicas">
+                    <tr>
+                        <th>Temática</th>
+                        <th>Porcentaje</th>
+                        <th>Eliminar</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr id="tematica_0">
+                        <th>Cualquier temática</th>
+                        <th>100 %</th>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <br>
 
     </form>
 

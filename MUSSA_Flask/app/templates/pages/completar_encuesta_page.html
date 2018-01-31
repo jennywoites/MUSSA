@@ -1202,23 +1202,6 @@
         mostrarOcultarSeleccionMasTematicas(idPregunta);
     }
 
-    function getCleanedString(cadena){
-       var specialChars = "!@#$^&%*()+=-[]\/{}|:<>?,.;";
-
-       for (var i = 0; i < specialChars.length; i++) {
-           cadena= cadena.replace(new RegExp("\\" + specialChars[i], 'gi'), '');
-       }
-
-       cadena = cadena.toUpperCase();
-
-       cadena = cadena.replace(/Á/gi,"A");
-       cadena = cadena.replace(/É/gi,"E");
-       cadena = cadena.replace(/Í/gi,"I");
-       cadena = cadena.replace(/Ó/gi,"O");
-       cadena = cadena.replace(/Ú/gi,"U");
-       return cadena;
-    }
-
     function crearEtiquetaTematica(texto, idEtiqueta, opcion, idPregunta) {
         etiqueta = "";
         etiqueta += "<div class='col-lg-3' id='div_etiqueta_" + idEtiqueta + "_" + idPregunta + "' style='margin-bottom:5px;'>";

@@ -23,10 +23,12 @@ def nuevo_plan_de_estudios_page():
 
     mis_carreras = cliente.obtener_carreras_alumno(cookies)
     horarios = generar_lista_horarios()
+    tematicas = cliente.obtener_todas_las_tematicas(cookies)
 
     return render_template('pages/generar_plan_de_estudios_page.html',
                            carreras=mis_carreras,
                            dias=DIAS,
                            hora_desde=horarios[:-1],
-                           hora_hasta=horarios[1:]
+                           hora_hasta=horarios[1:],
+                           tematicas=tematicas
                            )

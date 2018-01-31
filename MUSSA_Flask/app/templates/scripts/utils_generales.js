@@ -13,6 +13,24 @@ function scroll_arriba() {
 function redirigir_a(url) {
     window.location.replace(url);
 }
+
+function getCleanedString(cadena){
+   var specialChars = "!@#$^&%*()+=-[]\/{}|:<>?,.;";
+
+   for (var i = 0; i < specialChars.length; i++) {
+       cadena= cadena.replace(new RegExp("\\" + specialChars[i], 'gi'), '');
+   }
+
+   cadena = cadena.toUpperCase();
+
+   cadena = cadena.replace(/Á/gi,"A");
+   cadena = cadena.replace(/É/gi,"E");
+   cadena = cadena.replace(/Í/gi,"I");
+   cadena = cadena.replace(/Ó/gi,"O");
+   cadena = cadena.replace(/Ú/gi,"U");
+   return cadena;
+}
+
 //////////////////////////////////////////////////////////////////////
 
 function fill_dropdown(dropdown_id, process_response, responseText){
@@ -31,4 +49,15 @@ function fill_dropdown(dropdown_id, process_response, responseText){
         content += "</option>";
     }
     $("#" + dropdown_id).html(content);
+}
+
+function seleccionar_primer_opcion_no_oculta(idselector) {
+    var selector = document.getElementById(idselector);
+    for (var i=0; i<selector.options.length; i++) {
+        if (!selector.options[i].hidden) {
+            selector.selectedIndex = i;
+            return;
+        }
+    }
+    selector.selectedIndex = 0;
 }
