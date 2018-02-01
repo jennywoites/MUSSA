@@ -8,8 +8,23 @@
         if (cant_carreras == 1) {
             var opcion = document.getElementsByName('opcion-carrera')[0];
             opcion.checked = true;
+            actualizar_finales_pendientes(opcion.id);
         }
     });
+
+    function actualizar_finales_pendientes(idCarrera) {
+        var tabla = document.getElementById('finales_pendientes');
+        var visibles = tabla.rows.length - 1;
+        for (var i=1; i<tabla.rows.length; i++) {
+            var fila = tabla.rows[i];
+            fila.hidden = (idCarrera != fila.cells[1].innerText);
+            if (fila.hidden)
+                visibles -= 1;
+        }
+
+        var div_finales = document.getElementById('div_materias_con_final_pendiente');
+        div_finales.hidden = (visibles == 0);
+    }
 
     function actualizarHoraHasta() {
         var hora_desde_element = document.getElementById("hora_desde");
@@ -192,7 +207,6 @@
 
 
 
-
 </script>
 
 <div class="container">
@@ -211,7 +225,7 @@
         <label>Carrera:</label>
         {% for carrera in carreras %}
         <div class="radio" id="carrera-{{carrera['id_carrera']}}">
-            <label><input type="radio" name="opcion-carrera">{{carrera["descripcion"]}}</label>
+            <label><input type="radio" id="{{carrera['id_carrera']}}" name="opcion-carrera" onchange="actualizar_finales_pendientes({{carrera['id_carrera']}})">{{carrera["descripcion"]}}</label>
         </div>
         {% endfor %}
 
@@ -298,6 +312,27 @@
                         <span class="glyphicon glyphicon-question-sign" aria-hidden="true" data-toggle="tooltip"
                               title="En qué momento se desea comenzar a cursar las primeras materias que surjan de este plan. Es necesario diferenciar entre primer y segundo cuatrimestre ya que no todas las materias se dictan en ambos cuatrimestres."></span>
                     </label>
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                <label>Número de cuatrimestre:</label>
+                                <select class="form-control" id="numero_cuatrimestre" name="numero_cuatrimestre">
+                                    <option>1</option>
+                                    <option>2</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                <label>Año:</label>
+                                <select class="form-control" id="anio" name="anio">
+                                    {% for i in anios %}
+                                    <option>{{i}}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -434,6 +469,59 @@
         </div>
 
         <br>
+
+        <div id="div_materias_con_final_pendiente" hidden="true">
+            <label>Indicar para cada materia con final pendiente a partir de qué momento puede ser considerada
+                aprobada:</label>
+
+            <br>
+
+            <div class="form-group" id="div-tabla-finales-pendientes">
+                <div class='table-responsive'>
+                    <table class='table table-hover' id="finales_pendientes">
+                        <tr>
+                            <th hidden="true">Id Materia</th>
+                            <th hidden="true">Id Carrera</th>
+                            <th>Código</th>
+                            <th>Materia</th>
+                            <th>Cuatrimestre en la que la materia estará aprobada <span
+                                    class="glyphicon glyphicon-question-sign" aria-hidden="true" data-toggle="tooltip"
+                                    title="Puedes seleccionar los valores -1, 0, 1 y 2 que representan a partir de qué cuatrimestre se puede considerar aprobada la materia antes de realizar la asignación de materias para el cuatrimestre.
+Un valor de 0 indica que para el inicio del nuevo cuatrimestre la materia ya se puede considerar con el final aprobado. Un valor de 1 indica que será luego de un cuatrimestre, y un valor de 2 que será luego del segundo cuatrimestre.
+Como solo hay tres períodos en los que se puede rendir la materia, solo puedes elegir entre esos tres valores para darla por aprobada.
+Si por algún motivo no quieres considerar que esta materia va a estar aprobada y que sea tenida en cuenta como una materia a cursar al generar el plan, establecer el valor -1 que se encuentra por defecto."></span>
+                            </th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for materia in materias_con_final_pendiente%}
+                        <tr>
+                            <th hidden="true">{{materia["id_materia"]}}</th>
+                            <th hidden="true">{{materia["id_carrera"]}}</th>
+                            <th>{{materia["codigo"]}}</th>
+                            <th>{{materia["nombre"]}}</th>
+                            <th>
+                                <div class="row">
+                                    <div class="col-sm-4">
+                                        <select class="form-control"
+                                                id="final_aprobado_{{materia['id_materia_alumno']}}"
+                                                name="final_aprobado_{{materia['id_materia_alumno']}}">
+                                            {% for i in range(-1,3) %}
+                                            <option>{{i}}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+                            </th>
+                        </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <br>
+        </div>
 
     </form>
 

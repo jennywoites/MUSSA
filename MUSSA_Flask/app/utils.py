@@ -1,8 +1,14 @@
+from datetime import datetime
+
 DIAS = ["LUNES", "MARTES", "MIERCOLES", "JUEVES", "VIERNES", "SABADO"]
 
 #####################################################################
 ##                     
 #####################################################################
+def generar_lista_anios():
+    MAX_TIEMPO = 5
+    hoy = datetime.now().year
+    return [x for x in range(hoy, hoy - MAX_TIEMPO, -1)]
 
 def generar_lista_horarios():
     HORA_MIN = 7
