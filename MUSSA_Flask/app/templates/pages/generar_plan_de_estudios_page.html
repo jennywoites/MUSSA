@@ -12,6 +12,113 @@
         }
     });
 
+    function onChangeCarrera(idCarrera) {
+        actualizar_finales_pendientes(idCarrera);
+        actualizar_materias_disponibles(idCarrera);
+    }
+
+    function actualizar_materias_disponibles(idCarrera) {
+        show_loading_mask();
+
+        //Habilitar selector de materias
+        limpiar_selector_materias(true);
+
+        // Deshabilitar selector de curso
+        limpiar_selector_cursos(false);
+
+        obtener_materias_pendientes_service('{{ csrf_token() }}', idCarrera, function(state, result) {
+            for (var i=0; i<result.length; i++) {
+                var materia = result[i];
+                var opt = document.createElement('option');
+                opt.id = materia["codigo"];
+                opt.value = materia["id_materia_alumno"];
+                opt.innerHTML = materia["codigo"] + " - " + materia["nombre"];
+
+                var materia_element = document.getElementById("materia");
+                materia_element.appendChild(opt);
+            }
+            hide_loading_mask();
+        }, function(state, result) {
+            console.log(result);
+            hide_loading_mask();
+        })
+    }
+
+    function habilitar_curso() {
+        show_loading_mask();
+        var materia_element = document.getElementById("materia");
+        materia_element[0].style["display"] = "none";
+
+        limpiar_selector_cursos(true);
+
+        var csrf_token = '{{ csrf_token() }}';
+        var codigo_materia = materia_element[materia_element.selectedIndex].id;
+
+        var opciones_carrera = document.getElementsByName('opcion-carrera');
+        var id_carrera = 0;
+        for (var i=0; i<opciones_carrera.length; i++) {
+            if (opciones_carrera[i].checked) {
+                id_carrera = opciones_carrera[i].id;
+                break;
+            }
+        }
+
+        get_cursos_con_filtro_service(csrf_token, '', codigo_materia, id_carrera, true, function(state, result) {
+            for (var i=0; i<result.length; i++) {
+                var curso = result[i];
+                var opt = document.createElement('option');
+
+                opt.value = curso["id_curso"];
+                opt.innerHTML = curso["codigo_curso"] + " | " + curso["docentes"];
+
+                var selector_curso = document.getElementById("curso");
+                selector_curso.appendChild(opt);
+            }
+            hide_loading_mask();
+        }, function(state, result) {
+            console.log(result);
+            hide_loading_mask();
+        });
+    }
+
+    function limpiar_selector_materias(habilitado) {
+        limpiar_selector("materia", '', "Seleccione una materia", 'materia_opcion_0', habilitado, true);
+
+        limpiar_tablas_materias_elegidas();
+    }
+
+    function limpiar_tablas_materias_elegidas() {
+        var div_tabla = document.getElementById('div-tabla-cursos-seleccionados-para-cursar');
+        div_tabla.hidden = true;
+
+        var tabla = document.getElementById("cursos_seleccionados_para_cursar");
+        for(var i=1;i<tabla.rows.length; i++) {
+            tabla.rows[i].remove();
+        }
+    }
+
+    function limpiar_selector_cursos(habilitado) {
+        limpiar_selector("curso", '', "Seleccione un curso", 'curso_opcion_0', habilitado, true);
+        habilitar_deshabilitar_boton_agregar(false);
+    }
+
+    function limpiar_selector(idSelector, valueOpt, textOpt, idOpt, habilitado, deshabilitar_opcion) {
+        var selector = document.getElementById(idSelector);
+        selector.innerHTML = ''
+
+        var opt = document.createElement('option');
+        opt.id = idOpt;
+        opt.value = valueOpt;
+        opt.innerHTML = textOpt;
+        selector.appendChild(opt);
+
+        selector.disabled = false;
+        selector.selectedIndex = 0;
+        selector[0].disabled = deshabilitar_opcion;
+
+        selector.disabled = !habilitado;
+    }
+
     function actualizar_finales_pendientes(idCarrera) {
         var tabla = document.getElementById('finales_pendientes');
         var visibles = tabla.rows.length - 1;
@@ -164,6 +271,56 @@
         actualizar_porcentaje_restante();
     }
 
+    function habilitar_deshabilitar_boton_agregar(habilitado) {
+        var boton = document.getElementById('boton_agregar_curso');
+        boton.disabled = !habilitado;
+
+        document.getElementById('curso_opcion_0').hidden = habilitado;
+    }
+
+    function agregarCurso() {
+        var selector_materia = document.getElementById("materia");
+        var materiaElegida = selector_materia[selector_materia.selectedIndex];
+
+        var selector_curso = document.getElementById("curso");
+        var cursoElegido = selector_curso[selector_curso.selectedIndex];
+
+        var tabla = document.getElementById("cursos_seleccionados_para_cursar");
+
+        var indice = tabla.rows.length;
+        var row = tabla.insertRow(indice);
+        var ultimo_id = tabla.rows[indice-1].id
+        var numero_id = parseInt(ultimo_id.substr(ultimo_id.indexOf("_")+1)) + 1;
+        if (isNaN(numero_id))
+            numero_id = 0;
+
+        row.id = "curso_" + numero_id;
+
+        var celda_id_materia = row.insertCell(0);
+        celda_id_materia.innerHTML = materiaElegida.value;
+        celda_id_materia.hidden = true;
+
+        var celda_id_curso = row.insertCell(1);
+        celda_id_curso.innerHTML = cursoElegido.value;
+        celda_id_curso.hidden = true;
+
+        row.insertCell(2).innerHTML = materiaElegida.innerText;
+        row.insertCell(3).innerHTML = cursoElegido.innerText;
+        row.insertCell(4).innerHTML = '<button type="button" class="btn btn-default" onclick="eliminarCurso(' + numero_id + ')"><span class="glyphicon glyphicon-trash"></span></button></td>'
+
+        materiaElegida.hidden = true;
+        selector_materia.selectedIndex = 0;
+        limpiar_selector_cursos(false);
+
+        var div_tabla = document.getElementById('div-tabla-cursos-seleccionados-para-cursar');
+        div_tabla.hidden = false;
+    }
+
+    function eliminarCurso(numero_id) {
+        var tabla = document.getElementById("cursos_seleccionados_para_cursar");
+        tabla.rows["curso_" + numero_id].remove();
+    }
+
     function porcentaje_es_valido(valor) {
         var actual = calcular_porcentaje_actual();
         var error_label = document.getElementById('error_label_tematica')
@@ -207,6 +364,7 @@
 
 
 
+
 </script>
 
 <div class="container">
@@ -225,7 +383,8 @@
         <label>Carrera:</label>
         {% for carrera in carreras %}
         <div class="radio" id="carrera-{{carrera['id_carrera']}}">
-            <label><input type="radio" id="{{carrera['id_carrera']}}" name="opcion-carrera" onchange="actualizar_finales_pendientes({{carrera['id_carrera']}})">{{carrera["descripcion"]}}</label>
+            <label><input type="radio" id="{{carrera['id_carrera']}}" name="opcion-carrera"
+                          onchange="onChangeCarrera({{carrera['id_carrera']}})">{{carrera["descripcion"]}}</label>
         </div>
         {% endfor %}
 
@@ -233,7 +392,8 @@
         <div class="row">
             <div class="col-sm-6">
                 <div class="form-group">
-                    <label>Máxima cantidad de cuatrimestres de duración:</label>
+                    <label>Máxima cantidad de cuatrimestres de duración: <span class="glyphicon glyphicon-question-sign" aria-hidden="true" data-toggle="tooltip" title="No incluyen los dos cuatrimestres que requiere el CBC (o un cuatrimestre si tenés al menos 3 de las materias aprobadas). Si ya tenés el CBC aprobado no se agregarán cuatrimestres extras."></span>
+                    </label>
                     <div class="row">
                         <div class="col-sm-4">
                             <input type="number" class="form-control" name="maxima_cantidad_cuatrimestres"
@@ -522,6 +682,53 @@ Si por algún motivo no quieres considerar que esta materia va a estar aprobada 
 
             <br>
         </div>
+
+
+        <label>
+            Si querés, podes elegir algunos cursos específicos en los que desees cursar: <span
+                class="glyphicon glyphicon-question-sign" aria-hidden="true" data-toggle="tooltip"
+                title="Esto garantiza que esos cursos sean elegidos aunque no determina en qué cuatrimestre serán cursados."></span>
+        </label>
+
+        <div class="form-group">
+            <label>Materia:</label>
+
+            <select class="form-control" id="materia" name="materia" onchange="habilitar_curso()" disabled>
+                <option id="opcion_0">Seleccione una materia</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>Curso:</label>
+            <select class="form-control" id="curso" name="curso" onchange="habilitar_deshabilitar_boton_agregar(true)" disabled>
+                <option id="curso_opcion_0" value="-1">Seleccione un curso</option>
+            </select>
+        </div>
+
+        <br>
+        <button type="button" class="btn btn-mussa-default" id='boton_agregar_curso' onclick="agregarCurso()" disabled>
+            Agregar curso
+        </button>
+
+        <div class="form-group" id="div-tabla-cursos-seleccionados-para-cursar" hidden="true">
+            <br>
+            <div class='table-responsive'>
+                <table class='table table-hover' id="cursos_seleccionados_para_cursar">
+                    <tr>
+                        <th hidden="true">Id Materia</th>
+                        <th hidden="true">Id Curso</th>
+                        <th>Materia</th>
+                        <th>Curso</th>
+                        <th>Eliminar</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <br>
 
     </form>
 
