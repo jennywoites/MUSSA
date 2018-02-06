@@ -8,11 +8,26 @@
         if (cant_carreras == 1) {
             var opcion = document.getElementsByName('opcion-carrera')[0];
             opcion.checked = true;
+            mostrar_orientaciones_de_la_carrera_elegida(opcion.id);
             actualizar_finales_pendientes(opcion.id);
         }
     });
 
+    function generar_plan_de_estudios() {
+        debugger;
+        // Validar los campos y llamar al servicio
+    }
+
+    function mostrar_orientaciones_de_la_carrera_elegida(idCarrera) {
+        var divs_orientaciones = document.getElementsByName('orientaciones-disponibles');
+        for (var i=0; i<divs_orientaciones.length; i++) {
+            var div_actual = divs_orientaciones[i];
+            div_actual.hidden = (div_actual.id != ('orientaciones-' + idCarrera));
+        }
+    }
+
     function onChangeCarrera(idCarrera) {
+        mostrar_orientaciones_de_la_carrera_elegida(idCarrera);
         actualizar_finales_pendientes(idCarrera);
         actualizar_materias_disponibles(idCarrera);
     }
@@ -380,19 +395,55 @@
     <br>
 
     <form onsubmit="return false;">
-        <label>Carrera:</label>
-        {% for carrera in carreras %}
-        <div class="radio" id="carrera-{{carrera['id_carrera']}}">
-            <label><input type="radio" id="{{carrera['id_carrera']}}" name="opcion-carrera"
-                          onchange="onChangeCarrera({{carrera['id_carrera']}})">{{carrera["descripcion"]}}</label>
+        <div class="row">
+            <div class="col-sm-6">
+                <label>>> Carrera:</label>
+                {% for carrera in carreras %}
+                <div class="radio" id="carrera-{{carrera['id_carrera']}}">
+                    <label><input type="radio" id="{{carrera['id_carrera']}}" name="opcion-carrera"
+                                  onchange="onChangeCarrera({{carrera['id_carrera']}})">{{carrera["descripcion"]}}</label>
+                    {% if carrera["orientaciones"] | length > 0 %}
+                    <div class="row" id="orientaciones-{{carrera['id_carrera']}}" name="orientaciones-disponibles"
+                         hidden="true">
+                        <br>
+                        <div class="col-sm-1">
+                        </div>
+                        <div class="col-sm-6">
+                            <label style="font-weight: bold;margin-left: -20px;">>> Orientación elegida:</label>
+                            {% for orientacion in carrera["orientaciones"] %}
+                            <div class="radio"
+                                 id="orientacion-{{orientacion['clave_reducida']}}-carrera-{{carrera['id_carrera']}}">
+                                <label><input type="radio" id="{{orientacion['clave_reducida']}}"
+                                              name="opcion-orientacion">{{orientacion["descripcion"]}}</label>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        <div class="col-sm-5">
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+                {% endfor %}
+            </div>
+            <!-- diferenciar carreras q no tienen tesis o tp -->
+            <div class="col-sm-6">
+                <label>>> Tipo de trabajo final de carrera</label>
+                <div class="radio">
+                    <label><input type="radio" name="tipo_trabajo_final">Tesis</label>
+                </div>
+                <div class="radio">
+                    <label><input type="radio" name="tipo_trabajo_final">Trabajo Profesional</label>
+                </div>
+            </div>
         </div>
-        {% endfor %}
 
         <br>
         <div class="row">
             <div class="col-sm-6">
                 <div class="form-group">
-                    <label>Máxima cantidad de cuatrimestres de duración: <span class="glyphicon glyphicon-question-sign" aria-hidden="true" data-toggle="tooltip" title="No incluyen los dos cuatrimestres que requiere el CBC (o un cuatrimestre si tenés al menos 3 de las materias aprobadas). Si ya tenés el CBC aprobado no se agregarán cuatrimestres extras."></span>
+                    <label>>> Máxima cantidad de cuatrimestres de duración: <span
+                            class="glyphicon glyphicon-question-sign" aria-hidden="true" data-toggle="tooltip"
+                            title="No incluyen los dos cuatrimestres que requiere el CBC (o un cuatrimestre si tenés al menos 3 de las materias aprobadas). Si ya tenés el CBC aprobado no se agregarán cuatrimestres extras."></span>
                     </label>
                     <div class="row">
                         <div class="col-sm-4">
@@ -406,7 +457,7 @@
 
             <div class="col-sm-6">
                 <div class="form-group">
-                    <label>Máxima cantidad de materias por cuatrimestre:</label>
+                    <label>>> Máxima cantidad de materias por cuatrimestre:</label>
                     <div class="row">
                         <div class="col-sm-4">
                             <input type="number" class="form-control" name="maxima_cantidad_materias_por_cuatrimestre"
@@ -421,7 +472,7 @@
         <div class="row">
             <div class="col-sm-6">
                 <div class="form-group">
-                    <label>Máxima cantidad de horas de cursada por semana:</label>
+                    <label>>> Máxima cantidad de horas de cursada por semana:</label>
                     <div class="row">
                         <div class="col-sm-4">
                             <input type="number" class="form-control" name="maxima_cantidad_hs_por_semana"
@@ -434,7 +485,7 @@
 
             <div class="col-sm-6">
                 <div class="form-group">
-                    <label>Máxima cantidad de horas extra que le querés dedicar por semana al conjunto de
+                    <label>>> Máxima cantidad de horas extra que le querés dedicar por semana al conjunto de
                         materias:</label>
                     <div class="row">
                         <div class="col-sm-4">
@@ -451,7 +502,7 @@
             <div class="col-sm-6">
                 <div class="form-group">
                     <label>
-                        Puntaje mínimo requerido para los cursos a seleccionar:
+                        >> Puntaje mínimo requerido para los cursos a seleccionar:
                         <span class="glyphicon glyphicon-question-sign" aria-hidden="true" data-toggle="tooltip" title="Los cursos no puntuados tienen un puntaje de 0.
                 La restricción de puntaje no es tenida en cuenta en el caso de los cursos que se seleccionan manualmente.
                 Las materias que se elijan no tendrán un puntaje menor al seleccionado a menos que sean el único curso disponible en el caso de las obligatorias o que las electivas disponibles con esos puntajes no alcancen a cubrir el total de electivas requerido. En estos casos siempre se seleccionará en orden la de mayor puntaje con mayor cantidad de encuestas completas."></span>
@@ -468,7 +519,7 @@
             <div class="col-sm-6">
                 <div class="form-group">
                     <label>
-                        Cuatrimestre y año de inicio del plan:
+                        >> Cuatrimestre y año de inicio del plan:
                         <span class="glyphicon glyphicon-question-sign" aria-hidden="true" data-toggle="tooltip"
                               title="En qué momento se desea comenzar a cursar las primeras materias que surjan de este plan. Es necesario diferenciar entre primer y segundo cuatrimestre ya que no todas las materias se dictan en ambos cuatrimestres."></span>
                     </label>
@@ -497,7 +548,7 @@
             </div>
         </div>
 
-        <label>Horarios en los cuales no podés cursar:</label>
+        <label>>> Horarios en los cuales no podés cursar:</label>
 
         <div>
             <div class="row">
@@ -575,7 +626,7 @@
             </div>
         </div>
 
-        <label>Porcentaje de cada temática deseada con el que querés que sean elegidas las materias electivas:
+        <label>>> Porcentaje de cada temática deseada con el que querés que sean elegidas las materias electivas:
             <span class="glyphicon glyphicon-question-sign" aria-hidden="true" data-toggle="tooltip" title="Esto indica el porcentaje de créditos de materias electivas que deben ser de cada temática, no se tendrá en cuenta las temáticas de materias electivas o de materias seleccionadas especialmente para cursar.
             Te recomendamos dejar un porcentaje libre para que la carrera no se alargue debido a incompatibilidad horaria de algunas de esas materias"></span>
         </label>
@@ -631,7 +682,7 @@
         <br>
 
         <div id="div_materias_con_final_pendiente" hidden="true">
-            <label>Indicar para cada materia con final pendiente a partir de qué momento puede ser considerada
+            <label>>> Indicar para cada materia con final pendiente a partir de qué momento puede ser considerada
                 aprobada:</label>
 
             <br>
@@ -685,7 +736,7 @@ Si por algún motivo no quieres considerar que esta materia va a estar aprobada 
 
 
         <label>
-            Si querés, podes elegir algunos cursos específicos en los que desees cursar: <span
+            >> Si querés, podes elegir algunos cursos específicos en los que desees cursar: <span
                 class="glyphicon glyphicon-question-sign" aria-hidden="true" data-toggle="tooltip"
                 title="Esto garantiza que esos cursos sean elegidos aunque no determina en qué cuatrimestre serán cursados."></span>
         </label>
@@ -700,12 +751,12 @@ Si por algún motivo no quieres considerar que esta materia va a estar aprobada 
 
         <div class="form-group">
             <label>Curso:</label>
-            <select class="form-control" id="curso" name="curso" onchange="habilitar_deshabilitar_boton_agregar(true)" disabled>
+            <select class="form-control" id="curso" name="curso" onchange="habilitar_deshabilitar_boton_agregar(true)"
+                    disabled>
                 <option id="curso_opcion_0" value="-1">Seleccione un curso</option>
             </select>
         </div>
 
-        <br>
         <button type="button" class="btn btn-mussa-default" id='boton_agregar_curso' onclick="agregarCurso()" disabled>
             Agregar curso
         </button>
@@ -731,6 +782,13 @@ Si por algún motivo no quieres considerar que esta materia va a estar aprobada 
         <br>
 
     </form>
+
+    <br>
+    <br>
+
+    <button type="button" class="btn btn-mussa-default" onclick="generar_plan_de_estudios()" disabled>
+        Generar Plan de Estudios
+    </button>
 
     {% else %}
 

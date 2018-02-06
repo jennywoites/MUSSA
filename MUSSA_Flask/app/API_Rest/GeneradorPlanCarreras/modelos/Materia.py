@@ -1,3 +1,5 @@
+from app.API_Rest.GeneradorPlanCarreras.Constantes import *
+
 class Materia:
 
     def __init__(self, codigo, nombre, creditos, tipo, cred_min=0, correlativas=[]):

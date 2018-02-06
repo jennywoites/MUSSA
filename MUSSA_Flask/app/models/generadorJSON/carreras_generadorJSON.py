@@ -7,8 +7,19 @@ def generarJSON_carrera(carrera):
         'codigo': carrera.codigo,
         'nombre': carrera.nombre,
         'plan': carrera.plan,
-        'descripcion': carrera.get_descripcion_carrera()
+        'descripcion': carrera.get_descripcion_carrera(),
+        'orientaciones': generarJSON_orientaciones(carrera.orientaciones.all())
     }
+
+
+def generarJSON_orientaciones(orientaciones):
+    json_orientaciones = []
+    for orientacion in orientaciones:
+        json_orientaciones.append({
+            "descripcion": orientacion.descripcion,
+            "clave_reducida": orientacion.clave_reducida
+        })
+    return json_orientaciones
 
 
 def generarJSON_materia(materia):
