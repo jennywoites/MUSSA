@@ -8,8 +8,7 @@
         if (cant_carreras == 1) {
             var opcion = document.getElementsByName('opcion-carrera')[0];
             opcion.checked = true;
-            mostrar_orientaciones_de_la_carrera_elegida(opcion.id);
-            actualizar_finales_pendientes(opcion.id);
+            onChangeCarrera(opcion.id);
         }
     });
 
@@ -30,6 +29,37 @@
         mostrar_orientaciones_de_la_carrera_elegida(idCarrera);
         actualizar_finales_pendientes(idCarrera);
         actualizar_materias_disponibles(idCarrera);
+        mostrar_opciones_trabajo_final(idCarrera);
+    }
+
+    function mostrar_opciones_trabajo_final(idCarrera) {
+        var carreras = {{carreras | safe}}
+        var carrera = ''
+        for (var i=0; i<carreras.length; i++) {
+            if (carreras[i]["id_carrera"] == idCarrera) {
+                carrera = carreras[i];
+                break;
+            }
+        }
+
+        var div_tipos = document.getElementById('tipos_trabajo_final_carrera');
+        div_tipos.innerHTML = '';
+
+        var texto_etiqueta = document.createElement('label');
+        texto_etiqueta.innerText = ">> Tipo de trabajo final de carrera";
+        div_tipos.appendChild(texto_etiqueta);
+
+        var trabajos = carrera["trabajos_finales_carrera"];
+        for(var i=0; i<trabajos.length; i++) {
+            var div_opcion = document.createElement('div');
+            div_opcion.className = "radio";
+            var html = "<label><input type='radio' name='tipo_trabajo_final' value='" + trabajos[i]["codigo"] + "'>";
+            html +=  trabajos[i]["descripcion"] + "</label>";
+            div_opcion.innerHTML = html;
+            div_tipos.appendChild(div_opcion);
+        }
+
+        div_tipos.hidden = (trabajos.length == 0);
     }
 
     function actualizar_materias_disponibles(idCarrera) {
@@ -425,15 +455,7 @@
                 </div>
                 {% endfor %}
             </div>
-            <!-- diferenciar carreras q no tienen tesis o tp -->
-            <div class="col-sm-6">
-                <label>>> Tipo de trabajo final de carrera</label>
-                <div class="radio">
-                    <label><input type="radio" name="tipo_trabajo_final">Tesis</label>
-                </div>
-                <div class="radio">
-                    <label><input type="radio" name="tipo_trabajo_final">Trabajo Profesional</label>
-                </div>
+            <div class="col-sm-6" id="tipos_trabajo_final_carrera" hidden="true">
             </div>
         </div>
 

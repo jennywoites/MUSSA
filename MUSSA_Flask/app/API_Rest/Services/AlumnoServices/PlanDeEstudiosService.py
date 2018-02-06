@@ -44,7 +44,7 @@ class PlanDeEstudiosService(BaseService):
         tematicas = self.obtener_lista('tematicas')
         aprobacion_finales = self.obtener_lista('aprobacion_finales')
         cursos_preseleccioandos = self.obtener_lista('cursos_preseleccioandos')
-        hace_tesis = self.obtener_booleano('hace_tesis')
+        trabajo_final = self.obtener_booleano('trabajo_final')
         orientacion = self.obtener_texto('orientacion')
         algoritmo = self.obtener_parametro('algoritmo')
 
@@ -70,7 +70,7 @@ class PlanDeEstudiosService(BaseService):
         parametros.max_horas_extras = max_horas_extras
         parametros.tematicas = tematicas
 
-        self.configurar_plan_de_carrera_origen(carrera, hace_tesis, parametros)
+        self.configurar_plan_de_carrera_origen(carrera, trabajo_final, parametros)
         self.actualizar_plan_con_materias_aprobadas(carrera, aprobacion_finales, parametros)
         self.configurar_horarios_y_seleccionar_cursos_obligatorios(horarios_invalidos, cursos_preseleccioandos,
                                                                    puntaje_minimo_cursos, parametros)
@@ -93,7 +93,7 @@ class PlanDeEstudiosService(BaseService):
         self.logg_resultado(result)
         return result
 
-    def configurar_plan_de_carrera_origen(self, id_carrera, hace_tesis, parametros):
+    def configurar_plan_de_carrera_origen(self, id_carrera, trabajo_final, parametros):
         """
         Guarda para el id de carrera especificado en el campo plan de los parámetros, un
         diccionario con el codigo de materia como clave y como valor una lista con los
@@ -116,11 +116,11 @@ class PlanDeEstudiosService(BaseService):
                 continue
 
             # Si no hace tesis no guardo la materia de tesis
-            if materia.tipo_materia_id == tipo_tesis.id and not hace_tesis:
+            if materia.tipo_materia_id == tipo_tesis.id and trabajo_final != "TESIS":
                 continue
 
             # Si hace tesis no guardo la materia de tp profesional
-            if materia.tipo_materia_id == tipo_tp_profesional.id and hace_tesis:
+            if materia.tipo_materia_id == tipo_tp_profesional.id and trabajo_final == "TESIS":
                 continue
 
             # TODO: Si la materia es tesis o tp dividir en dos submaterias
@@ -139,11 +139,17 @@ class PlanDeEstudiosService(BaseService):
                     correlativas.append(materia.codigo)
                 parametros.plan[correlativa.codigo] = correlativas
 
+        self.actualizar_creditos(id_carrera, trabajo_final, parametros)
+
+    def actualizar_creditos(self, id_carrera, trabajo_final, parametros):
         creditos = Creditos.query.filter_by(carrera_id=id_carrera).first()
-        if hace_tesis:
+
+        if trabajo_final == "TESIS":
             parametros.creditos_minimos_electivas = creditos.creditos_electivas_con_tesis
-        else:
+        elif trabajo_final == "TP_PROFESIONAL":
             parametros.creditos_minimos_electivas = creditos.creditos_electivas_con_tp
+        else:
+            parametros.creditos_minimos_electivas = creditos.creditos_electivas_general
 
     def agregar_materia_a_parametros(self, parametros, materia):
         if materia.codigo in parametros.materias:
