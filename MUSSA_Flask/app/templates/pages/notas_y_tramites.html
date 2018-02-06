@@ -1,0 +1,32 @@
+{% extends "common/page_base.html" %}
+
+{% block content %}
+<div class="container">
+
+    <h2>{%trans%}Generar Formularios{%endtrans%}</h2>
+
+    <br>
+    <label>En esta sección podrás generar automáticamente los diferentes formularios disponibles:</label>
+
+    <br>
+    <br>
+    <div class='table-responsive'>
+        <table class='table table-hover' id="tabla_cursos_guardados">
+            <tr>
+                <th>Formulario</th>
+                <th>Generar</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td>Nota dirigida al decano</td>
+                <td><a href="{{url_for('main.nota_al_decano_page')}}"><span class='glyphicon glyphicon-pencil'></span></a></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+
+</div>
+
+{% endblock %}

@@ -14,6 +14,9 @@ class Alumno(db.Model):
 
         return "Alumno con padrón: {}".format(self.padron)
 
+    def get_padron(self):
+        return self.padron if self.padron else "sin_padron"
+
 
 class AlumnosCarreras(db.Model):
     __tablename__ = 'alumnos_carreras'
