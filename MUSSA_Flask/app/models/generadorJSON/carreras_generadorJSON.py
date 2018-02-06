@@ -12,6 +12,7 @@ def generarJSON_carrera(carrera):
         'trabajos_finales_carrera': generarJSON_trabajo_final_carrera(carrera)
     }
 
+
 def generarJSON_trabajo_final_carrera(carrera):
     creditos = Creditos.query.get(carrera.id)
     trabajos = []
@@ -24,11 +25,12 @@ def generarJSON_trabajo_final_carrera(carrera):
 
     if creditos.creditos_tesis > 0:
         trabajos.append({
-            "codigo": "TP_PORFESIONAL",
+            "codigo": "TP_PROFESIONAL",
             "descripcion": "Trabajo Profesional"
         })
 
     return trabajos
+
 
 def generarJSON_orientaciones(orientaciones):
     json_orientaciones = []
