@@ -1,0 +1,828 @@
+{% extends "common/page_base.html" %}
+
+{% block content %}
+<script>
+
+    $( function () {
+        var cant_carreras = {{carreras | length}};
+        if (cant_carreras == 1) {
+            var opcion = document.getElementsByName('opcion-carrera')[0];
+            opcion.checked = true;
+            onChangeCarrera(opcion.id);
+        }
+    });
+
+    function generar_plan_de_estudios() {
+        debugger;
+        // Validar los campos y llamar al servicio
+    }
+
+    function mostrar_orientaciones_de_la_carrera_elegida(idCarrera) {
+        var divs_orientaciones = document.getElementsByName('orientaciones-disponibles');
+        for (var i=0; i<divs_orientaciones.length; i++) {
+            var div_actual = divs_orientaciones[i];
+            div_actual.hidden = (div_actual.id != ('orientaciones-' + idCarrera));
+        }
+    }
+
+    function onChangeCarrera(idCarrera) {
+        mostrar_orientaciones_de_la_carrera_elegida(idCarrera);
+        actualizar_finales_pendientes(idCarrera);
+        actualizar_materias_disponibles(idCarrera);
+        mostrar_opciones_trabajo_final(idCarrera);
+    }
+
+    function mostrar_opciones_trabajo_final(idCarrera) {
+        var carreras = {{carreras | safe}}
+        var carrera = ''
+        for (var i=0; i<carreras.length; i++) {
+            if (carreras[i]["id_carrera"] == idCarrera) {
+                carrera = carreras[i];
+                break;
+            }
+        }
+
+        var div_tipos = document.getElementById('tipos_trabajo_final_carrera');
+        div_tipos.innerHTML = '';
+
+        var texto_etiqueta = document.createElement('label');
+        texto_etiqueta.innerText = ">> Tipo de trabajo final de carrera";
+        div_tipos.appendChild(texto_etiqueta);
+
+        var trabajos = carrera["trabajos_finales_carrera"];
+        for(var i=0; i<trabajos.length; i++) {
+            var div_opcion = document.createElement('div');
+            div_opcion.className = "radio";
+            var html = "<label><input type='radio' name='tipo_trabajo_final' value='" + trabajos[i]["codigo"] + "'>";
+            html +=  trabajos[i]["descripcion"] + "</label>";
+            div_opcion.innerHTML = html;
+            div_tipos.appendChild(div_opcion);
+        }
+
+        div_tipos.hidden = (trabajos.length == 0);
+    }
+
+    function actualizar_materias_disponibles(idCarrera) {
+        show_loading_mask();
+
+        //Habilitar selector de materias
+        limpiar_selector_materias(true);
+
+        // Deshabilitar selector de curso
+        limpiar_selector_cursos(false);
+
+        obtener_materias_pendientes_service('{{ csrf_token() }}', idCarrera, function(state, result) {
+            for (var i=0; i<result.length; i++) {
+                var materia = result[i];
+                var opt = document.createElement('option');
+                opt.id = materia["codigo"];
+                opt.value = materia["id_materia_alumno"];
+                opt.innerHTML = materia["codigo"] + " - " + materia["nombre"];
+
+                var materia_element = document.getElementById("materia");
+                materia_element.appendChild(opt);
+            }
+            hide_loading_mask();
+        }, function(state, result) {
+            console.log(result);
+            hide_loading_mask();
+        })
+    }
+
+    function habilitar_curso() {
+        show_loading_mask();
+        var materia_element = document.getElementById("materia");
+        materia_element[0].style["display"] = "none";
+
+        limpiar_selector_cursos(true);
+
+        var csrf_token = '{{ csrf_token() }}';
+        var codigo_materia = materia_element[materia_element.selectedIndex].id;
+
+        var opciones_carrera = document.getElementsByName('opcion-carrera');
+        var id_carrera = 0;
+        for (var i=0; i<opciones_carrera.length; i++) {
+            if (opciones_carrera[i].checked) {
+                id_carrera = opciones_carrera[i].id;
+                break;
+            }
+        }
+
+        get_cursos_con_filtro_service(csrf_token, '', codigo_materia, id_carrera, true, function(state, result) {
+            for (var i=0; i<result.length; i++) {
+                var curso = result[i];
+                var opt = document.createElement('option');
+
+                opt.value = curso["id_curso"];
+                opt.innerHTML = curso["codigo_curso"] + " | " + curso["docentes"];
+
+                var selector_curso = document.getElementById("curso");
+                selector_curso.appendChild(opt);
+            }
+            hide_loading_mask();
+        }, function(state, result) {
+            console.log(result);
+            hide_loading_mask();
+        });
+    }
+
+    function limpiar_selector_materias(habilitado) {
+        limpiar_selector("materia", '', "Seleccione una materia", 'materia_opcion_0', habilitado, true);
+
+        limpiar_tablas_materias_elegidas();
+    }
+
+    function limpiar_tablas_materias_elegidas() {
+        var div_tabla = document.getElementById('div-tabla-cursos-seleccionados-para-cursar');
+        div_tabla.hidden = true;
+
+        var tabla = document.getElementById("cursos_seleccionados_para_cursar");
+        for(var i=1;i<tabla.rows.length; i++) {
+            tabla.rows[i].remove();
+        }
+    }
+
+    function limpiar_selector_cursos(habilitado) {
+        limpiar_selector("curso", '', "Seleccione un curso", 'curso_opcion_0', habilitado, true);
+        habilitar_deshabilitar_boton_agregar(false);
+    }
+
+    function limpiar_selector(idSelector, valueOpt, textOpt, idOpt, habilitado, deshabilitar_opcion) {
+        var selector = document.getElementById(idSelector);
+        selector.innerHTML = ''
+
+        var opt = document.createElement('option');
+        opt.id = idOpt;
+        opt.value = valueOpt;
+        opt.innerHTML = textOpt;
+        selector.appendChild(opt);
+
+        selector.disabled = false;
+        selector.selectedIndex = 0;
+        selector[0].disabled = deshabilitar_opcion;
+
+        selector.disabled = !habilitado;
+    }
+
+    function actualizar_finales_pendientes(idCarrera) {
+        var tabla = document.getElementById('finales_pendientes');
+        var visibles = tabla.rows.length - 1;
+        for (var i=1; i<tabla.rows.length; i++) {
+            var fila = tabla.rows[i];
+            fila.hidden = (idCarrera != fila.cells[1].innerText);
+            if (fila.hidden)
+                visibles -= 1;
+        }
+
+        var div_finales = document.getElementById('div_materias_con_final_pendiente');
+        div_finales.hidden = (visibles == 0);
+    }
+
+    function actualizarHoraHasta() {
+        var hora_desde_element = document.getElementById("hora_desde");
+        var indice_seleccionado = hora_desde_element.selectedIndex;
+
+        var hora_hasta_element = document.getElementById("hora_hasta");
+        for (var i=0; i < hora_hasta_element.length; i++) {
+            var opcion = hora_hasta_element[i];
+            if (i < indice_seleccionado)
+                opcion.style["display"] = "none";
+            else
+                opcion.style["display"] = "";
+        }
+
+        hora_hasta_element.selectedIndex = indice_seleccionado;
+     }
+
+    function agregarHorario() {
+        var dia_element = document.getElementById("horario-dia")
+        var dia = dia_element[dia_element.selectedIndex].innerHTML;
+
+        var hora_desde_element = document.getElementById("hora_desde");
+        var hora_desde = hora_desde_element[hora_desde_element.selectedIndex].innerHTML;
+
+        var hora_hasta_element = document.getElementById("hora_hasta");
+        var hora_hasta = hora_hasta_element[hora_hasta_element.selectedIndex].innerHTML;
+
+        if (!horarioParaAgregarEsValido(dia, hora_desde, hora_hasta))
+            return false;
+
+        agregarHorarioATabla(dia, hora_desde, hora_hasta);
+    }
+
+    function agregarHorarioATabla(dia, hora_desde, hora_hasta) {
+        var horarios_table = document.getElementById("tabla_horarios");
+        var horarios = horarios_table.rows;
+
+        var indice = horarios_table.rows.length;
+        var row = horarios_table.insertRow(indice);
+        var ultimo_id = horarios_table.rows[indice-1].id
+        var numero_id = parseInt(ultimo_id.substr(ultimo_id.indexOf("_")+1)) + 1;
+        if (isNaN(numero_id))
+            numero_id = 0;
+
+        row.id = "horario_" + numero_id;
+        row.insertCell(0).innerHTML = dia;
+        row.insertCell(1).innerHTML = hora_desde;
+        row.insertCell(2).innerHTML = hora_hasta;
+        row.insertCell(3).innerHTML = '<button type="button" class="btn btn-default" onclick="eliminarHorario(' + numero_id + ')"><span class="glyphicon glyphicon-trash"></span></button></td>'
+
+        var div_tabla_horarios = document.getElementById("div-tabla-horarios");
+        div_tabla_horarios.hidden = false;
+    }
+
+    function eliminarHorario(idHorario) {
+        var tabla = document.getElementById("tabla_horarios");
+
+        var horarios = tabla.rows;
+        horarios["horario_" + idHorario].remove()
+
+        if (tabla.rows.length == 1) { //Siempre una fila es el encabezado
+            var div_tabla_horarios = document.getElementById("div-tabla-horarios");
+            div_tabla_horarios.hidden = true;
+        }
+    }
+
+    function convertirHorario(horario) {
+        var hora = parseInt(horario.substring(0,2));
+        var minutos = parseInt(horario.substring(3));
+        if (minutos == 30)
+            hora += 0.5;
+        return hora;
+    }
+
+    function horarioParaAgregarEsValido(dia, hora_desde, hora_hasta) {
+        var error_label = document.getElementById("error_label_horario");
+
+        hora_desde = convertirHorario(hora_desde);
+        hora_hasta = convertirHorario(hora_hasta);
+
+        var horarios = document.getElementById("tabla_horarios").rows;
+        for (var i=0; i<horarios.length; i++) {
+            var horario = horarios[i];
+            var dia_actual = horario.cells[0].innerText;
+
+            if (dia_actual != dia)
+                continue;
+
+            var hora_desde_actual = convertirHorario(horario.cells[1].innerText);
+            var hora_hasta_actual = convertirHorario(horario.cells[2].innerText);
+
+            //El curso empieza despues de que termina el nuevo
+            if (hora_desde_actual >= hora_hasta)
+                continue;
+
+            //El curso comienza antes que el nuevo y termina antes que el
+            if (hora_desde_actual < hora_desde && hora_hasta_actual < hora_desde)
+                continue;
+
+            error_label.style["display"] = "";
+            return false;
+        }
+
+        error_label.style["display"] = "none";
+        return true;
+    }
+
+    function agregar_tematica() {
+        var selector = document.getElementById("selector_tematica");
+        var opcionElegida = selector[selector.selectedIndex];
+
+        var idTema = opcionElegida.value;
+        var tematica = getCleanedString(opcionElegida.innerText);
+        opcionElegida.hidden = true;
+        var porcentaje = document.getElementById('porcentaje_tematica').value;
+
+        if (!porcentaje_es_valido(porcentaje))
+            return;
+
+        seleccionar_primer_opcion_no_oculta("selector_tematica");
+
+        var tabla_tematicas = document.getElementById("tabla_tematicas");
+        var tematicas = tabla_tematicas.rows;
+
+        var indice = tabla_tematicas.rows.length;
+        var row = tabla_tematicas.insertRow(indice);
+        var ultimo_id = tabla_tematicas.rows[indice-1].id
+        var numero_id = parseInt(ultimo_id.substr(ultimo_id.indexOf("_")+1)) + 1;
+        if (isNaN(numero_id))
+            numero_id = 0;
+
+        row.id = "tematica_" + numero_id;
+        row.insertCell(0).innerHTML = tematica;
+        row.insertCell(1).innerHTML = porcentaje + "%";
+        row.insertCell(2).innerHTML = '<button type="button" class="btn btn-default" onclick="eliminarTematica(' + numero_id + ')"><span class="glyphicon glyphicon-trash"></span></button></td>'
+
+        actualizar_porcentaje_restante();
+    }
+
+    function habilitar_deshabilitar_boton_agregar(habilitado) {
+        var boton = document.getElementById('boton_agregar_curso');
+        boton.disabled = !habilitado;
+
+        document.getElementById('curso_opcion_0').hidden = habilitado;
+    }
+
+    function agregarCurso() {
+        var selector_materia = document.getElementById("materia");
+        var materiaElegida = selector_materia[selector_materia.selectedIndex];
+
+        var selector_curso = document.getElementById("curso");
+        var cursoElegido = selector_curso[selector_curso.selectedIndex];
+
+        var tabla = document.getElementById("cursos_seleccionados_para_cursar");
+
+        var indice = tabla.rows.length;
+        var row = tabla.insertRow(indice);
+        var ultimo_id = tabla.rows[indice-1].id
+        var numero_id = parseInt(ultimo_id.substr(ultimo_id.indexOf("_")+1)) + 1;
+        if (isNaN(numero_id))
+            numero_id = 0;
+
+        row.id = "curso_" + numero_id;
+
+        var celda_id_materia = row.insertCell(0);
+        celda_id_materia.innerHTML = materiaElegida.value;
+        celda_id_materia.hidden = true;
+
+        var celda_id_curso = row.insertCell(1);
+        celda_id_curso.innerHTML = cursoElegido.value;
+        celda_id_curso.hidden = true;
+
+        row.insertCell(2).innerHTML = materiaElegida.innerText;
+        row.insertCell(3).innerHTML = cursoElegido.innerText;
+        row.insertCell(4).innerHTML = '<button type="button" class="btn btn-default" onclick="eliminarCurso(' + numero_id + ')"><span class="glyphicon glyphicon-trash"></span></button></td>'
+
+        materiaElegida.hidden = true;
+        selector_materia.selectedIndex = 0;
+        limpiar_selector_cursos(false);
+
+        var div_tabla = document.getElementById('div-tabla-cursos-seleccionados-para-cursar');
+        div_tabla.hidden = false;
+    }
+
+    function eliminarCurso(numero_id) {
+        var tabla = document.getElementById("cursos_seleccionados_para_cursar");
+        tabla.rows["curso_" + numero_id].remove();
+    }
+
+    function porcentaje_es_valido(valor) {
+        var actual = calcular_porcentaje_actual();
+        var error_label = document.getElementById('error_label_tematica')
+
+        var msj = "El porcentaje ingresado no es válido. El valor debe ser mayor a 0 y menor o igual que "
+        msj += (100 - actual) + "%"
+
+        var es_valido = (valor > 0 && valor <= (100 - actual));
+        error_label.innerText = msj
+
+        error_label.hidden = es_valido;
+        return es_valido;
+    }
+
+    function actualizar_porcentaje_restante() {
+        var tabla = document.getElementById("tabla_tematicas");
+        var nuevo_porcentaje = (100 - calcular_porcentaje_actual());
+        tabla.rows["tematica_0"].cells[1].innerText = nuevo_porcentaje + "%"
+
+        var div_selector = document.getElementById('div_seleccionar_tematicas');
+        div_selector.hidden = (nuevo_porcentaje == 0);
+    }
+
+    function calcular_porcentaje_actual() {
+        var tabla = document.getElementById("tabla_tematicas");
+        var porcentaje = 0;
+        for (var i=2; i<tabla.rows.length; i++) {
+            var texto = tabla.rows[i].cells[1].innerText;
+            porcentaje += parseInt(texto.substring(0,texto.indexOf("%")));
+        }
+        return porcentaje;
+    }
+
+    function eliminarTematica(idTematica) {
+        var tabla = document.getElementById("tabla_tematicas");
+        tabla.rows["tematica_" + idTematica].remove();
+        actualizar_porcentaje_restante();
+    }
+
+
+
+
+
+
+</script>
+
+<div class="container">
+
+    <h2>{%trans%}Nuevo Plan de Estudios{%endtrans%}</h2>
+
+    <br>
+
+    {% if carreras | length > 0 %}
+    <label>Seleccioná las preferencias con las cuales querés generar el nuevo plan.</label>
+
+    <br>
+    <br>
+
+    <form onsubmit="return false;">
+        <div class="row">
+            <div class="col-sm-6">
+                <label>>> Carrera:</label>
+                {% for carrera in carreras %}
+                <div class="radio" id="carrera-{{carrera['id_carrera']}}">
+                    <label><input type="radio" id="{{carrera['id_carrera']}}" name="opcion-carrera"
+                                  onchange="onChangeCarrera({{carrera['id_carrera']}})">{{carrera["descripcion"]}}</label>
+                    {% if carrera["orientaciones"] | length > 0 %}
+                    <div class="row" id="orientaciones-{{carrera['id_carrera']}}" name="orientaciones-disponibles"
+                         hidden="true">
+                        <br>
+                        <div class="col-sm-1">
+                        </div>
+                        <div class="col-sm-6">
+                            <label style="font-weight: bold;margin-left: -20px;">>> Orientación elegida:</label>
+                            {% for orientacion in carrera["orientaciones"] %}
+                            <div class="radio"
+                                 id="orientacion-{{orientacion['clave_reducida']}}-carrera-{{carrera['id_carrera']}}">
+                                <label><input type="radio" id="{{orientacion['clave_reducida']}}"
+                                              name="opcion-orientacion">{{orientacion["descripcion"]}}</label>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        <div class="col-sm-5">
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+                {% endfor %}
+            </div>
+            <div class="col-sm-6" id="tipos_trabajo_final_carrera" hidden="true">
+            </div>
+        </div>
+
+        <br>
+        <div class="row">
+            <div class="col-sm-6">
+                <div class="form-group">
+                    <label>>> Máxima cantidad de cuatrimestres de duración: <span
+                            class="glyphicon glyphicon-question-sign" aria-hidden="true" data-toggle="tooltip"
+                            title="No incluyen los dos cuatrimestres que requiere el CBC (o un cuatrimestre si tenés al menos 3 de las materias aprobadas). Si ya tenés el CBC aprobado no se agregarán cuatrimestres extras."></span>
+                    </label>
+                    <div class="row">
+                        <div class="col-sm-4">
+                            <input type="number" class="form-control" name="maxima_cantidad_cuatrimestres"
+                                   id="maxima_cantidad_cuatrimestres" value="1"
+                                   min="1" max="24" step="1">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-sm-6">
+                <div class="form-group">
+                    <label>>> Máxima cantidad de materias por cuatrimestre:</label>
+                    <div class="row">
+                        <div class="col-sm-4">
+                            <input type="number" class="form-control" name="maxima_cantidad_materias_por_cuatrimestre"
+                                   id="maxima_cantidad_materias_por_cuatrimestre" value="1"
+                                   min="1" max="10" step="1">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-sm-6">
+                <div class="form-group">
+                    <label>>> Máxima cantidad de horas de cursada por semana:</label>
+                    <div class="row">
+                        <div class="col-sm-4">
+                            <input type="number" class="form-control" name="maxima_cantidad_hs_por_semana"
+                                   id="maxima_cantidad_hs_por_semana" value="1"
+                                   min="1" max="144" step="1">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-sm-6">
+                <div class="form-group">
+                    <label>>> Máxima cantidad de horas extra que le querés dedicar por semana al conjunto de
+                        materias:</label>
+                    <div class="row">
+                        <div class="col-sm-4">
+                            <input type="number" class="form-control" name="maxima_hs_extra_por_semana"
+                                   id="maxima_hs_extra_por_semana" value="1"
+                                   min="1" max="168" step="1">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-sm-6">
+                <div class="form-group">
+                    <label>
+                        >> Puntaje mínimo requerido para los cursos a seleccionar:
+                        <span class="glyphicon glyphicon-question-sign" aria-hidden="true" data-toggle="tooltip" title="Los cursos no puntuados tienen un puntaje de 0.
+                La restricción de puntaje no es tenida en cuenta en el caso de los cursos que se seleccionan manualmente.
+                Las materias que se elijan no tendrán un puntaje menor al seleccionado a menos que sean el único curso disponible en el caso de las obligatorias o que las electivas disponibles con esos puntajes no alcancen a cubrir el total de electivas requerido. En estos casos siempre se seleccionará en orden la de mayor puntaje con mayor cantidad de encuestas completas."></span>
+                    </label>
+                    <div class="row">
+                        <div class="col-sm-4">
+                            <input type="number" class="form-control" name="puntaje_minimo"
+                                   id="puntaje_minimo" value="0" min="0" max="5" step="1">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-sm-6">
+                <div class="form-group">
+                    <label>
+                        >> Cuatrimestre y año de inicio del plan:
+                        <span class="glyphicon glyphicon-question-sign" aria-hidden="true" data-toggle="tooltip"
+                              title="En qué momento se desea comenzar a cursar las primeras materias que surjan de este plan. Es necesario diferenciar entre primer y segundo cuatrimestre ya que no todas las materias se dictan en ambos cuatrimestres."></span>
+                    </label>
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                <label>Número de cuatrimestre:</label>
+                                <select class="form-control" id="numero_cuatrimestre" name="numero_cuatrimestre">
+                                    <option>1</option>
+                                    <option>2</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                <label>Año:</label>
+                                <select class="form-control" id="anio" name="anio">
+                                    {% for i in anios %}
+                                    <option>{{i}}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <label>>> Horarios en los cuales no podés cursar:</label>
+
+        <div>
+            <div class="row">
+                <div class="col-sm-2">
+                    <div class="form-group">
+
+                        <select class="form-control" id="horario-dia" name="horario-dia">
+                            {% for dia in dias %}
+                            <option>{{dia}}</option>
+                            {% endfor %}
+                        </select>
+
+                    </div>
+                </div>
+
+                <div class="col-xs-1">
+                    <p>De:</p>
+                </div>
+
+                <div class="col-sm-2">
+                    <div class="form-group">
+                        <select class="form-control" id="hora_desde" name="hora_desde" onchange="actualizarHoraHasta()">
+                            {% for i in range(hora_desde | length) %}
+                            <option id="hora_desde_{{i}}">{{hora_desde[i]}}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+
+                <div class="col-xs-1">
+                    <p>A:</p>
+                </div>
+
+                <div class="col-sm-2">
+                    <div class="form-group">
+                        <select class="form-control" id="hora_hasta" name="hora_hasta">
+                            {% for i in range(hora_hasta | length) %}
+                            <option id="hora_hasta_{{i}}">{{hora_hasta[i]}}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+
+                <div class="col-sm-2">
+                    <div class="form-group">
+                        <button type="button" class="btn btn-mussa-default"
+                                onclick="agregarHorario()">Agregar horario
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="alert alert-danger" id="error_label_horario" style="display:none">
+                Este horario es incompatible con los que cargaste previamente.
+            </div>
+
+        </div>
+
+        <br>
+
+        <div class="form-group" id="div-tabla-horarios" hidden="true">
+            <div class='table-responsive'>
+                <table class='table table-hover' id="tabla_horarios">
+                    <tr>
+                        <th>Dia</th>
+                        <th>De</th>
+                        <th>A</th>
+                        <th>Eliminar</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <label>>> Porcentaje de cada temática deseada con el que querés que sean elegidas las materias electivas:
+            <span class="glyphicon glyphicon-question-sign" aria-hidden="true" data-toggle="tooltip" title="Esto indica el porcentaje de créditos de materias electivas que deben ser de cada temática, no se tendrá en cuenta las temáticas de materias electivas o de materias seleccionadas especialmente para cursar.
+            Te recomendamos dejar un porcentaje libre para que la carrera no se alargue debido a incompatibilidad horaria de algunas de esas materias"></span>
+        </label>
+
+        <br>
+        <br>
+
+        <div class="row" id="div_seleccionar_tematicas">
+            <div class="col-sm-3">
+                <div class="form-group">
+                    <select class="form-control" id="selector_tematica" name="selector_tematica">
+                        {% for tematica in tematicas %}
+                        <option id="tematica_opcion_{{tematica['id_tematica']}}" value="{{tematica['id_tematica']}}">
+                            {{tematica["tematica"]}}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            <div class="col-sm-3">
+                <input type="number" class="form-control" name="porcentaje_tematica"
+                       id="porcentaje_tematica" min="0" max="100" step="1">
+            </div>
+            <div class="col-sm-2">
+                <button class="btn btn-mussa-default"
+                        onclick="agregar_tematica()">Agregar
+                </button>
+            </div>
+
+        </div>
+
+        <div class="alert alert-danger" id="error_label_tematica" hidden="true"></div>
+
+        <div class="form-group" id="div-tabla-tematicas">
+            <div class='table-responsive'>
+                <table class='table table-hover' id="tabla_tematicas">
+                    <tr>
+                        <th>Temática</th>
+                        <th>Porcentaje</th>
+                        <th>Eliminar</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr id="tematica_0">
+                        <th>Cualquier temática</th>
+                        <th>100 %</th>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <br>
+
+        <div id="div_materias_con_final_pendiente" hidden="true">
+            <label>>> Indicar para cada materia con final pendiente a partir de qué momento puede ser considerada
+                aprobada:</label>
+
+            <br>
+
+            <div class="form-group" id="div-tabla-finales-pendientes">
+                <div class='table-responsive'>
+                    <table class='table table-hover' id="finales_pendientes">
+                        <tr>
+                            <th hidden="true">Id Materia</th>
+                            <th hidden="true">Id Carrera</th>
+                            <th>Código</th>
+                            <th>Materia</th>
+                            <th>Cuatrimestre en la que la materia estará aprobada <span
+                                    class="glyphicon glyphicon-question-sign" aria-hidden="true" data-toggle="tooltip"
+                                    title="Puedes seleccionar los valores -1, 0, 1 y 2 que representan a partir de qué cuatrimestre se puede considerar aprobada la materia antes de realizar la asignación de materias para el cuatrimestre.
+Un valor de 0 indica que para el inicio del nuevo cuatrimestre la materia ya se puede considerar con el final aprobado. Un valor de 1 indica que será luego de un cuatrimestre, y un valor de 2 que será luego del segundo cuatrimestre.
+Como solo hay tres períodos en los que se puede rendir la materia, solo puedes elegir entre esos tres valores para darla por aprobada.
+Si por algún motivo no quieres considerar que esta materia va a estar aprobada y que sea tenida en cuenta como una materia a cursar al generar el plan, establecer el valor -1 que se encuentra por defecto."></span>
+                            </th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for materia in materias_con_final_pendiente%}
+                        <tr>
+                            <th hidden="true">{{materia["id_materia"]}}</th>
+                            <th hidden="true">{{materia["id_carrera"]}}</th>
+                            <th>{{materia["codigo"]}}</th>
+                            <th>{{materia["nombre"]}}</th>
+                            <th>
+                                <div class="row">
+                                    <div class="col-sm-4">
+                                        <select class="form-control"
+                                                id="final_aprobado_{{materia['id_materia_alumno']}}"
+                                                name="final_aprobado_{{materia['id_materia_alumno']}}">
+                                            {% for i in range(-1,3) %}
+                                            <option>{{i}}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+                            </th>
+                        </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <br>
+        </div>
+
+
+        <label>
+            >> Si querés, podes elegir algunos cursos específicos en los que desees cursar: <span
+                class="glyphicon glyphicon-question-sign" aria-hidden="true" data-toggle="tooltip"
+                title="Esto garantiza que esos cursos sean elegidos aunque no determina en qué cuatrimestre serán cursados."></span>
+        </label>
+
+        <div class="form-group">
+            <label>Materia:</label>
+
+            <select class="form-control" id="materia" name="materia" onchange="habilitar_curso()" disabled>
+                <option id="opcion_0">Seleccione una materia</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>Curso:</label>
+            <select class="form-control" id="curso" name="curso" onchange="habilitar_deshabilitar_boton_agregar(true)"
+                    disabled>
+                <option id="curso_opcion_0" value="-1">Seleccione un curso</option>
+            </select>
+        </div>
+
+        <button type="button" class="btn btn-mussa-default" id='boton_agregar_curso' onclick="agregarCurso()" disabled>
+            Agregar curso
+        </button>
+
+        <div class="form-group" id="div-tabla-cursos-seleccionados-para-cursar" hidden="true">
+            <br>
+            <div class='table-responsive'>
+                <table class='table table-hover' id="cursos_seleccionados_para_cursar">
+                    <tr>
+                        <th hidden="true">Id Materia</th>
+                        <th hidden="true">Id Curso</th>
+                        <th>Materia</th>
+                        <th>Curso</th>
+                        <th>Eliminar</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <br>
+
+    </form>
+
+    <br>
+    <br>
+
+    <button type="button" class="btn btn-mussa-default" onclick="generar_plan_de_estudios()" disabled>
+        Generar Plan de Estudios
+    </button>
+
+    {% else %}
+
+    <p style="font-style: italic; color: purple; font-size: large;">
+        No tenés ninguna carrera en la que estés registrado.
+    </p>
+    <p style="font-style: italic; color: purple; font-size: large;">
+        Cuando te registres en una o más carreras podrás generar sus correspondientes planes de estudios personalizados
+        desde esta sección.
+    </p>
+
+    {% endif %}
+</div>
+
+{% endblock %}

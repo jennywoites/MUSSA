@@ -1,4 +1,4 @@
-from app.models.carreras_models import TipoMateria
+from app.models.carreras_models import TipoMateria, Creditos
 
 
 def generarJSON_carrera(carrera):
@@ -7,8 +7,39 @@ def generarJSON_carrera(carrera):
         'codigo': carrera.codigo,
         'nombre': carrera.nombre,
         'plan': carrera.plan,
-        'descripcion': carrera.get_descripcion_carrera()
+        'descripcion': carrera.get_descripcion_carrera(),
+        'orientaciones': generarJSON_orientaciones(carrera.orientaciones.all()),
+        'trabajos_finales_carrera': generarJSON_trabajo_final_carrera(carrera)
     }
+
+
+def generarJSON_trabajo_final_carrera(carrera):
+    creditos = Creditos.query.get(carrera.id)
+    trabajos = []
+
+    if creditos.creditos_tesis > 0:
+        trabajos.append({
+            "codigo": "TESIS",
+            "descripcion": "Tesis"
+        })
+
+    if creditos.creditos_tesis > 0:
+        trabajos.append({
+            "codigo": "TP_PROFESIONAL",
+            "descripcion": "Trabajo Profesional"
+        })
+
+    return trabajos
+
+
+def generarJSON_orientaciones(orientaciones):
+    json_orientaciones = []
+    for orientacion in orientaciones:
+        json_orientaciones.append({
+            "descripcion": orientacion.descripcion,
+            "clave_reducida": orientacion.clave_reducida
+        })
+    return json_orientaciones
 
 
 def generarJSON_materia(materia):

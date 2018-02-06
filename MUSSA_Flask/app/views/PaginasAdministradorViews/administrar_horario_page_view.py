@@ -4,21 +4,18 @@ from flask_user import roles_accepted
 from werkzeug import secure_filename
 from app.ClienteAPI.ClienteAPI import ClienteAPI
 from app.views.base_view import main_blueprint
-from datetime import datetime
 from app.API_Rest.codes import *
 from flask_babel import gettext
+from app.utils import generar_lista_anios
 
 
 @main_blueprint.route('/admin/administrar_horarios')
 @roles_accepted('admin')
 def administrar_horarios_page():
-    MAX_TIEMPO = 5
-
     cursos = ClienteAPI().obtener_todos_los_cursos_existentes(request.cookies)
     cursos = cursos if cursos else []
 
-    hoy = datetime.now().year
-    anios = [x for x in range(hoy, hoy - MAX_TIEMPO, -1)]
+    anios = generar_lista_anios()
     return render_template('pages/administrar_horarios_page.html',
                            cursos=cursos,
                            anios=anios

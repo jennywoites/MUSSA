@@ -40,6 +40,16 @@ class Parametros:
         self.max_cuatrimestres = MAX_CUATRIMESTRES_TOTALES
         self.max_cant_materias_por_cuatrimestre = MAX_CANTIDAD_MATERIAS_POR_CUATRIMESTRE
 
+        #Nuevos parametros a agregar
+        self.materias_CBC_pendientes = []
+        self.orientacion = ''
+        self.id_carrera = ''
+        self.max_horas_cursada = 0
+        self.max_horas_extras = 0
+        self.materias_con_finales_pendientes = {}
+        self.tematicas = {}
+
+
     def set_franjas(self, minima, maxima):
         self.franja_minima = minima
         self.franja_maxima = maxima

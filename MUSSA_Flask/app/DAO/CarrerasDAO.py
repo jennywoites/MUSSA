@@ -132,7 +132,6 @@ def cargar_datos_carrera(nombre_arch):
             else:
                 orientaciones = []
                 for dato in datos:
-                    dato = dato[1:len(dato) - 1]
                     orientacion, cod_orientacion = dato.split(":")
                     orientaciones.append((orientacion, cod_orientacion))
                 dic_datos[etiqueta] = orientaciones

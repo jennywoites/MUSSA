@@ -1354,14 +1354,14 @@
           "type": "array",
           "description": "Lista de carreras a las que pertenece el curso. Un curso puede dictarse para materias de igual código en diferentes carreras.",
           "items": {
-            "$ref": "#definitions/Carrera"
+            "$ref": "#/definitions/Carrera"
           }
         },
         "horarios": {
           "type": "array",
           "description": "Lista de horarios en las que es dictado el curso. La composición de estos horarios es la carga horaria completa del curso.",
           "items": {
-            "$ref": "#definitions/Horario"
+            "$ref": "#/definitions/Horario"
           }
         },
         "docentes": {
@@ -1373,7 +1373,7 @@
           "type": "array",
           "description": "Lista de datos completos de los docentes que dicatn el curso.",
           "items": {
-            "$ref": "#definitions/Docente"
+            "$ref": "#/definitions/Docente"
           }
         },
         "puntaje": {
@@ -1516,6 +1516,20 @@
           "type": "string",
           "description": "Descripción completa de la carrera. El formato es 'codigo - nombre de la carrera (Plan año)'",
           "example": "09 - Licenciatura en Análisis de Sistemas (Plan 1986)"
+        },
+        "orientaciones": {
+          "type": "array",
+          "description": "Lista de orientaciones que posee la carrera. Si no tiene orientaciones la lista está vacía.",
+          "items": {
+            "$ref": "#/definitions/Orientacion"
+          }
+        },
+        "trabajos_finales_carrera": {
+          "type": "array",
+          "description": "Lista de trabajos finales que posee la carrera. Si no tiene ninguno la lista está vacía.",
+          "items": {
+            "$ref": "#/definitions/TrabajoFinal"
+          }
         }
       }
     },
@@ -1528,6 +1542,36 @@
           "items": {
             "$ref": "#/definitions/Carrera"
           }
+        }
+      }
+    },
+    "Orientacion": {
+      "type": "object",
+      "properties": {
+        "descripcion": {
+          "type": "string",
+          "description": "Descripcion completa de la orientacion",
+          "example": "Gestión Industrial de Sistemas"
+        },
+        "clave_reducida": {
+          "type": "string",
+          "description": "Clave utilizada para identificar la orientacion",
+          "example": "GESTION"
+        }
+      }
+    },
+    "TrabajoFinal": {
+      "type": "object",
+      "properties": {
+        "descripcion": {
+          "type": "string",
+          "description": "Descripcion completa del tipo de trabajo final",
+          "example": "Trabajo Profesional"
+        },
+        "codigo": {
+          "type": "string",
+          "description": "Clave utilizada para identificar el tipo de trabajo final",
+          "example": "TP_PROFESIONAL"
         }
       }
     },
@@ -1734,7 +1778,7 @@
           "type": "array",
           "description": "Lista de materias alumno",
           "items": {
-            "$ref": "#definitions/MateriaAlumno"
+            "$ref": "#/definitions/MateriaAlumno"
           }
         }
       }
@@ -1845,13 +1889,13 @@
           "example": 5
         },
         "carrera": {
-          "$ref": "#definitions/Carrera"
+          "$ref": "#/definitions/Carrera"
         },
         "materia": {
-          "$ref": "#definitions/Materia"
+          "$ref": "#/definitions/Materia"
         },
         "curso": {
-          "$ref": "#definitions/Curso"
+          "$ref": "#/definitions/Curso"
         },
         "cuatrimestre_aprobacion_cursada": {
           "type": "integer",
@@ -1979,21 +2023,21 @@
           "type": "array",
           "description": "Lista de horarios para respuestas de tipo HORARIOS.",
           "items": {
-            "$ref": "#definitions/Horario"
+            "$ref": "#/definitions/Horario"
           }
         },
         "comentarios_docentes": {
           "type": "array",
           "description": "Lista de comentarios y los ids de docentes para respuestas de tipo DOCENTES.",
           "items": {
-            "$ref": "#definitions/ComentarioDocente"
+            "$ref": "#/definitions/ComentarioDocente"
           }
         },
         "materias_correlativas": {
           "type": "array",
           "description": "Lista de comentarios y los ids de docentes para respuestas de tipo DOCENTES.",
           "items": {
-            "$ref": "#definitions/Correlativa"
+            "$ref": "#/definitions/Correlativa"
           }
         },
         "estrellas": {
@@ -2010,14 +2054,14 @@
           "type": "array",
           "description": "Lista de palabras clave para respuestas de tipo TAG",
           "items": {
-            "$ref": "#definitions/RespuestaPalabraClave"
+            "$ref": "#/definitions/RespuestaPalabraClave"
           }
         },
         "tematicas": {
           "type": "array",
           "description": "Lista de tematicas para respuestas de tipo TEMATICA",
           "items": {
-            "$ref": "#definitions/RespuestaTematica"
+            "$ref": "#/definitions/RespuestaTematica"
           }
         }
       }

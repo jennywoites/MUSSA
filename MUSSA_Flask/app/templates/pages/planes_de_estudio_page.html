@@ -1,0 +1,20 @@
+{% extends "common/page_base.html" %}
+
+{% block content %}
+<div class="container">
+
+    <h2>{%trans%}Plan de Estudios{%endtrans%}</h2>
+
+    <br>
+
+    <button type="button" onclick="redirigir_a('{{ url_for('main.nuevo_plan_de_estudios_page') }}')" class="btn btn-mussa-default">Generar nuevo plan de estudios</button>
+
+    <br>
+
+    <!-- Lista de carreras y fechas de planes de estudios generados -->
+
+    <br>
+
+</div>
+
+{% endblock %}
