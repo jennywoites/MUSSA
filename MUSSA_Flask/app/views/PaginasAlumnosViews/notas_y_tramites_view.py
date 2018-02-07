@@ -14,7 +14,15 @@ def notas_y_tramites_page():
 @main_blueprint.route('/formularios/nota_al_decano', methods=['GET'])
 @login_required
 def nota_al_decano_page():
-    cookie = request.cookies
+    return render_template('pages/nota_al_decano.html')
+
+
+@main_blueprint.route('/formularios/materias_alumno', methods=['GET'])
+@login_required
+def formulario_materias_alumno_page():
+    cookies = request.cookies
     cliente = ClienteAPI()
 
-    return render_template('pages/nota_al_decano.html')
+    mis_carreras = cliente.obtener_carreras_alumno(cookies)
+    return render_template('pages/formulario_materias_alumno.html',
+                           carreras=mis_carreras)

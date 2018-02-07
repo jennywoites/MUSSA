@@ -29,15 +29,13 @@ class NotaAlDecanoService(BaseService):
         nombre_archivo = "NotaAlDecano-" + alumno.get_padron() + ".pdf"
         ruta = os.path.join('tmp', nombre_archivo)
 
-        self.generar_archivo_PDF(objeto, motivo, telefono, domicilio, localidad, dni, anio_ingreso, nota_extendida, alumno, nombre_archivo)
+        self.generar_archivo_PDF(objeto, motivo, telefono, domicilio, localidad, dni, anio_ingreso, nota_extendida,
+                                 alumno, nombre_archivo)
 
         return send_file(ruta, as_attachment=True)
 
-    def obtener_texto_o_guion(self, nombre_parametro):
-        texto = self.obtener_texto(nombre_parametro)
-        return texto if texto else '-'
-
-    def generar_archivo_PDF(self, objeto, motivo, telefono, domicilio, localidad, dni, anio_ingreso, nota_extendida, alumno, nombre_archivo):
+    def generar_archivo_PDF(self, objeto, motivo, telefono, domicilio, localidad, dni, anio_ingreso, nota_extendida,
+                            alumno, nombre_archivo):
         ruta = os.path.join('app', 'tmp', nombre_archivo)
         generador = GeneradorPDF(ruta)
 
@@ -67,9 +65,13 @@ class NotaAlDecanoService(BaseService):
 
         generador.insertar_salto_de_pagina()
         generador.insertar_logos()
+
         generador.insertar_materias_rendidas(alumno)
+        generador.insertar_materias_final_pendiente(alumno)
+        generador.insertar_materias_en_curso(alumno)
 
         generador.guardar_pdf()
+
 
 #########################################
 CLASE = NotaAlDecanoService

@@ -116,6 +116,15 @@ class GeneradorPDF:
         self.story.append(Paragraph(texto, self.estilos["Justificado_identado"]))
         self.story.append(Spacer(1, 12))
 
+    def insertar_datos_alumno(self, alumno):
+        usuario = User.query.get(alumno.user_id)
+
+        texto = usuario.last_name + ", " + usuario.last_name + SALTO_DE_LINEA
+        texto += "Padrón: " + alumno.get_padron()
+
+        self.story.append(Paragraph(texto, self.estilos["Justificado"]))
+        self.story.append(Spacer(1, 12))
+
     def obtener_texto_carreras(self, alumno):
         carreras = []
         for dato in AlumnosCarreras.query.filter_by(alumno_id=alumno.id).all():
@@ -218,33 +227,45 @@ class GeneradorPDF:
         self.story.append(Paragraph(nota, self.estilos["Justificado_identado"]))
         self.story.append(Spacer(1, 12))
 
-    def insertar_materias_rendidas(self, alumno):
+    def insertar_materias_rendidas(self, alumno, carreras_filtradas=[]):
         self.insertar_materias_por_carrera(
             "Materias Rendidas",
             'Sin materias aprobadas / desaprobadas para esta carrera',
             alumno,
-            [APROBADA, DESAPROBADA]
+            [APROBADA, DESAPROBADA],
+            carreras_filtradas
         )
         self.story.append(Spacer(1, 12))
+
+    def insertar_materias_final_pendiente(self, alumno, carreras_filtradas=[]):
         self.insertar_materias_por_carrera(
             "Materias con final pendiente",
             'No hay materias con final pendeinte para esta carrera',
             alumno,
-            [FINAL_PENDIENTE]
+            [FINAL_PENDIENTE],
+            carreras_filtradas
         )
         self.story.append(Spacer(1, 12))
+
+    def insertar_materias_en_curso(self, alumno, carreras_filtradas=[]):
         self.insertar_materias_por_carrera(
             "Cursando este cuatrimestre",
             'No se cursan materias de esta carrera este cuatrimestre',
             alumno,
-            [EN_CURSO]
+            [EN_CURSO],
+            carreras_filtradas
         )
 
-    def insertar_materias_por_carrera(self, titulo, texto_sin_datos, alumno, estados):
+    def insertar_materias_por_carrera(self, titulo, texto_sin_datos, alumno, estados, carreras_filtradas):
         self.story.append(Paragraph(titulo + ":", self.estilos["Alinear_Izquierda_Bold"]))
         self.story.append(Spacer(1, 12))
 
-        for carrera_alumno in AlumnosCarreras.query.filter_by(alumno_id=alumno.id).all():
+        query = AlumnosCarreras.query.filter_by(alumno_id=alumno.id)
+        if carreras_filtradas:
+            query = query.filter(AlumnosCarreras.carrera_id.in_(carreras_filtradas))
+        carreras_alumno = query.all()
+
+        for carrera_alumno in carreras_alumno:
             carrera = Carrera.query.get(carrera_alumno.carrera_id)
             self.story.append(Paragraph(carrera.get_descripcion_carrera() + ":", self.estilos["Alinear_Izquierda_Bold"]))
             self.story.append(Spacer(1, 12))
