@@ -1,0 +1,84 @@
+{% extends "common/page_base.html" %}
+
+{% block content %}
+<script>
+
+    function descargarFormulario() {
+        var objeto = document.getElementById('objeto').value;
+        var motivo = document.getElementById('motivo').value;
+        var telefono = document.getElementById('telefono').value;
+        var domicilio = document.getElementById('domicilio').value;
+        var localidad = document.getElementById('localidad').value;
+        var dni = document.getElementById('dni').value;
+        var anio_ingreso = document.getElementById('anio_ingreso').value;
+        var nota_extendida = document.getElementById('nota_extendida').value;
+
+        show_loading_mask();
+        descargar_nota_al_decano('{{ csrf_token()}}', objeto, motivo, telefono, domicilio, localidad, dni,
+        anio_ingreso, nota_extendida, hide_loading_mask);
+    }
+
+</script>
+
+<div class="container">
+
+    <h2>{%trans%}Nota dirigida al decano{%endtrans%}</h2>
+
+    <br>
+
+    <form onsubmit="return false;">
+        <div class="form-group">
+            <label>Objeto:</label>
+            <textarea class="form-control" rows="2" id="objeto"></textarea>
+        </div>
+
+        <div class="form-group">
+            <label>Motivo de la solicitud:</label>
+            <textarea class="form-control" rows="6" id="motivo"></textarea>
+        </div>
+
+        <div class="form-group">
+            <label>Teléfono / Celular:</label>
+            <input type="text" class="form-control" id="telefono">
+        </div>
+
+        <div class="form-group">
+            <label>Domicilio:</label>
+            <input type="text" class="form-control" id="domicilio">
+        </div>
+
+        <div class="form-group">
+            <label>Localidad:</label>
+            <input type="text" class="form-control" id="localidad">
+        </div>
+
+        <div class="form-group">
+            <label>DNI:</label>
+            <input type="number" class="form-control" id="dni">
+        </div>
+
+        <div class="form-group">
+            <label>Año de ingreso a la Facultad:</label>
+            <input type="number" class="form-control" id="anio_ingreso">
+        </div>
+
+        <div class="form-group">
+            <label>Nota extendiendo el motivo de la solicitud (opcional):</label>
+            <textarea class="form-control" rows="6" id="nota_extendida"></textarea>
+        </div>
+
+        <div>
+            <div class="pull-left">
+                <button type="button" class="btn btn-mussa-default" onclick="redirigir_a({{url_for('main.notas_y_tramites_page')}})">Volver</button>
+            </div>
+
+            <div class="pull-right">
+                <button type="button" class="btn btn-mussa-default" onclick="descargarFormulario()">Descargar Formulario</button>
+            </div>
+        </div>
+
+    </form>
+
+</div>
+
+{% endblock %}

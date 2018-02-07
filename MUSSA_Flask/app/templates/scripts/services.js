@@ -41,6 +41,36 @@ function do_request(method, page, CSRF_token, parametros, onSucces, onError) {
     }
 }
 
+function do_request_y_abrir_PDF(method, page, CSRF_token, parametros, nombrePDF, onFinished) {
+    xmlhttp = new XMLHttpRequest();
+    xmlhttp.responseType = 'blob';
+
+    xmlhttp.onreadystatechange = function() {
+        if (this.status == 0 || this.readyState != 4)
+            return;
+
+        if ( this.status == SUCCESS || this.status == SUCCESS_NO_DATA) {
+            var blob = new Blob([this.response], {type: 'application/pdf'});
+            var link = document.createElement('a');
+            link.href = window.URL.createObjectURL(blob);
+            link.download = (nombrePDF + ".pdf");
+            link.click();
+        }
+
+        if (onFinished)
+            onFinished();
+    }
+
+    var async = true;
+    xmlhttp.open(method, page, async);
+
+    xmlhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+    xmlhttp.withCredentials = true;
+
+    xmlhttp.setRequestHeader("X-CSRFToken", CSRF_token);
+    xmlhttp.send(jQuery.param(parametros));
+}
+
 //////////////////////////////////////////////////////////////////////
 
 HTTP = "http://"
@@ -218,4 +248,20 @@ function guardar_respuestas_encuesta_alumno_service(token, idEncuestaAlumno, cat
     parametros["respuestas"] = JSON.stringify(respuestas);
 
     do_request('POST', url_servicio, token, parametros, onSuccess, onError);
+}
+
+function descargar_nota_al_decano(token, objeto, motivo, telefono, domicilio, localidad, dni, anio_ingreso, nota_extendida, onFinished) {
+    var url_servicio = BASE_URL + '/alumno/formulario/nota_al_decano';
+
+    parametros = {}
+    parametros["objeto"] = objeto;
+    parametros["motivo"] = motivo;
+    parametros["telefono"] = telefono;
+    parametros["domicilio"] = domicilio;
+    parametros["localidad"] = localidad;
+    parametros["dni"] = dni;
+    parametros["anio_ingreso"] = anio_ingreso;
+    parametros["nota_extendida"] = nota_extendida;
+
+    do_request_y_abrir_PDF('PUT', url_servicio, token, parametros, 'NotaAlDecano', onFinished);
 }
