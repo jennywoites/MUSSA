@@ -265,3 +265,13 @@ function descargar_nota_al_decano(token, objeto, motivo, telefono, domicilio, lo
 
     do_request_y_abrir_PDF('PUT', url_servicio, token, parametros, 'NotaAlDecano', onFinished);
 }
+
+function descargar_lista_de_materias(token, carreras, tipos_de_materias, onFinished) {
+    var url_servicio = BASE_URL + '/alumno/formulario/materias_alumno';
+
+    parametros = {}
+    parametros["carreras"] = JSON.stringify(carreras);
+    parametros["tipos_de_materias"] = JSON.stringify(tipos_de_materias);
+
+    do_request_y_abrir_PDF('PUT', url_servicio, token, parametros, 'Materias', onFinished);
+}

@@ -1,0 +1,114 @@
+{% extends "common/page_base.html" %}
+
+{% block content %}
+<script>
+
+    function descargarFormulario() {
+        var ids_carreras = getCarrerasElegidas();
+        var tipos = getTiposMateriasAIncluir();
+
+        var div_error_carrera = document.getElementById('div_error_carrera');
+        div_error_carrera.hidden = true;
+        var div_error_materias = document.getElementById('div_error_materias_a_incluir');
+        div_error_materias.hidden = true;
+
+        if (ids_carreras.length == 0 || tipos.length == 0) {
+            div_error_carrera.hidden = (ids_carreras.length != 0);
+            div_error_materias.hidden = (tipos.length != 0);
+            return;
+        }
+
+        show_loading_mask();
+        descargar_lista_de_materias('{{ csrf_token()}}', ids_carreras, tipos, hide_loading_mask);
+    }
+
+    function getCarrerasElegidas() {
+        var ids_carreras = [];
+        var carreras = {{carreras | safe}};
+        for (var i=0; i<carreras.length;i++) {
+            var carrera = carreras[i];
+            var opcion = document.getElementById("carrera_" + carrera['id_carrera']);
+            if (opcion.checked)
+                ids_carreras.push(carrera['id_carrera']);
+        }
+        return ids_carreras
+    }
+
+    function getTiposMateriasAIncluir() {
+        var tipos = [];
+
+        var incluir_rendidas = document.getElementById("incluir_rendidas");
+        if (incluir_rendidas.checked)
+            tipos.push(incluir_rendidas.value);
+
+        var incluir_final_pendiente = document.getElementById("incluir_final_pendiente");
+        if (incluir_final_pendiente.checked)
+            tipos.push(incluir_final_pendiente.value);
+
+        var incluir_en_curso = document.getElementById("incluir_en_curso");
+        if (incluir_en_curso.checked)
+            tipos.push(incluir_en_curso.value);
+
+        return tipos;
+    }
+
+</script>
+
+<div class="container">
+
+    <h2>{%trans%}Listado de Materias{%endtrans%}</h2>
+
+    <br>
+
+    <form onsubmit="return false;">
+        <div class="form-group">
+            <label>Carreras:</label>
+            {% for carrera in carreras %}
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" value="{{carrera['id_carrera']}}" id="carrera_{{carrera['id_carrera']}}">
+                {{carrera['descripcion']}}
+            </div>
+            {% endfor %}
+        </div>
+
+        <div id="div_error_carrera" hidden="true">
+            <div class="alert alert-danger">Tenés que elegir al menos una carrera.
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>Incluir:</label>
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" value="0" id="incluir_rendidas">
+                Materias Aprobadas y Desaprobadas
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" value="1" id="incluir_final_pendiente">
+                Materias con Final Pendiente
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" value="2" id="incluir_en_curso">
+                Materias en Curso
+            </div>
+        </div>
+
+        <div id="div_error_materias_a_incluir" hidden="true">
+            <div class="alert alert-danger">Tenés que elegir al menos un tipo de materia para incluir.
+            </div>
+        </div>
+
+        <div>
+            <div class="pull-left">
+                <button type="button" class="btn btn-mussa-default" onclick="redirigir_a('{{url_for('main.notas_y_tramites_page')}}')">Volver</button>
+            </div>
+
+            <div class="pull-right">
+                <button type="button" class="btn btn-mussa-default" onclick="descargarFormulario()">Descargar Formulario</button>
+            </div>
+        </div>
+
+    </form>
+
+</div>
+
+{% endblock %}

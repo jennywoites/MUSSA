@@ -23,6 +23,10 @@ class BaseService(Resource):
         datos = self.obtener_argumentos()
         return datos[nombre_parametro] if nombre_parametro in datos else None
 
+    def obtener_texto_o_guion(self, nombre_parametro):
+        texto = self.obtener_texto(nombre_parametro)
+        return texto if texto else '-'
+
     def obtener_alumno_usuario_actual(self):
         """
         Obtiene el alumno para el usuario actual.
