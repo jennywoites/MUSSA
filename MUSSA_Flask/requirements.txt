@@ -29,8 +29,9 @@ flask-restful
 request
 requests
 
-#Para parsear el PDF
+#Para trabajar con PDF
 PyPDF2
+reportlab
 
 #Boostrap
 flask_bootstrap
