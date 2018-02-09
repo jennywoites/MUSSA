@@ -2,36 +2,18 @@
 
 {% block content %}
 
-    <script>
-
-        function filtrar_resultados() {
-            var input = document.getElementById('filtroCursos');
-            var filter = input.value.toUpperCase();
-
-            var rows = document.getElementsByTagName("table")[0].rows;
-            for (var i = 1; i < rows.length; i++) {
-                var codigo = rows[i].cells[0].innerHTML.toUpperCase();
-                if (codigo.indexOf(filter) > -1) {
-                    rows[i].style.display = "";
-                } else {
-                    rows[i].style.display = "none";
-                }
-            }
-        }
-
-    </script>
-
-    <div class="container">
+<div class="container">
 
     <h2>Cargar horarios de cuatrimestres</h2>
 
-    <form onsubmit="show_loading_mask(); return true;" action="{{ url_for('main.administrar_horarios_upload_file') }}" method="POST"
-    enctype="multipart/form-data">
+    <form onsubmit="show_loading_mask(); return true;" action="{{ url_for('main.administrar_horarios_upload_file') }}"
+          method="POST"
+          enctype="multipart/form-data">
         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
 
         <div class="form-group">
-            <label for="archivo">Archivo de horarios:</label>
-                <input type="file" name="file">
+            <label>Archivo de horarios:</label>
+            <input type="file" name="file">
             </label>
         </div>
 
@@ -51,105 +33,16 @@
                         <label>Año:</label>
                         <select class="form-control" id="anio" name="anio">
                             {% for i in anios %}
-                                <option>{{i}}</option>
+                            <option>{{i}}</option>
                             {% endfor %}
                         </select>
                     </div>
                 </div>
             </div>
-        </div>        
+        </div>
 
         <input type="submit" class="btn btn-mussa-default"/>
     </form>
-
-    {% if cursos | length == 0 %}
-        <h3>No hay horarios cargados</h3>
-    {% else %}
-        <br>
-        <h3>Cursos guardados:</h3>
-
-        <div>
-            <div class="row">
-                <div class="col-sm-4">
-                    <div class="input-group">
-                        <span class="input-group-addon"><i class="glyphicon glyphicon-search"></i></span>
-                        <input type="text" class="form-control" id="filtroCursos" onkeyup="filtrar_resultados()" placeholder="Filtrar por código de materia...">
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <br>
-
-        <div class='table-responsive'>
-            <table class='table table-hover' id="tabla_cursos_guardados">
-                <tr>
-                    <th>Materia</th>
-                    <th>Curso</th>
-                    <th>Docentes</th>
-                    <th>Carreras</th>
-                    <th>Horarios</th>
-                    <th>1º Cuatrimestre</th>
-                    <th>2º Cuatrimestre</th>
-                    <th>Acciones</th>
-                </tr>
-                </thead>
-                <tbody>
-                    {% for curso in cursos %}
-                        <tr>
-                            <td>{{curso["codigo_materia"]}}</td>
-                            <td>{{curso["codigo_curso"]}}</td>
-                            <td>{{curso["docentes"]}}</td>
-                            <td>
-                                <ul class="list-group">
-                                    {% for carrera in curso["carreras"] %}
-                                        <li class="list-group-item" style="border-color: transparent; background-color: transparent;">
-                                            {{carrera["codigo"]}} - {{carrera["nombre"]}}
-                                        </li>
-                                    {% endfor %}
-                                </ul>
-                            </td>
-                            <td>
-                                <ul class="list-group">
-                                    {% for horario in curso["horarios"] %}
-                                        <li class="list-group-item" style="border-color: transparent; background-color: transparent;">
-                                            {{horario["dia"]}} de {{horario["hora_desde"]}} a {{horario["hora_hasta"]}}
-                                        </li>
-                                    {% endfor %}
-                                </ul>
-                            </td>
-                            <td>
-                                <p>
-                                {% if curso["se_dicta_primer_cuatri"] %}
-                                    SI
-                                {% else %}
-                                    NO
-                                {% endif %}
-                                </p>
-                            </td>
-                            <td>
-                                <p>
-                                {% if curso["se_dicta_segundo_cuatri"] %}
-                                    SI
-                                {% else %}
-                                    NO
-                                {% endif %}
-                                </p>
-                            </td>
-                            <td>
-                                <a href='/admin/curso/{{curso["id_curso"]}}'>
-                                    <span class='glyphicon glyphicon-pencil'></span>
-                                </a>
-                            </td>
-                        </tr>
-
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
-
-        {% endif %}
-
-    </div>
+</div>
 
 {% endblock %}

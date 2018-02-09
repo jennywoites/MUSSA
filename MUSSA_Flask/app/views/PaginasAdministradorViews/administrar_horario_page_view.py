@@ -9,20 +9,23 @@ from flask_babel import gettext
 from app.utils import generar_lista_anios
 
 
-@main_blueprint.route('/admin/administrar_horarios')
+@main_blueprint.route('/admin/administrar_cursos')
 @roles_accepted('admin')
-def administrar_horarios_page():
+def administrar_cursos_page():
     cursos = ClienteAPI().obtener_todos_los_cursos_existentes(request.cookies)
     cursos = cursos if cursos else []
 
+    return render_template('pages/administrar_cursos_page.html', cursos=cursos)
+
+
+@main_blueprint.route('/admin/cargar_horarios')
+@roles_accepted('admin')
+def administrar_horarios_page():
     anios = generar_lista_anios()
-    return render_template('pages/administrar_horarios_page.html',
-                           cursos=cursos,
-                           anios=anios
-                           )
+    return render_template('pages/administrar_horarios_page.html', anios=anios)
 
 
-@main_blueprint.route('/admin/administrar_horarios/uploader', methods=['POST'])
+@main_blueprint.route('/admin/cargar_horarios/uploader', methods=['POST'])
 @roles_accepted('admin')
 def administrar_horarios_upload_file():
     f = request.files['file']
