@@ -14,7 +14,7 @@
         var nota_extendida = document.getElementById('nota_extendida').value;
 
         show_loading_mask();
-        descargar_nota_al_decano('{{ csrf_token()}}', objeto, motivo, telefono, domicilio, localidad, dni,
+        descargar_nota_al_decano_service('{{ csrf_token()}}', objeto, motivo, telefono, domicilio, localidad, dni,
         anio_ingreso, nota_extendida, hide_loading_mask);
     }
 

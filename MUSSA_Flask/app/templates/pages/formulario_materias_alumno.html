@@ -19,7 +19,7 @@
         }
 
         show_loading_mask();
-        descargar_lista_de_materias('{{ csrf_token()}}', ids_carreras, tipos, hide_loading_mask);
+        descargar_lista_de_materias_service('{{ csrf_token()}}', ids_carreras, tipos, hide_loading_mask);
     }
 
     function getCarrerasElegidas() {

@@ -6,6 +6,18 @@ function hide_loading_mask() {
     $('#loader').hide();
 }
 
+function hideElementById(id_element) {
+    var element_to_hide = document.getElementById(id_element);
+    if (element_to_hide)
+        element_to_hide.hidden = true;
+}
+
+function showElementById(id_element) {
+    var element_to_hide = document.getElementById(id_element);
+    if (element_to_hide)
+        element_to_hide.hidden = false;
+}
+
 function scroll_arriba() {
     $('html, body').animate({scrollTop:0}, 'slow');
 }
