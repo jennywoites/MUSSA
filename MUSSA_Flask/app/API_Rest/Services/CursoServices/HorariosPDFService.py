@@ -95,7 +95,7 @@ class HorariosPDFService(BaseService):
     def guardar_horarios_pdf(self, horarios_pdf, cuatrimestre, fecha_actualizacion):
         carreras_en_sistema = []
         for carrera in Carrera.query.all():
-            carreras_en_sistema.append(carrera.codigo)
+            carreras_en_sistema.append(int(carrera.codigo))
 
         for horario_pdf in horarios_pdf:
             carreras = self.filtrar_solo_carreras_en_sistema(carreras_en_sistema, horario_pdf["Carreras"])
@@ -136,6 +136,7 @@ class HorariosPDFService(BaseService):
 
     def agregar_carreras_al_curso(self, curso, carreras):
         for codigo in carreras:
+            codigo = codigo if len(str(codigo)) > 1 else '0' + str(codigo)
             carrera_db = Carrera.query.filter_by(codigo=codigo).first()
 
             query = CarreraPorCurso.query.filter_by(curso_id=curso.id)
@@ -216,7 +217,7 @@ class HorariosPDFService(BaseService):
     def filtrar_solo_carreras_en_sistema(self, carreras_en_sistema, carreras_pdf):
         carreras = []
         for carrera in carreras_pdf:
-            if str(carrera) in carreras_en_sistema:
+            if carrera in carreras_en_sistema:
                 carreras.append(carrera)
         return carreras
 

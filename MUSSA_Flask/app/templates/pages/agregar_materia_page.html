@@ -67,6 +67,8 @@
             var error_element = document.getElementById("error_formulario");
             error_element.hidden = !mostrar;
             error_element.innerText = texto || "";
+            if (mostrar)
+                scroll_arriba();
         }
 
         function filtrar_materias_segun_carrera() {
