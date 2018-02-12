@@ -7,11 +7,47 @@
 
     <br>
 
-    <button type="button" onclick="redirigir_a('{{ url_for('main.nuevo_plan_de_estudios_page') }}')" class="btn btn-mussa-default">Generar nuevo plan de estudios</button>
+    <button type="button" onclick="redirigir_a('{{ url_for('main.nuevo_plan_de_estudios_page') }}')"
+            class="btn btn-mussa-default">Generar nuevo plan de estudios
+    </button>
 
     <br>
+    <br>
 
-    <!-- Lista de carreras y fechas de planes de estudios generados -->
+    {% if planes | length > 0 %}
+
+    <div class='table-responsive'>
+        <table class='table table-hover' id="tabla_cursos_guardados">
+            <tr>
+                <th>Fecha de generación del plan</th>
+                <th>Estado</th>
+                <th>Ver</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for plan in planes %}
+            <tr>
+                <td>{{plan['fecha_generacion']}}</td>
+                <td>{{plan['estado']}}</td>
+                {% if plan['estado_numero'] == 1 %}<!-- Estado finalizdo -->
+                <td>
+                    <a href="{{url_for('main.visualizar_plan_de_estudios_page', idPlanEstudios=plan['id_plan'])}}"><span
+                            class='glyphicon glyphicon-search'></span></a>
+                </td>
+                {% endif %}
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    {% else %}
+
+    <p style="font-style: italic; color: purple; font-size: large;">
+        Aún no tienes ningún plan de estudios generado.
+    </p>
+
+    {% endif%}
 
     <br>
 

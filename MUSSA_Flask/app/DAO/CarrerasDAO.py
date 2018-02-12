@@ -76,12 +76,14 @@ def crear_carrera(codigo, titulo, plan):
         requiere_prueba_suficiencia_de_idioma=datos[REQUIERE_SUFICIENCIA_IDIOMA]
     )
 
+    db.session.add(carrera)
+
     guardar_cantidad_de_creditos(carrera, datos)
     guardar_orientaciones(carrera, datos)
 
     guardar_materias(carrera, codigo, titulo, plan)
 
-    db.session.add(carrera)
+    db.session.commit()
 
 
 def guardar_orientaciones(carrera, datos):
@@ -141,11 +143,11 @@ def cargar_datos_carrera(nombre_arch):
 
 def guardar_materias(carrera, codigo, titulo, plan):
     archivo_carrera = get_nombre_carrera_para_archivo(titulo, plan, "csv")
-    materias = cargar_datos_materias(archivo_carrera)
+    materias = cargar_datos_materias(archivo_carrera, carrera)
     carrera.materias = materias
 
 
-def cargar_datos_materias(nombre_arch):
+def cargar_datos_materias(nombre_arch, carrera):
     materias = []
 
     dir = os.path.dirname(__file__)
@@ -160,14 +162,14 @@ def cargar_datos_materias(nombre_arch):
                 primera = False
                 continue
 
-            materias.append(crear_materia(linea, dict_correlativas))
+            materias.append(crear_materia(linea, dict_correlativas, carrera))
 
-    guardar_correlativas(dict_correlativas)
+    guardar_correlativas(dict_correlativas, carrera)
 
     return materias
 
 
-def crear_materia(linea, dict_correlativas):
+def crear_materia(linea, dict_correlativas, carrera):
     linea = linea.rstrip()
 
     codigo, nombre, creditos, tipo, cred_minimos, correlativas = linea.split(",")
@@ -186,7 +188,8 @@ def crear_materia(linea, dict_correlativas):
         objetivos="",
         tipo_materia_id=tipo.id,
         creditos_minimos_para_cursarla=cred_minimos,
-        creditos=creditos
+        creditos=creditos,
+        carrera_id=carrera.id
     )
 
     db.session.add(materia)
@@ -220,10 +223,10 @@ def find_or_create_correlativa(id_materia_actual, id_materia_correlativa):
         db.session.add(correlatividad)
 
 
-def guardar_correlativas(dic_correlativas):
+def guardar_correlativas(dic_correlativas, carrera):
     for cod in dic_correlativas:
 
-        materia_actual = Materia.query.filter(Materia.codigo == cod).first()
+        materia_actual = Materia.query.filter_by(codigo=cod).filter_by(carrera_id=carrera.id).first()
 
         for correlativa in dic_correlativas[cod]:
             materia_correlativa = Materia.query.filter(Materia.codigo == correlativa).first()
