@@ -1192,6 +1192,29 @@
         }
       }
     },
+    "alumno/planDeEstudios/all": {
+      "get": {
+        "tags": [
+          "alumno"
+        ],
+        "summary": "Devuelve el listado de todos los planes de carrera que se han generado o se están generando.",
+        "description": "Devuelve el listado de todos los planes de carrera que se han generado o se están generando.",
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/ListaPlanesDeEstudio"
+            }
+          },
+          "401": {
+            "description": "La información de autorización no fue enviada o es inválida."
+          }
+        }
+      }
+    },
     "/encuesta/preguntas": {
       "get": {
         "tags": [
@@ -2143,6 +2166,48 @@
           "type": "string",
           "description": "Nombre de la materia",
           "example": "Algoritmos y Programación I"
+        }
+      }
+    },
+    "ListaPlanesDeEstudio": {
+      "type": "object",
+      "properties": {
+        "planes_de_estudio": {
+          "type": "array",
+          "description": "Lista de planes de estudio",
+          "items": {
+            "$ref": "#/definitions/PlanDeEstudios"
+          }
+        }
+      }
+    },
+    "PlanDeEstudios": {
+      "type": "object",
+      "properties": {
+        "id_plan": {
+          "type": "integer",
+          "description": "Id del plan de estudios",
+          "example": 1
+        },
+        "fecha_generacion": {
+          "type": "string",
+          "description": "Fecha de generacion del plan de estudios",
+          "example": "20/08/2017"
+        },
+        "estado_id": {
+          "type": "integer",
+          "description": "Id del estado del plan de estudios",
+          "example": 1
+        },
+        "estado_numero": {
+          "type": "integer",
+          "description": "Numero del estado del plan de estudios",
+          "example": 1
+        },
+        "estado": {
+          "type": "string",
+          "description": "Estado del plan de estudios",
+          "example": 1
         }
       }
     }
