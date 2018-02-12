@@ -72,10 +72,15 @@
 
             var rows = document.getElementById("materias_alumno_table").rows;
 
+            var titulos = rows[0];
+            var POS_CARRERA = 3;
+            titulos.cells[POS_CARRERA].hidden = (id_carrera != "todas_mis_carreras");
+
             var no_hay_datos = true;
             for (var i = 1; i < rows.length; i++) {
                 var id_carrera_tabla = rows[i].cells[0].innerText;
 
+                rows[i].cells[POS_CARRERA].hidden = (id_carrera != "todas_mis_carreras");
                 if (id_carrera == "todas_mis_carreras") {
                     no_hay_datos = false;
                     rows[i].style.display = "";

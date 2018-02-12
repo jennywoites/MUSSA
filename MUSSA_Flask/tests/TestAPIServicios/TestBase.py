@@ -7,6 +7,7 @@ from app.ClienteAPI.ClienteAPI import ClienteAPI
 
 from app.DAO.UsersDAO import create_users
 from app.DAO.MateriasDAO import create_estados_materia, create_forma_aprobacion_materias
+from app.DAO.PlanDeCarreraDAO import create_estados_plan_de_estudios
 
 from app.models.user_models import User
 
@@ -68,7 +69,7 @@ class TestBase(TestCase):
         create_users()
         create_estados_materia()
         create_forma_aprobacion_materias()
-        db.session.commit()
+        create_estados_plan_de_estudios()
 
         self.crear_datos_bd()
         db.session.commit()

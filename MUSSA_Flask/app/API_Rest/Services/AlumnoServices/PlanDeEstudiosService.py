@@ -1,5 +1,6 @@
 from app.API_Rest.codes import *
 from flask_user import login_required
+from flask import url_for
 from app.API_Rest.Services.BaseService import BaseService
 from app.DAO.PlanDeCarreraDAO import *
 from app.API_Rest.GeneradorPlanCarreras.ParametrosDTO import Parametros
@@ -132,7 +133,7 @@ class PlanDeEstudiosService(BaseService):
         parametros.materias = {}
         parametros.materias_CBC_pendientes = []
 
-        for materia in Materia.query.filter_by(carrera_id=id_carrera):
+        for materia in Materia.query.filter_by(carrera_id=id_carrera).all():
             if not materia.codigo in parametros.plan:
                 parametros.plan[materia.codigo] = []
 
@@ -484,7 +485,8 @@ class PlanDeEstudiosService(BaseService):
     ########################################################################
 
     def generar_plan_de_cursada_greedy(self, parametros):
-        result = "www.google.com", SUCCESS_OK
+        url = url_for('main.visualizar_plan_de_estudios_page', idPlanEstudios=1)
+        result = url, SUCCESS_OK
         self.logg_resultado(result)
         return result
 

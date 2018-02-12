@@ -14,7 +14,9 @@ def planes_de_estudios_page():
     cookies = request.cookies
     cliente = ClienteAPI()
 
-    return render_template('pages/planes_de_estudio_page.html')
+    planes = cliente.obtener_planes_de_estudio_alumno(cookies)
+
+    return render_template('pages/planes_de_estudio_page.html', planes=planes)
 
 
 @main_blueprint.route('/planes_de_estudio/nuevo_plan', methods=['GET'])
@@ -43,3 +45,11 @@ def nuevo_plan_de_estudios_page():
                            materias_con_final_pendiente=materias_con_final_pendiente,
                            primer_cuatri_valido=primer_cuatri_valido
                            )
+
+@main_blueprint.route('/planes_de_estudio/mis_planes/<int:idPlanEstudios>', methods=['GET'])
+@login_required
+def visualizar_plan_de_estudios_page(idPlanEstudios):
+    cookies = request.cookies
+    cliente = ClienteAPI()
+
+    return "No se ha implementado esta pagina"

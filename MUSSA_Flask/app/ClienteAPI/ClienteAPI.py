@@ -155,6 +155,10 @@ class ClienteAPI:
         """
         return self.BASE_URL + '/alumno/carrera' + ('/' + str(idCarrera) if idCarrera else '')
 
+    def get_url_get_all_planes_de_estudio_alumno(self):
+        """URL: '/api/alumno/planDeEstudios/all'"""
+        return self.BASE_URL + '/alumno/planDeEstudios/all'
+
     ################################################
     ##              Servicios DOCENTE             ##
     ################################################
@@ -453,3 +457,7 @@ class ClienteAPI:
         parametros["respuestas"] = json.dumps(respuestas)
 
         return self.invocar_post(url_servicio, cookie, csrf_token, parametros)
+
+    def obtener_planes_de_estudio_alumno(self, cookie):
+        url_servicio = self.get_url_get_all_planes_de_estudio_alumno()
+        return self.invocar_get(url_servicio, cookie)["planes_de_estudio"]

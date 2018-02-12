@@ -6,6 +6,8 @@ from app.DAO.CarrerasDAO import create_carreras
 from app.DAO.MateriasDAO import create_estados_materia, create_forma_aprobacion_materias
 from app.DAO.EncuestasDAO import create_encuestas
 from app.DAO.PalabrasClaveDAO import create_tematicas
+from app.DAO.PlanDeCarreraDAO import create_estados_plan_de_estudios
+
 
 class InitDbCommand(Command):
     """ Initialize the database."""
@@ -25,3 +27,4 @@ def init_db():
     create_forma_aprobacion_materias()
     create_encuestas()
     create_tematicas()
+    create_estados_plan_de_estudios()
