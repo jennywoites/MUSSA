@@ -7,11 +7,13 @@ from app.API_Rest.GeneradorPlanCarreras.ParametrosDTO import Parametros
 from app.models.carreras_models import Materia, Correlativas, Creditos, TipoMateria
 from app.models.alumno_models import MateriasAlumno
 from app.models.horarios_models import Curso, HorarioPorCurso, Horario, CarreraPorCurso
+from app.models.plan_de_estudios_models import PlanDeEstudios
 from app.DAO.MateriasDAO import *
 from app.API_Rest.GeneradorPlanCarreras.Constantes import OBLIGATORIA, ELECTIVA, TRABAJO_FINAL
 from app.API_Rest.GeneradorPlanCarreras.modelos.Materia import Materia as Modelo_Materia
 from app.API_Rest.GeneradorPlanCarreras.modelos.Curso import Curso as Modelo_Curso
 from app.API_Rest.GeneradorPlanCarreras.modelos.Horario import Horario as Modelo_Horario
+from datetime import datetime
 
 
 class PlanDeEstudiosService(BaseService):
@@ -112,11 +114,13 @@ class PlanDeEstudiosService(BaseService):
 
         self.actualizar_horarios_con_franjas_minimas_y_maximas(parametros)
 
+        plan_de_estudios = self.alta_nuevo_plan_de_estudios(parametros)
+
         if algoritmo == ALGORITMO_GREEDY:
-            return self.generar_plan_de_cursada_greedy(parametros)
+            return self.generar_plan_de_cursada_greedy(parametros, plan_de_estudios)
 
         if algoritmo == ALGORITMO_PROGRAMACION_LINEAL_ENTERA:
-            return self.generar_plan_de_cursada_programacion_lineal_entera(parametros)
+            return self.generar_plan_de_cursada_programacion_lineal_entera(parametros, plan_de_estudios)
 
         result = "El algoritmo introducido no es valido", CLIENT_ERROR_BAD_REQUEST
         self.logg_resultado(result)
@@ -261,8 +265,8 @@ class PlanDeEstudiosService(BaseService):
 
         # Si la materia es del CBC no modifica los cuatrimestres de inicio
         tipo_CBC = TipoMateria.query.filter_by(descripcion='CBC').first().id
-        if Materia.query.filter_by(carrera_id=parametros.id_carrera).filter_by(codigo=codigo)\
-            .filter_by(tipo_materia_id=tipo_CBC).first():
+        if Materia.query.filter_by(carrera_id=parametros.id_carrera).filter_by(codigo=codigo) \
+                .filter_by(tipo_materia_id=tipo_CBC).first():
             return
 
         materias_que_la_tienen_de_correlativa = parametros.plan[codigo]
@@ -370,8 +374,8 @@ class PlanDeEstudiosService(BaseService):
 
             horario = Modelo_Horario(
                 dia=horario.dia,
-                hora_inicio = float(horario.hora_desde),
-                hora_fin = float(horario.hora_hasta)
+                hora_inicio=float(horario.hora_desde),
+                hora_fin=float(horario.hora_hasta)
             )
             franjas = horario.get_franjas_utilizadas()
             for franja in franjas:
@@ -425,8 +429,8 @@ class PlanDeEstudiosService(BaseService):
 
             horario = Modelo_Horario(
                 dia=datos_horario["dia"],
-                hora_inicio = self.get_hora_numerica(datos_horario["hora_desde"]),
-                hora_fin = self.get_hora_numerica(datos_horario["hora_hasta"])
+                hora_inicio=self.get_hora_numerica(datos_horario["hora_desde"]),
+                hora_fin=self.get_hora_numerica(datos_horario["hora_hasta"])
             )
 
             for franja in horario.get_franjas_utilizadas():
@@ -480,17 +484,34 @@ class PlanDeEstudiosService(BaseService):
                                                   'cantidad de créditos mínimos necesarios. Modifica las restricciones '
                                                   'o elige algunas materias electivas especificas que desees.')
 
+    def alta_nuevo_plan_de_estudios(self, parametros):
+        estado_en_curso = EstadoPlanDeEstudios.query.filter_by(numero=PLAN_EN_CURSO).first()
+        alumno = self.obtener_alumno_usuario_actual()
+
+        plan_de_estudios = PlanDeEstudios(
+            alumno_id=alumno.id,
+            fecha_generacion=datetime.today(),
+            fecha_ultima_actualizacion=datetime.today(),
+            estado_id=estado_en_curso.id,
+            cuatrimestre_inicio_plan=parametros.cuatrimestre_inicio,
+            anio_inicio_plan=parametros.anio_inicio
+        )
+        db.session.add(plan_de_estudios)
+        db.session.commit()
+
+        return plan_de_estudios
+
     ########################################################################
     ##              Algoritmos de generación de plan de carrera           ##
     ########################################################################
 
-    def generar_plan_de_cursada_greedy(self, parametros):
+    def generar_plan_de_cursada_greedy(self, parametros, plan_de_estudios):
         url = url_for('main.visualizar_plan_de_estudios_page', idPlanEstudios=1)
         result = url, SUCCESS_OK
         self.logg_resultado(result)
         return result
 
-    def generar_plan_de_cursada_programacion_lineal_entera(self, parametros):
+    def generar_plan_de_cursada_programacion_lineal_entera(self, parametros, plan_de_estudios):
         # parametros.nombre_archivo_pulp = ARCHIVO_PULP
         # parametros.nombre_archivo_resultados_pulp = ARCHIVO_RESULTADO_PULP
         # parametros.nombre_archivo_pulp_optimizado = ARCHIVO_PULP_OPTIMIZADO
