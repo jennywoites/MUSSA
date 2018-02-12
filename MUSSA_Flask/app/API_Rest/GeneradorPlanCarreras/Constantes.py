@@ -13,8 +13,10 @@ SABADO = "SABADO"
 #Tipos de materias
 OBLIGATORIA = 0
 ELECTIVA = 1
+TRABAJO_FINAL = 2
 
 TIPOS_MATERIAS = {
 	OBLIGATORIA: "Obligatoria",
-	ELECTIVA: "Electiva"
+	ELECTIVA: "Electiva",
+	TRABAJO_FINAL: "Trabajo Final"
 }

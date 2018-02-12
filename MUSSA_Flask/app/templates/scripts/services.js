@@ -250,7 +250,7 @@ function guardar_respuestas_encuesta_alumno_service(token, idEncuestaAlumno, cat
     do_request('POST', url_servicio, token, parametros, onSuccess, onError);
 }
 
-function descargar_nota_al_decano(token, objeto, motivo, telefono, domicilio, localidad, dni, anio_ingreso, nota_extendida, onFinished) {
+function descargar_nota_al_decano_service(token, objeto, motivo, telefono, domicilio, localidad, dni, anio_ingreso, nota_extendida, onFinished) {
     var url_servicio = BASE_URL + '/alumno/formulario/nota_al_decano';
 
     parametros = {}
@@ -266,7 +266,7 @@ function descargar_nota_al_decano(token, objeto, motivo, telefono, domicilio, lo
     do_request_y_abrir_PDF('PUT', url_servicio, token, parametros, 'NotaAlDecano', onFinished);
 }
 
-function descargar_lista_de_materias(token, carreras, tipos_de_materias, onFinished) {
+function descargar_lista_de_materias_service(token, carreras, tipos_de_materias, onFinished) {
     var url_servicio = BASE_URL + '/alumno/formulario/materias_alumno';
 
     parametros = {}
@@ -274,4 +274,50 @@ function descargar_lista_de_materias(token, carreras, tipos_de_materias, onFinis
     parametros["tipos_de_materias"] = JSON.stringify(tipos_de_materias);
 
     do_request_y_abrir_PDF('PUT', url_servicio, token, parametros, 'Materias', onFinished);
+}
+
+function generar_plan_de_estudios_greedy_service(token, carrera, max_cant_cuatrimestres, max_cant_materias, max_horas_cursada,
+    max_horas_extras, puntaje_minimo_cursos, cuatrimestre_inicio, anio_inicio, horarios_invalidos, tematicas,
+    aprobacion_finales, cursos_preseleccioandos, trabajo_final, orientacion, onSuccess, onError) {
+
+    var algoritmo = 0;
+    generar_plan_de_estudios_service(token, carrera, max_cant_cuatrimestres, max_cant_materias, max_horas_cursada,
+            max_horas_extras, puntaje_minimo_cursos, cuatrimestre_inicio, anio_inicio, horarios_invalidos, tematicas,
+            aprobacion_finales, cursos_preseleccioandos, trabajo_final, orientacion, algoritmo, onSuccess, onError);
+}
+
+function generar_plan_de_estudios_PLE_service(token, carrera, max_cant_cuatrimestres, max_cant_materias, max_horas_cursada,
+    max_horas_extras, puntaje_minimo_cursos, cuatrimestre_inicio, anio_inicio, horarios_invalidos, tematicas,
+    aprobacion_finales, cursos_preseleccioandos, trabajo_final, orientacion, onSuccess, onError) {
+
+    var algoritmo = 1;
+    generar_plan_de_estudios_service(token, carrera, max_cant_cuatrimestres, max_cant_materias, max_horas_cursada,
+        max_horas_extras, puntaje_minimo_cursos, cuatrimestre_inicio, anio_inicio, horarios_invalidos, tematicas,
+        aprobacion_finales, cursos_preseleccioandos, trabajo_final, orientacion, algoritmo, onSuccess, onError);
+}
+
+function generar_plan_de_estudios_service(token, carrera, max_cant_cuatrimestres, max_cant_materias, max_horas_cursada,
+    max_horas_extras, puntaje_minimo_cursos, cuatrimestre_inicio, anio_inicio, horarios_invalidos, tematicas,
+    aprobacion_finales, cursos_preseleccionados, trabajo_final, orientacion, algoritmo, onSuccess, onError) {
+    var url_servicio = BASE_URL + '/alumno/planDeEstudios';
+
+    parametros = {}
+    parametros["carrera"] = carrera;
+    parametros["max_cant_cuatrimestres"] = max_cant_cuatrimestres;
+    parametros["max_cant_materias"] = max_cant_materias;
+    parametros["max_horas_cursada"] = max_horas_cursada;
+    parametros["max_horas_extras"] = max_horas_extras;
+    parametros["puntaje_minimo_cursos"] = puntaje_minimo_cursos;
+    parametros["cuatrimestre_inicio"] = cuatrimestre_inicio;
+    parametros["anio_inicio"] = anio_inicio;
+    parametros["horarios_invalidos"] = JSON.stringify(horarios_invalidos);
+
+    parametros["tematicas"] = JSON.stringify(tematicas);
+    parametros["aprobacion_finales"] = JSON.stringify(aprobacion_finales);
+    parametros["cursos_preseleccionados"] = JSON.stringify(cursos_preseleccionados);
+    parametros["trabajo_final"] = trabajo_final;
+    parametros["orientacion"] = orientacion;
+    parametros["algoritmo"] = algoritmo;
+
+    do_request('PUT', url_servicio, token, parametros, onSuccess, onError);
 }

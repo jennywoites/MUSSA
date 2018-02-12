@@ -10,18 +10,237 @@
             opcion.checked = true;
             onChangeCarrera(opcion.id);
         }
+        seleccionar_inicio_del_plan_valido();
     });
 
-    function generar_plan_de_estudios() {
-        debugger;
-        // Validar los campos y llamar al servicio
+    function seleccionar_inicio_del_plan_valido() {
+        var cuatrimestre = {{ primer_cuatri_valido | safe }};
+        var opcion = document.getElementById('cuatrimestre_' + cuatrimestre);
+        opcion.selected = true;
+    }
+
+    function generar_plan_greedy() {
+        generar_plan_de_estudios(generar_plan_de_estudios_greedy_service, function(status, response){
+            redirigir_a(response);
+        });
+    }
+
+    function generar_plan_PLE() {
+        generar_plan_de_estudios(generar_plan_de_estudios_PLE_service, function(status, response) {
+            showElementById('div_success_generar_plan_de_estudios');
+        });
+    }
+
+    function ocultar_errores() {
+        hideElementById('div_success_generar_plan_de_estudios');
+        hideElementById('div_error_generar_plan_de_estudios');
+
+        hideElementById('div_error_carrera');
+        hideElementById('div_error_max_cant_cuatrimestres');
+        hideElementById('div_error_maxima_cantidad_materias_por_cuatrimestre');
+        hideElementById('div_error_maxima_cantidad_hs_por_semana');
+        hideElementById('div_error_maxima_hs_extra_por_semana');
+        hideElementById('div_error_puntaje_minimo');
+        hideElementById('div_error_tipos_trabajo_final');
+
+        var carreras = {{carreras | safe}};
+        for (var i=0; i < carreras.length; i++) {
+            var id_carrera = carreras[i]['id_carrera'];
+            hideElementById('div_error_orientacion_carrera_' + id_carrera);
+        }
+    }
+
+    function generar_plan_de_estudios(f_servicio, onSuccess) {
+        ocultar_errores();
+
+        var es_valido = true;
+
+        var carrera = obtener_carrera_elegida();
+        if (!carrera) {
+            showElementById('div_error_carrera');
+            es_valido = false;
+        }
+
+        if (carrera) {
+            var orientacion = '';
+
+            var div_orientaciones = document.getElementById('orientaciones-disponibles-' + carrera);
+            if (div_orientaciones && !div_orientaciones.hidden) {
+                var opciones_orientacion = document.getElementsByName('opcion_orientacion_' + carrera);
+                for (var i=0; i<opciones_orientacion.length; i++) {
+                    if (opciones_orientacion[i].checked) {
+                        orientacion = opciones_orientacion[i].id;
+                        break;
+                    }
+                }
+
+                if (!orientacion) {
+                    showElementById('div_error_orientacion_carrera_' + carrera);
+                    es_valido = false;
+                }
+            }
+
+            var trabajo_final = ''
+
+            var div_tipos_trabajos = document.getElementById('tipos_trabajo_final_carrera');
+            if (div_tipos_trabajos && !div_tipos_trabajos.hidden) {
+                var opciones = document.getElementsByName('tipo_trabajo_final');
+
+                for (var i=0; i<opciones.length; i++) {
+                    if (opciones[i].checked) {
+                        trabajo_final = opciones[i].value;
+                    }
+                }
+
+                if (!trabajo_final) {
+                    showElementById('div_error_tipos_trabajo_final');
+                    es_valido = false;
+                }
+            }
+        }
+
+        var max_cant_cuatrimestres = document.getElementById('maxima_cantidad_cuatrimestres').value;
+        if (!max_cant_cuatrimestres || (parseInt(max_cant_cuatrimestres) < 1 || parseInt(max_cant_cuatrimestres) > 24)) {
+            showElementById('div_error_max_cant_cuatrimestres');
+            es_valido = false;
+        }
+
+        var max_cant_materias = document.getElementById('maxima_cantidad_materias_por_cuatrimestre').value;
+        if (!max_cant_materias || (parseInt(max_cant_materias) < 1 || parseInt(max_cant_materias) > 10)) {
+            showElementById('div_error_maxima_cantidad_materias_por_cuatrimestre');
+            es_valido = false;
+        }
+
+        var max_horas_cursada = document.getElementById('maxima_cantidad_hs_por_semana').value;
+        if (!max_horas_cursada || (parseInt(max_horas_cursada) < 1 || parseInt(max_horas_cursada) > 144)) {
+            showElementById('div_error_maxima_cantidad_hs_por_semana');
+            es_valido = false;
+        }
+
+        var max_horas_extras = document.getElementById('maxima_hs_extra_por_semana').value;
+        if (!max_horas_extras || (parseInt(max_horas_extras) < 1 || parseInt(max_horas_extras) > 168)) {
+            showElementById('div_error_maxima_hs_extra_por_semana');
+            es_valido = false;
+        }
+
+        var puntaje_minimo_cursos = document.getElementById('puntaje_minimo').value;
+        if (!puntaje_minimo_cursos || (parseInt(puntaje_minimo_cursos) < 0 || parseInt(puntaje_minimo_cursos) > 5)) {
+            showElementById('div_error_puntaje_minimo');
+            es_valido = false;
+        }
+
+        var cuatrimestre_inicio = obtener_opcion_seleccionada('numero_cuatrimestre');
+        var anio_inicio = obtener_opcion_seleccionada('anio');
+
+        var horarios_invalidos = obtenerHorariosInvalidos();
+        var tematicas = obtenerTematicas();
+        var aprobacion_finales = obtenerEstadoFinalesAprobados();
+        var cursos_preseleccionados = obtenerCursosPreseleccionados();
+
+        if (!es_valido) {
+            scroll_arriba();
+            return;
+        }
+
+        show_loading_mask();
+        f_servicio('{{ csrf_token() }}', carrera, max_cant_cuatrimestres, max_cant_materias, max_horas_cursada,
+        max_horas_extras, puntaje_minimo_cursos, cuatrimestre_inicio, anio_inicio, horarios_invalidos, tematicas,
+        aprobacion_finales, cursos_preseleccionados, trabajo_final, orientacion, function (status, response) {
+            hide_loading_mask();
+            onSuccess(status, response);
+        }, function (status, response) {
+            var div_error = document.getElementById('div_error_generar_plan_de_estudios');
+            div_error.innerHTML = '';
+
+            var div_texto = document.createElement('div');
+            div_texto.className = "alert alert-danger";
+            div_texto.innerHTML = response.substring(1,response.length-2);
+            div_error.appendChild(div_texto);
+
+            div_error.hidden = false;
+            hide_loading_mask();
+        });
+    }
+
+    function obtenerCursosPreseleccionados() {
+        cursos_seleccionados = {};
+        var tabla = document.getElementById("cursos_seleccionados_para_cursar");
+        for(var i=1;i<tabla.rows.length; i++) {
+            var curso = tabla.rows[i].cells;
+            var codigo = curso[2].innerText.substring(0,curso[2].innerText.indexOf(" - "));
+            var id_curso = curso[1].innerText;
+            cursos_seleccionados[codigo] = id_curso;
+        }
+        return cursos_seleccionados;
+    }
+
+    function obtenerEstadoFinalesAprobados() {
+        var div_finales = document.getElementById('div_materias_con_final_pendiente');
+        if (div_finales.hidden)
+            return {}
+
+        var estado_finales = {};
+        var tabla = document.getElementById('finales_pendientes');
+        for (var i=1; i<tabla.rows.length; i++) {
+            var fila = tabla.rows[i];
+            if (!fila.hidden) {
+                var codigo = fila.cells[2].innerText;
+                var id_materia = fila.cells[0].innerText;
+
+                var selector = document.getElementById('final_aprobado_' + id_materia)
+                estado_finales[codigo] = selector[selector.selectedIndex].value;
+            }
+        }
+        return estado_finales;
+    }
+
+    function obtenerTematicas() {
+        var tematicas = {};
+        var tabla_tematicas = document.getElementById("tabla_tematicas");
+        for (var i=2; i<tabla_tematicas.rows.length; i++) { //0 es encabezado, 1 es cualquier tematica
+            var tematica = tabla_tematicas.rows[i].cells;
+            var porcentaje = tematica[1].innerText;
+            tematicas[tematica[0].innerText] = porcentaje.substring(0, porcentaje.length-1);
+        }
+        return tematicas;
+    }
+
+    function obtenerHorariosInvalidos() {
+        var horarios = [];
+        var horarios_table = document.getElementById("tabla_horarios");
+        for (var i=1; i<horarios_table.rows.length; i++) {
+            var horario = horarios_table.rows[i].cells;
+            horarios.push({
+                'dia': horario[0].innerText,
+                'hora_desde': horario[1].innerText,
+                'hora_hasta': horario[2].innerText
+            });
+        }
+        return horarios;
+    }
+
+    function obtener_opcion_seleccionada(idSelector) {
+        var selector = document.getElementById(idSelector);
+        return selector[selector.selectedIndex].value;
+    }
+
+    function obtener_carrera_elegida() {
+        var opciones = document.getElementsByName('opcion-carrera');
+        for (var i=0; i<opciones.length;i++) {
+            var opcion = opciones[i];
+            if (opcion.checked)
+                return opcion.id;
+        }
+        return null;
     }
 
     function mostrar_orientaciones_de_la_carrera_elegida(idCarrera) {
-        var divs_orientaciones = document.getElementsByName('orientaciones-disponibles');
-        for (var i=0; i<divs_orientaciones.length; i++) {
-            var div_actual = divs_orientaciones[i];
-            div_actual.hidden = (div_actual.id != ('orientaciones-' + idCarrera));
+        var carreras = {{carreras | safe}};
+        for (var i=0; i<carreras.length; i++) {
+            var carrera = carreras[i];
+            var div_orientaciones = document.getElementById('orientaciones-disponibles-' + carrera['id_carrera']);
+            if (div_orientaciones)
+                div_orientaciones.hidden = (carrera['id_carrera'] != idCarrera);
         }
     }
 
@@ -48,6 +267,12 @@
         var texto_etiqueta = document.createElement('label');
         texto_etiqueta.innerText = ">> Tipo de trabajo final de carrera";
         div_tipos.appendChild(texto_etiqueta);
+
+        var div_error = document.createElement('div');
+        div_error.id = "div_error_tipos_trabajo_final";
+        div_error.hidden = true;
+        div_error.innerHTML = "<div class='alert alert-danger'>Tenés que elegir un tipo de trabajo final que querés realizar.</div>";
+        div_tipos.appendChild(div_error);
 
         var trabajos = carrera["trabajos_finales_carrera"];
         for(var i=0; i<trabajos.length; i++) {
@@ -404,12 +629,6 @@
         tabla.rows["tematica_" + idTematica].remove();
         actualizar_porcentaje_restante();
     }
-
-
-
-
-
-
 </script>
 
 <div class="container">
@@ -428,23 +647,33 @@
         <div class="row">
             <div class="col-sm-6">
                 <label>>> Carrera:</label>
+
+                <div id="div_error_carrera" hidden="true">
+                    <div class="alert alert-danger">Tenés que elegir una carrera.
+                    </div>
+                </div>
+
                 {% for carrera in carreras %}
                 <div class="radio" id="carrera-{{carrera['id_carrera']}}">
                     <label><input type="radio" id="{{carrera['id_carrera']}}" name="opcion-carrera"
                                   onchange="onChangeCarrera({{carrera['id_carrera']}})">{{carrera["descripcion"]}}</label>
+
                     {% if carrera["orientaciones"] | length > 0 %}
-                    <div class="row" id="orientaciones-{{carrera['id_carrera']}}" name="orientaciones-disponibles"
-                         hidden="true">
+                    <div class="row" id="orientaciones-disponibles-{{carrera['id_carrera']}}" hidden="true">
                         <br>
                         <div class="col-sm-1">
                         </div>
                         <div class="col-sm-6">
                             <label style="font-weight: bold;margin-left: -20px;">>> Orientación elegida:</label>
+                            <div id="div_error_orientacion_carrera_{{carrera['id_carrera']}}" hidden="true">
+                                <div class="alert alert-danger">Tenés que elegir una orientación
+                                </div>
+                            </div>
                             {% for orientacion in carrera["orientaciones"] %}
                             <div class="radio"
                                  id="orientacion-{{orientacion['clave_reducida']}}-carrera-{{carrera['id_carrera']}}">
                                 <label><input type="radio" id="{{orientacion['clave_reducida']}}"
-                                              name="opcion-orientacion">{{orientacion["descripcion"]}}</label>
+                                              name="opcion_orientacion_{{carrera['id_carrera']}}">{{orientacion["descripcion"]}}</label>
                             </div>
                             {% endfor %}
                         </div>
@@ -452,11 +681,13 @@
                         </div>
                     </div>
                     {% endif %}
+
                 </div>
                 {% endfor %}
             </div>
-            <div class="col-sm-6" id="tipos_trabajo_final_carrera" hidden="true">
-            </div>
+
+            <div class='col-sm-6' id="tipos_trabajo_final_carrera" hidden="true"></div>
+
         </div>
 
         <br>
@@ -467,10 +698,14 @@
                             class="glyphicon glyphicon-question-sign" aria-hidden="true" data-toggle="tooltip"
                             title="No incluyen los dos cuatrimestres que requiere el CBC (o un cuatrimestre si tenés al menos 3 de las materias aprobadas). Si ya tenés el CBC aprobado no se agregarán cuatrimestres extras."></span>
                     </label>
+                    <div id="div_error_max_cant_cuatrimestres" hidden="true">
+                        <div class="alert alert-danger">La cantidad de cuatrimestres máxima de duración debe ser un número entre 1 y 24 cuatrimestres.
+                        </div>
+                    </div>
                     <div class="row">
                         <div class="col-sm-4">
                             <input type="number" class="form-control" name="maxima_cantidad_cuatrimestres"
-                                   id="maxima_cantidad_cuatrimestres" value="1"
+                                   id="maxima_cantidad_cuatrimestres" value="10"
                                    min="1" max="24" step="1">
                         </div>
                     </div>
@@ -480,10 +715,14 @@
             <div class="col-sm-6">
                 <div class="form-group">
                     <label>>> Máxima cantidad de materias por cuatrimestre:</label>
+                    <div id="div_error_maxima_cantidad_materias_por_cuatrimestre" hidden="true">
+                        <div class="alert alert-danger">La cantidad de materias por cuatrimestre debe estar entre 1 y 10 materias.
+                        </div>
+                    </div>
                     <div class="row">
                         <div class="col-sm-4">
                             <input type="number" class="form-control" name="maxima_cantidad_materias_por_cuatrimestre"
-                                   id="maxima_cantidad_materias_por_cuatrimestre" value="1"
+                                   id="maxima_cantidad_materias_por_cuatrimestre" value="5"
                                    min="1" max="10" step="1">
                         </div>
                     </div>
@@ -495,10 +734,15 @@
             <div class="col-sm-6">
                 <div class="form-group">
                     <label>>> Máxima cantidad de horas de cursada por semana:</label>
+                    <div id="div_error_maxima_cantidad_hs_por_semana" hidden="true">
+                        <div class="alert alert-danger">La cantidad de horas por semana de cursada debe ser un número entre 1 y 144.
+                            Considerá que una materia de 6 créditos suele tener 6 horas de cursada semanales.
+                        </div>
+                    </div>
                     <div class="row">
                         <div class="col-sm-4">
                             <input type="number" class="form-control" name="maxima_cantidad_hs_por_semana"
-                                   id="maxima_cantidad_hs_por_semana" value="1"
+                                   id="maxima_cantidad_hs_por_semana" value="28"
                                    min="1" max="144" step="1">
                         </div>
                     </div>
@@ -509,10 +753,15 @@
                 <div class="form-group">
                     <label>>> Máxima cantidad de horas extra que le querés dedicar por semana al conjunto de
                         materias:</label>
+                    <div id="div_error_maxima_hs_extra_por_semana" hidden="true">
+                        <div class="alert alert-danger">La cantidad de horas extras por semana (para estudiar, hacer ejercicios, TPs, etc) debe ser un número entre 1 y 168.
+                            Considerá que una materia de 6 créditos suele tener alrededor de 6 horas extras para trabajos semanalmente.
+                        </div>
+                    </div>
                     <div class="row">
                         <div class="col-sm-4">
                             <input type="number" class="form-control" name="maxima_hs_extra_por_semana"
-                                   id="maxima_hs_extra_por_semana" value="1"
+                                   id="maxima_hs_extra_por_semana" value="28"
                                    min="1" max="168" step="1">
                         </div>
                     </div>
@@ -529,10 +778,14 @@
                 La restricción de puntaje no es tenida en cuenta en el caso de los cursos que se seleccionan manualmente.
                 Las materias que se elijan no tendrán un puntaje menor al seleccionado a menos que sean el único curso disponible en el caso de las obligatorias o que las electivas disponibles con esos puntajes no alcancen a cubrir el total de electivas requerido. En estos casos siempre se seleccionará en orden la de mayor puntaje con mayor cantidad de encuestas completas."></span>
                     </label>
+                    <div id="div_error_puntaje_minimo" hidden="true">
+                        <div class="alert alert-danger">El puntaje debe ser un número entre 0 y 5 inclusives.
+                        </div>
+                    </div>
                     <div class="row">
                         <div class="col-sm-4">
                             <input type="number" class="form-control" name="puntaje_minimo"
-                                   id="puntaje_minimo" value="0" min="0" max="5" step="1">
+                                   id="puntaje_minimo" value="3" min="0" max="5" step="1">
                         </div>
                     </div>
                 </div>
@@ -550,8 +803,8 @@
                             <div class="form-group">
                                 <label>Número de cuatrimestre:</label>
                                 <select class="form-control" id="numero_cuatrimestre" name="numero_cuatrimestre">
-                                    <option>1</option>
-                                    <option>2</option>
+                                    <option id="cuatrimestre_1">1</option>
+                                    <option id="cuatrimestre_2">2</option>
                                 </select>
                             </div>
                         </div>
@@ -808,9 +1061,23 @@ Si por algún motivo no quieres considerar que esta materia va a estar aprobada 
     <br>
     <br>
 
-    <button type="button" class="btn btn-mussa-default" onclick="generar_plan_de_estudios()" disabled>
+    <button type="button" class="btn btn-mussa-default" onclick="generar_plan_greedy()">
         Generar Plan de Estudios
     </button>
+
+    <button type="button" class="btn btn-mussa-default" onclick="generar_plan_PLE()" disabled>
+        Generar Plan de Estudios Optimizado
+    </button>
+
+    <br>
+    <br>
+
+    <div id="div_success_generar_plan_de_estudios" hidden="true">
+        <div class="alert alert-success">El plan de estudios optimizado se está generando. <br />Cuando el plan esté listo se te enviará una notificación para que puedas visualizarlo.</div>
+    </div>
+
+    <div id="div_error_generar_plan_de_estudios" hidden="true">
+    </div>
 
     {% else %}
 

@@ -5,6 +5,7 @@ from app.views.base_view import main_blueprint
 from app.ClienteAPI.ClienteAPI import ClienteAPI
 from app.utils import DIAS, generar_lista_horarios, generar_lista_anios
 from app.DAO.MateriasDAO import FINAL_PENDIENTE
+from datetime import datetime
 
 
 @main_blueprint.route('/planes_de_estudio', methods=['GET'])
@@ -22,6 +23,9 @@ def nuevo_plan_de_estudios_page():
     cookies = request.cookies
     cliente = ClienteAPI()
 
+    hoy = datetime.today()
+    primer_cuatri_valido = 1 if hoy.month <= 7 else 2
+
     mis_carreras = cliente.obtener_carreras_alumno(cookies)
     horarios = generar_lista_horarios()
     tematicas = cliente.obtener_todas_las_tematicas(cookies)
@@ -36,5 +40,6 @@ def nuevo_plan_de_estudios_page():
                            hora_hasta=horarios[1:],
                            tematicas=tematicas,
                            anios=anios,
-                           materias_con_final_pendiente=materias_con_final_pendiente
+                           materias_con_final_pendiente=materias_con_final_pendiente,
+                           primer_cuatri_valido=primer_cuatri_valido
                            )

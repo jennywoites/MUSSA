@@ -14,7 +14,11 @@ class Horario:
         if (round(hora) != hora):
             base += 1
             hora = int(hora - 0.5)
-        return (hora - hora_origen)*2 + base
+        return int((hora - hora_origen)*2 + base)
+
+    def convertir_franja_a_hora(self, franja):
+        hora_origen = 7
+        return hora_origen + 0.5*(franja - 1)
 
     def get_franjas_utilizadas(self):
         """
