@@ -17,4 +17,7 @@ def filtrar_materias_alumno(filtro):
 
         query = query.filter(MateriasAlumno.estado_id.in_(ids_estados))
 
+    if "ids_a_excluir" in filtro:
+        query = query.filter(~MateriasAlumno.id.in_(filtro["ids_a_excluir"]))
+
     return query.all()

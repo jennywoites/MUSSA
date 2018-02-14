@@ -7,13 +7,14 @@ from app.API_Rest.GeneradorPlanCarreras.ParametrosDTO import Parametros
 from app.models.carreras_models import Materia, Correlativas, Creditos, TipoMateria
 from app.models.alumno_models import MateriasAlumno
 from app.models.horarios_models import Curso, HorarioPorCurso, Horario, CarreraPorCurso
-from app.models.plan_de_estudios_models import PlanDeEstudios
+from app.models.plan_de_estudios_models import PlanDeEstudios, MateriaPlanDeEstudios
 from app.DAO.MateriasDAO import *
 from app.API_Rest.GeneradorPlanCarreras.Constantes import OBLIGATORIA, ELECTIVA, TRABAJO_FINAL
 from app.API_Rest.GeneradorPlanCarreras.modelos.Materia import Materia as Modelo_Materia
 from app.API_Rest.GeneradorPlanCarreras.modelos.Curso import Curso as Modelo_Curso
 from app.API_Rest.GeneradorPlanCarreras.modelos.Horario import Horario as Modelo_Horario
 from datetime import datetime
+from app.models.generadorJSON.plan_de_estudios_generadorJSON import generarJSON_materias_plan_de_estudios
 
 
 class PlanDeEstudiosService(BaseService):
@@ -23,6 +24,40 @@ class PlanDeEstudiosService(BaseService):
     ##########################################
     ##                Servicios             ##
     ##########################################
+
+    @login_required
+    def get(self, idPlanDeEstudios):
+        self.logg_parametros_recibidos()
+
+        alumno = self.obtener_alumno_usuario_actual()
+
+        if not alumno:
+            msj = "El usuario no tiene ningun alumno asociado"
+            self.logg_error(msj)
+            return {'Error': msj}, CLIENT_ERROR_NOT_FOUND
+
+        parametros_son_validos, msj, codigo = self.validar_parametros(dict([
+            ("idPlanDeEstudios", {
+                self.PARAMETRO: idPlanDeEstudios,
+                self.ES_OBLIGATORIO: True,
+                self.FUNCIONES_VALIDACION: [
+                    (self.id_es_valido, []),
+                    (self.existe_id, [PlanDeEstudios]),
+                    (self.plan_pertenece_al_alumno, [])
+                ]
+            })
+        ]))
+
+        if not parametros_son_validos:
+            self.logg_error(msj)
+            return {'Error': msj}, codigo
+
+        plan_json = generarJSON_materias_plan_de_estudios(PlanDeEstudios.query.get(idPlanDeEstudios))
+
+        result = ({"plan_de_estudio": plan_json}, SUCCESS_OK)
+        self.logg_resultado(result)
+
+        return result
 
     @login_required
     def put(self):
@@ -186,6 +221,7 @@ class PlanDeEstudiosService(BaseService):
         if codigo and codigo in parametros.materias:
             materia_trabajo_final_parte_1 = parametros.materias[codigo]
             materia_trabajo_final_parte_2 = Modelo_Materia(
+                id_materia=materia_trabajo_final_parte_1.id_materia,
                 codigo=materia_trabajo_final_parte_1.codigo + '_PARTE_B',
                 nombre=materia_trabajo_final_parte_1.nombre,
                 creditos=materia_trabajo_final_parte_1.creditos,
@@ -229,6 +265,7 @@ class PlanDeEstudiosService(BaseService):
             correlativas.append(Materia.query.get(correlativa.materia_correlativa_id).codigo)
 
         parametros.materias[materia.codigo] = Modelo_Materia(
+            id_materia=materia.id,
             codigo=materia.codigo,
             nombre=materia.nombre,
             creditos=materia.creditos,
@@ -260,8 +297,6 @@ class PlanDeEstudiosService(BaseService):
     def setear_cuatrimestre_minimo_correlativas(self, codigo, cuatrimestre, parametros):
         if cuatrimestre <= 0 or not codigo in parametros.plan:
             return
-
-        materia = parametros.materias[codigo]
 
         # Si la materia es del CBC no modifica los cuatrimestres de inicio
         tipo_CBC = TipoMateria.query.filter_by(descripcion='CBC').first().id
@@ -327,6 +362,7 @@ class PlanDeEstudiosService(BaseService):
             ))
 
         return Modelo_Curso(
+            id_curso=curso_db.id,
             cod_materia=curso_db.codigo_materia,
             nombre_curso=curso_db.codigo,
             horarios=horarios,
@@ -501,12 +537,48 @@ class PlanDeEstudiosService(BaseService):
 
         return plan_de_estudios
 
+    def plan_pertenece_al_alumno(self, nombre_parametro, valor, es_obligatorio):
+        alumno = self.obtener_alumno_usuario_actual()
+        plan = PlanDeEstudios.query.filter_by(id=valor).filter_by(alumno_id=alumno.id).first()
+        if not plan:
+            return False, 'El plan indicado no existe o no pertenece al alumno', CLIENT_ERROR_NOT_FOUND
+        return self.mensaje_OK(nombre_parametro)
+
+    def actualizar_plan(self, plan_de_estudios, nuevo_estado):
+        estado = EstadoPlanDeEstudios.query.filter_by(numero=nuevo_estado).first()
+
+        plan_de_estudios.fecha_ultima_actualizacion = datetime.today()
+        plan_de_estudios.estado_id = estado.id
+
+        db.session.commit()
+
+    def agregar_materia_al_plan(self, plan_de_estudios, materia, curso, cuatrimestre):
+        materia_plan = MateriaPlanDeEstudios(
+            plan_estudios_id=plan_de_estudios.id,
+            materia_id=materia.id_materia,
+            curso_id=curso.id_curso,
+            orden=cuatrimestre
+        )
+        db.session.add(materia_plan)
+        db.session.commit()
+
     ########################################################################
     ##              Algoritmos de generación de plan de carrera           ##
     ########################################################################
 
     def generar_plan_de_cursada_greedy(self, parametros, plan_de_estudios):
-        url = url_for('main.visualizar_plan_de_estudios_page', idPlanEstudios=1)
+
+        cuatrimestre = 0
+        for index, cod in enumerate(parametros.materias):
+            if index % 4 == 0:
+                cuatrimestre += 1
+            materia = parametros.materias[cod]
+            curso = parametros.horarios[cod][0]
+            self.agregar_materia_al_plan(plan_de_estudios, materia, curso, cuatrimestre)
+
+        self.actualizar_plan(plan_de_estudios, PLAN_FINALIZADO)
+
+        url = url_for('main.visualizar_plan_de_estudios_page', idPlanEstudios=plan_de_estudios.id)
         result = url, SUCCESS_OK
         self.logg_resultado(result)
         return result
@@ -525,5 +597,6 @@ class PlanDeEstudiosService(BaseService):
 CLASE = PlanDeEstudiosService
 URLS_SERVICIOS = (
     '/api/alumno/planDeEstudios',
+    '/api/alumno/planDeEstudios/<int:idPlanDeEstudios>',
 )
 #########################################
