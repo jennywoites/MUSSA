@@ -1192,6 +1192,44 @@
         }
       }
     },
+    "alumno/planDeEstudios/{idPlanDeEstudios}": {
+      "get": {
+        "tags": [
+          "alumno"
+        ],
+        "summary": "Devuelve el plan de estudios asociado al id.",
+        "description": "Devuelve el plan de estudios asociado al id.",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "idPlanDeEstudios",
+            "required": true,
+            "type": "integer",
+            "description": "El ID del plan de estudios del alumno a buscar."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/PlanDeEstudio"
+            }
+          },
+          "400": {
+            "description": "BAD REQUEST. El ID del plan debe ser un número mayor a 0."
+          },
+          "401": {
+            "description": "La información de autorización no fue enviada o es inválida."
+          },
+          "404": {
+            "description": "El plan de estudios del ID especificado no fue encontrado o no pertenece al alumno del usuario actual."
+          }
+        }
+      }
+    },
     "alumno/planDeEstudios/all": {
       "get": {
         "tags": [
@@ -2208,6 +2246,132 @@
           "type": "string",
           "description": "Estado del plan de estudios",
           "example": 1
+        }
+      }
+    },
+    "PlanDeEstudio": {
+      "type": "object",
+      "properties": {
+        "id_plan": {
+          "type": "integer",
+          "description": "Id del plan de estudios",
+          "example": 1
+        },
+        "fecha_generacion": {
+          "type": "string",
+          "description": "Fecha de generacion del plan de estudios",
+          "example": "20/08/2017"
+        },
+        "estado_id": {
+          "type": "integer",
+          "description": "Id del estado del plan de estudios",
+          "example": 1
+        },
+        "estado_numero": {
+          "type": "integer",
+          "description": "Numero del estado del plan de estudios",
+          "example": 1
+        },
+        "estado": {
+          "type": "string",
+          "description": "Estado del plan de estudios",
+          "example": 1
+        },
+        "materias_por_cuatrimestre": {
+          "type": "array",
+          "description": "Lista de grupos de materias por cuatrimestre",
+          "items": {
+            "$ref": "#/definitions/MateriasPorCuatrimestre"
+          }
+        }
+      }
+    },
+    "MateriasPorCuatrimestre": {
+      "type": "object",
+      "properties": {
+        "cuatrimestre": {
+          "type": "string",
+          "description": "Cuatrimestre al que pertenece el grupo de materias",
+          "example": 1
+        },
+        "anio": {
+          "type": "string",
+          "description": "Año al que pertenece el grupo de materias",
+          "example": 2018
+        },
+        "materias": {
+          "type": "array",
+          "description": "Listado de materias del grupo",
+          "items": {
+            "$ref": "#/definitions/MateriaPlan"
+          }
+        }
+      }
+    },
+    "MateriaPlan": {
+      "type": "object",
+      "properties": {
+        "id_materia": {
+          "type": "integer",
+          "description": "Id de la materia",
+          "example": 1
+        },
+        "codigo": {
+          "type": "string",
+          "description": "Código de la materia",
+          "example": 7540
+        },
+        "nombre": {
+          "type": "string",
+          "description": "Nombre de la materia",
+          "example": "Algoritmos y programación I"
+        },
+        "id_carrera": {
+          "type": "integer",
+          "description": "Id de la carrera a la que pertenece la materia",
+          "example": 1
+        },
+        "codigo_carrera": {
+          "type": "string",
+          "description": "Código de la carrera a la que pertenece la materia",
+          "example": "09"
+        },
+        "carrera": {
+          "type": "string",
+          "description": "Descripción de la carrera a la que pertenece la materia",
+          "example": "09 - Licenciatura en Análisis de Sistemas (Plan 1986)"
+        },
+        "id_curso": {
+          "type": "integer",
+          "description": "Id del curso elegido",
+          "example": 2
+        },
+        "curso": {
+          "type": "string",
+          "description": "Descripcion del curso elegido",
+          "example": "2A | Nombres de profesores"
+        },
+        "codigo_curso": {
+          "type": "string",
+          "description": "Código del curso elegido",
+          "example": "2A"
+        },
+        "estado": {
+          "type": "string",
+          "description": "Estado de la materia (aprobada, final pendiente, etc)",
+          "example": "Aprobada"
+        },
+        "puntaje": {
+          "type": "integer",
+          "description": "Puntaje del curso",
+          "example": 4
+        },
+        "horarios": {
+          "type": "array",
+          "description": "Lista de horarios en las que es dictado el curso.",
+          "items": {
+            "$ref": "#/definitions/Horario"
+          }
         }
       }
     }
