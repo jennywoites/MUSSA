@@ -240,7 +240,7 @@ class GeneradorPDF:
     def insertar_materias_final_pendiente(self, alumno, carreras_filtradas=[]):
         self.insertar_materias_por_carrera(
             "Materias con final pendiente",
-            'No hay materias con final pendeinte para esta carrera',
+            'No hay materias con final pendiente para esta carrera',
             alumno,
             [FINAL_PENDIENTE],
             carreras_filtradas
