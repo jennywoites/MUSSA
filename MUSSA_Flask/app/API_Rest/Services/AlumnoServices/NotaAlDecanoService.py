@@ -3,6 +3,7 @@ from app.API_Rest.Services.BaseService import BaseService
 from flask import send_file
 import os
 from app.API_Rest.Services.GeneradorPDF import GeneradorPDF
+from app.API_Rest.codes import *
 
 
 class NotaAlDecanoService(BaseService):
@@ -25,6 +26,11 @@ class NotaAlDecanoService(BaseService):
         nota_extendida = self.obtener_texto("nota_extendida")
 
         alumno = self.obtener_alumno_usuario_actual()
+
+        if not alumno:
+            msj = "El usuario no tiene ningun alumno asociado"
+            self.logg_error(msj)
+            return {'Error': msj}, CLIENT_ERROR_NOT_FOUND
 
         nombre_archivo = "NotaAlDecano-" + alumno.get_padron() + ".pdf"
         ruta = os.path.join('tmp', nombre_archivo)
