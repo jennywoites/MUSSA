@@ -159,6 +159,10 @@ class ClienteAPI:
         """URL: '/api/alumno/planDeEstudios/all'"""
         return self.BASE_URL + '/alumno/planDeEstudios/all'
 
+    def get_url_get_plan_de_estudio_alumno(self, idPlanDeEstudios):
+        """URL: '/api/alumno/planDeEstudios/<int:idPlanDeEstudios>'"""
+        return self.BASE_URL + '/alumno/planDeEstudios/' + str(idPlanDeEstudios)
+
     ################################################
     ##              Servicios DOCENTE             ##
     ################################################
@@ -461,3 +465,7 @@ class ClienteAPI:
     def obtener_planes_de_estudio_alumno(self, cookie):
         url_servicio = self.get_url_get_all_planes_de_estudio_alumno()
         return self.invocar_get(url_servicio, cookie)["planes_de_estudio"]
+
+    def obtener_plan_de_estudios_alumno(self, cookie, idPlanDeEstudios):
+        url_servicio = self.get_url_get_plan_de_estudio_alumno(idPlanDeEstudios)
+        return self.invocar_get(url_servicio, cookie)["plan_de_estudio"]

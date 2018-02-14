@@ -1,0 +1,114 @@
+{% extends "common/page_base.html" %}
+
+{% block content %}
+<div class="container">
+
+    <h2>{%trans%}Plan de Estudio{%endtrans%}</h2>
+
+    <br>
+
+    <label>Fecha de creación: {{plan['fecha_generacion']}}</label>
+
+    <br>
+    <br>
+
+    <label>Carreras:</label>
+
+    <br>
+    <div class='table-responsive'>
+        <table class='table table-hover'>
+            <tr style="background-color: #a348cc;color: white;">
+                <th>Código</th>
+                <th>Carrera</th>
+                <th>Plan</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for carrera in carreras %}
+            <tr>
+                <td>{{carrera["codigo"]}}</td>
+                <td>{{carrera["nombre"]}}</td>
+                <td>{{carrera["plan"]}}</td>
+            </tr>
+
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <br>
+
+    {% for grupo_cuatrimestre in plan['materias_por_cuatrimestre'] %}
+
+    <h4>{{grupo_cuatrimestre['cuatrimestre']}}º Cuatrimestre de {{grupo_cuatrimestre['anio']}}</h4>
+
+    <br>
+
+    {% if grupo_cuatrimestre['materias'] | length > 0 %}
+
+    <div class='table-responsive'>
+        <table class='table table-hover' id="tabla_cursos_guardados">
+            <tr style="background-color: #a348cc;color: white;">
+                <th>Codigo</th>
+                <th>Materia</th>
+                <th>Carrera</th>
+                <th>Curso</th>
+                <th>Horarios</th>
+                <th>Puntaje</th>
+                <th>Estado</th>
+                <th>Encuestas</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for materia in grupo_cuatrimestre['materias'] %}
+            {% if materia['estado'] == "Cursando actualmente" %}
+            <tr style="background-color: #fbf8668c;">
+                {% elif materia['estado'] == "Final Pendiente" %}
+            <tr style="background-color: #8de7e5;">
+                {% elif materia['estado'] == "Aprobada" %}
+            <tr style="background-color: #8de7b8;">
+                {% elif materia['estado'] == "Desaprobada" %}
+            <tr style="background-color: #e78d8fb0;">
+                {% else %}
+            <tr>
+                {% endif %}
+
+                <td>{{materia['codigo']}}</td>
+                <td>
+                    <a href="{{url_for('main.materia_page', idMateria=materia['id_materia'])}}">{{materia['nombre']}}</a>
+                </td>
+                <td>{{materia['codigo_carrera']}}</td>
+                <td>{{materia['curso']}}</td>
+                <td>
+                    <ul class="list-group">
+                        {% for horario in materia["horarios"] %}
+                        <li class="list-group-item" style="border-color: transparent; background-color: transparent;">
+                            {{horario["dia"]}} de {{horario["hora_desde"]}} a {{horario["hora_hasta"]}}
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </td>
+                <td>{{materia['puntaje']}}</td>
+                <td>{{materia['estado']}}</td>
+                <td>
+                    <a href='/materias/encuestas/{{materia["id_curso"]}}'><span
+                            class='glyphicon glyphicon-search'></span></a>
+                </td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    {% else %}
+
+    <p>No hay materias cursadas o para cursar este cuatrimestre</p>
+    <br>
+
+    {% endif %}
+
+    {% endfor %}
+
+</div>
+
+{% endblock %}

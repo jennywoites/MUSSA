@@ -1,11 +1,13 @@
 from flask import render_template
 from flask_user import login_required
-from flask import request
+from flask import request, url_for, redirect
 from app.views.base_view import main_blueprint
 from app.ClienteAPI.ClienteAPI import ClienteAPI
 from app.utils import DIAS, generar_lista_horarios, generar_lista_anios
 from app.DAO.MateriasDAO import FINAL_PENDIENTE
 from datetime import datetime
+from app.DAO.PlanDeCarreraDAO import PLAN_FINALIZADO
+from app.API_Rest.codes import *
 
 
 @main_blueprint.route('/planes_de_estudio', methods=['GET'])
@@ -46,10 +48,20 @@ def nuevo_plan_de_estudios_page():
                            primer_cuatri_valido=primer_cuatri_valido
                            )
 
+
 @main_blueprint.route('/planes_de_estudio/mis_planes/<int:idPlanEstudios>', methods=['GET'])
 @login_required
 def visualizar_plan_de_estudios_page(idPlanEstudios):
     cookies = request.cookies
     cliente = ClienteAPI()
 
-    return "No se ha implementado esta pagina"
+    plan = cliente.obtener_plan_de_estudios_alumno(cookies, idPlanEstudios)
+
+    if plan["estado_numero"] != PLAN_FINALIZADO:
+        return redirect(url_for('main.planes_de_estudios_page'), code=REDIRECTION_FOUND)
+
+    mis_carreras = cliente.obtener_carreras_alumno(cookies)
+
+    return render_template('pages/ver_plan_de_estudios_page.html',
+                           carreras=mis_carreras,
+                           plan=plan)

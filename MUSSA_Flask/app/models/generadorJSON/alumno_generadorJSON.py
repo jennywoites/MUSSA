@@ -9,6 +9,7 @@ def generarJSON_alumno(alumno):
         "padron": alumno.padron
     }
 
+
 def generarJSON_materia_alumno(materia_alumno):
     materia_carrera = Materia.query.get(materia_alumno.materia_id)
     carrera = Carrera.query.get(materia_alumno.carrera_id)
@@ -29,6 +30,7 @@ def generarJSON_materia_alumno(materia_alumno):
         'acta_o_resolucion': materia_alumno.acta_o_resolucion if materia_alumno.acta_o_resolucion else "-",
         'forma_aprobacion_materia': get_forma_aprobacion_materia(materia_alumno)
     }
+
 
 def get_fecha_aprobacion(materia_alumno):
     if not materia_alumno.fecha_aprobacion:
@@ -57,8 +59,11 @@ def get_curso(materia_alumno):
         return "Sin designar"
 
     curso_elegido = Curso.query.get(materia_alumno.curso_id)
+    return generar_string_curso(curso_elegido)
+
+def generar_string_curso(curso):
     docentes = ""
-    for curso_docente in CursosDocente.query.filter_by(curso_id=curso_elegido.id).all():
+    for curso_docente in CursosDocente.query.filter_by(curso_id=curso.id).all():
         docente = Docente.query.get(curso_docente.docente_id)
         docentes += docente.obtener_nombre_completo() + "-"
-    return "{} | {}".format(curso_elegido.codigo, docentes[:-1])
+    return "{} | {}".format(curso.codigo, docentes[:-1])
