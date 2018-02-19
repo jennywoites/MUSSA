@@ -82,6 +82,14 @@ class Correlativas(db.Model):
         return "La materia {} tiene como correlativa a {}".format(self.materia_id, self.materia_correlativa_id)
 
 
+class MateriasIncompatibles(db.Model):
+    __tablename__ = 'materias_incompatibles'
+    id = db.Column(db.Integer, primary_key=True)
+
+    materia_id = db.Column(db.Integer, db.ForeignKey('materia.id'))
+    materia_incompatible_id = db.Column(db.Integer, db.ForeignKey('materia.id'))
+
+
 class Orientacion(db.Model):
     __tablename__ = 'orientacion'
 

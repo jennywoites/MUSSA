@@ -2,7 +2,8 @@ from app.API_Rest.GeneradorPlanCarreras.Constantes import *
 
 
 class Materia:
-    def __init__(self, id_materia, codigo, nombre, creditos, tipo, cred_min=0, correlativas=[]):
+    def __init__(self, id_materia, codigo, nombre, creditos, tipo, cred_min=0, correlativas=[],
+                 tematicas_principales=[], medias_horas_extras_cursada=0):
         self.id_materia = id_materia
         self.codigo = codigo
         self.nombre = nombre
@@ -10,6 +11,8 @@ class Materia:
         self.tipo = tipo
         self.creditos_minimos_aprobados = cred_min
         self.correlativas = correlativas
+        self.tematicas_principales = tematicas_principales
+        self.medias_horas_extras_cursada = medias_horas_extras_cursada
 
     def get_str_tipo(self):
         return TIPOS_MATERIAS[self.tipo]
