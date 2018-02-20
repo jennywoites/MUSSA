@@ -1258,7 +1258,7 @@
             "description": "La información de autorización no fue enviada o es inválida."
           },
           "404": {
-            "description": "El plan de estudios del ID especificado no fue encontrado o no pertenece al alumno del usuario actual."
+            "description": "El plan de estudios del ID especificado no fue encontrado, no pertenece al alumno del usuario actual o se encuentra en curso."
           }
         }
       }

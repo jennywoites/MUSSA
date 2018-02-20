@@ -80,6 +80,7 @@ class PlanDeEstudiosService(BaseService):
                     (self.id_es_valido, []),
                     (self.existe_id, [PlanDeEstudios]),
                     (self.plan_pertenece_al_alumno, [])
+                    (self.plan_no_se_encuentra_en_curso, [])
                 ]
             })
         ]))
@@ -618,6 +619,15 @@ class PlanDeEstudiosService(BaseService):
         plan = PlanDeEstudios.query.filter_by(id=valor).filter_by(alumno_id=alumno.id).first()
         if not plan:
             return False, 'El plan indicado no existe o no pertenece al alumno', CLIENT_ERROR_NOT_FOUND
+        return self.mensaje_OK(nombre_parametro)
+
+    def plan_no_se_encuentra_en_curso(self, nombre_parametro, valor, es_obligatorio):
+        plan = PlanDeEstudios.query.get(id=valor)
+        estado_en_curso = EstadoPlanDeEstudios.query.filter_by(numero=PLAN_EN_CURSO).first()
+
+        if plan.estado_id == estado_en_curso.id:
+            return False, 'El plan indicado no puede eliminarse porque se encuentra en curso', CLIENT_ERROR_NOT_FOUND
+
         return self.mensaje_OK(nombre_parametro)
 
     def actualizar_plan(self, plan_de_estudios, nuevo_estado):
