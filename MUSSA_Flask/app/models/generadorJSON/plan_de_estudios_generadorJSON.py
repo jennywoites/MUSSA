@@ -42,7 +42,7 @@ def agregar_materias_plan_de_estudios(plan_de_estudios, materias_por_cuatrimestr
     min_cuatri_anio, max_cuatri_anio = None, None
     for materia_plan in MateriaPlanDeEstudios.query.filter_by(plan_estudios_id=plan_de_estudios.id).all():
         materia = Materia.query.get(materia_plan.materia_id)
-        curso = Curso.query.get(materia_plan.curso_id)
+        curso = Curso.query.get(materia_plan.curso_id) if materia_plan.curso_id else None
 
         materias_alumno = MateriasAlumno.query.filter_by(alumno_id=plan_de_estudios.alumno_id) \
             .filter_by(materia_id=materia.id).all()
@@ -125,16 +125,16 @@ def normalizar_materias_y_completar_cuatrimestres_vacios(materias_por_cuatrimest
 def obtener_anio_y_cuatrimestre(plan_de_estudios, materia_plan):
     anio_inicio = int(plan_de_estudios.anio_inicio_plan)
     cuatri_inicio = int(plan_de_estudios.cuatrimestre_inicio_plan)
+    orden = materia_plan.orden + 1 #Para los calculos se requiere que el orden comience en 1 en lugar de en 0
 
-    if materia_plan.orden < cuatri_inicio:
-        anio = anio_inicio + (1 if materia_plan.orden == 2 else 0)
+    if orden < cuatri_inicio:
+        anio = anio_inicio + (1 if orden == 2 else 0)
     else:
-        anios_extras = (materia_plan.orden - cuatri_inicio) // 2 + \
-                       (1 if cuatri_inicio == 2 and materia_plan.orden > 1 else 0)
+        anios_extras = (orden - cuatri_inicio) // 2 + (1 if cuatri_inicio == 2 and orden > 1 else 0)
         anio = anio_inicio + anios_extras
 
     siguiente = 2 if cuatri_inicio == 1 else 1
-    cuatrimestre = siguiente if (materia_plan.orden % 2 == 0) else cuatri_inicio
+    cuatrimestre = siguiente if (orden % 2 == 0) else cuatri_inicio
 
     return anio, cuatrimestre
 
@@ -147,11 +147,11 @@ def generarJSON_materia_plan(materia, materia_alumno, curso):
         'nombre': materia.nombre,
         'id_carrera': carrera.id,
         'codigo_carrera': carrera.codigo,
-        'id_curso': curso.id,
+        'id_curso': curso.id if curso else -1,
         'carrera': carrera.get_descripcion_carrera(),
         'curso': generar_string_curso(curso),
         'estado': EstadoMateria.query.get(materia_alumno.estado_id).estado,
-        'codigo_curso': curso.codigo,
+        'codigo_curso': curso.codigo if curso else '',
         'horarios': obtener_horarios_response(curso),
-        'puntaje': curso.calcular_puntaje(),
+        'puntaje': curso.calcular_puntaje() if curso else "-",
     }

@@ -8,6 +8,9 @@ def generar_plan_greedy(parametros):
     planes_pendientes = []
     resultado = generar_plan_greedy_recursivo(planes_pendientes, parametros, [], {}, [], 0, 0, 0)
 
+    #FIXME:
+    return resultado
+
     if resultado == PLAN_GENERADO_CORRECTAMENTE:
         return PLAN_GENERADO_CORRECTAMENTE
 
@@ -74,9 +77,9 @@ def generar_plan_greedy_recursivo(planes_pendientes, parametros, materias_dispon
                                                       medias_horas_extras, parametros, materias_cuatrimestre_actual):
                 continue
 
-            agregar_plan_sin_opcion_actual(planes_pendientes, parametros, materias_disponibles, index,
-                                           materias_cuatrimestre_actual, franjas_cuatrimestre,
-                                           creditos_totales, medias_horas_cursada, medias_horas_extras)
+            # agregar_plan_sin_opcion_actual(planes_pendientes, parametros, materias_disponibles, index,
+            #                                materias_cuatrimestre_actual, franjas_cuatrimestre,
+            #                                creditos_totales, medias_horas_cursada, medias_horas_extras)
 
             creditos_totales += materia.creditos
             medias_horas_cursada += horas_cursada

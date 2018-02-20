@@ -30,6 +30,9 @@ def generarJSON_curso_con_filtros(curso, carreras_response, docentes, docentes_r
 
 
 def obtener_horarios_response(curso):
+    if not curso:
+        return []
+
     horarios_response = []
     horarios_por_curso = HorarioPorCurso.query.filter_by(curso_id=curso.id).all()
     for horario in horarios_por_curso:

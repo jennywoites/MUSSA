@@ -62,6 +62,9 @@ def get_curso(materia_alumno):
     return generar_string_curso(curso_elegido)
 
 def generar_string_curso(curso):
+    if not curso:
+        return "Sin curso asignado"
+
     docentes = ""
     for curso_docente in CursosDocente.query.filter_by(curso_id=curso.id).all():
         docente = Docente.query.get(curso_docente.docente_id)

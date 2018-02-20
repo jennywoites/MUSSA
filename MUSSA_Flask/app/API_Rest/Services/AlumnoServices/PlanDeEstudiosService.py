@@ -170,7 +170,7 @@ class PlanDeEstudiosService(BaseService):
         parametros.materias_incompatibles = {}
 
         for cod_materia in parametros.materias:
-            incompatibles = MateriasIncompatibles.query.\
+            incompatibles = MateriasIncompatibles.query. \
                 filter_by(materia_id=parametros.materias[cod_materia].id_materia).all()
             if not incompatibles:
                 continue
@@ -305,8 +305,8 @@ class PlanDeEstudiosService(BaseService):
         for tematica in tematicas_por_materia:
             tematicas_principales.append(tematica.tematica_id)
 
-        #TODO: Si se tienen suficientes encuestas modificar para que las horas extras se saquen con ese valor
-        medias_horas_extra_cursada = materia.creditos * 2 #Se multiplica por dos para obtener las medias horas
+        # TODO: Si se tienen suficientes encuestas modificar para que las horas extras se saquen con ese valor
+        medias_horas_extra_cursada = materia.creditos * 2  # Se multiplica por dos para obtener las medias horas
 
         parametros.materias[materia.codigo] = Modelo_Materia(
             id_materia=materia.id,
@@ -590,29 +590,53 @@ class PlanDeEstudiosService(BaseService):
 
         db.session.commit()
 
-    def agregar_materia_al_plan(self, plan_de_estudios, materia, curso, cuatrimestre):
+    def agregar_materia_al_plan(self, plan_de_estudios, id_materia, id_curso, cuatrimestre):
         materia_plan = MateriaPlanDeEstudios(
             plan_estudios_id=plan_de_estudios.id,
-            materia_id=materia.id_materia,
-            curso_id=curso.id_curso,
+            materia_id=id_materia,
             orden=cuatrimestre
         )
+
+        if id_curso:
+            materia_plan.curso_id = id_curso
+
         db.session.add(materia_plan)
         db.session.commit()
+
+    def agregar_materias_CBC_al_plan_generado(self, parametros):
+        if not parametros.materias_CBC_pendientes:
+            return
+
+        grupos_CBC = []
+        grupo_actual = {}
+        for index, materia in enumerate(parametros.materias_CBC_pendientes):
+            grupo_actual[materia.codigo] = {
+                "id_materia": materia.id,
+                "id_curso": None
+            }
+            if (index + 1) % 3 == 0:
+                grupos_CBC.append(grupo_actual)
+                grupo_actual = {}
+
+        if grupo_actual: #En caso de tener menos materias por cuatrimestre
+            grupos_CBC.append(grupo_actual)
+
+        for i in range(len(grupos_CBC)-1,-1,-1):
+            grupo_cuatrimestre = grupos_CBC[i]
+            parametros.plan_generado.insert(0, grupo_cuatrimestre)
+
+    def agregar_materias_generadas_al_plan(self, parametros, plan_de_estudios):
+        self.agregar_materias_CBC_al_plan_generado(parametros)
+
+        for cuatrimestre, grupo_materias in enumerate(parametros.plan_generado):
+            for cod_materia in grupo_materias:
+                id_materia = grupo_materias[cod_materia]["id_materia"]
+                id_curso = grupo_materias[cod_materia]["id_curso"]
+                self.agregar_materia_al_plan(plan_de_estudios, id_materia, id_curso, cuatrimestre)
 
     ########################################################################
     ##              Algoritmos de generación de plan de carrera           ##
     ########################################################################
-
-    def agregar_materias_generadas_al_plan(self, parametros, plan_de_estudios):
-        # TODO: Ver como quedan al ser generadas
-        cuatrimestre = 0
-        for index, cod in enumerate(parametros.materias):
-            if index % 4 == 0:
-                cuatrimestre += 1
-            materia = parametros.materias[cod]
-            curso = parametros.horarios[cod][0]
-            self.agregar_materia_al_plan(plan_de_estudios, materia, curso, cuatrimestre)
 
     def generar_plan_de_cursada_greedy(self, parametros, plan_de_estudios):
         se_genero_plan_compatible = generar_plan_greedy(parametros)

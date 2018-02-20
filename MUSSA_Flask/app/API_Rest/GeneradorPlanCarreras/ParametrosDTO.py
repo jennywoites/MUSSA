@@ -140,6 +140,11 @@ class Parametros:
             if codigo in materia_actual.correlativas:
                 materia_actual.correlativas.remove(codigo)
 
+        for cod_correlativa in materia.correlativas:
+            if not cod_correlativa in self.plan or not materia.codigo in self.plan[cod_correlativa]:
+                continue
+            self.plan[cod_correlativa].remove(materia.codigo)
+
         if codigo in self.plan:
             del (self.plan[codigo])
 
@@ -257,13 +262,17 @@ class Parametros:
                 disponibles.append(obligatoria)
                 obligatoria = obligatorias.pop(0) if obligatorias else None
 
-        for obligatoria in obligatorias:
-            disponibles.append(obligatoria)
-
-        for electiva in electivas:
-            disponibles.append(electiva)
+        self.concatenar_materias_restantes(obligatoria, obligatorias, disponibles)
+        self.concatenar_materias_restantes(electiva, electivas, disponibles)
 
         return disponibles
+
+    def concatenar_materias_restantes(self, materia_restante, materias, disponibles):
+        if materia_restante:
+            disponibles.append(materia_restante)
+
+        for materia in materias:
+            disponibles.append(materia)
 
     CMP_PRIMERO_ES_MENOR = -1
     CMP_SON_IGUALES = 0
