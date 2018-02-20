@@ -1,5 +1,4 @@
 class Horario:
-    
     def __init__(self, dia, hora_inicio, hora_fin):
         """
         Hora_inicio, Hora_fin: Numeros enteros si son horas en punto. Decimales, ejemplo 7.5 si son las 07:30
@@ -8,17 +7,24 @@ class Horario:
         self.hora_inicio = hora_inicio
         self.hora_fin = hora_fin
 
+    def copia_profunda(self):
+        return Horario(
+            dia=self.dia,
+            hora_inicio=self.hora_inicio,
+            hora_fin=self.hora_fin
+        )
+
     def convertir_a_franja(self, hora):
         base = 1
         hora_origen = 7
         if (round(hora) != hora):
             base += 1
             hora = int(hora - 0.5)
-        return int((hora - hora_origen)*2 + base)
+        return int((hora - hora_origen) * 2 + base)
 
     def convertir_franja_a_hora(self, franja):
         hora_origen = 7
-        return hora_origen + 0.5*(franja - 1)
+        return hora_origen + 0.5 * (franja - 1)
 
     def get_franjas_utilizadas(self):
         """

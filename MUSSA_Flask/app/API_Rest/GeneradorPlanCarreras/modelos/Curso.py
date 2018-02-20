@@ -9,6 +9,21 @@ class Curso:
         self.se_dicta_segundo_cuatrimestre = se_dicta_segundo_cuatrimestre
         self.puntaje = puntaje
 
+    def copia_profunda(self):
+        horarios = []
+        for horario in self.horarios:
+            horarios.append(horario.copia_profunda())
+
+        return Curso(
+            id_curso=self.id_curso,
+            cod_materia=self.cod,
+            nombre_curso=self.nombre,
+            horarios=horarios,
+            se_dicta_primer_cuatrimestre=self.se_dicta_primer_cuatrimestre,
+            se_dicta_segundo_cuatrimestre=self.se_dicta_segundo_cuatrimestre,
+            puntaje=self.puntaje
+        )
+
     def __str__(self):
         horarios = ""
         for h in self.horarios:

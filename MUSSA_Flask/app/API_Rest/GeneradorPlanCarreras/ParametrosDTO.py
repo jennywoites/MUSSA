@@ -61,6 +61,63 @@ class Parametros:
 
         self.plan_generado = []
 
+    def copia_profunda_datos_mas_relevantes(self):
+        copia_parametros = Parametros()
+
+        copia_parametros.primer_cuatrimestre_es_impar = self.primer_cuatrimestre_es_impar
+
+        copia_parametros.plan = {}
+        for codigo in self.plan:
+            copia_parametros.plan[codigo] = self.plan[codigo][:]
+
+        copia_parametros.materias = {}
+        for codigo in self.materias:
+            copia_parametros.materias[codigo] = self.materias[codigo].copia_profunda()
+
+        copia_parametros.horarios = {}
+        for codigo in self.horarios:
+            l_cursos = []
+            for curso in self.horarios[codigo]:
+                l_cursos.append(curso.copia_profunda())
+            copia_parametros.horarios[codigo] = l_cursos
+
+        copia_parametros.creditos_minimos_electivas = self.creditos_minimos_electivas
+
+        copia_parametros.franja_minima = self.franja_minima
+        copia_parametros.franja_maxima = self.franja_maxima
+
+        copia_parametros.dias = self.dias
+        copia_parametros.max_cuatrimestres = self.max_cuatrimestres
+        copia_parametros.max_cant_materias_por_cuatrimestre = self.max_cant_materias_por_cuatrimestre
+
+        copia_parametros.cuatrimestre_minimo_para_materia = {}
+        for cod in self.cuatrimestre_minimo_para_materia:
+            copia_parametros.cuatrimestre_minimo_para_materia[cod] = self.cuatrimestre_minimo_para_materia[cod]
+
+        copia_parametros.creditos_minimos_tematicas = {}
+        for tematica in self.creditos_minimos_tematicas:
+            copia_parametros.creditos_minimos_tematicas[tematica] = self.creditos_minimos_tematicas[tematica]
+
+        copia_parametros.materias_incompatibles = {}
+        for cod in self.materias_incompatibles:
+            copia_parametros.materias_incompatibles[cod] = self.materias_incompatibles[cod][:]
+
+        copia_parametros.max_horas_cursada = self.max_horas_cursada
+        copia_parametros.max_horas_extras = self.max_horas_extras
+
+        copia_parametros.materia_trabajo_final = []
+        for materia in self.materia_trabajo_final:
+            copia_parametros.materia_trabajo_final.append(materia.copia_profunda())
+
+        copia_parametros.plan_generado = []
+        for cuatrimestre in self.plan_generado:
+            copia_materias_cuatrimestre = {}
+            for cod in cuatrimestre:
+                copia_materias_cuatrimestre[cod] = cuatrimestre[cod]
+            copia_parametros.plan_generado.append(copia_materias_cuatrimestre)
+
+        return copia_parametros
+
     def set_franjas(self, minima, maxima):
         self.franja_minima = minima
         self.franja_maxima = maxima
