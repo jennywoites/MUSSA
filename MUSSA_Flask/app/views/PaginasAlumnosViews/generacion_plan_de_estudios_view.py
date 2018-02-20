@@ -65,3 +65,10 @@ def visualizar_plan_de_estudios_page(idPlanEstudios):
     return render_template('pages/ver_plan_de_estudios_page.html',
                            carreras=mis_carreras,
                            plan=plan)
+
+@main_blueprint.route('/planes_de_estudio/mis_planes/eliminar_plan/<int:idPlanEstudios>/<string:token>', methods=['GET'])
+@login_required
+def eliminar_plan_de_estudios_page(idPlanEstudios, token):
+    ClienteAPI().eliminar_plan_de_estudios_alumno(request.cookies, token, idPlanEstudios)
+    return redirect(url_for('main.planes_de_estudios_page'), code=REDIRECTION_FOUND)
+

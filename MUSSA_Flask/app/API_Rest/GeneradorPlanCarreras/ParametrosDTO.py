@@ -183,7 +183,8 @@ class Parametros:
 
         for cod_materia in self.plan:
             materia = self.materias[cod_materia]
-            if not materia.correlativas and materia.creditos_minimos_aprobados <= creditos_actuales:
+
+            if self.la_materia_esta_habilitada(materia, creditos_actuales):
                 for curso in self.horarios[cod_materia]:
                     self.agregar_materia_al_listado_correspondiente(materia, curso, disponibles_obligatorias,
                                                                     disponibles_electivas_prioritarias,
@@ -211,6 +212,17 @@ class Parametros:
             disponibles.append(materia_electiva)
 
         return disponibles
+
+    def la_materia_esta_habilitada(self, materia, creditos_actuales):
+        return (not materia.correlativas and
+                materia.creditos_minimos_aprobados <= creditos_actuales and
+                self.tiene_cuatrimestre_minimo_cumplido(materia.codigo))
+
+    def tiene_cuatrimestre_minimo_cumplido(self, cod_materia):
+        if not cod_materia in self.cuatrimestre_minimo_para_materia:
+            return True
+
+        return self.cuatrimestre_minimo_para_materia[cod_materia] < len(self.plan_generado)
 
     def se_encuentra_materia_en_plan_generado(self, cod_materia, materias_cuatrimestre_actual):
         for cuatrimestre in self.plan_generado:

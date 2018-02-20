@@ -5,95 +5,51 @@ PLAN_GENERADO_CORRECTAMENTE = True
 
 
 def generar_plan_greedy(parametros):
-    planes_pendientes = []
-    resultado = generar_plan_greedy_recursivo(planes_pendientes, parametros, [], {}, [], 0, 0, 0)
-
-    #FIXME:
-    return resultado
-
-    if resultado == PLAN_GENERADO_CORRECTAMENTE:
-        return PLAN_GENERADO_CORRECTAMENTE
-
-    total_planes = 0
-    while (planes_pendientes):
-        total_planes += 1
-        plan_nuevo = planes_pendientes.pop(0)
-
-        parametros_actuales = plan_nuevo["parametros"]
-        materias_disponibles = plan_nuevo["materias_disponibles"]
-        materias_cuatrimestre_actual = plan_nuevo["materias_cuatrimestre_actual"]
-        franjas_cuatrimestre = plan_nuevo["franjas_cuatrimestre"]
-        creditos_totales = plan_nuevo["creditos_totales"]
-        medias_horas_cursada = plan_nuevo["medias_horas_cursada"]
-        medias_horas_extras = plan_nuevo["medias_horas_extras"]
-
-        resultado = generar_plan_greedy_recursivo(planes_pendientes, parametros_actuales, materias_disponibles,
-                                                  materias_cuatrimestre_actual,
-                                                  franjas_cuatrimestre, creditos_totales, medias_horas_cursada,
-                                                  medias_horas_extras)
-
-        if resultado == PLAN_GENERADO_CORRECTAMENTE:
-            # actualizar el parametro a como esta actualmente
-            return PLAN_GENERADO_CORRECTAMENTE
-
-    return resultado
-
-
-def generar_plan_greedy_recursivo(planes_pendientes, parametros, materias_disponibles, materias_cuatrimestre_actual,
-                                  franjas_cuatrimestre,
-                                  creditos_totales, medias_horas_cursada, medias_horas_extras):
-    es_primera_vez = True
+    creditos_totales = 0
     while (not parametros.plan_esta_finalizado()):
         if len(parametros.plan_generado) == parametros.max_cuatrimestres:
             return PLAN_NO_GENERADO
 
-        # Cuando no es el paso inicial debo reiniciar los datos. En el caso de que sea la
-        # primer llamada del paso recursivo, debo iniciar los datos y por ello materias_disponibles
-        # estará vacío.
-        if not materias_disponibles or not es_primera_vez:
-            materias_disponibles = parametros.obtener_materias_disponibles(creditos_totales)
-            materias_cuatrimestre_actual = {}
-
-        es_primera_vez = False
+        materias_cuatrimestre_actual, creditos_totales = generar_cuatrimestre_actual(parametros, creditos_totales)
 
         if not materias_cuatrimestre_actual:
-            franjas_cuatrimestre = parametros.generar_lista_franjas_limpia()
-            medias_horas_cursada = 0
-            medias_horas_extras = 0
-
-        for index, grupo_materia in enumerate(materias_disponibles):
-            materia, curso = grupo_materia
-            # Si el cuatrimestre esta completo en cantidad de materias, cierro el cuatrimestre
-            if (parametros.max_cant_materias_por_cuatrimestre == len(materias_cuatrimestre_actual) or
-                        parametros.max_horas_extras == medias_horas_extras or
-                        parametros.max_horas_cursada == medias_horas_cursada):
-                break
-
-            franjas_curso, horas_cursada = obtener_franjas_curso(curso) if curso else ([], 0)
-
-            if not es_posible_agregar_materia_y_curso(materia, franjas_curso, horas_cursada,
-                                                      materia.medias_horas_extras_cursada, franjas_cuatrimestre,
-                                                      medias_horas_cursada,
-                                                      medias_horas_extras, parametros, materias_cuatrimestre_actual):
-                continue
-
-            # agregar_plan_sin_opcion_actual(planes_pendientes, parametros, materias_disponibles, index,
-            #                                materias_cuatrimestre_actual, franjas_cuatrimestre,
-            #                                creditos_totales, medias_horas_cursada, medias_horas_extras)
-
-            creditos_totales += materia.creditos
-            medias_horas_cursada += horas_cursada
-            medias_horas_extras += materia.medias_horas_extras_cursada
-            agregar_materia_y_actualizar_creditos(materia, curso, franjas_curso, parametros,
-                                                  materias_cuatrimestre_actual, franjas_cuatrimestre)
-
-        if materias_cuatrimestre_actual:
-            parametros.plan_generado.append(materias_cuatrimestre_actual)
-        else:
             return PLAN_NO_GENERADO
+
+        parametros.plan_generado.append(materias_cuatrimestre_actual)
 
     return PLAN_GENERADO_CORRECTAMENTE
 
+def generar_cuatrimestre_actual(parametros, creditos_totales):
+    materias_disponibles = parametros.obtener_materias_disponibles(creditos_totales)
+    materias_cuatrimestre_actual = {}
+
+    franjas_cuatrimestre = parametros.generar_lista_franjas_limpia()
+    medias_horas_cursada = 0
+    medias_horas_extras = 0
+
+    for index, grupo_materia in enumerate(materias_disponibles):
+        materia, curso = grupo_materia
+        # Si el cuatrimestre esta completo en cantidad de materias, cierro el cuatrimestre
+        if (parametros.max_cant_materias_por_cuatrimestre == len(materias_cuatrimestre_actual) or
+                    parametros.max_horas_extras == medias_horas_extras or
+                    parametros.max_horas_cursada == medias_horas_cursada):
+            break
+
+        franjas_curso, horas_cursada = obtener_franjas_curso(curso) if curso else ([], 0)
+
+        if not es_posible_agregar_materia_y_curso(materia, franjas_curso, horas_cursada,
+                                                  materia.medias_horas_extras_cursada, franjas_cuatrimestre,
+                                                  medias_horas_cursada,
+                                                  medias_horas_extras, parametros, materias_cuatrimestre_actual):
+            continue
+
+        creditos_totales += materia.creditos
+        medias_horas_cursada += horas_cursada
+        medias_horas_extras += materia.medias_horas_extras_cursada
+        agregar_materia_y_actualizar_creditos(materia, curso, franjas_curso, parametros,
+                                              materias_cuatrimestre_actual, franjas_cuatrimestre)
+
+    return materias_cuatrimestre_actual, creditos_totales
 
 def agregar_plan_sin_opcion_actual(planes_pendientes, parametros, materias_disponibles, index_materia_ignorar,
                                    materias_cuatrimestre_actual, franjas_cuatrimestre,

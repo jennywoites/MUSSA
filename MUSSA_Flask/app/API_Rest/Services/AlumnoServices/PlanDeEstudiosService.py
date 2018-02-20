@@ -62,6 +62,44 @@ class PlanDeEstudiosService(BaseService):
         return result
 
     @login_required
+    def delete(self, idPlanDeEstudios):
+        self.logg_parametros_recibidos()
+
+        alumno = self.obtener_alumno_usuario_actual()
+
+        if not alumno:
+            msj = "El usuario no tiene ningun alumno asociado"
+            self.logg_error(msj)
+            return {'Error': msj}, CLIENT_ERROR_NOT_FOUND
+
+        parametros_son_validos, msj, codigo = self.validar_parametros(dict([
+            ("idPlanDeEstudios", {
+                self.PARAMETRO: idPlanDeEstudios,
+                self.ES_OBLIGATORIO: True,
+                self.FUNCIONES_VALIDACION: [
+                    (self.id_es_valido, []),
+                    (self.existe_id, [PlanDeEstudios]),
+                    (self.plan_pertenece_al_alumno, [])
+                ]
+            })
+        ]))
+
+        if not parametros_son_validos:
+            self.logg_error(msj)
+            return {'Error': msj}, codigo
+
+
+        MateriaPlanDeEstudios.query.filter_by(plan_estudios_id=idPlanDeEstudios).delete()
+        db.session.commit()
+
+        PlanDeEstudios.query.filter_by(id=idPlanDeEstudios).delete()
+        db.session.commit()
+
+        result = SUCCESS_NO_CONTENT
+        self.logg_resultado(result)
+        return result
+
+    @login_required
     def put(self):
         self.logg_parametros_recibidos()
 

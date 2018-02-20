@@ -1228,6 +1228,39 @@
             "description": "El plan de estudios del ID especificado no fue encontrado o no pertenece al alumno del usuario actual."
           }
         }
+      },
+      "delete": {
+        "tags": [
+          "alumno"
+        ],
+        "summary": "Elimina el plan de estudios asociado al id.",
+        "description": "Elimina el plan de estudios asociado al id.",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "idPlanDeEstudios",
+            "required": true,
+            "type": "integer",
+            "description": "El ID del plan de estudios del alumno a eliminar."
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "BAD REQUEST. El ID del plan debe ser un número mayor a 0."
+          },
+          "401": {
+            "description": "La información de autorización no fue enviada o es inválida."
+          },
+          "404": {
+            "description": "El plan de estudios del ID especificado no fue encontrado o no pertenece al alumno del usuario actual."
+          }
+        }
       }
     },
     "alumno/planDeEstudios/all": {

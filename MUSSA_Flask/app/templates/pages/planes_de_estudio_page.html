@@ -1,6 +1,19 @@
 {% extends "common/page_base.html" %}
 
 {% block content %}
+<script>
+    function confirmar_eliminar_plan(fecha, estado, url) {
+        msj = "¿Estás seguro de que querés eliminar el plan del día " + fecha;
+        msj += " que se encuentra " + estado + "?";
+
+        titulo = "Eliminar plan de estudios generado";
+
+        show_modal(titulo, msj, "Eliminar", "Cancelar", function(modal) {
+            redirigir_a(url);
+        });
+    }
+
+</script>
 <div class="container">
 
     <h2>{%trans%}Planes de Estudios{%endtrans%}</h2>
@@ -29,10 +42,16 @@
             <tr>
                 <td>{{plan['fecha_generacion']}}</td>
                 <td>{{plan['estado']}}</td>
-                {% if plan['estado_numero'] == 1 %}<!-- Estado finalizdo -->
+                {% if plan['estado_numero'] == 1 %}<!-- Estado finalizado -->
                 <td>
                     <a href="{{url_for('main.visualizar_plan_de_estudios_page', idPlanEstudios=plan['id_plan'])}}"><span
                             class='glyphicon glyphicon-search'></span></a>
+                    <button type="button" class="btn btn-link" onclick="confirmar_eliminar_plan('{{plan['fecha_generacion']}}', '{{plan['estado']}}', '{{ url_for('main.eliminar_plan_de_estudios_page', idPlanEstudios=plan['id_plan'], token=csrf_token())}}')"><span class='glyphicon glyphicon-trash'></span></button>
+                </td>
+                {% endif %}
+                {% if plan['estado_numero'] == 2 %}<!-- Incompatible -->
+                <td>
+                    <button type="button" class="btn btn-link" onclick="confirmar_eliminar_plan('{{plan['fecha_generacion']}}', '{{plan['estado']}}', '{{ url_for('main.eliminar_plan_de_estudios_page', idPlanEstudios=plan['id_plan'], token=csrf_token())}}')"><span class='glyphicon glyphicon-trash'></span></button>
                 </td>
                 {% endif %}
             </tr>
