@@ -13,6 +13,7 @@
         });
     }
 
+
 </script>
 <div class="container">
 
@@ -34,7 +35,7 @@
             <tr>
                 <th>Fecha de generación del plan</th>
                 <th>Estado</th>
-                <th>Ver</th>
+                <th>Acciones</th>
             </tr>
             </thead>
             <tbody>
@@ -46,13 +47,18 @@
                 <td>
                     <a href="{{url_for('main.visualizar_plan_de_estudios_page', idPlanEstudios=plan['id_plan'])}}"><span
                             class='glyphicon glyphicon-search'></span></a>
-                    <button type="button" class="btn btn-link" onclick="confirmar_eliminar_plan('{{plan['fecha_generacion']}}', '{{plan['estado']}}', '{{ url_for('main.eliminar_plan_de_estudios_page', idPlanEstudios=plan['id_plan'], token=csrf_token())}}')"><span class='glyphicon glyphicon-trash'></span></button>
+                    <button type="button" class="btn btn-link"
+                            onclick="confirmar_eliminar_plan('{{plan['fecha_generacion']}}', '{{plan['estado']}}', '{{ url_for('main.eliminar_plan_de_estudios_page', idPlanEstudios=plan['id_plan'], token=csrf_token())}}')">
+                        <span class='glyphicon glyphicon-trash'></span></button>
                 </td>
-                {% endif %}
-                {% if plan['estado_numero'] == 2 %}<!-- Incompatible -->
+                {% elif plan['estado_numero'] == 2 %}<!-- Incompatible -->
                 <td>
-                    <button type="button" class="btn btn-link" onclick="confirmar_eliminar_plan('{{plan['fecha_generacion']}}', '{{plan['estado']}}', '{{ url_for('main.eliminar_plan_de_estudios_page', idPlanEstudios=plan['id_plan'], token=csrf_token())}}')"><span class='glyphicon glyphicon-trash'></span></button>
+                    <button type="button" class="btn btn-link"
+                            onclick="confirmar_eliminar_plan('{{plan['fecha_generacion']}}', '{{plan['estado']}}', '{{ url_for('main.eliminar_plan_de_estudios_page', idPlanEstudios=plan['id_plan'], token=csrf_token())}}')">
+                        <span class='glyphicon glyphicon-trash'></span></button>
                 </td>
+                {% else %}
+                <td></td>
                 {% endif %}
             </tr>
             {% endfor %}

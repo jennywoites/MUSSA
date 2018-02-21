@@ -24,6 +24,19 @@ class Curso:
             puntaje=self.puntaje
         )
 
+    def obtener_franjas_curso(self):
+        franjas_totales = {}
+        total_horas = 0
+        for horario in self.horarios:
+            franjas = horario.get_franjas_utilizadas()
+            franjas_dia = franjas_totales.get(horario.dia, [])
+            for franja in franjas:
+                franjas_dia.append(franja)
+            franjas_totales[horario.dia] = franjas_dia
+            total_horas += len(franjas_dia)
+
+        return franjas_totales, total_horas
+
     def __str__(self):
         horarios = ""
         for h in self.horarios:

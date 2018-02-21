@@ -86,7 +86,7 @@ def agregar_materias_no_pendientes_no_contempladas_en_plan(plan_de_estudios, mat
 
     for materia_alumno in filtrar_materias_alumno(filtro):
         materia = Materia.query.get(materia_alumno.materia_id)
-        curso_actual = Curso.query.get(materia_alumno.curso_id)
+        curso_actual = Curso.query.get(materia_alumno.curso_id) if materia_alumno.curso_id else None
         anio, cuatrimestre = int(materia_alumno.anio_aprobacion_cursada), \
                              int(materia_alumno.cuatrimestre_aprobacion_cursada)
 

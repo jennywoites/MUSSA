@@ -61,7 +61,7 @@ class Parametros:
 
         self.plan_generado = []
 
-    def copia_profunda_datos_mas_relevantes(self):
+    def copia_profunda(self):
         copia_parametros = Parametros()
 
         copia_parametros.primer_cuatrimestre_es_impar = self.primer_cuatrimestre_es_impar
@@ -81,7 +81,15 @@ class Parametros:
                 l_cursos.append(curso.copia_profunda())
             copia_parametros.horarios[codigo] = l_cursos
 
+        copia_parametros.horarios_no_permitidos = []
+        for horario in self.horarios_no_permitidos:
+            copia_parametros.horarios_no_permitidos.append(horario)
+
         copia_parametros.creditos_minimos_electivas = self.creditos_minimos_electivas
+
+        copia_parametros.nombre_archivo_pulp = self.nombre_archivo_pulp
+        copia_parametros.nombre_archivo_resultados_pulp = self.nombre_archivo_resultados_pulp
+        copia_parametros.nombre_archivo_pulp_optimizado = self.nombre_archivo_pulp_optimizado
 
         copia_parametros.franja_minima = self.franja_minima
         copia_parametros.franja_maxima = self.franja_maxima
@@ -90,6 +98,13 @@ class Parametros:
         copia_parametros.max_cuatrimestres = self.max_cuatrimestres
         copia_parametros.max_cant_materias_por_cuatrimestre = self.max_cant_materias_por_cuatrimestre
 
+        copia_parametros.materias_CBC_pendientes = []
+        for materia in self.materias_CBC_pendientes:
+            copia_parametros.materias_CBC_pendientes.append(materia)
+
+        copia_parametros.orientacion = self.orientacion
+        copia_parametros.id_carrera = self.id_carrera
+
         copia_parametros.cuatrimestre_minimo_para_materia = {}
         for cod in self.cuatrimestre_minimo_para_materia:
             copia_parametros.cuatrimestre_minimo_para_materia[cod] = self.cuatrimestre_minimo_para_materia[cod]
@@ -97,6 +112,9 @@ class Parametros:
         copia_parametros.creditos_minimos_tematicas = {}
         for tematica in self.creditos_minimos_tematicas:
             copia_parametros.creditos_minimos_tematicas[tematica] = self.creditos_minimos_tematicas[tematica]
+
+        copia_parametros.cuatrimestre_inicio = self.cuatrimestre_inicio
+        copia_parametros.anio_inicio = self.anio_inicio
 
         copia_parametros.materias_incompatibles = {}
         for cod in self.materias_incompatibles:
@@ -202,8 +220,10 @@ class Parametros:
             key=cmp_to_key(self.cmp_materias_electivas)
         )
 
-        disponibles = self.concatenar_listas_por_horarios(disponibles_obligatorias,
-                                                          disponibles_electivas_prioritarias)
+        #FIXME: Decidir la mejor manera de colocarlas (si concatenadas o seguidas)
+        # disponibles = self.concatenar_listas_por_horarios(disponibles_obligatorias,
+        #                                                   disponibles_electivas_prioritarias)
+        disponibles = disponibles_obligatorias + disponibles_electivas_prioritarias
 
         self.concatenar_materias_trabajo_final(disponibles, creditos_actuales)
 
@@ -523,3 +543,31 @@ class Parametros:
                 self.creditos_minimos_tematicas[tematica] -= materia.creditos
                 if self.creditos_minimos_tematicas[tematica] <= 0:
                     self.creditos_minimos_tematicas.pop(tematica)
+
+    def actualizar_datos_con_parametros_seleccionados(self, parametros_actuales):
+        self.primer_cuatrimestre_es_impar = parametros_actuales.primer_cuatrimestre_es_impar
+        self.plan = parametros_actuales.plan
+        self.materias = parametros_actuales.materias
+        self.horarios = parametros_actuales.horarios
+        self.horarios_no_permitidos = parametros_actuales.horarios_no_permitidos
+        self.creditos_minimos_electivas = parametros_actuales.creditos_minimos_electivas
+        self.nombre_archivo_pulp = parametros_actuales.nombre_archivo_pulp
+        self.nombre_archivo_resultados_pulp = parametros_actuales.nombre_archivo_resultados_pulp
+        self.nombre_archivo_pulp_optimizado = parametros_actuales.nombre_archivo_pulp_optimizado
+        self.franja_minima = parametros_actuales.franja_minima
+        self.franja_maxima = parametros_actuales.franja_maxima
+        self.dias = parametros_actuales.dias
+        self.max_cuatrimestres = parametros_actuales.max_cuatrimestres
+        self.max_cant_materias_por_cuatrimestre = parametros_actuales.max_cant_materias_por_cuatrimestre
+        self.materias_CBC_pendientes = parametros_actuales.materias_CBC_pendientes
+        self.orientacion = parametros_actuales.orientacion
+        self.id_carrera = parametros_actuales.id_carrera
+        self.cuatrimestre_minimo_para_materia = parametros_actuales.cuatrimestre_minimo_para_materia
+        self.creditos_minimos_tematicas = parametros_actuales.creditos_minimos_tematicas
+        self.cuatrimestre_inicio = parametros_actuales.cuatrimestre_inicio
+        self.anio_inicio = parametros_actuales.anio_inicio
+        self.materias_incompatibles = parametros_actuales.materias_incompatibles
+        self.max_horas_cursada = parametros_actuales.max_horas_cursada
+        self.max_horas_extras = parametros_actuales.max_horas_extras
+        self.materia_trabajo_final = parametros_actuales.materia_trabajo_final
+        self.plan_generado = parametros_actuales.plan_generado
