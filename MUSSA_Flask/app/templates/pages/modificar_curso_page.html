@@ -2,7 +2,7 @@
 
 {% block content %}
 
-    <script>
+<script>
 
         $(function(){
             var tabla = document.getElementById("tabla_docentes");
@@ -214,236 +214,254 @@
             var primer_cuatrimestre = $("input:checkbox[name^='check_primer_cuatri']")[0].checked;;
             var segundo_cuatrimestre = $("input:checkbox[name^='check_segundo_cuatri']")[0].checked;
 
+            show_loading_mask();
             modificar_curso_service(csrf_token, idCurso, ids_carreras, primer_cuatrimestre, segundo_cuatrimestre,
             ids_docentes, horarios, function(state, result) {
-                redirigir_a("{{ url_for('main.administrar_horarios_page') }}");
+                redirigir_a("{{ url_for('main.administrar_cursos_page') }}");
+                hide_loading_mask();
             }, function(state, result) {
                 var error_label = document.getElementById("error_al_guardar_label");
                 error_label.style["display"] = "";
+                hide_loading_mask();
             })
         }
 
-    </script>
 
-    <div class="container">
+</script>
 
-        <h2>Modificar curso: {{curso["codigo_curso"]}} - Materia: {{curso["codigo_materia"]}}</h2>
+<div class="container">
 
-        <br>
+    <h2>Modificar curso: {{curso["codigo_curso"]}} - Materia: {{curso["codigo_materia"]}}</h2>
 
-        <form>
-            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+    <br>
 
-            <div class="form-group">
-                <label>Carreras habilitadas:</label>
+    <form>
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
 
-                {% for carrera in carreras %}
-                    <div class="checkbox" id="carrera-{{carrera.codigo}}">
-                        <label>
-                            {% if carrera["activa"] == "true" %}
-                                <input type="checkbox" name="carrera-{{carrera['codigo']}}" value="{{carrera['codigo']}}" checked="checked">{{ carrera['codigo'] }} - {{ carrera['nombre'] }}
-                            {% else %}
-                                <input type="checkbox" name="carrera-{{carrera['codigo']}}" value="{{carrera['codigo']}}">{{ carrera['codigo'] }} - {{ carrera['nombre'] }}
-                            {% endif %}
-                        </label>
-                    </div>
-                {% endfor %}
+        <div class="form-group">
+            <label>Carreras habilitadas:</label>
 
-                <div class="alert alert-danger" id="error_label_carrera_habilitada" style="display:none">
-                    Debe seleccionar al menos una carrera en la que el horario esté habilitado.
-                </div>
-
-            </div>
-
-            <div class="form-group">
-                <label>Cuatrimestres en que se dicta la materia:</label>
-
-                <div class="checkbox" id="check_primer_cuatri">
-                    {% if curso['se_dicta_primer_cuatri'] %}
-                        <label><input type="checkbox" checked="checked" value="" name="check_primer_cuatri">Primer cuatrimestre</label>
+            {% for carrera in carreras %}
+            <div class="checkbox" id="carrera-{{carrera.codigo}}">
+                <label>
+                    {% if carrera["activa"] == "true" %}
+                    <input type="checkbox" name="carrera-{{carrera['codigo']}}" value="{{carrera['codigo']}}"
+                           checked="checked">{{ carrera['codigo'] }} - {{ carrera['nombre'] }}
                     {% else %}
-                        <label><input type="checkbox" value="" name="check_primer_cuatri">Primer cuatrimestre</label>
+                    <input type="checkbox" name="carrera-{{carrera['codigo']}}" value="{{carrera['codigo']}}">{{
+                    carrera['codigo'] }} - {{ carrera['nombre'] }}
                     {% endif %}
-                </div>
-                <div class="checkbox" id="check_segundo_cuatri">
-                    {% if curso['se_dicta_segundo_cuatri'] %}
-                        <label><input type="checkbox" checked="checked" value="" name="check_segundo_cuatri">Segundo cuatrimestre</label>
-                    {% else %}
-                        <label><input type="checkbox" value="" name="check_segundo_cuatri">Segundo cuatrimestre</label>
-                    {% endif %}
-                </div>
+                </label>
+            </div>
+            {% endfor %}
 
+            <div class="alert alert-danger" id="error_label_carrera_habilitada" style="display:none">
+                Debe seleccionar al menos una carrera en la que el horario esté habilitado.
             </div>
 
-            <div class="form-group">
-                <label>Docentes:</label>
+        </div>
 
-                <div>
-                    <div class="row">
-                        <div class="col-sm-2">
-                            <div class="form-group">
-                                <select class="form-control" id="selector_docentes" name="selector_docentes">
-                                    {% for docente in docentes %}
-                                    <option id="option-{{docente['id_docente']}}">{{docente['nombre_completo']}}</option>
-                                    {% endfor %}
-                                </select>
-                            </div>
-                        </div>
+        <div class="form-group">
+            <label>Cuatrimestres en que se dicta la materia:</label>
 
-                        <div class="col-sm-2">
-                            <div class="form-group">
-                                <button type="button" class="btn btn-mussa-default" onclick="agregarDocente()">Agregar docente</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="alert alert-danger" id="error_label_docentes_habilitados" style="display:none">
-                    Debe seleccionar al menos un docente para que dicte la materia
-                </div>
-
-                <div class="form-group">
-                    <div class='table-responsive'>
-                        <table class='table table-hover' id="tabla_docentes">
-                            <tr>
-                                <th>Apellido, Nombre</th>
-                                <th>Materias que dicta</th>
-                                <th>Eliminar</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            {% for i in range(docentes | length) %}
-                                <tr id="{{docentes[i]['id_docente']}}" hidden="true">
-                                    <td>{{docentes[i]['nombre_completo']}}</td>
-                                    <td>
-                                        <ul class="list-group">
-                                            {% for codigo in docentes[i]["materias_que_dicta"] %}
-                                            <li class="list-group-item" style="border-color: transparent; background-color: transparent;">
-                                                {{codigo}} - {{docentes[i]["materias_que_dicta"][codigo]["nombre"]}} / {{docentes[i]["materias_que_dicta"][codigo]["carrera"]}}
-                                            </li>
-                                            {% endfor %}
-                                        </ul>
-                                    </td>
-                                    <td><button type="button" class="btn btn-default" onclick="eliminarDocente({{i+1}})"><span class='glyphicon glyphicon-trash'></span></button></td>
-                                </tr>
-                            {% endfor %}
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
+            <div class="checkbox" id="check_primer_cuatri">
+                {% if curso['se_dicta_primer_cuatri'] %}
+                <label><input type="checkbox" checked="checked" value="" name="check_primer_cuatri">Primer cuatrimestre</label>
+                {% else %}
+                <label><input type="checkbox" value="" name="check_primer_cuatri">Primer cuatrimestre</label>
+                {% endif %}
+            </div>
+            <div class="checkbox" id="check_segundo_cuatri">
+                {% if curso['se_dicta_segundo_cuatri'] %}
+                <label><input type="checkbox" checked="checked" value="" name="check_segundo_cuatri">Segundo
+                    cuatrimestre</label>
+                {% else %}
+                <label><input type="checkbox" value="" name="check_segundo_cuatri">Segundo cuatrimestre</label>
+                {% endif %}
             </div>
 
+        </div>
 
-            <label>Horarios:</label>
+        <div class="form-group">
+            <label>Docentes:</label>
 
             <div>
                 <div class="row">
                     <div class="col-sm-2">
                         <div class="form-group">
-                
-                            <select class="form-control" id="dia" name="dia">
-                                {% for dia in dias %}
-                                    <option>{{dia}}</option>
-                                {% endfor %}
-                            </select>
-
-                        </div>
-                    </div>
-
-                    <div class="col-xs-1">
-                        <p>De:</p>
-                    </div>
-
-                    <div class="col-sm-2">
-                        <div class="form-group">                
-                            <select class="form-control" id="hora_desde" name="hora_desde" onchange="actualizarHoraHasta()">
-                                {% for i in range(hora_desde | length) %}
-                                    <option id="hora_desde_{{i}}">{{hora_desde[i]}}</option>
-                                {% endfor %}
-                            </select>
-                        </div>
-                    </div>
-
-                    <div class="col-xs-1">
-                        <p>A:</p>
-                    </div>
-
-                    <div class="col-sm-2">
-                        <div class="form-group">                
-                            <select class="form-control" id="hora_hasta" name="hora_hasta">
-                                {% for i in range(hora_hasta | length) %}
-                                    <option id="hora_hasta_{{i}}">{{hora_hasta[i]}}</option>
+                            <select class="form-control" id="selector_docentes" name="selector_docentes">
+                                {% for docente in docentes %}
+                                <option id="option-{{docente['id_docente']}}">{{docente['nombre_completo']}}</option>
                                 {% endfor %}
                             </select>
                         </div>
                     </div>
 
                     <div class="col-sm-2">
-                        <div class="form-group"> 
-                            <button type="button" class="btn btn-mussa-default" onclick="agregarHorario()">Agregar horario</button>
+                        <div class="form-group">
+                            <button type="button" class="btn btn-mussa-default" onclick="agregarDocente()">Agregar
+                                docente
+                            </button>
                         </div>
                     </div>
-
                 </div>
-                    
-                <div class="alert alert-danger" id="error_label" style="display:none">
-                    Este horario es incompatible con los que han sido cargados previamente.
-                </div>
-
             </div>
 
-            <br>
+            <div class="alert alert-danger" id="error_label_docentes_habilitados" style="display:none">
+                Debe seleccionar al menos un docente para que dicte la materia
+            </div>
 
             <div class="form-group">
                 <div class='table-responsive'>
-                    <table class='table table-hover' id="tabla_cursos_guardados">
+                    <table class='table table-hover' id="tabla_docentes">
                         <tr>
-                            <th>Dia</th>
-                            <th>De</th>
-                            <th>A</th>
+                            <th>Apellido, Nombre</th>
+                            <th>Materias que dicta</th>
                             <th>Eliminar</th>
                         </tr>
                         </thead>
                         <tbody>
-                        {% for i in range(curso["horarios"] | length) %}
-
-                            <tr id="horario_{{i}}">
-                                <td>{{curso["horarios"][i]["dia"]}}</td>
-                                <td>{{curso["horarios"][i]["hora_desde"]}}</td>
-                                <td>{{curso["horarios"][i]["hora_hasta"]}}</td>
-                                <td><button type="button" class="btn btn-default" onclick="eliminarHorario({{i}})"><span class='glyphicon glyphicon-trash'></span></button></td>
-                            </tr>
+                        {% for i in range(docentes | length) %}
+                        <tr id="{{docentes[i]['id_docente']}}" hidden="true">
+                            <td>{{docentes[i]['nombre_completo']}}</td>
+                            <td>
+                                <ul class="list-group">
+                                    {% for codigo in docentes[i]["materias_que_dicta"] %}
+                                    <li class="list-group-item"
+                                        style="border-color: transparent; background-color: transparent;">
+                                        {{codigo}} - {{docentes[i]["materias_que_dicta"][codigo]["nombre"]}} /
+                                        {{docentes[i]["materias_que_dicta"][codigo]["carrera"]}}
+                                    </li>
+                                    {% endfor %}
+                                </ul>
+                            </td>
+                            <td>
+                                <button type="button" class="btn btn-default" onclick="eliminarDocente({{i+1}})"><span
+                                        class='glyphicon glyphicon-trash'></span></button>
+                            </td>
+                        </tr>
                         {% endfor %}
                         </tbody>
                     </table>
                 </div>
             </div>
+        </div>
 
-            <div class="alert alert-danger" id="error_al_guardar_label" style="display:none">
-                Los datos no se han guardado. Intente nuevamente.
-            </div>
 
-            <div>
-                <div class="row">
-                    <div class="col-sm-4">
-                    </div>
+        <label>Horarios:</label>
 
-                    <div class="col-sm-3">
-                        <button type="button" class="btn btn-mussa-default" onclick="guardarHorario()">
-                            Guardar
-                        </button>
-                    </div>
+        <div>
+            <div class="row">
+                <div class="col-sm-2">
+                    <div class="form-group">
 
-                    <div class="col-sm-4">
-                        <a href="{{ url_for('main.administrar_horarios_page') }}">
-                            <input type="button" class="btn btn-mussa-default" value="Descartar"/>
-                        </a>
+                        <select class="form-control" id="dia" name="dia">
+                            {% for dia in dias %}
+                            <option>{{dia}}</option>
+                            {% endfor %}
+                        </select>
+
                     </div>
                 </div>
+
+                <div class="col-xs-1">
+                    <p>De:</p>
+                </div>
+
+                <div class="col-sm-2">
+                    <div class="form-group">
+                        <select class="form-control" id="hora_desde" name="hora_desde" onchange="actualizarHoraHasta()">
+                            {% for i in range(hora_desde | length) %}
+                            <option id="hora_desde_{{i}}">{{hora_desde[i]}}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+
+                <div class="col-xs-1">
+                    <p>A:</p>
+                </div>
+
+                <div class="col-sm-2">
+                    <div class="form-group">
+                        <select class="form-control" id="hora_hasta" name="hora_hasta">
+                            {% for i in range(hora_hasta | length) %}
+                            <option id="hora_hasta_{{i}}">{{hora_hasta[i]}}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+
+                <div class="col-sm-2">
+                    <div class="form-group">
+                        <button type="button" class="btn btn-mussa-default" onclick="agregarHorario()">Agregar horario
+                        </button>
+                    </div>
+                </div>
+
             </div>
 
-        </form>
+            <div class="alert alert-danger" id="error_label" style="display:none">
+                Este horario es incompatible con los que han sido cargados previamente.
+            </div>
 
-    </div>
+        </div>
+
+        <br>
+
+        <div class="form-group">
+            <div class='table-responsive'>
+                <table class='table table-hover' id="tabla_cursos_guardados">
+                    <tr>
+                        <th>Dia</th>
+                        <th>De</th>
+                        <th>A</th>
+                        <th>Eliminar</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for i in range(curso["horarios"] | length) %}
+
+                    <tr id="horario_{{i}}">
+                        <td>{{curso["horarios"][i]["dia"]}}</td>
+                        <td>{{curso["horarios"][i]["hora_desde"]}}</td>
+                        <td>{{curso["horarios"][i]["hora_hasta"]}}</td>
+                        <td>
+                            <button type="button" class="btn btn-default" onclick="eliminarHorario({{i}})"><span
+                                    class='glyphicon glyphicon-trash'></span></button>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="alert alert-danger" id="error_al_guardar_label" style="display:none">
+            Los datos no se han guardado. Intente nuevamente.
+        </div>
+
+        <div>
+            <div class="row">
+                <div class="col-sm-4">
+                </div>
+
+                <div class="col-sm-3">
+                    <button type="button" class="btn btn-mussa-default" onclick="guardarHorario()">
+                        Guardar
+                    </button>
+                </div>
+
+                <div class="col-sm-4">
+                    <a href="{{ url_for('main.administrar_cursos_page') }}">
+                        <input type="button" class="btn btn-mussa-default" value="Descartar"/>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+    </form>
+
+</div>
 
 {% endblock %}

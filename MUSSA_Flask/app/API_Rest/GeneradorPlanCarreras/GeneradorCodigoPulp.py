@@ -28,10 +28,10 @@ def definir_problema_minimizacion(arch):
 
 def definir_funcion_objetivo(arch):
     arch.write("# Definicion de la funcion objetivo a minimizar." + ENTER + ENTER)
-    funciones = [] #[(factor, variable)]
+    funciones = []  # [(factor, variable)]
     funciones.append((10, "TOTAL_CUATRIMESTRES"))
-    #funciones.append((1,"HORAS_LIBRES_TOTALES"))
-    
+    # funciones.append((1,"HORAS_LIBRES_TOTALES"))
+
     ecuacion = "prob += "
     for (factor, variable) in funciones:
         ecuacion += str(factor) + "*" + variable + " + "
@@ -73,7 +73,7 @@ def generar_codigo(arch, parametros):
     definir_variables(arch, parametros)
     definir_problema_minimizacion(arch)
     generar_restricciones(arch, parametros)
-    definir_funcion_objetivo(arch)    
+    definir_funcion_objetivo(arch)
     resolver_problema(arch)
     guardar_variables(arch, parametros)
 
@@ -81,7 +81,7 @@ def generar_codigo(arch, parametros):
 def generar_archivo_pulp(parametros):
     ruta = parametros.nombre_archivo_pulp
     with open(ruta, "w") as f:
-        generar_codigo(f, parametros)        
+        generar_codigo(f, parametros)
 
 
 def main():

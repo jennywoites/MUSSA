@@ -1,6 +1,7 @@
 import os
 from app import db
-from app.models.carreras_models import Carrera, Creditos, Orientacion, Materia, TipoMateria, Correlativas
+from app.models.carreras_models import Carrera, Creditos, Orientacion, Materia, TipoMateria, Correlativas, \
+    MateriasIncompatibles
 
 RUTA_PLANES_CSV = "../../../PlanesdeEstudio/CSV/"
 RUTA_PLANES_INFO = "../../../PlanesdeEstudio/InfoCarrera/"
@@ -83,6 +84,8 @@ def crear_carrera(codigo, titulo, plan):
 
     guardar_materias(carrera, codigo, titulo, plan)
 
+    guardar_materias_incompatibles(datos, carrera)
+
     db.session.commit()
 
 
@@ -127,16 +130,24 @@ def cargar_datos_carrera(nombre_arch):
             datos = datos.split("-")
             datos = [] if len(datos) == 1 and datos[0] == "NULL" else datos
 
-            if len(datos) == 1:  # Salvo las orientaciones, todas son unico valor numerico entero
+            if len(
+                    datos) == 1:  # Salvo las orientaciones y materias incompatibles todas son unico valor numerico entero
                 dato = datos[0]
                 dato = dato[1:len(dato) - 1]
                 dic_datos[etiqueta] = int(dato)
             else:
-                orientaciones = []
-                for dato in datos:
-                    orientacion, cod_orientacion = dato.split(":")
-                    orientaciones.append((orientacion, cod_orientacion))
-                dic_datos[etiqueta] = orientaciones
+                if etiqueta == "ORIENTACIONES":
+                    orientaciones = []
+                    for dato in datos:
+                        orientacion, cod_orientacion = dato.split(":")
+                        orientaciones.append((orientacion, cod_orientacion))
+                    dic_datos[etiqueta] = orientaciones
+                if etiqueta == "MATERIAS_INCOMPATIBLES":
+                    dic_datos[etiqueta] = {}
+                    for dato in datos:
+                        cod_materia_original, materias = dato.split(":")
+                        materias = materias.split("|")
+                        dic_datos[etiqueta][cod_materia_original] = materias
 
     return dic_datos
 
@@ -238,3 +249,19 @@ def guardar_correlativas(dic_correlativas, carrera):
                 input()
 
             find_or_create_correlativa(materia_actual.id, materia_correlativa.id)
+
+
+def guardar_materias_incompatibles(datos, carrera):
+    for cod_materia in datos["MATERIAS_INCOMPATIBLES"]:
+        id_materia_origen = Materia.query.filter_by(carrera_id=carrera.id).filter_by(codigo=cod_materia).first().id
+        for cod_materia_incompatible in datos["MATERIAS_INCOMPATIBLES"][cod_materia]:
+            id_materia_incomp = Materia.query.filter_by(carrera_id=carrera.id). \
+                filter_by(codigo=cod_materia_incompatible).first().id
+            materia_incompatible = MateriasIncompatibles.query.filter_by(materia_id=id_materia_origen).filter_by(
+                materia_incompatible_id=id_materia_incomp).first()
+            if not materia_incompatible:
+                db.session.add(MateriasIncompatibles(
+                    materia_id=id_materia_origen,
+                    materia_incompatible_id=id_materia_incomp
+                ))
+                db.session.commit()
