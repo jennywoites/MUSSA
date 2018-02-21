@@ -5,6 +5,16 @@ PLAN_GENERADO_CORRECTAMENTE = True
 
 MAX_COMBINACIONES = 25 * 24 * 23 * 22 * 21  # 25 cursos posibles, 5 materias max
 
+PARAMETROS_ACTUALES = "parametros_actuales"
+CREDITOS_TOTALES = "creditos_totales"
+FRANJAS_CUATRIMESTRE = "franjas_cuatrimestre"
+MEDIAS_HORAS_CURSADA = "medias_horas_cursada"
+MEDIAS_HORAS_EXTRAS = "medias_horas_extras"
+MATERIAS_CUATRI_ACTUAL = "materias_cuatrimestre_actual"
+CANT_OBLIGATORIAS_QUE_LIBERA = "cant_obligatorias_que_libera"
+CANT_CREDITOS_TEMATICAS = "cant_creditos_tematicas"
+CANT_CREDITOS_ELECTIVAS = "cant_creditos_electivas"
+
 
 def generar_plan_greedy(parametros):
     creditos_totales = 0
@@ -29,10 +39,14 @@ def generar_cuatrimestre_actual(parametros, creditos_totales):
     for i in range(1, parametros.max_cant_materias_por_cuatrimestre):
         combinaciones = combinaciones * (len(materias_disponibles) - i)
 
-    if combinaciones > MAX_COMBINACIONES:
-        return generar_cuatrimestre_actual_greedy(parametros, materias_disponibles, creditos_totales)
+    posibles_combinaciones = [generar_combinacion_base(parametros, creditos_totales)]
 
-    mejor_combinacion = generar_posibles_combinaciones_cuatrimestre(parametros, materias_disponibles, creditos_totales)
+    agregar_segunda_parte_del_trabajo_final_consecutiva_a_la_primera_parte(parametros, posibles_combinaciones[0])
+
+    generar_todas_las_combinaciones_posibles = (combinaciones < MAX_COMBINACIONES)
+    mejor_combinacion = obtener_combinacion_materias_cuatrimestre(materias_disponibles, posibles_combinaciones,
+                                                                  generar_todas_las_combinaciones_posibles)
+
     if not mejor_combinacion:
         return {}, creditos_totales
 
@@ -40,53 +54,8 @@ def generar_cuatrimestre_actual(parametros, creditos_totales):
     return mejor_combinacion[MATERIAS_CUATRI_ACTUAL], mejor_combinacion[CREDITOS_TOTALES]
 
 
-def generar_cuatrimestre_actual_greedy(parametros, materias_disponibles, creditos_totales):
-    materias_cuatrimestre_actual = {}
-
-    franjas_cuatrimestre = parametros.generar_lista_franjas_limpia()
-    medias_horas_cursada = 0
-    medias_horas_extras = 0
-
-    for index, grupo_materia in enumerate(materias_disponibles):
-        materia, curso = grupo_materia
-
-        # Si el cuatrimestre esta completo en cantidad de materias, cierro el cuatrimestre
-        if combinacion_esta_completa(parametros, len(materias_cuatrimestre_actual), medias_horas_extras,
-                                     medias_horas_cursada):
-            break
-
-        franjas_curso, horas_cursada = curso.obtener_franjas_curso() if curso else ([], 0)
-
-        if not es_posible_agregar_materia_y_curso(materia, franjas_curso, horas_cursada,
-                                                  materia.medias_horas_extras_cursada, franjas_cuatrimestre,
-                                                  medias_horas_cursada, medias_horas_extras, parametros,
-                                                  materias_cuatrimestre_actual):
-            continue
-
-        creditos_totales += materia.creditos
-        medias_horas_cursada += horas_cursada
-        medias_horas_extras += materia.medias_horas_extras_cursada
-        agregar_materia_y_actualizar_creditos(materia, curso, franjas_curso, parametros,
-                                              materias_cuatrimestre_actual, franjas_cuatrimestre)
-
-    return materias_cuatrimestre_actual, creditos_totales
-
-
-PARAMETROS_ACTUALES = "parametros_actuales"
-CREDITOS_TOTALES = "creditos_totales"
-FRANJAS_CUATRIMESTRE = "franjas_cuatrimestre"
-MEDIAS_HORAS_CURSADA = "medias_horas_cursada"
-MEDIAS_HORAS_EXTRAS = "medias_horas_extras"
-MATERIAS_CUATRI_ACTUAL = "materias_cuatrimestre_actual"
-CANT_OBLIGATORIAS_QUE_LIBERA = "cant_obligatorias_que_libera"
-CANT_CREDITOS_TEMATICAS = "cant_creditos_tematicas"
-CANT_CREDITOS_ELECTIVAS = "cant_creditos_electivas"
-
-
-def generar_posibles_combinaciones_cuatrimestre(parametros, materias_disponibles, creditos_totales):
-    mejor_combinacion = None
-
-    posibles_combinaciones = [{
+def generar_combinacion_base(parametros, creditos_totales):
+    return {
         PARAMETROS_ACTUALES: parametros.copia_profunda(),
         FRANJAS_CUATRIMESTRE: parametros.generar_lista_franjas_limpia(),
         MEDIAS_HORAS_CURSADA: 0,
@@ -96,7 +65,33 @@ def generar_posibles_combinaciones_cuatrimestre(parametros, materias_disponibles
         CANT_CREDITOS_TEMATICAS: 0,
         CANT_CREDITOS_ELECTIVAS: 0,
         MATERIAS_CUATRI_ACTUAL: {}
-    }]
+    }
+
+
+def agregar_segunda_parte_del_trabajo_final_consecutiva_a_la_primera_parte(parametros, combinacion_actual):
+    # Si el tp o tesis fue agregado el cuatrimestre anterior, se lo agrega para este cuatrimestre
+    if len(parametros.materia_trabajo_final) == 1:
+        codigo_base = parametros.materia_trabajo_final[0].codigo[:-1]
+        codigo_parte_a = codigo_base + "A"
+        if codigo_parte_a in parametros.plan_generado[-1]:
+            materia_tp = parametros.materia_trabajo_final[0]
+            agregar_materia_a_combinacion_actualizar_creditos_y_horas(combinacion_actual, materia_tp)
+
+
+def obtener_combinacion_materias_cuatrimestre(materias_disponibles, posibles_combinaciones,
+                                              generar_todas_las_combinaciones_posibles):
+    """
+    Se obtiene la combinación para el cuatrimestre actual.
+
+    - Si el parámetro "generar_todas_las_combinaciones_posibles" es True, entonces se generan todas
+    las combinaciones válidas de las materias disponibles y se elige la mejor.
+
+    - Si es False, entonces se colocan las materias disponibles ordenadas por prioridad y se las agrega
+    una a una mientras que la combinación sea válida. Cuando no se pueden agregar más materias porque
+    el cuatrimestre está completo o no hay disponibles, se devuelve esa cobinación como la mejor. En este
+    caso solo se genera una única combinación.
+    """
+    mejor_combinacion = None
 
     for index, grupo_materia in enumerate(materias_disponibles):
         materia, curso = grupo_materia
@@ -104,54 +99,39 @@ def generar_posibles_combinaciones_cuatrimestre(parametros, materias_disponibles
 
         for combinacion in posibles_combinaciones:
 
-            nueva_combinacion = copiar_combinacion(combinacion)
+            nueva_combinacion = copiar_combinacion(
+                combinacion) if generar_todas_las_combinaciones_posibles else combinacion
+
             parametros = nueva_combinacion[PARAMETROS_ACTUALES]
 
             # Si el cuatrimestre esta completo en cantidad de materias, cierro el cuatrimestre
-            if combinacion_esta_completa(parametros, nueva_combinacion[MATERIAS_CUATRI_ACTUAL],
-                                         nueva_combinacion[MEDIAS_HORAS_EXTRAS],
-                                         nueva_combinacion[MEDIAS_HORAS_CURSADA]):
-                break
+            if combinacion_esta_completa(parametros, nueva_combinacion):
+                if not generar_todas_las_combinaciones_posibles:
+                    return nueva_combinacion
+                else:
+                    break
 
             franjas_curso, horas_cursada = curso.obtener_franjas_curso() if curso else ([], 0)
 
-            if not es_posible_agregar_materia_y_curso(materia, franjas_curso, horas_cursada,
-                                                      materia.medias_horas_extras_cursada,
-                                                      nueva_combinacion[FRANJAS_CUATRIMESTRE],
-                                                      nueva_combinacion[MEDIAS_HORAS_CURSADA],
-                                                      nueva_combinacion[MEDIAS_HORAS_EXTRAS],
-                                                      parametros, nueva_combinacion[MATERIAS_CUATRI_ACTUAL]):
+            if not es_posible_agregar_materia_y_curso(materia, franjas_curso, horas_cursada, nueva_combinacion):
                 continue
 
-            nueva_combinacion[CREDITOS_TOTALES] += materia.creditos
-            nueva_combinacion[MEDIAS_HORAS_CURSADA] += horas_cursada
-            nueva_combinacion[MEDIAS_HORAS_EXTRAS] += materia.medias_horas_extras_cursada
+            agregar_materia_a_combinacion_actualizar_creditos_y_horas(nueva_combinacion, materia, curso, franjas_curso,
+                                                                      horas_cursada)
 
-            if materia.tipo == ELECTIVA:
-                nueva_combinacion[CANT_CREDITOS_ELECTIVAS] += materia.creditos
-                nueva_combinacion[CANT_CREDITOS_TEMATICAS] += parametros.calcular_creditos_aportados_tematicas(materia)
+            if generar_todas_las_combinaciones_posibles:
+                nuevas_posibles_combinaciones.append(nueva_combinacion)
 
-            if materia.codigo in parametros.plan:
-                for cod_correlativa_liberada in parametros.plan[materia.codigo]:
-                    if parametros.materias[cod_correlativa_liberada].tipo == OBLIGATORIA:
-                        nueva_combinacion[CANT_OBLIGATORIAS_QUE_LIBERA] += 1
+        if generar_todas_las_combinaciones_posibles:
+            for combinacion in nuevas_posibles_combinaciones:
+                posibles_combinaciones.append(combinacion)
 
-            agregar_materia_y_actualizar_creditos(materia, curso, franjas_curso, parametros,
-                                                  nueva_combinacion[MATERIAS_CUATRI_ACTUAL],
-                                                  nueva_combinacion[FRANJAS_CUATRIMESTRE])
-
-            nuevas_posibles_combinaciones.append(nueva_combinacion)
-
-        for combinacion in nuevas_posibles_combinaciones:
-            posibles_combinaciones.append(combinacion)
-
-        for i in range(len(posibles_combinaciones) - 1, -1, -1):
-            combinacion = posibles_combinaciones.pop()
-            if combinacion_esta_completa(combinacion[PARAMETROS_ACTUALES], combinacion[MATERIAS_CUATRI_ACTUAL],
-                                         combinacion[MEDIAS_HORAS_EXTRAS], combinacion[MEDIAS_HORAS_CURSADA]):
-                mejor_combinacion = obtener_mejor_combinacion(mejor_combinacion, combinacion)
-            else:
-                posibles_combinaciones.insert(0, combinacion)
+            for i in range(len(posibles_combinaciones) - 1, -1, -1):
+                combinacion = posibles_combinaciones.pop()
+                if combinacion_esta_completa(combinacion[PARAMETROS_ACTUALES], combinacion):
+                    mejor_combinacion = obtener_mejor_combinacion(mejor_combinacion, combinacion)
+                else:
+                    posibles_combinaciones.insert(0, combinacion)
 
     if not mejor_combinacion:
         for i in range(len(posibles_combinaciones)):
@@ -160,10 +140,32 @@ def generar_posibles_combinaciones_cuatrimestre(parametros, materias_disponibles
     return mejor_combinacion
 
 
-def combinacion_esta_completa(parametros, cantidad_materias, medias_horas_extra, medias_horas_cursada):
-    return (parametros.max_cant_materias_por_cuatrimestre == cantidad_materias or
-            parametros.max_horas_extras == medias_horas_extra or
-            parametros.max_horas_cursada == medias_horas_cursada)
+def agregar_materia_a_combinacion_actualizar_creditos_y_horas(combinacion_actual, materia, curso=None, franjas_curso=[],
+                                                              horas_cursada=0):
+    parametros = combinacion_actual[PARAMETROS_ACTUALES]
+
+    combinacion_actual[CREDITOS_TOTALES] += materia.creditos
+    combinacion_actual[MEDIAS_HORAS_CURSADA] += horas_cursada
+    combinacion_actual[MEDIAS_HORAS_EXTRAS] += materia.medias_horas_extras_cursada
+
+    if materia.tipo == ELECTIVA:
+        combinacion_actual[CANT_CREDITOS_ELECTIVAS] += materia.creditos
+        combinacion_actual[CANT_CREDITOS_TEMATICAS] += parametros.calcular_creditos_aportados_tematicas(materia)
+
+    if materia.codigo in parametros.plan:
+        for cod_correlativa_liberada in parametros.plan[materia.codigo]:
+            if parametros.materias[cod_correlativa_liberada].tipo == OBLIGATORIA:
+                combinacion_actual[CANT_OBLIGATORIAS_QUE_LIBERA] += 1
+
+    agregar_materia_y_actualizar_creditos(materia, curso, franjas_curso, parametros,
+                                          combinacion_actual[MATERIAS_CUATRI_ACTUAL],
+                                          combinacion_actual[FRANJAS_CUATRIMESTRE])
+
+
+def combinacion_esta_completa(parametros, combinacion):
+    return (parametros.max_cant_materias_por_cuatrimestre == combinacion[MATERIAS_CUATRI_ACTUAL] or
+            parametros.max_horas_extras == combinacion[MEDIAS_HORAS_EXTRAS] or
+            parametros.max_horas_cursada == combinacion[MEDIAS_HORAS_CURSADA])
 
 
 def obtener_mejor_combinacion(mejor_combinacion_actual, combinacion_nueva):
@@ -237,9 +239,14 @@ def copiar_combinacion(combinacion):
     }
 
 
-def es_posible_agregar_materia_y_curso(materia, franjas_curso, horas_cursada,
-                                       horas_extras_del_curso, franjas_cuatrimestre, medias_horas_cursada,
-                                       medias_horas_extras, parametros, materias_cuatrimestre_actual):
+def es_posible_agregar_materia_y_curso(materia, franjas_curso, horas_cursada, combinacion):
+    horas_extras_del_curso = materia.medias_horas_extras_cursada
+    franjas_cuatrimestre = combinacion[FRANJAS_CUATRIMESTRE]
+    medias_horas_cursada = combinacion[MEDIAS_HORAS_CURSADA]
+    medias_horas_extras = combinacion[MEDIAS_HORAS_EXTRAS]
+    parametros = combinacion[PARAMETROS_ACTUALES]
+    materias_cuatrimestre_actual = combinacion[MATERIAS_CUATRI_ACTUAL]
+
     # Verifico que no se haya agregado ya la materia en este cuatrimestre y este sea otro de los horarios
     # disponibles para el mismo código de materia
     if (materia.codigo in materias_cuatrimestre_actual):
