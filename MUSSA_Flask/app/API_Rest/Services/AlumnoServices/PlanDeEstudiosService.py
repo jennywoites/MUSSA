@@ -79,7 +79,7 @@ class PlanDeEstudiosService(BaseService):
                 self.FUNCIONES_VALIDACION: [
                     (self.id_es_valido, []),
                     (self.existe_id, [PlanDeEstudios]),
-                    (self.plan_pertenece_al_alumno, [])
+                    (self.plan_pertenece_al_alumno, []),
                     (self.plan_no_se_encuentra_en_curso, [])
                 ]
             })
@@ -419,7 +419,7 @@ class PlanDeEstudiosService(BaseService):
 
     def generar_curso(self, curso_db):
         horarios = []
-        for horario_por_curso in HorarioPorCurso.query.filter_by(curso_id=curso_db.id):
+        for horario_por_curso in HorarioPorCurso.query.filter_by(curso_id=curso_db.id).filter_by(es_horario_activo=True).all():
             horario = Horario.query.get(horario_por_curso.horario_id)
             horarios.append(Modelo_Horario(
                 dia=horario.dia,
@@ -622,7 +622,7 @@ class PlanDeEstudiosService(BaseService):
         return self.mensaje_OK(nombre_parametro)
 
     def plan_no_se_encuentra_en_curso(self, nombre_parametro, valor, es_obligatorio):
-        plan = PlanDeEstudios.query.get(id=valor)
+        plan = PlanDeEstudios.query.get(valor)
         estado_en_curso = EstadoPlanDeEstudios.query.filter_by(numero=PLAN_EN_CURSO).first()
 
         if plan.estado_id == estado_en_curso.id:
