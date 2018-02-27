@@ -469,7 +469,7 @@ class PlanDeEstudiosService(BaseService):
             parametros.horarios[materia.codigo] = cursos_materia
 
     def curso_tiene_horario_valido(self, curso, horarios_invalidos):
-        for horario_curso in HorarioPorCurso.query.filter_by(curso_id=curso.id).all():
+        for horario_curso in HorarioPorCurso.query.filter_by(curso_id=curso.id).filter_by(es_horario_activo=True).all():
             horario = Horario.query.get(horario_curso.horario_id)
             if not horario.dia in horarios_invalidos:
                 continue

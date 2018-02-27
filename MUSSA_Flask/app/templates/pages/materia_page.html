@@ -89,6 +89,10 @@
             <br>
             <h4>Cursos:</h4>
 
+            {% if hay_curso_asterisco %}
+                <p>Los cursos marcados con * son cursos nuevos y aún no se cuenta con información completa de los cuatrimestres en los que estará disponible.</p>
+            {% endif %}
+
             <div class='table-responsive'>
                 <table class='table'>
                     <tr>

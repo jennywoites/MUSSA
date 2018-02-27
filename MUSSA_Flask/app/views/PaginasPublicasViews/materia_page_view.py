@@ -19,8 +19,15 @@ def materia_page(idMateria):
         filtrar_cursos=True
     )
 
+    hay_curso_asterisco = False
+    for curso in cursos:
+        if curso["es_nuevo_curso"] == str(True):
+            curso["codigo_curso"] = "* " + curso["codigo_curso"]
+            hay_curso_asterisco = True
+
     return render_template('pages/materia_page.html',
                            materia=materia,
                            carreras=carreras,
                            correlativas=correlativas,
-                           cursos=cursos)
+                           cursos=cursos,
+                           hay_curso_asterisco=hay_curso_asterisco)

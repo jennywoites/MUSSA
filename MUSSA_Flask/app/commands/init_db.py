@@ -7,6 +7,7 @@ from app.DAO.MateriasDAO import create_estados_materia, create_forma_aprobacion_
 from app.DAO.EncuestasDAO import create_encuestas
 from app.DAO.PalabrasClaveDAO import create_tematicas
 from app.DAO.PlanDeCarreraDAO import create_estados_plan_de_estudios
+from app.DAO.CursosDAO import create_horarios_y_cursos_desde_PDF
 
 
 class InitDbCommand(Command):
@@ -28,3 +29,4 @@ def init_db():
     create_encuestas()
     create_tematicas()
     create_estados_plan_de_estudios()
+    create_horarios_y_cursos_desde_PDF()

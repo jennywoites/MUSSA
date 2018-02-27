@@ -25,7 +25,8 @@ def generarJSON_curso_con_filtros(curso, carreras_response, docentes, docentes_r
         'datos_docentes': docentes_response,
         'puntaje': curso.calcular_puntaje(),
         'cantidad_encuestas_completas': curso.cantidad_encuestas_completas,
-        'puntaje_total_encuestas': curso.puntaje_total_encuestas
+        'puntaje_total_encuestas': curso.puntaje_total_encuestas,
+        'es_nuevo_curso': str((not curso.primer_cuatrimestre_actualizado or not curso.segundo_cuatrimestre_actualizado))
     }
 
 
@@ -34,7 +35,7 @@ def obtener_horarios_response(curso):
         return []
 
     horarios_response = []
-    horarios_por_curso = HorarioPorCurso.query.filter_by(curso_id=curso.id).all()
+    horarios_por_curso = HorarioPorCurso.query.filter_by(curso_id=curso.id).filter_by(es_horario_activo=True).all()
     for horario in horarios_por_curso:
         horario_db = Horario.query.get(horario.horario_id)
         horarios_response.append(generarJSON_horario(horario_db))
