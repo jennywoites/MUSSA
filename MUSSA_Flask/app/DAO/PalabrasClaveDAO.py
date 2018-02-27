@@ -8,7 +8,8 @@ def get_tematicas_por_defecto():
         "MATEMATICA",
         "GESTION",
         "ADMINISTRACION",
-        "ECONOMIA"
+        "ECONOMIA",
+        "ROBOTICA"
     ]
 
 

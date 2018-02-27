@@ -1,5 +1,14 @@
 from app import db
 
+
+# FIXME: Eliminar cuando se encuentre una mejor manera de trabajar con los cursos de modelos I con teoricas de horario opcional
+class AjustadoCursoModelosI(db.Model):
+    __tablename__ = 'ajustado_curso_modelos_I'
+
+    id = db.Column(db.Integer, primary_key=True)
+    actualizado = db.Column(db.Boolean(), nullable=False, server_default='0')
+
+
 class Curso(db.Model):
     __tablename__ = 'curso'
 
@@ -12,6 +21,11 @@ class Curso(db.Model):
     cantidad_encuestas_completas = db.Column(db.Integer, nullable=False, server_default='0')
     puntaje_total_encuestas = db.Column(db.Integer, nullable=False, server_default='0')
     fecha_actualizacion = db.Column(db.DateTime)
+
+    # Indican si el curso fue actualizado por primera vez un primer y un segundo cuatrimestre respectivamente
+    # es decir, para cada curso nuevo se verificó su horario y si era dictado en ambos cuatrimestres.
+    primer_cuatrimestre_actualizado = db.Column(db.Boolean(), nullable=False, server_default='0')
+    segundo_cuatrimestre_actualizado = db.Column(db.Boolean(), nullable=False, server_default='0')
 
     def __str__(self):
         return "Curso {} de {}".format(self.codigo, self.codigo_materia)
@@ -29,6 +43,7 @@ class Curso(db.Model):
         if self.cantidad_encuestas_completas == 0:
             return 0
         return (self.puntaje_total_encuestas / self.cantidad_encuestas_completas)
+
 
 class Horario(db.Model):
     __tablename__ = 'horario'
@@ -53,12 +68,15 @@ class Horario(db.Model):
             return hora + ":00"
         return hora + ":30"
 
+
 class HorarioPorCurso(db.Model):
     __tablename__ = 'horario_por_curso'
     id = db.Column(db.Integer, primary_key=True)
 
     curso_id = db.Column(db.Integer, db.ForeignKey('curso.id'))
     horario_id = db.Column(db.Integer, db.ForeignKey('horario.id'))
+    es_horario_activo = db.Column(db.Boolean(), nullable=False, server_default='0')
+    fecha_actualizacion = db.Column(db.DateTime)
 
     def __str__(self):
         return "El curso {} tiene este horario: {}".format(self.curso_id, self.horario_id)

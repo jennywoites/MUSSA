@@ -3,6 +3,7 @@ from app.models.generadorJSON.carreras_generadorJSON import generarJSON_materia
 from app.models.filtros.carreras_filter import filtrar_materia
 from app.API_Rest.Services.BaseService import BaseService
 from app.models.carreras_models import Carrera
+from app.utils import sustituir_todos_los_acentos
 
 
 class AllMateriasService(BaseService):
@@ -34,7 +35,7 @@ class AllMateriasService(BaseService):
 
         filtros = {}
         if codigo_materia: filtros["codigo"] = codigo_materia
-        if nombre: filtros["nombre"] = nombre
+        if nombre: filtros["nombre"] = sustituir_todos_los_acentos(nombre)
         if ids_carreras: filtros["ids_carreras"] = ids_carreras
 
         materias_result = []

@@ -1,8 +1,4 @@
 import PyPDF2
-
-from app.API_Rest.GeneradorPlanCarreras.modelos.Curso import Curso
-from app.API_Rest.GeneradorPlanCarreras.modelos.Horario import Horario
-
 from app.utils import DIAS
 
 VOCALES = {
@@ -37,12 +33,12 @@ def parsear_carreras(linea):
     datos = linea.split(', ')
     for dato in datos:
         if dato == 'TODAS':
-            return [x for x in range(1,len(CARRERAS)+1)]
+            return [x for x in range(1, len(CARRERAS) + 1)]
         if dato in CARRERAS:
             carreras.append(CARRERAS[dato])
         else:
             print(dato)
-            input("Error en la carrera! - Presionar ENTER")
+            print("Error en la carrera!")
 
     return carreras
 
@@ -77,7 +73,7 @@ def obtener_todas_posiciones_de_dias(linea):
             pos = linea_actual.find(dia)
             if pos == -1: continue
             posiciones.append(pos)
-            linea_actual = linea_actual[:pos] + ("X" * len(dia)) + linea_actual[pos+len(dia):]
+            linea_actual = linea_actual[:pos] + ("X" * len(dia)) + linea_actual[pos + len(dia):]
     return posiciones
 
 
@@ -94,7 +90,7 @@ def procesar_horarios(linea):
                 d_dia = dia
                 break
 
-        len_horario = 5  #ej 19:00
+        len_horario = 5  # ej 19:00
         hora_desde = procesar_hora(d_horarios[:len_horario])
         d_horarios = d_horarios[len_horario + 1:]
         hora_hasta = procesar_hora(d_horarios[:len_horario])
@@ -110,21 +106,21 @@ def procesar_hora(hora_string):
     19:00. Si la hora no es en punto, se agrega 0,5 como valor
     a la cantidad de horas"""
     horas, minutos = hora_string.split(":")
-    return int(horas) + (0.5 if int(minutos) > 0 else 0) 
+    return int(horas) + (0.5 if int(minutos) > 0 else 0)
 
 
 def parsear_horarios(linea):
     horarios = []
     posicion_dias = obtener_todas_posiciones_de_dias(linea)
     posicion_dias.sort()
-    posicion_dias.pop(0) #Descarto la posicion 0 que es siempre la primera
+    posicion_dias.pop(0)  # Descarto la posicion 0 que es siempre la primera
 
     offset = 0
     for pos in posicion_dias:
-        horario = linea[:pos-offset]
+        horario = linea[:pos - offset]
 
         horarios.append(horario)
-        linea = linea[pos-offset:]
+        linea = linea[pos - offset:]
         offset += len(horario)
 
     horarios.append(linea)
@@ -138,7 +134,7 @@ def parsear_materia(materia):
         if c == " ":
             break
         codigo += c
-    return codigo, materia[len(codigo)+1:]
+    return codigo, materia[len(codigo) + 1:]
 
 
 def parsear_horarios_de_materias(texto):
@@ -181,7 +177,7 @@ def parsear_horarios_de_materias(texto):
 
 
 def parsear_pdf(ruta):
-    pdfFileObj = open(ruta,'rb')
+    pdfFileObj = open(ruta, 'rb')
     pdfReader = PyPDF2.PdfFileReader(pdfFileObj, strict=False)
 
     texto = ""

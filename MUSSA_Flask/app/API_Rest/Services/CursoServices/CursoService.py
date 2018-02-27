@@ -6,6 +6,7 @@ from app.API_Rest.codes import *
 from app.models.carreras_models import Carrera
 from app.models.docentes_models import Docente, CursosDocente
 from app import db
+import datetime
 
 
 class CursoService(BaseService):
@@ -92,15 +93,8 @@ class CursoService(BaseService):
     def eliminar_horarios_viejos(self, id_curso):
         horarios_por_curso = HorarioPorCurso.query.filter_by(curso_id=id_curso).all()
 
-        ids_horarios = []
-        for h in horarios_por_curso:
-            ids_horarios.append(h.horario_id)
-
-        HorarioPorCurso.query.filter_by(curso_id=id_curso).delete()
-        db.session.commit()
-
-        for id_horario in ids_horarios:
-            Horario.query.filter_by(id=id_horario).delete()
+        for horario in horarios_por_curso:
+            horario.es_horario_activo = False
 
         db.session.commit()
 
@@ -113,6 +107,8 @@ class CursoService(BaseService):
         db.session.commit()
 
     def agregar_horarios(self, id_curso, horarios):
+        fecha = datetime.datetime.today()
+
         for horario_a_agregar in horarios:
             horario = Horario(
                 dia=horario_a_agregar["dia"],
@@ -122,7 +118,12 @@ class CursoService(BaseService):
             db.session.add(horario)
             db.session.commit()
 
-            db.session.add(HorarioPorCurso(curso_id=id_curso, horario_id=horario.id))
+            db.session.add(HorarioPorCurso(
+                curso_id=id_curso,
+                horario_id=horario.id,
+                fecha_actualizacion=fecha,
+                es_horario_activo=True
+            ))
 
         db.session.commit()
 

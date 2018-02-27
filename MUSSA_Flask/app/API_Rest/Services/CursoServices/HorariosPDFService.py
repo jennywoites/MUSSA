@@ -55,18 +55,19 @@ class HorariosPDFService(BaseService):
             self.logg_error(msj)
             return {'Error': msj}, codigo
 
-        horarios_pdf = parsear_pdf(ruta)
-
-        fecha_actualizacion = datetime.datetime.now()
-
-        self.guardar_horarios_pdf(horarios_pdf, cuatrimestre, fecha_actualizacion)
-
-        self.guardar_ultima_actualizacion_horarios(cuatrimestre, anio, fecha_actualizacion)
+        self.generar_horarios_desde_PDF(ruta, cuatrimestre, anio)
 
         result = SUCCESS_NO_CONTENT
         self.logg_resultado(result)
 
         return result
+
+    def generar_horarios_desde_PDF(self, ruta, cuatrimestre, anio):
+        horarios_pdf = parsear_pdf(ruta)
+
+        fecha_actualizacion = datetime.datetime.now()
+        self.guardar_horarios_pdf(horarios_pdf, cuatrimestre, fecha_actualizacion)
+        self.guardar_ultima_actualizacion_horarios(cuatrimestre, anio, fecha_actualizacion)
 
     def el_horario_no_fue_cargado(self, nombre_parametro, anio, obligatorio, cuatrimestre):
         horarios = HorariosYaCargados.query.filter_by(anio=anio).filter_by(cuatrimestre=cuatrimestre).all()
@@ -124,12 +125,16 @@ class HorariosPDFService(BaseService):
         curso = Curso.query.filter_by(codigo_materia=codigo_materia).filter_by(codigo=nombre_curso).first()
 
         if not curso:
-            curso = self.crear_curso(nombre_curso, codigo_materia, docentes, horarios_materia)
+            curso = self.crear_curso(nombre_curso, codigo_materia, docentes, cuatrimestre)
+
+        self.crear_o_actualizar_horarios(curso, horarios_materia, fecha_actualizacion)
 
         if cuatrimestre == 1 or cuatrimestre == '1':
             curso.se_dicta_primer_cuatrimestre = True
+            curso.primer_cuatrimestre_actualizado = True
         else:
             curso.se_dicta_segundo_cuatrimestre = True
+            curso.segundo_cuatrimestre_actualizado = True
 
         curso.fecha_actualizacion = fecha_actualizacion
         self.agregar_carreras_al_curso(curso, carreras)
@@ -151,21 +156,40 @@ class HorariosPDFService(BaseService):
             )
             db.session.add(carrera_por_curso)
 
-    def crear_curso(self, nombre_curso, codigo_materia, docentes, horarios_materia):
+    def crear_curso(self, nombre_curso, codigo_materia, docentes, cuatrimestre):
+        """
+        Cuando se crea el curso se lo crea habilitado para ambos cuatrimestres,
+        pero como horario nuevo, es decir, solo con el chequeo del cuatrimestre
+        que corresponde. Cuando se cargue el siguiente cuatrimestre, se marcara
+        si corresponde a ambos cuatrimestres o solo se dicta en uno de ellos.
+        """
         curso = Curso(
             codigo_materia=codigo_materia,
             codigo=nombre_curso,
             cantidad_encuestas_completas=0,
-            puntaje_total_encuestas=0
+            puntaje_total_encuestas=0,
+            se_dicta_primer_cuatrimestre=True,
+            se_dicta_segundo_cuatrimestre=True,
+            primer_cuatrimestre_actualizado=(cuatrimestre == '1'),
+            segundo_cuatrimestre_actualizado=(cuatrimestre == '2'),
         )
         db.session.add(curso)
 
-        self.crear_horario(curso, horarios_materia)
         self.asignar_docentes(curso, docentes)
 
         return curso
 
-    def crear_horario(self, curso, horarios_materia):
+    def desactualizar_horarios_anteriores(self, curso):
+        horarios_por_curso = HorarioPorCurso.query.filter_by(curso_id=curso.id).all()
+
+        for horario in horarios_por_curso:
+            horario.es_horario_activo = False
+
+        db.session.commit()
+
+    def crear_o_actualizar_horarios(self, curso, horarios_materia, fecha_actualizacion):
+        self.desactualizar_horarios_anteriores(curso)
+
         horarios_materia = self.concatenar_horarios(horarios_materia)
 
         for horario_pdf in horarios_materia:
@@ -179,7 +203,9 @@ class HorariosPDFService(BaseService):
 
             horario_por_curso = HorarioPorCurso(
                 curso_id=curso.id,
-                horario_id=horario.id
+                horario_id=horario.id,
+                fecha_actualizacion=fecha_actualizacion,
+                es_horario_activo=True
             )
             db.session.add(horario_por_curso)
 
@@ -225,13 +251,17 @@ class HorariosPDFService(BaseService):
         db.session.add(HorariosYaCargados(anio=anio, cuatrimestre=cuatrimestre))
 
         # Actualizar todos los cuatrimestres que no tuvieron update como
-        # NO que no se cursa en el cuatrimestre actual.
+        # NO que no se cursa en el cuatrimestre actual. Ademas se marca a todos
+        # los cursos como que han tenido el chequeo del cuatrimestre 1 o 2 segun
+        # corresponda
         cursos = Curso.query.filter(Curso.fecha_actualizacion < fecha_actualizacion).all()
         for curso in cursos:
             if cuatrimestre == 1 or cuatrimestre == '1':
                 curso.se_dicta_primer_cuatrimestre = False
+                curso.primer_cuatrimestre_actualizado = True
             else:
                 curso.se_dicta_segundo_cuatrimestre = False
+                curso.segundo_cuatrimestre_actualizado = True
 
         db.session.commit()
 
