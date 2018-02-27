@@ -1,6 +1,13 @@
 from datetime import datetime
 
-DIAS = ["LUNES", "MARTES", "MIERCOLES", "JUEVES", "VIERNES", "SABADO"]
+LUNES = "LUNES"
+MARTES = "MARTES"
+MIERCOLES = "MIERCOLES"
+JUEVES = "JUEVES"
+VIERNES = "VIERNES"
+SABADO = "SABADO"
+
+DIAS = [LUNES, MARTES, MIERCOLES, JUEVES, VIERNES, SABADO]
 
 
 #####################################################################
@@ -34,6 +41,25 @@ def cmp_to_key(mycmp):
 
 
 #####################################################################
+def sustituir_todos_los_acentos(linea):
+    ACENTOS = {
+        'Á': 'A',
+        'É': 'E',
+        'Í': 'I',
+        'Ó': 'O',
+        'Ú': 'U',
+        'á': 'a',
+        'é': 'e',
+        'í': 'i',
+        'ó': 'o',
+        'ú': 'u'
+    }
+    nueva_linea = linea
+    for vocal in ACENTOS:
+        while(vocal in nueva_linea):
+            nueva_linea = nueva_linea.replace(vocal, ACENTOS[vocal])
+    return nueva_linea
+
 def generar_lista_anios():
     MAX_TIEMPO = 5
     hoy = datetime.now().year
