@@ -1,8 +1,3 @@
-import datetime
-import os
-
-from flask import current_app
-
 from app import db
 from app.models.alumno_models import EstadoMateria, FormaAprobacionMateria
 
@@ -15,14 +10,17 @@ EN_CURSO = 1
 FINAL_PENDIENTE = 2
 APROBADA = 4
 DESAPROBADA = 5
+ELIMINADA_POR_INCOMPATIBLE = 6
 
 ESTADO_MATERIA = {
     PENDIENTE: "Pendiente de cursar",
     EN_CURSO: "Cursando actualmente",
     FINAL_PENDIENTE: "Final Pendiente",
     APROBADA: "Aprobada",
-    DESAPROBADA: "Desaprobada"
+    DESAPROBADA: "Desaprobada",
+    ELIMINADA_POR_INCOMPATIBLE: 'Eliminada por ser incompatible con otra materia ya ingresada'
 }
+
 
 def create_estados_materia():
     for codigo in ESTADO_MATERIA:
@@ -44,6 +42,7 @@ FORMA_APROBACION = {
     EXAMEN_EQUIVALENCIA: "Examen de Equivalencia",
     EQUIVALENCIA: "Equivalencia"
 }
+
 
 def create_forma_aprobacion_materias():
     for codigo in FORMA_APROBACION:

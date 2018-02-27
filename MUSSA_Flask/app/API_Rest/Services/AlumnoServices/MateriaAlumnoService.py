@@ -3,7 +3,7 @@ from flask_user import login_required
 from app.API_Rest.Services.BaseService import BaseService
 from app.models.generadorJSON.alumno_generadorJSON import generarJSON_materia_alumno
 from app.models.alumno_models import MateriasAlumno
-from app.models.carreras_models import Materia
+from app.models.carreras_models import Materia, MateriasIncompatibles
 from app.models.respuestas_encuesta_models import EncuestaAlumno, EstadoPasosEncuestaAlumno, RespuestaEncuestaTematica, \
     RespuestaEncuestaTags, RespuestaEncuestaAlumno
 from app.models.palabras_clave_models import PalabrasClaveParaMateria, TematicaPorMateria
@@ -177,6 +177,8 @@ class MateriaAlumnoService(BaseService):
         materia = MateriasAlumno.query.get(idMateriaAlumno)
 
         self.eliminar_encuesta_asociada(materia)
+
+        self.actualizar_materias_incompatibles_al_eliminar_materia(materia)
 
         se_elimino_materia_actual = False
         if materia.estado_id == EstadoMateria.query.filter_by(estado=ESTADO_MATERIA[DESAPROBADA]).first().id:
@@ -394,6 +396,75 @@ class MateriaAlumnoService(BaseService):
             self.agregar_materia_pendiente(materia)
 
         db.session.commit()
+
+        self.actualizar_materias_incompatibles(materia)
+
+    def actualizar_materias_incompatibles(self, materia):
+        """
+        Si la materia tiene materias incompatibles que se encuentren en un estado pendiente
+        o en estado incompatible las actualiza.
+        Si la materia actual esta desaprobada todas las incompatibles quedan como pendientes
+        ya que pueden ser cursadas.
+        Si la materia actual está en cualquier otro estado, marcar las materias correspondientes
+        como incompatibles
+        """
+        incompatibles = MateriasIncompatibles.query.filter_by(materia_id=materia.materia_id).all()
+        if not incompatibles:
+            return
+
+        alumno = self.obtener_alumno_usuario_actual()
+
+        estado_desaprobada = EstadoMateria.query.filter_by(estado=ESTADO_MATERIA[DESAPROBADA]).first().id
+        estado_incompatible = EstadoMateria.query.filter_by(
+            estado=ESTADO_MATERIA[ELIMINADA_POR_INCOMPATIBLE]).first().id
+        estado_pendiente = EstadoMateria.query.filter_by(estado=ESTADO_MATERIA[PENDIENTE]).first().id
+
+        for materia_incompatible in incompatibles:
+            materias_alumno = MateriasAlumno.query.filter_by(materia_id=materia_incompatible.materia_incompatible_id). \
+                filter_by(alumno_id=alumno.id).all()
+            if not materias_alumno:
+                continue
+
+            for materia_alumno in materias_alumno:
+                # Si la materia esta desaprobada, todas las materias que se supone son incompatibles y estan en
+                # estado ELIMINADA_POR_INCOMPATIBLE quedan en estado PENDIENTE
+                if materia.estado_id == estado_desaprobada:
+                    if materia_alumno.estado_id == estado_incompatible:
+                        materia_alumno.estado_id = estado_pendiente
+
+                # Si se la cursa o aprueba, entonces todas las materias que se supone que son incompatibles y se
+                # encuentran en estado pendiente, quedan como incompatibles
+                elif materia_alumno.estado_id == estado_pendiente:
+                    materia_alumno.estado_id = estado_incompatible
+
+                db.session.commit()
+
+    def actualizar_materias_incompatibles_al_eliminar_materia(self, materia):
+        estado_desaprobada = EstadoMateria.query.filter_by(estado=ESTADO_MATERIA[DESAPROBADA]).first().id
+
+        # Si la materia a eliminar estaba desaprobada entonces no se modifican las otras materias
+        if materia.estado_id == estado_desaprobada:
+            return
+
+        incompatibles = MateriasIncompatibles.query.filter_by(materia_id=materia.materia_id).all()
+        if not incompatibles:
+            return
+
+        alumno = self.obtener_alumno_usuario_actual()
+
+        estado_incompatible = EstadoMateria.query.filter_by(
+            estado=ESTADO_MATERIA[ELIMINADA_POR_INCOMPATIBLE]).first().id
+        estado_pendiente = EstadoMateria.query.filter_by(estado=ESTADO_MATERIA[PENDIENTE]).first().id
+
+        for materia_incompatible in incompatibles:
+            materias_alumno = MateriasAlumno.query.filter_by(materia_id=materia_incompatible.materia_incompatible_id). \
+                filter_by(alumno_id=alumno.id).filter_by(estado_id=estado_incompatible).all()
+            if not materias_alumno:
+                continue
+
+            for materia_alumno in materias_alumno:
+                materia_alumno.estado_id = estado_pendiente
+                db.session.commit()
 
     def es_calificacion_valida_para_el_estado(self, nombre_parametro, valor, obligatorio, estado):
         if not valor and not obligatorio:
