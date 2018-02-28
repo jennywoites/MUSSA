@@ -2,58 +2,67 @@
 {% import "bootstrap/wtf.html" as wtf %}
 {% block content %}
 
-<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.11.1/bootstrap-table.min.css">
-<script type='text/javascript' src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.11.1/bootstrap-table.min.js"></script>
+<link rel="stylesheet" type="text/css"
+      href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.11.1/bootstrap-table.min.css">
+<script type='text/javascript'
+        src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.11.1/bootstrap-table.min.js"></script>
 
-<!- Bootrstrap table ->
-
-<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.11.1/bootstrap-table.min.css">
-<script type='text/javascript' src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.11.1/bootstrap-table.min.js"></script>
+<link rel="stylesheet" type="text/css"
+      href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.11.1/bootstrap-table.min.css">
+<script type='text/javascript'
+        src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.11.1/bootstrap-table.min.js"></script>
 <script type='text/javascript' src="/js/bootstrap-table-es-AR.js"></script>
-<!-- <script type='text/javascript' src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-validator/0.5.3/js/bootstrapValidator.js"></script>
--->
+
 <style type='text/css'>
     .row-index {
       width: 50px;
       display: inline-block;
     }
-  </style>
-<!- fin Bootrstrap table ->
+</style>
 
 <script>
-
     $(document).ready(function() {
-                                   $("#enviar").click(function(e) {
-                                                        e.preventDefault();
-                                                        console.log("click");
-                                                        submit_docente();
-                                                        })
-                                  }
-                      )
+       $("#enviar").click(function(e) {
+            e.preventDefault();
+            submit_docente();
+        })
+       $("#volver").click(function(e) {
+            e.preventDefault();
+            redirigir_a("{{ url_for('main.administrar_docentes_page') }}")
+        })
+    });
+
     function submit_docente(){
-        form = $("#docente_form");
-
+        var form = $("#docente_form");
         var data = form.data();
-        // var isValid = data.bootstrapValidator.isValid();
-        // if(!isValid) return false
-        var docente = {"id_docente": {{ id_docente }} }
 
-        docente["nombre"] = $("#nombre").val()
-        docente["apellido"] = $("#apellido").val()
-        docente["materias"] = $("#tabla_materias").bootstrapTable('getData');
-        var xhr = new XMLHttpRequest();
-        xhr.open("POST", SERVICE_MODIFICAR_DOCENTE, true);
-        xhr.setRequestHeader('Content-Type', 'application/json; charset=UTF-8');
-        xhr.setRequestHeader("X-CSRFToken", "{{ csrf_token() }}");
-        xhr.send(JSON.stringify(docente));
-        xhr.onloadend = function () {
-        // done
-        };
-        return false;
+        var apellido = $("#apellido").val();
+        var nombre = $("#nombre").val();
+
+        var celdas = $("#tabla_materias").bootstrapTable('getData');
+        var l_ids_curso = [];
+        for (var i=0; i<celdas.length; i++) {
+            l_ids_curso.push(celdas[i]["id_curso"]);
+        }
+
+        show_loading_mask();
+
+        var div_error = document.getElementById('div_error');
+        div_error.hidden = true;
+        var div_success = document.getElementById('div_success');
+        div_success.hidden = true;
+
+        modificar_docente_service('{{ csrf_token() }}', {{ id_docente }}, apellido, nombre, l_ids_curso, function(status, response) {
+            div_success.hidden = false;
+            hide_loading_mask();
+        }, function(status, response) {
+            div_error.hidden = false;
+            hide_loading_mask();
+        })
     }
 
     function get_id_carrera_seleccionada(){
-            return $("#carreras_disponibles")[0][$("#carreras_disponibles")[0].selectedIndex].value
+        return $("#carreras_disponibles")[0][$("#carreras_disponibles")[0].selectedIndex].value
     }
 
     function id_carrera_to_codigo_carrera(id_carrera){
@@ -61,23 +70,26 @@
         for(var i=0; i<opciones.length; i++) {
             var opcion = opciones[i];
             if (opcion.id == id_carrera)
-                return opcion.value, opcion.text
+                return opcion.value, opcion.text;
         }
     }
 
-    function delete_row(row){
-        var row_number = row.parentElement.parentElement.rowIndex;
-        var table = $('#' + row.parentElement.parentElement.parentElement.parentElement.id);
-        table_data = table.bootstrapTable('getData');
-        table_data.pop(row_number);
-        table.bootstrapTable('load', table_data);
-    }
+    function delete_row(id_curso) {
+        var table = $('#tabla_materias');
+        var table_data = table.bootstrapTable('getData');
 
-    table_materia_actions = [
-            '<a class="remove ml10" href="javascript:void(0)" onclick="delete_row(this)"  title="Remove">',
-            '<i class="glyphicon glyphicon-trash"></i>',
-            '</a>'
-                ].join('');
+        var nuevos_datos = [];
+        for (var i=0; i<table_data.length; i++) {
+            if (table_data[i]["id_curso"] != id_curso)
+                nuevos_datos.push(table_data[i]);
+        }
+
+        table.bootstrapTable('load', nuevos_datos);
+
+        var carrera_selected = $("#carreras_disponibles")[0][$("#carreras_disponibles")[0].selectedIndex];
+        populate_materias(carrera_selected.id);
+        fill_dropdown('cursos_disponibles', format_cursos_dropdown, []);
+    }
 
     $(window).on('load',(function(){
       $(function() {
@@ -93,20 +105,30 @@
     }));
 
     function populate_data_docente(service_status, service_data){
-        console.log(service_data);
-
         var docente = service_data;
         $('#nombre').val(docente.nombre);
         $('#apellido').val(docente.apellido);
 
-        var materias = []
+        var materias = [];
         for (var materia in docente.materias_que_dicta){
-            materias.push({"codigo": materia ,
-                            "materia": docente.materias_que_dicta[materia]["nombre"],
-                            "id_carrera": docente.materias_que_dicta[materia]["id_carrera"],
-                            "carrera": docente.materias_que_dicta[materia]["carrera"],
-                            "actions": table_materia_actions});
-        }
+            var id_curso = docente.materias_que_dicta[materia]["id_curso"];
+
+            table_materia_actions = [
+                '<a class="remove ml10" href="javascript:void(0)" onclick="delete_row(' + id_curso + ')"  title="Remove">',
+                '<i class="glyphicon glyphicon-trash"></i>',
+                '</a>'
+             ].join('');
+
+            materias.push({
+                "codigo": materia ,
+                "materia": docente.materias_que_dicta[materia]["nombre"],
+                "curso": docente.materias_que_dicta[materia]["curso"],
+                "id_curso": id_curso,
+                "id_carrera": docente.materias_que_dicta[materia]["id_carrera"],
+                "carrera": docente.materias_que_dicta[materia]["carrera"],
+                "actions": table_materia_actions
+            });
+         }
          $('#tabla_materias').bootstrapTable('load',materias);
     }
 
@@ -116,9 +138,10 @@
         carreras.sort();
         for(var i=0; i< carreras.length; i++){
             var carrera = carreras[i];
-            result.push({"id": carrera["id_carrera"],
-                         "text": carrera["codigo"] + " - " + carrera["nombre"] + " (Plan " + carrera["plan"] + ")",
-                         "value": carrera["id_carrera"]});
+            result.push({
+                "id": carrera["id_carrera"],
+                "text": carrera["descripcion"],
+                "value": carrera["id_carrera"]});
         }
         return result;
     }
@@ -132,91 +155,167 @@
     });
 
     function populate_materias(id_carrera) {
-        if(id_carrera>0){
-            get_materias_con_filtro_service('{{ csrf_token() }}', '', '', [id_carrera], function(status, responseText){
-                fill_dropdown('materias_disponibles', format_materias_dropdown, responseText);
-                $("#materias_disponibles").prop('disabled', false);
-            }, function(status, responseText){
-                $("#materias_disponibles").prop('disabled', true);
-            });
-        }else{
-            console.log("No implementado");
-        }
+        if (id_carrera <= 0)
+            return;
+
+        get_materias_con_filtro_service('{{ csrf_token() }}', '', '', [id_carrera], function(status, responseText){
+            fill_dropdown('materias_disponibles', format_materias_dropdown, responseText);
+            $("#materias_disponibles").prop('disabled', false);
+        }, function(status, responseText){
+            $("#materias_disponibles").prop('disabled', true);
+        });
+    }
+
+    function populate_cursos(id_materia) {
+        if (id_materia <= 0)
+            return;
+
+        var materia_selected =  $("#materias_disponibles")[0][$("#materias_disponibles")[0].selectedIndex];
+        var codigo_materia = materia_selected.innerText.substring(0,materia_selected.innerText.indexOf(" - "));
+
+        var carrera_selected = $("#carreras_disponibles")[0][$("#carreras_disponibles")[0].selectedIndex];
+        var id_carrera = carrera_selected.id;
+
+        get_cursos_con_filtro_service('{{ csrf_token() }}', '', codigo_materia, id_carrera, true, function(status, responseText){
+            fill_dropdown('cursos_disponibles', format_cursos_dropdown, responseText);
+            $("#cursos_disponibles").prop('disabled', false);
+        }, function(status, responseText){
+            $("#cursos_disponibles").prop('disabled', true);
+        });
     }
 
     function format_materias_dropdown(response){
-        var result = [];
+        var result = [{"id":-1, "text":"Seleccione una materia", "value":-1}];
         var materias = response;
-        var filter_list = [];
-        table_data = $("#tabla_materias").bootstrapTable('getData');
-
 
         for(var i=0; i< materias.length; i++){
             var materia = materias[i];
-            var id_carrera = $("#carreras_disponibles")[0][$("#carreras_disponibles")[0].selectedIndex].value
-            var materia_presente=false;
-            for (var j=0;j<table_data.length;j++){
-                row=table_data[j];
+            if (materia["tipo_materia"] == "CBC")
+                continue;
 
-                if ( row.codigo == materia.codigo && row.id_carrera == id_carrera){
-                     materia_presente = true;
-                    break;
-                }
-            }
-            if(!materia_presente){
-                result.push({"id": materia["codigo"],
-                             "text":  materia["codigo"] + " - " + materia["nombre"],
-                             "id_carrera": materia["id_carrera"],
-                             "carrera": materia["carrera"]
-                             });
-            }
+            result.push({
+                "id": materia["id_materia"],
+                "text":  materia["codigo"] + " - " + materia["nombre"],
+                "id_carrera": materia["id_carrera"],
+                "carrera": materia["carrera"]
+            });
         }
         return result;
     }
 
-    function add_materia(tabla, materia){
+    function format_cursos_dropdown(response){
+        var result = [{"id":-1, "text":"Seleccione un curso", "value":-1}];
+        var cursos = response;
 
-            var materia_selected =  $("#" + materia)[0][$("#" + materia)[0].selectedIndex]
-            var carrera_selected = $("#carreras_disponibles")[0][$("#carreras_disponibles")[0].selectedIndex];
-            var nueva_materia = {"codigo": materia_selected.id,
-                                 "materia": materia_selected.text.split(' - ')[1],
-                                 "id_carrera":  $("#carreras_disponibles")[0][$("#carreras_disponibles")[0].selectedIndex].value,
-                                 "carrera": carrera_selected.text,
-                                 "actions": table_materia_actions}
+        var table_data = $("#tabla_materias").bootstrapTable('getData');
+        for(var i=0; i< cursos.length; i++) {
+            var curso = cursos[i];
 
-            $('#' + tabla).bootstrapTable('append',nueva_materia);
-            materia_selected.remove();
+            var id_carrera = $("#carreras_disponibles")[0][$("#carreras_disponibles")[0].selectedIndex].value
+            var curso_presente=false;
+            for (var j=0;j<table_data.length;j++){
+                var row=table_data[j];
+
+                if ( row.id_curso == curso.id_curso && row.id_carrera == id_carrera){
+                    curso_presente = true;
+                    break;
+                }
+            }
+
+            if(!curso_presente){
+                result.push({
+                    "id": curso["id_curso"],
+                    "text":  curso["codigo_curso"]
+                });
+            }
+        }
+
+        return result;
     }
 
+    function add_materia(tabla){
+        var carrera_selected = $("#carreras_disponibles")[0][$("#carreras_disponibles")[0].selectedIndex];
+        var materia_selected =  $("#materias_disponibles")[0][$("#materias_disponibles")[0].selectedIndex]
+        var curso_selected =  $("#cursos_disponibles")[0][$("#cursos_disponibles")[0].selectedIndex]
+
+        if (carrera_selected.id < 0 || materia_selected.id < 0 || curso_selected.id < 0)
+            return;
+
+        table_materia_actions = [
+            '<a class="remove ml10" href="javascript:void(0)" onclick="delete_row(' + curso_selected.id + ')"  title="Remove">',
+            '<i class="glyphicon glyphicon-trash"></i>',
+            '</a>'
+         ].join('');
+
+        var nueva_materia = {
+            "codigo": materia_selected.text.split(' - ')[0],
+            "materia": materia_selected.text.split(' - ')[1],
+            "curso": curso_selected.text,
+            "id_curso": curso_selected.id,
+            "id_carrera":  $("#carreras_disponibles")[0][$("#carreras_disponibles")[0].selectedIndex].value,
+            "carrera": carrera_selected.text,
+            "actions": table_materia_actions
+        }
+
+        $('#' + tabla).bootstrapTable('append',nueva_materia);
+        curso_selected.remove();
+    }
 
 </script>
 
 <div class="container">
-        <form method="POST" action="#" id="docente_form" data-toggle="validator">
-            {{ wtf.form_field(form.nombre) }}
-            {{ wtf.form_field(form.apellido) }}
-            <div class="row">
+    <form method="POST" action="#" id="docente_form" data-toggle="validator">
 
-                <div class="col-md-4"> {{ wtf.form_field(form.carreras_disponibles) }} </div>
-                <div class="col-md-4"> {{ wtf.form_field(form.materias_disponibles) }} </div>
+        <div class="row">
+            <div class="col-md-8">{{ wtf.form_field(form.nombre) }}</div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-8">{{ wtf.form_field(form.apellido) }}</div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-8">{{ wtf.form_field(form.carreras_disponibles) }}</div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-8">{{ wtf.form_field(form.materias_disponibles) }}</div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-8">{{ wtf.form_field(form.cursos_disponibles) }}</div>
+        </div>
+
+        <button class="btn btn-mussa-default"
+                type="button" onclick="add_materia('tabla_materias')">
+            Agregar materia
+        </button>
+
+        <table id="tabla_materias" data-toggle="true" data-toolbar="#toolbar" data-pagination="true"
+               data-locale="es-AR">
+        </table>
+        <br>
+
+        <div id="div_error" hidden="true">
+            <div class="alert alert-danger">Se ha producido un error al guardar el docente. Por favor intenta nuevamente.
             </div>
+        </div>
 
-            <button class="btn btn-mussa-default"
-                        type="button" onclick="add_materia('tabla_materias','materias_disponibles')">
-                        Agregar materia
-                </button>
-            <table
-                    id="tabla_materias"
-                    data-toggle="true"
-                    data-toolbar="#toolbar"
-                    data-pagination="true"
-                    data-locale="es-AR"
-                    >
-            </table>
-            <br>
-            {{ form.enviar }}
+        <div id="div_success" hidden="true">
+            <div class="alert alert-success">Se ha guardado el docente exitosamente.
+            </div>
+        </div>
 
-        </form>
-    </div>
+        <div class="row">
+            <div class="col-md-3"></div>
+            <div class="col-md-3">{{ form.enviar }}</div>
+            <div class="col-md-2"></div>
+            <div class="col-md-4">{{ form.volver }}</div>
+        </div>
+
+
+
+    </form>
+</div>
 
 {% endblock %}
