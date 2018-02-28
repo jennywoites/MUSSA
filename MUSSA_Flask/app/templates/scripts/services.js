@@ -97,9 +97,9 @@ function modificar_docente_service(token, idDocente, apellido, nombre, l_ids_cur
     var url_servicio = BASE_URL + '/docente/' + idDocente;
 
     parametros = {};
-    parametro["apellido"] = apellido;
-    parametro["nombre"] = nombre;
-    parametro["l_ids_curso"] = JSON.stringify(l_ids_curso);
+    parametros["apellido"] = apellido;
+    parametros["nombre"] = nombre;
+    parametros["l_ids_cursos"] = JSON.stringify(l_ids_curso);
 
     do_request('POST', url_servicio, token, parametros, onSucces, onError);
 }

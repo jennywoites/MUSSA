@@ -24,7 +24,9 @@ def generarJSON_materias_docente(docente):
         materias[materia.codigo] = {
             "nombre": materia.nombre,
             "id_carrera": materia.carrera_id,
-            "carrera": carrera.get_descripcion_carrera()
+            "carrera": carrera.get_descripcion_carrera(),
+            "curso": curso.codigo,
+            "id_curso": curso.id
         }
 
     return materias
