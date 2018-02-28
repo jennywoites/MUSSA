@@ -187,33 +187,18 @@
     function format_materias_dropdown(response){
         var result = [{"id":-1, "text":"Seleccione una materia", "value":-1}];
         var materias = response;
-        var filter_list = [];
-        var table_data = $("#tabla_materias").bootstrapTable('getData');
 
         for(var i=0; i< materias.length; i++){
             var materia = materias[i];
             if (materia["tipo_materia"] == "CBC")
                 continue;
 
-            var id_carrera = $("#carreras_disponibles")[0][$("#carreras_disponibles")[0].selectedIndex].value
-            var materia_presente=false;
-            for (var j=0;j<table_data.length;j++){
-                var row=table_data[j];
-
-                if ( row.codigo == materia.codigo && row.id_carrera == id_carrera){
-                     materia_presente = true;
-                    break;
-                }
-            }
-
-            if(!materia_presente){
-                result.push({
-                    "id": materia["id_materia"],
-                    "text":  materia["codigo"] + " - " + materia["nombre"],
-                    "id_carrera": materia["id_carrera"],
-                    "carrera": materia["carrera"]
-                });
-            }
+            result.push({
+                "id": materia["id_materia"],
+                "text":  materia["codigo"] + " - " + materia["nombre"],
+                "id_carrera": materia["id_carrera"],
+                "carrera": materia["carrera"]
+            });
         }
         return result;
     }
@@ -221,15 +206,30 @@
     function format_cursos_dropdown(response){
         var result = [{"id":-1, "text":"Seleccione un curso", "value":-1}];
         var cursos = response;
-        var filter_list = [];
 
-        for(var i=0; i< cursos.length; i++){
+        var table_data = $("#tabla_materias").bootstrapTable('getData');
+        for(var i=0; i< cursos.length; i++) {
             var curso = cursos[i];
-            result.push({
-                "id": curso["id_curso"],
-                "text":  curso["codigo_curso"]
-            });
+
+            var id_carrera = $("#carreras_disponibles")[0][$("#carreras_disponibles")[0].selectedIndex].value
+            var curso_presente=false;
+            for (var j=0;j<table_data.length;j++){
+                var row=table_data[j];
+
+                if ( row.id_curso == curso.id_curso && row.id_carrera == id_carrera){
+                    curso_presente = true;
+                    break;
+                }
+            }
+
+            if(!curso_presente){
+                result.push({
+                    "id": curso["id_curso"],
+                    "text":  curso["codigo_curso"]
+                });
+            }
         }
+
         return result;
     }
 
@@ -258,8 +258,7 @@
         }
 
         $('#' + tabla).bootstrapTable('append',nueva_materia);
-        materia_selected.remove();
-        fill_dropdown('cursos_disponibles', format_cursos_dropdown, []);
+        curso_selected.remove();
     }
 
 </script>
