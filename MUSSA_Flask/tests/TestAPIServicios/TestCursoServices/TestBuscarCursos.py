@@ -11,6 +11,8 @@ from app.models.docentes_models import Docente, CursosDocente
 import json
 import datetime
 from app.API_Rest.codes import *
+from tests.TestAPIServicios.DAOMock.CarreraDAOMock import CarreraDAOMock, LICENCIATURA_EN_SISTEMAS_1986, \
+    INGENIERIA_EN_INFORMATICA_1986
 
 
 class TestBuscarCursos(TestBase):
@@ -19,25 +21,6 @@ class TestBuscarCursos(TestBase):
     ##########################################################
 
     FECHA = datetime.datetime.now()
-
-    CARRERA_1 = {
-        "id": 1,
-        "codigo": "10",
-        "nombre": 'Ingeniería en Informática',
-        "duracion_estimada_en_cuatrimestres": 12,
-        "requiere_prueba_suficiencia_de_idioma": False
-    }
-
-    CARRERA_2 = {
-        "id": 2,
-        "codigo": "9",
-        "nombre": 'Otra carrera test',
-        "duracion_estimada_en_cuatrimestres": 8,
-        "requiere_prueba_suficiencia_de_idioma": True
-    }
-
-    def get_carreras_bd(self):
-        return [self.CARRERA_1, self.CARRERA_2]
 
     def get_materias_bd(self):
         return [self.MATERIA_7540, self.MATERIA_7540_2, self.MATERIA_7541, self.MATERIA_8787]
@@ -176,7 +159,7 @@ class TestBuscarCursos(TestBase):
         "puntaje_total_encuestas": 105,
         "fecha_actualizacion": FECHA,
         "horarios": [HORARIO_1, HORARIO_2],
-        "carreras": [CARRERA_1, CARRERA_2]
+        "carreras": [LICENCIATURA_EN_SISTEMAS_1986, INGENIERIA_EN_INFORMATICA_1986]
     }
 
     CURSO_7540_B_DOS_CARRERAS = {
@@ -191,7 +174,7 @@ class TestBuscarCursos(TestBase):
         "puntaje_total_encuestas": 0,
         "fecha_actualizacion": FECHA,
         "horarios": [HORARIO_3],
-        "carreras": [CARRERA_1, CARRERA_2]
+        "carreras": [LICENCIATURA_EN_SISTEMAS_1986, INGENIERIA_EN_INFORMATICA_1986]
     }
 
     CURSO_7540_C_UNA_CARRERA = {
@@ -206,7 +189,7 @@ class TestBuscarCursos(TestBase):
         "puntaje_total_encuestas": 0,
         "fecha_actualizacion": FECHA,
         "horarios": [HORARIO_4, HORARIO_5],
-        "carreras": [CARRERA_1]
+        "carreras": [LICENCIATURA_EN_SISTEMAS_1986]
     }
 
     CURSO_7541_UNA_CARRERA = {
@@ -221,7 +204,7 @@ class TestBuscarCursos(TestBase):
         "puntaje_total_encuestas": 0,
         "fecha_actualizacion": FECHA,
         "horarios": [HORARIO_4, HORARIO_5],
-        "carreras": [CARRERA_1]
+        "carreras": [INGENIERIA_EN_INFORMATICA_1986]
     }
 
     CURSO_8787_NO_SE_DICTA_NINGUN_CUATRIMESTRE = {
@@ -236,7 +219,7 @@ class TestBuscarCursos(TestBase):
         "puntaje_total_encuestas": 0,
         "fecha_actualizacion": FECHA,
         "horarios": [HORARIO_4, HORARIO_5],
-        "carreras": [CARRERA_2]
+        "carreras": [INGENIERIA_EN_INFORMATICA_1986]
     }
 
     def get_cursos_bd(self):
@@ -250,8 +233,9 @@ class TestBuscarCursos(TestBase):
         return "test_buscar_cursos"
 
     def crear_datos_bd(self):
-        for carrera in self.get_carreras_bd():
-            self.agregar_carrera(carrera)
+        carrerasDAO = CarreraDAOMock()
+        carrerasDAO.crear_licenciatura_en_sistemas_1986()
+        carrerasDAO.crear_ingenieria_informatica_1986()
 
         for materia in self.get_materias_bd():
             self.agregar_materia(materia)
@@ -275,15 +259,6 @@ class TestBuscarCursos(TestBase):
         db.session.add(Docente(
             apellido=docente["apellido"],
             nombre=docente["nombre"]
-        ))
-        db.session.commit()
-
-    def agregar_carrera(self, datos):
-        db.session.add(Carrera(
-            codigo=datos["codigo"],
-            nombre=datos["nombre"],
-            duracion_estimada_en_cuatrimestres=datos["duracion_estimada_en_cuatrimestres"],
-            requiere_prueba_suficiencia_de_idioma=datos["requiere_prueba_suficiencia_de_idioma"]
         ))
         db.session.commit()
 

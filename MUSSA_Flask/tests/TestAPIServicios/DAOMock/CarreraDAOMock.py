@@ -2,6 +2,7 @@ from app import db
 from app.models.carreras_models import Carrera, Creditos, Orientacion
 
 LICENCIATURA_EN_SISTEMAS_1986 = {
+    "id": -1,
     "codigo": "09",
     "nombre": "Licenciatura en Análisis de Sistemas",
     "plan": "1986",
@@ -20,6 +21,7 @@ LICENCIATURA_EN_SISTEMAS_1986 = {
 }
 
 INGENIERIA_EN_INFORMATICA_1986 = {
+    "id": -1,
     "codigo": "10",
     "nombre": "Ingeniería en Informática",
     "plan": "1986",
@@ -60,6 +62,8 @@ class CarreraDAOMock:
 
     def crear_carrera(self, datos):
         carrera = self.agregar_carrera(datos)
+        datos["id"] = carrera.id
+
         self.agregar_orientacion_a_carrera(carrera, datos["orientaciones"])
         self.agregar_creditos_carrera(carrera, datos["creditos"])
         return carrera
