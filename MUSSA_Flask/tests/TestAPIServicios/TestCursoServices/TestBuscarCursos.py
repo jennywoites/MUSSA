@@ -6,7 +6,7 @@ if __name__ == '__main__':
 from tests.TestAPIServicios.TestBase import TestBase
 from app import db
 from app.models.horarios_models import Curso, Horario, HorarioPorCurso, CarreraPorCurso
-from app.models.carreras_models import Carrera, Materia, TipoMateria
+from app.models.carreras_models import Materia, TipoMateria
 from app.models.docentes_models import Docente, CursosDocente
 import json
 import datetime
@@ -189,7 +189,7 @@ class TestBuscarCursos(TestBase):
         "puntaje_total_encuestas": 0,
         "fecha_actualizacion": FECHA,
         "horarios": [HORARIO_4, HORARIO_5],
-        "carreras": [LICENCIATURA_EN_SISTEMAS_1986]
+        "carreras": [INGENIERIA_EN_INFORMATICA_1986]
     }
 
     CURSO_7541_UNA_CARRERA = {
@@ -219,7 +219,7 @@ class TestBuscarCursos(TestBase):
         "puntaje_total_encuestas": 0,
         "fecha_actualizacion": FECHA,
         "horarios": [HORARIO_4, HORARIO_5],
-        "carreras": [INGENIERIA_EN_INFORMATICA_1986]
+        "carreras": [LICENCIATURA_EN_SISTEMAS_1986]
     }
 
     def get_cursos_bd(self):
@@ -578,7 +578,7 @@ class TestBuscarCursos(TestBase):
 
     def test_buscar_todos_los_cursos_cuya_carrera_sea_la_especificada_filtrando_resultados(self):
         parametros = {}
-        parametros["id_carrera"] = self.CARRERA_2["id"]
+        parametros["id_carrera"] = LICENCIATURA_EN_SISTEMAS_1986["id"]
         parametros["filtrar_cursos"] = True
 
         client = self.app.test_client()
@@ -594,7 +594,7 @@ class TestBuscarCursos(TestBase):
 
     def test_buscar_todos_los_cursos_cuya_carrera_sea_la_especificada_sin_filtrar_cursos(self):
         parametros = {}
-        parametros["id_carrera"] = self.CARRERA_2["id"]
+        parametros["id_carrera"] = LICENCIATURA_EN_SISTEMAS_1986["id"]
         parametros["filtrar_cursos"] = False
 
         client = self.app.test_client()
@@ -612,7 +612,7 @@ class TestBuscarCursos(TestBase):
     def test_buscar_todos_los_cursos_cuya_carrera_sea_la_especificada_y_su_codigo_coincida_con_el_buscado(self):
         parametros = {}
         parametros["codigo_materia"] = "754"
-        parametros["id_carrera"] = self.CARRERA_1["id"]
+        parametros["id_carrera"] = INGENIERIA_EN_INFORMATICA_1986["id"]
 
         client = self.app.test_client()
         response = client.get(self.get_url_all_cursos(), query_string=parametros)
@@ -629,7 +629,7 @@ class TestBuscarCursos(TestBase):
 
     def test_buscar_con_carrera_invalida_compuesta_por_carreras_validas(self):
         parametros = {}
-        parametros["id_carrera"] = str(self.CARRERA_1["id"]) + ";" + str(self.CARRERA_2["id"])
+        parametros["id_carrera"] = str(LICENCIATURA_EN_SISTEMAS_1986["id"]) + ";" + str(INGENIERIA_EN_INFORMATICA_1986["id"])
 
         client = self.app.test_client()
         response = client.get(self.get_url_all_cursos(), query_string=parametros)
