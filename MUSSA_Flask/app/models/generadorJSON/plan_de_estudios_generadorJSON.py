@@ -57,7 +57,7 @@ def agregar_materias_plan_de_estudios(plan_de_estudios, materias_por_cuatrimestr
                 curso_actual = curso
                 anio, cuatrimestre = obtener_anio_y_cuatrimestre(plan_de_estudios, materia_plan)
             else:
-                curso_actual = Curso.query.get(materia_alumno.curso_id)
+                curso_actual = Curso.query.get(materia_alumno.curso_id) if materia_alumno.curso_id else None
                 anio, cuatrimestre = int(materia_alumno.anio_aprobacion_cursada), \
                                      int(materia_alumno.cuatrimestre_aprobacion_cursada)
 

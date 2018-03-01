@@ -20,6 +20,10 @@ hr { border-color: #cccccc; margin: 0px; }
     margin-left: -15px;
 }
 
+.header_tabla {
+    background-color: #a348cc;
+    color: white;
+}
 /*************** CARROUSEL *****************/
 .item {
     display: block;
