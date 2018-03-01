@@ -326,11 +326,10 @@
                             <td>{{docentes[i]['nombre_completo']}}</td>
                             <td>
                                 <ul class="list-group">
-                                    {% for codigo in docentes[i]["materias_que_dicta"] %}
+                                    {% for materia in docentes[i]["materias_que_dicta"] %}
                                     <li class="list-group-item"
                                         style="border-color: transparent; background-color: transparent;">
-                                        {{codigo}} - {{docentes[i]["materias_que_dicta"][codigo]["nombre"]}} /
-                                        {{docentes[i]["materias_que_dicta"][codigo]["carrera"]}}
+                                        {{materia["codigo"]}} - {{materia["nombre"]}} | Curso {{materia["curso"]}} | {{materia["carrera"]}}
                                     </li>
                                     {% endfor %}
                                 </ul>

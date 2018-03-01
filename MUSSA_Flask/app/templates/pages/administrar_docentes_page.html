@@ -42,10 +42,10 @@
 
     function format_lista_materias(materias){
         res = '<ul class="list-group">'
-        for(var materia in materias){
+        for(var index in materias){
             res += '<li class="list-group-item lista-materias">';
-            res +=  materia + " - " + materias[materia]['nombre'] + " | Curso: " + materias[materia]['curso'];
-            res +=  " | " + materias[materia]['carrera'];
+            res +=  materias[index]['codigo'] + " - " + materias[index]['nombre'] + " | Curso: " + materias[index]['curso'];
+            res +=  " | " + materias[index]['carrera'];
             res += '</li>';
         }
         res += "</ul>"

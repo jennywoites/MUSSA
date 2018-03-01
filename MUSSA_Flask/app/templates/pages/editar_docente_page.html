@@ -18,6 +18,7 @@
       width: 50px;
       display: inline-block;
     }
+
 </style>
 
 <script>
@@ -120,7 +121,7 @@
              ].join('');
 
             materias.push({
-                "codigo": materia ,
+                "codigo": docente.materias_que_dicta[materia]["codigo"],
                 "materia": docente.materias_que_dicta[materia]["nombre"],
                 "curso": docente.materias_que_dicta[materia]["curso"],
                 "id_curso": id_curso,
@@ -225,7 +226,7 @@
             if(!curso_presente){
                 result.push({
                     "id": curso["id_curso"],
-                    "text":  curso["codigo_curso"]
+                    "text": curso["codigo_curso"]
                 });
             }
         }
@@ -260,6 +261,7 @@
         $('#' + tabla).bootstrapTable('append',nueva_materia);
         curso_selected.remove();
     }
+
 
 </script>
 
@@ -297,7 +299,8 @@
         <br>
 
         <div id="div_error" hidden="true">
-            <div class="alert alert-danger">Se ha producido un error al guardar el docente. Por favor intenta nuevamente.
+            <div class="alert alert-danger">Se ha producido un error al guardar el docente. Por favor intenta
+                nuevamente.
             </div>
         </div>
 
@@ -312,7 +315,6 @@
             <div class="col-md-2"></div>
             <div class="col-md-4">{{ form.volver }}</div>
         </div>
-
 
 
     </form>
