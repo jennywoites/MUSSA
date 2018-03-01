@@ -6,8 +6,9 @@ if __name__ == '__main__':
 from tests.TestAPIServicios.TestBase import TestBase
 from app import db
 from app.models.horarios_models import Curso, Horario, HorarioPorCurso, CarreraPorCurso
-from app.models.carreras_models import Carrera
 from app.models.docentes_models import Docente, CursosDocente
+from tests.TestAPIServicios.DAOMock.CarreraDAOMock import CarreraDAOMock, INGENIERIA_EN_INFORMATICA_1986, \
+    LICENCIATURA_EN_SISTEMAS_1986, CARRERA_FICTICIA_1
 import datetime
 from app.API_Rest.codes import *
 import json
@@ -19,33 +20,6 @@ class TestModificarCurso(TestBase):
     ##########################################################
 
     FECHA = datetime.datetime.now()
-
-    CARRERA_1 = {
-        "id": 1,
-        "codigo": "10",
-        "nombre": 'Ingeniería en Informática',
-        "duracion_estimada_en_cuatrimestres": 12,
-        "requiere_prueba_suficiencia_de_idioma": False
-    }
-
-    CARRERA_2 = {
-        "id": 2,
-        "codigo": "9",
-        "nombre": 'Otra carrera test',
-        "duracion_estimada_en_cuatrimestres": 8,
-        "requiere_prueba_suficiencia_de_idioma": True
-    }
-
-    CARRERA_3 = {
-        "id": 3,
-        "codigo": "25",
-        "nombre": 'Nueva carrera test',
-        "duracion_estimada_en_cuatrimestres": 10,
-        "requiere_prueba_suficiencia_de_idioma": False
-    }
-
-    def get_carreras_bd(self):
-        return [self.CARRERA_1, self.CARRERA_2, self.CARRERA_3]
 
     HORARIO_1 = {
         "id": 1,
@@ -112,15 +86,17 @@ class TestModificarCurso(TestBase):
         "puntaje_total_encuestas": 105,
         "fecha_actualizacion": FECHA,
         "horarios": [HORARIO_1, HORARIO_2],
-        "carreras": [CARRERA_1, CARRERA_2]
+        "carreras": [INGENIERIA_EN_INFORMATICA_1986, LICENCIATURA_EN_SISTEMAS_1986]
     }
 
     def get_test_name(self):
         return "test_buscar_cursos"
 
     def crear_datos_bd(self):
-        for carrera in self.get_carreras_bd():
-            self.agregar_carrera(carrera)
+        carreraDAO = CarreraDAOMock()
+        carreraDAO.crear_ingenieria_informatica_1986()
+        carreraDAO.crear_licenciatura_en_sistemas_1986()
+        carreraDAO.crear_carrera_ficticia_1()
 
         for horario in self.get_horarios_bd():
             self.agregar_horario(horario)
@@ -150,15 +126,6 @@ class TestModificarCurso(TestBase):
         ))
         db.session.commit()
 
-    def agregar_carrera(self, datos):
-        db.session.add(Carrera(
-            codigo=datos["codigo"],
-            nombre=datos["nombre"],
-            duracion_estimada_en_cuatrimestres=datos["duracion_estimada_en_cuatrimestres"],
-            requiere_prueba_suficiencia_de_idioma=datos["requiere_prueba_suficiencia_de_idioma"]
-        ))
-        db.session.commit()
-
     def agregar_curso(self, datos):
         db.session.add(Curso(
             codigo_materia=datos["codigo_materia"],
@@ -182,7 +149,8 @@ class TestModificarCurso(TestBase):
     def agregar_horario_por_curso(self, curso, horario):
         db.session.add(HorarioPorCurso(
             curso_id=curso["id"],
-            horario_id=horario["id"]
+            horario_id=horario["id"],
+            es_horario_activo = True
         ))
         db.session.commit()
 
@@ -246,7 +214,7 @@ class TestModificarCurso(TestBase):
 
     def test_modificar_curso_una_carrera_con_todos_parametros_validos_lo_modifica(self):
         parametros = {}
-        parametros["ids_carreras"] = self.obtener_carreras_formateadas([self.CARRERA_1])
+        parametros["ids_carreras"] = self.obtener_carreras_formateadas([INGENIERIA_EN_INFORMATICA_1986])
         parametros["primer_cuatrimestre"] = self.CURSO["se_dicta_primer_cuatrimestre"]
         parametros["segundo_cuatrimestre"] = self.CURSO["se_dicta_segundo_cuatrimestre"]
         parametros["ids_docentes"] = self.obtener_docentes_formateados([self.DOCENTE_1])
@@ -260,7 +228,7 @@ class TestModificarCurso(TestBase):
 
         carreras = CarreraPorCurso.query.filter_by(curso_id=self.CURSO["id"]).all()
         assert (len(carreras) == 1)
-        assert (self.se_encuentra_la_carrera(self.CARRERA_1, carreras))
+        assert (self.se_encuentra_la_carrera(INGENIERIA_EN_INFORMATICA_1986, carreras))
 
         assert (curso.se_dicta_primer_cuatrimestre == self.CURSO["se_dicta_primer_cuatrimestre"])
         assert (curso.se_dicta_segundo_cuatrimestre == self.CURSO["se_dicta_segundo_cuatrimestre"])
@@ -269,7 +237,7 @@ class TestModificarCurso(TestBase):
         cursos = query.filter_by(docente_id=self.DOCENTE_1["id"]).all()
         assert (len(cursos) == 1)
 
-        horarios = HorarioPorCurso.query.filter_by(curso_id=self.CURSO["id"]).all()
+        horarios = HorarioPorCurso.query.filter_by(curso_id=self.CURSO["id"]).filter_by(es_horario_activo=True).all()
         assert (len(horarios) == 2)
         for horario in self.CURSO["horarios"]:
             assert (self.se_encuentra_el_horario(horario, horarios))
@@ -311,7 +279,8 @@ class TestModificarCurso(TestBase):
 
     def test_modificar_curso_dos_carreras_con_todos_parametros_validos_lo_modifica(self):
         parametros = {}
-        parametros["ids_carreras"] = self.obtener_carreras_formateadas([self.CARRERA_1, self.CARRERA_3])
+        parametros["ids_carreras"] = self.obtener_carreras_formateadas(
+            [INGENIERIA_EN_INFORMATICA_1986, CARRERA_FICTICIA_1])
         parametros["primer_cuatrimestre"] = self.CURSO["se_dicta_primer_cuatrimestre"]
         parametros["segundo_cuatrimestre"] = self.CURSO["se_dicta_segundo_cuatrimestre"]
         parametros["ids_docentes"] = self.obtener_docentes_formateados([self.DOCENTE_1])
@@ -325,8 +294,8 @@ class TestModificarCurso(TestBase):
 
         carreras = CarreraPorCurso.query.filter_by(curso_id=self.CURSO["id"]).all()
         assert (len(carreras) == 2)
-        assert (self.se_encuentra_la_carrera(self.CARRERA_1, carreras))
-        assert (self.se_encuentra_la_carrera(self.CARRERA_3, carreras))
+        assert (self.se_encuentra_la_carrera(INGENIERIA_EN_INFORMATICA_1986, carreras))
+        assert (self.se_encuentra_la_carrera(CARRERA_FICTICIA_1, carreras))
 
         assert (curso.se_dicta_primer_cuatrimestre == self.CURSO["se_dicta_primer_cuatrimestre"])
         assert (curso.se_dicta_segundo_cuatrimestre == self.CURSO["se_dicta_segundo_cuatrimestre"])
@@ -335,7 +304,7 @@ class TestModificarCurso(TestBase):
         cursos = query.filter_by(docente_id=self.DOCENTE_1["id"]).all()
         assert (len(cursos) == 1)
 
-        horarios = HorarioPorCurso.query.filter_by(curso_id=self.CURSO["id"]).all()
+        horarios = HorarioPorCurso.query.filter_by(curso_id=self.CURSO["id"]).filter_by(es_horario_activo=True).all()
         assert (len(horarios) == 2)
         for horario in self.CURSO["horarios"]:
             assert (self.se_encuentra_el_horario(horario, horarios))
@@ -356,17 +325,17 @@ class TestModificarCurso(TestBase):
 
         carreras = CarreraPorCurso.query.filter_by(curso_id=self.CURSO["id"]).all()
         assert (len(carreras) == 2)
-        assert (self.se_encuentra_la_carrera(self.CARRERA_1, carreras))
-        assert (self.se_encuentra_la_carrera(self.CARRERA_2, carreras))
+        assert (self.se_encuentra_la_carrera(INGENIERIA_EN_INFORMATICA_1986, carreras))
+        assert (self.se_encuentra_la_carrera(LICENCIATURA_EN_SISTEMAS_1986, carreras))
 
-        assert (curso.se_dicta_primer_cuatrimestre == True)
-        assert (curso.se_dicta_segundo_cuatrimestre == False)
+        assert (curso.se_dicta_primer_cuatrimestre)
+        assert (not curso.se_dicta_segundo_cuatrimestre)
 
         query = CursosDocente.query.filter_by(curso_id=self.CURSO["id"])
         cursos = query.filter_by(docente_id=self.DOCENTE_1["id"]).all()
         assert (len(cursos) == 1)
 
-        horarios = HorarioPorCurso.query.filter_by(curso_id=self.CURSO["id"]).all()
+        horarios = HorarioPorCurso.query.filter_by(curso_id=self.CURSO["id"]).filter_by(es_horario_activo=True).all()
         assert (len(horarios) == 2)
         for horario in self.CURSO["horarios"]:
             assert (self.se_encuentra_el_horario(horario, horarios))
@@ -387,17 +356,17 @@ class TestModificarCurso(TestBase):
 
         carreras = CarreraPorCurso.query.filter_by(curso_id=self.CURSO["id"]).all()
         assert (len(carreras) == 2)
-        assert (self.se_encuentra_la_carrera(self.CARRERA_1, carreras))
-        assert (self.se_encuentra_la_carrera(self.CARRERA_2, carreras))
+        assert (self.se_encuentra_la_carrera(INGENIERIA_EN_INFORMATICA_1986, carreras))
+        assert (self.se_encuentra_la_carrera(LICENCIATURA_EN_SISTEMAS_1986, carreras))
 
-        assert (curso.se_dicta_primer_cuatrimestre == False)
-        assert (curso.se_dicta_segundo_cuatrimestre == True)
+        assert (not curso.se_dicta_primer_cuatrimestre)
+        assert (curso.se_dicta_segundo_cuatrimestre)
 
         query = CursosDocente.query.filter_by(curso_id=self.CURSO["id"])
         cursos = query.filter_by(docente_id=self.DOCENTE_1["id"]).all()
         assert (len(cursos) == 1)
 
-        horarios = HorarioPorCurso.query.filter_by(curso_id=self.CURSO["id"]).all()
+        horarios = HorarioPorCurso.query.filter_by(curso_id=self.CURSO["id"]).filter_by(es_horario_activo=True).all()
         assert (len(horarios) == 2)
         for horario in self.CURSO["horarios"]:
             assert (self.se_encuentra_el_horario(horario, horarios))
@@ -418,17 +387,17 @@ class TestModificarCurso(TestBase):
 
         carreras = CarreraPorCurso.query.filter_by(curso_id=self.CURSO["id"]).all()
         assert (len(carreras) == 2)
-        assert (self.se_encuentra_la_carrera(self.CARRERA_1, carreras))
-        assert (self.se_encuentra_la_carrera(self.CARRERA_2, carreras))
+        assert (self.se_encuentra_la_carrera(INGENIERIA_EN_INFORMATICA_1986, carreras))
+        assert (self.se_encuentra_la_carrera(LICENCIATURA_EN_SISTEMAS_1986, carreras))
 
-        assert (curso.se_dicta_primer_cuatrimestre == True)
-        assert (curso.se_dicta_segundo_cuatrimestre == True)
+        assert (curso.se_dicta_primer_cuatrimestre)
+        assert (curso.se_dicta_segundo_cuatrimestre)
 
         query = CursosDocente.query.filter_by(curso_id=self.CURSO["id"])
         cursos = query.filter_by(docente_id=self.DOCENTE_1["id"]).all()
         assert (len(cursos) == 1)
 
-        horarios = HorarioPorCurso.query.filter_by(curso_id=self.CURSO["id"]).all()
+        horarios = HorarioPorCurso.query.filter_by(curso_id=self.CURSO["id"]).filter_by(es_horario_activo=True).all()
         assert (len(horarios) == 2)
         for horario in self.CURSO["horarios"]:
             assert (self.se_encuentra_el_horario(horario, horarios))
@@ -449,17 +418,17 @@ class TestModificarCurso(TestBase):
 
         carreras = CarreraPorCurso.query.filter_by(curso_id=self.CURSO["id"]).all()
         assert (len(carreras) == 2)
-        assert (self.se_encuentra_la_carrera(self.CARRERA_1, carreras))
-        assert (self.se_encuentra_la_carrera(self.CARRERA_2, carreras))
+        assert (self.se_encuentra_la_carrera(INGENIERIA_EN_INFORMATICA_1986, carreras))
+        assert (self.se_encuentra_la_carrera(LICENCIATURA_EN_SISTEMAS_1986, carreras))
 
-        assert (curso.se_dicta_primer_cuatrimestre == False)
-        assert (curso.se_dicta_segundo_cuatrimestre == False)
+        assert (not curso.se_dicta_primer_cuatrimestre)
+        assert (not curso.se_dicta_segundo_cuatrimestre)
 
         query = CursosDocente.query.filter_by(curso_id=self.CURSO["id"])
         cursos = query.filter_by(docente_id=self.DOCENTE_1["id"]).all()
         assert (len(cursos) == 1)
 
-        horarios = HorarioPorCurso.query.filter_by(curso_id=self.CURSO["id"]).all()
+        horarios = HorarioPorCurso.query.filter_by(curso_id=self.CURSO["id"]).filter_by(es_horario_activo=True).all()
         assert (len(horarios) == 2)
         for horario in self.CURSO["horarios"]:
             assert (self.se_encuentra_el_horario(horario, horarios))
@@ -526,17 +495,17 @@ class TestModificarCurso(TestBase):
 
         carreras = CarreraPorCurso.query.filter_by(curso_id=self.CURSO["id"]).all()
         assert (len(carreras) == 2)
-        assert (self.se_encuentra_la_carrera(self.CARRERA_1, carreras))
-        assert (self.se_encuentra_la_carrera(self.CARRERA_2, carreras))
+        assert (self.se_encuentra_la_carrera(INGENIERIA_EN_INFORMATICA_1986, carreras))
+        assert (self.se_encuentra_la_carrera(LICENCIATURA_EN_SISTEMAS_1986, carreras))
 
-        assert (curso.se_dicta_primer_cuatrimestre == True)
-        assert (curso.se_dicta_segundo_cuatrimestre == False)
+        assert (curso.se_dicta_primer_cuatrimestre)
+        assert (not curso.se_dicta_segundo_cuatrimestre)
 
         query = CursosDocente.query.filter_by(curso_id=self.CURSO["id"])
         cursos = query.filter_by(docente_id=self.DOCENTE_1["id"]).all()
         assert (len(cursos) == 1)
 
-        horarios = HorarioPorCurso.query.filter_by(curso_id=self.CURSO["id"]).all()
+        horarios = HorarioPorCurso.query.filter_by(curso_id=self.CURSO["id"]).filter_by(es_horario_activo=True).all()
         assert (len(horarios) == 2)
         for horario in self.CURSO["horarios"]:
             assert (self.se_encuentra_el_horario(horario, horarios))
@@ -557,17 +526,17 @@ class TestModificarCurso(TestBase):
 
         carreras = CarreraPorCurso.query.filter_by(curso_id=self.CURSO["id"]).all()
         assert (len(carreras) == 2)
-        assert (self.se_encuentra_la_carrera(self.CARRERA_1, carreras))
-        assert (self.se_encuentra_la_carrera(self.CARRERA_2, carreras))
+        assert (self.se_encuentra_la_carrera(INGENIERIA_EN_INFORMATICA_1986, carreras))
+        assert (self.se_encuentra_la_carrera(LICENCIATURA_EN_SISTEMAS_1986, carreras))
 
-        assert (curso.se_dicta_primer_cuatrimestre == False)
-        assert (curso.se_dicta_segundo_cuatrimestre == True)
+        assert (not curso.se_dicta_primer_cuatrimestre)
+        assert (curso.se_dicta_segundo_cuatrimestre)
 
         query = CursosDocente.query.filter_by(curso_id=self.CURSO["id"])
         cursos = query.filter_by(docente_id=self.DOCENTE_1["id"]).all()
         assert (len(cursos) == 1)
 
-        horarios = HorarioPorCurso.query.filter_by(curso_id=self.CURSO["id"]).all()
+        horarios = HorarioPorCurso.query.filter_by(curso_id=self.CURSO["id"]).filter_by(es_horario_activo=True).all()
         assert (len(horarios) == 2)
         for horario in self.CURSO["horarios"]:
             assert (self.se_encuentra_el_horario(horario, horarios))
@@ -588,17 +557,17 @@ class TestModificarCurso(TestBase):
 
         carreras = CarreraPorCurso.query.filter_by(curso_id=self.CURSO["id"]).all()
         assert (len(carreras) == 2)
-        assert (self.se_encuentra_la_carrera(self.CARRERA_1, carreras))
-        assert (self.se_encuentra_la_carrera(self.CARRERA_2, carreras))
+        assert (self.se_encuentra_la_carrera(INGENIERIA_EN_INFORMATICA_1986, carreras))
+        assert (self.se_encuentra_la_carrera(LICENCIATURA_EN_SISTEMAS_1986, carreras))
 
-        assert (curso.se_dicta_primer_cuatrimestre == True)
-        assert (curso.se_dicta_segundo_cuatrimestre == True)
+        assert (curso.se_dicta_primer_cuatrimestre)
+        assert (curso.se_dicta_segundo_cuatrimestre)
 
         query = CursosDocente.query.filter_by(curso_id=self.CURSO["id"])
         cursos = query.filter_by(docente_id=self.DOCENTE_1["id"]).all()
         assert (len(cursos) == 1)
 
-        horarios = HorarioPorCurso.query.filter_by(curso_id=self.CURSO["id"]).all()
+        horarios = HorarioPorCurso.query.filter_by(curso_id=self.CURSO["id"]).filter_by(es_horario_activo=True).all()
         assert (len(horarios) == 2)
         for horario in self.CURSO["horarios"]:
             assert (self.se_encuentra_el_horario(horario, horarios))
@@ -619,17 +588,17 @@ class TestModificarCurso(TestBase):
 
         carreras = CarreraPorCurso.query.filter_by(curso_id=self.CURSO["id"]).all()
         assert (len(carreras) == 2)
-        assert (self.se_encuentra_la_carrera(self.CARRERA_1, carreras))
-        assert (self.se_encuentra_la_carrera(self.CARRERA_2, carreras))
+        assert (self.se_encuentra_la_carrera(INGENIERIA_EN_INFORMATICA_1986, carreras))
+        assert (self.se_encuentra_la_carrera(LICENCIATURA_EN_SISTEMAS_1986, carreras))
 
-        assert (curso.se_dicta_primer_cuatrimestre == False)
-        assert (curso.se_dicta_segundo_cuatrimestre == False)
+        assert (not curso.se_dicta_primer_cuatrimestre)
+        assert (not curso.se_dicta_segundo_cuatrimestre)
 
         query = CursosDocente.query.filter_by(curso_id=self.CURSO["id"])
         cursos = query.filter_by(docente_id=self.DOCENTE_1["id"]).all()
         assert (len(cursos) == 1)
 
-        horarios = HorarioPorCurso.query.filter_by(curso_id=self.CURSO["id"]).all()
+        horarios = HorarioPorCurso.query.filter_by(curso_id=self.CURSO["id"]).filter_by(es_horario_activo=True).all()
         assert (len(horarios) == 2)
         for horario in self.CURSO["horarios"]:
             assert (self.se_encuentra_el_horario(horario, horarios))
@@ -650,17 +619,17 @@ class TestModificarCurso(TestBase):
 
         carreras = CarreraPorCurso.query.filter_by(curso_id=self.CURSO["id"]).all()
         assert (len(carreras) == 2)
-        assert (self.se_encuentra_la_carrera(self.CARRERA_1, carreras))
-        assert (self.se_encuentra_la_carrera(self.CARRERA_2, carreras))
+        assert (self.se_encuentra_la_carrera(INGENIERIA_EN_INFORMATICA_1986, carreras))
+        assert (self.se_encuentra_la_carrera(LICENCIATURA_EN_SISTEMAS_1986, carreras))
 
-        assert (curso.se_dicta_primer_cuatrimestre == True)
-        assert (curso.se_dicta_segundo_cuatrimestre == False)
+        assert (curso.se_dicta_primer_cuatrimestre)
+        assert (not curso.se_dicta_segundo_cuatrimestre)
 
         query = CursosDocente.query.filter_by(curso_id=self.CURSO["id"])
         cursos = query.filter_by(docente_id=self.DOCENTE_1["id"]).all()
         assert (len(cursos) == 1)
 
-        horarios = HorarioPorCurso.query.filter_by(curso_id=self.CURSO["id"]).all()
+        horarios = HorarioPorCurso.query.filter_by(curso_id=self.CURSO["id"]).filter_by(es_horario_activo=True).all()
         assert (len(horarios) == 2)
         for horario in self.CURSO["horarios"]:
             assert (self.se_encuentra_el_horario(horario, horarios))
@@ -681,17 +650,17 @@ class TestModificarCurso(TestBase):
 
         carreras = CarreraPorCurso.query.filter_by(curso_id=self.CURSO["id"]).all()
         assert (len(carreras) == 2)
-        assert (self.se_encuentra_la_carrera(self.CARRERA_1, carreras))
-        assert (self.se_encuentra_la_carrera(self.CARRERA_2, carreras))
+        assert (self.se_encuentra_la_carrera(INGENIERIA_EN_INFORMATICA_1986, carreras))
+        assert (self.se_encuentra_la_carrera(LICENCIATURA_EN_SISTEMAS_1986, carreras))
 
-        assert (curso.se_dicta_primer_cuatrimestre == False)
-        assert (curso.se_dicta_segundo_cuatrimestre == True)
+        assert (not curso.se_dicta_primer_cuatrimestre)
+        assert (curso.se_dicta_segundo_cuatrimestre)
 
         query = CursosDocente.query.filter_by(curso_id=self.CURSO["id"])
         cursos = query.filter_by(docente_id=self.DOCENTE_1["id"]).all()
         assert (len(cursos) == 1)
 
-        horarios = HorarioPorCurso.query.filter_by(curso_id=self.CURSO["id"]).all()
+        horarios = HorarioPorCurso.query.filter_by(curso_id=self.CURSO["id"]).filter_by(es_horario_activo=True).all()
         assert (len(horarios) == 2)
         for horario in self.CURSO["horarios"]:
             assert (self.se_encuentra_el_horario(horario, horarios))
@@ -712,17 +681,17 @@ class TestModificarCurso(TestBase):
 
         carreras = CarreraPorCurso.query.filter_by(curso_id=self.CURSO["id"]).all()
         assert (len(carreras) == 2)
-        assert (self.se_encuentra_la_carrera(self.CARRERA_1, carreras))
-        assert (self.se_encuentra_la_carrera(self.CARRERA_2, carreras))
+        assert (self.se_encuentra_la_carrera(INGENIERIA_EN_INFORMATICA_1986, carreras))
+        assert (self.se_encuentra_la_carrera(LICENCIATURA_EN_SISTEMAS_1986, carreras))
 
-        assert (curso.se_dicta_primer_cuatrimestre == True)
-        assert (curso.se_dicta_segundo_cuatrimestre == True)
+        assert (curso.se_dicta_primer_cuatrimestre)
+        assert (curso.se_dicta_segundo_cuatrimestre)
 
         query = CursosDocente.query.filter_by(curso_id=self.CURSO["id"])
         cursos = query.filter_by(docente_id=self.DOCENTE_1["id"]).all()
         assert (len(cursos) == 1)
 
-        horarios = HorarioPorCurso.query.filter_by(curso_id=self.CURSO["id"]).all()
+        horarios = HorarioPorCurso.query.filter_by(curso_id=self.CURSO["id"]).filter_by(es_horario_activo=True).all()
         assert (len(horarios) == 2)
         for horario in self.CURSO["horarios"]:
             assert (self.se_encuentra_el_horario(horario, horarios))
@@ -743,17 +712,17 @@ class TestModificarCurso(TestBase):
 
         carreras = CarreraPorCurso.query.filter_by(curso_id=self.CURSO["id"]).all()
         assert (len(carreras) == 2)
-        assert (self.se_encuentra_la_carrera(self.CARRERA_1, carreras))
-        assert (self.se_encuentra_la_carrera(self.CARRERA_2, carreras))
+        assert (self.se_encuentra_la_carrera(INGENIERIA_EN_INFORMATICA_1986, carreras))
+        assert (self.se_encuentra_la_carrera(LICENCIATURA_EN_SISTEMAS_1986, carreras))
 
-        assert (curso.se_dicta_primer_cuatrimestre == False)
-        assert (curso.se_dicta_segundo_cuatrimestre == False)
+        assert (not curso.se_dicta_primer_cuatrimestre)
+        assert (not curso.se_dicta_segundo_cuatrimestre)
 
         query = CursosDocente.query.filter_by(curso_id=self.CURSO["id"])
         cursos = query.filter_by(docente_id=self.DOCENTE_1["id"]).all()
         assert (len(cursos) == 1)
 
-        horarios = HorarioPorCurso.query.filter_by(curso_id=self.CURSO["id"]).all()
+        horarios = HorarioPorCurso.query.filter_by(curso_id=self.CURSO["id"]).filter_by(es_horario_activo=True).all()
         assert (len(horarios) == 2)
         for horario in self.CURSO["horarios"]:
             assert (self.se_encuentra_el_horario(horario, horarios))
@@ -774,13 +743,13 @@ class TestModificarCurso(TestBase):
 
         carreras = CarreraPorCurso.query.filter_by(curso_id=self.CURSO["id"]).all()
         assert (len(carreras) == 2)
-        assert (self.se_encuentra_la_carrera(self.CARRERA_1, carreras))
-        assert (self.se_encuentra_la_carrera(self.CARRERA_2, carreras))
+        assert (self.se_encuentra_la_carrera(INGENIERIA_EN_INFORMATICA_1986, carreras))
+        assert (self.se_encuentra_la_carrera(LICENCIATURA_EN_SISTEMAS_1986, carreras))
 
         assert (curso.se_dicta_primer_cuatrimestre == self.CURSO["se_dicta_primer_cuatrimestre"])
         assert (curso.se_dicta_segundo_cuatrimestre == self.CURSO["se_dicta_segundo_cuatrimestre"])
 
-        horarios = HorarioPorCurso.query.filter_by(curso_id=self.CURSO["id"]).all()
+        horarios = HorarioPorCurso.query.filter_by(curso_id=self.CURSO["id"]).filter_by(es_horario_activo=True).all()
         assert (len(horarios) == 2)
         for horario in self.CURSO["horarios"]:
             assert (self.se_encuentra_el_horario(horario, horarios))
@@ -810,7 +779,7 @@ class TestModificarCurso(TestBase):
         parametros["primer_cuatrimestre"] = 'false'
         parametros["segundo_cuatrimestre"] = 'false'
         parametros["horarios"] = self.obtener_horarios_formateados(self.CURSO["horarios"])
-        parametros["ids_docentes"] = json.dumps([58,69])
+        parametros["ids_docentes"] = json.dumps([58, 69])
 
         client = self.loguear_administrador()
         response = client.post(self.get_url_get_curso(self.CURSO["id"]), data=parametros)
@@ -844,8 +813,8 @@ class TestModificarCurso(TestBase):
 
         carreras = CarreraPorCurso.query.filter_by(curso_id=self.CURSO["id"]).all()
         assert (len(carreras) == 2)
-        assert (self.se_encuentra_la_carrera(self.CARRERA_1, carreras))
-        assert (self.se_encuentra_la_carrera(self.CARRERA_2, carreras))
+        assert (self.se_encuentra_la_carrera(INGENIERIA_EN_INFORMATICA_1986, carreras))
+        assert (self.se_encuentra_la_carrera(LICENCIATURA_EN_SISTEMAS_1986, carreras))
 
         assert (curso.se_dicta_primer_cuatrimestre == self.CURSO["se_dicta_primer_cuatrimestre"])
         assert (curso.se_dicta_segundo_cuatrimestre == self.CURSO["se_dicta_segundo_cuatrimestre"])
@@ -854,7 +823,7 @@ class TestModificarCurso(TestBase):
         cursos = query.filter_by(docente_id=self.DOCENTE_1["id"]).all()
         assert (len(cursos) == 1)
 
-        horarios = HorarioPorCurso.query.filter_by(curso_id=self.CURSO["id"]).all()
+        horarios = HorarioPorCurso.query.filter_by(curso_id=self.CURSO["id"]).filter_by(es_horario_activo=True).all()
         assert (len(horarios) == 3)
         for horario in (self.CURSO["horarios"] + [self.HORARIO_3]):
             assert (self.se_encuentra_el_horario(horario, horarios))
@@ -875,8 +844,8 @@ class TestModificarCurso(TestBase):
 
         carreras = CarreraPorCurso.query.filter_by(curso_id=self.CURSO["id"]).all()
         assert (len(carreras) == 2)
-        assert (self.se_encuentra_la_carrera(self.CARRERA_1, carreras))
-        assert (self.se_encuentra_la_carrera(self.CARRERA_2, carreras))
+        assert (self.se_encuentra_la_carrera(INGENIERIA_EN_INFORMATICA_1986, carreras))
+        assert (self.se_encuentra_la_carrera(LICENCIATURA_EN_SISTEMAS_1986, carreras))
 
         assert (curso.se_dicta_primer_cuatrimestre == self.CURSO["se_dicta_primer_cuatrimestre"])
         assert (curso.se_dicta_segundo_cuatrimestre == self.CURSO["se_dicta_segundo_cuatrimestre"])
@@ -885,7 +854,7 @@ class TestModificarCurso(TestBase):
         cursos = query.filter_by(docente_id=self.DOCENTE_1["id"]).all()
         assert (len(cursos) == 1)
 
-        horarios = HorarioPorCurso.query.filter_by(curso_id=self.CURSO["id"]).all()
+        horarios = HorarioPorCurso.query.filter_by(curso_id=self.CURSO["id"]).filter_by(es_horario_activo=True).all()
         assert (len(horarios) == 2)
         for horario in [self.HORARIO_3, self.HORARIO_4]:
             assert (self.se_encuentra_el_horario(horario, horarios))

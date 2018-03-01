@@ -76,6 +76,24 @@ INGENIERIA_EN_INFORMATICA_1986 = {
     }
 }
 
+CARRERA_FICTICIA_1 = {
+    P_ID: -1,
+    P_CODIGO: "88",
+    P_NOMBRE: "Carrera Ficticia 1",
+    P_PLAN: "2018",
+    P_DURACION_EN_CUATRIMESTRES: 9,
+    P_REQUIERE_PRUEBA_SUF_IDIOMA: False,
+    P_ORIENTACIONES: [],
+    P_CREDITOS: {
+        P_CREDITOS_OBLIGATORIAS: 130,
+        P_CREDITOS_ELECTIVAS_GRAL: 40,
+        P_CREDITOS_ORIENTACION: 0,
+        P_CREDITOS_ELECTIVAS_CON_TP: 0,
+        P_CREDITOS_ELECTIVAS_CON_TESIS: 0,
+        P_CREDITOS_TESIS: 0,
+        P_CREDITOS_TP_PROFESIONAL: 0
+    }
+}
 
 class CarreraDAOMock:
     def crear_licenciatura_en_sistemas_1986(self):
@@ -83,6 +101,9 @@ class CarreraDAOMock:
 
     def crear_ingenieria_informatica_1986(self):
         return self.crear_carrera(INGENIERIA_EN_INFORMATICA_1986)
+
+    def crear_carrera_ficticia_1(self):
+        return self.crear_carrera(CARRERA_FICTICIA_1)
 
     def crear_carrera(self, datos):
         carrera = self.agregar_carrera(datos)
