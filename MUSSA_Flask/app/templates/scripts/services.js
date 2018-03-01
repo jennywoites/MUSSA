@@ -104,6 +104,15 @@ function modificar_docente_service(token, idDocente, apellido, nombre, l_ids_cur
     do_request('POST', url_servicio, token, parametros, onSucces, onError);
 }
 
+function agrupar_docentes_service(token, ids_docentes, onSucces, onError) {
+    var url_servicio = BASE_URL + '/docente/agrupar';
+
+    parametros = {};
+    parametros["ids_docentes"] = JSON.stringify(ids_docentes);
+
+    do_request('POST', url_servicio, token, parametros, onSucces, onError);
+}
+
 function obtener_todos_los_docentes_service(token, onSuccess, onError) {
     var url_servicio = BASE_URL + '/docente/all';
     do_request('GET', url_servicio, token, {}, function(status, response) {

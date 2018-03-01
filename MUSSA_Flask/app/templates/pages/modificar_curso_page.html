@@ -314,7 +314,7 @@
             <div class="form-group">
                 <div class='table-responsive'>
                     <table class='table table-hover' id="tabla_docentes">
-                        <tr>
+                        <tr class="header_tabla">
                             <th>Apellido, Nombre</th>
                             <th>Materias que dicta</th>
                             <th>Eliminar</th>
@@ -326,11 +326,10 @@
                             <td>{{docentes[i]['nombre_completo']}}</td>
                             <td>
                                 <ul class="list-group">
-                                    {% for codigo in docentes[i]["materias_que_dicta"] %}
+                                    {% for materia in docentes[i]["materias_que_dicta"] %}
                                     <li class="list-group-item"
                                         style="border-color: transparent; background-color: transparent;">
-                                        {{codigo}} - {{docentes[i]["materias_que_dicta"][codigo]["nombre"]}} /
-                                        {{docentes[i]["materias_que_dicta"][codigo]["carrera"]}}
+                                        {{materia["codigo"]}} - {{materia["nombre"]}} | Curso {{materia["curso"]}} | {{materia["carrera"]}}
                                     </li>
                                     {% endfor %}
                                 </ul>
@@ -412,7 +411,7 @@
         <div class="form-group">
             <div class='table-responsive'>
                 <table class='table table-hover' id="tabla_cursos_guardados">
-                    <tr>
+                    <tr class="header_tabla">
                         <th>Dia</th>
                         <th>De</th>
                         <th>A</th>

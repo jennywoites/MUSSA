@@ -42,10 +42,10 @@
 
     function format_lista_materias(materias){
         res = '<ul class="list-group">'
-        for(var materia in materias){
+        for(var index in materias){
             res += '<li class="list-group-item lista-materias">';
-            res +=  materia + " - " + materias[materia]['nombre'];
-            res +=  " - " + materias[materia]['carrera'];
+            res +=  materias[index]['codigo'] + " - " + materias[index]['nombre'] + " | Curso: " + materias[index]['curso'];
+            res +=  " | " + materias[index]['carrera'];
             res += '</li>';
         }
         res += "</ul>"
@@ -110,7 +110,79 @@
     }
 
     function agrupar_seleccionados() {
-        debugger;
+        var div_error = document.getElementById('div_error_agrupar');
+        div_error.hidden = true;
+        var div_success = document.getElementById('div_success_agrupar');
+        div_success.hidden = true;
+        var div_texto = document.getElementById('text_div_error_agrupar');
+
+        var seleccionados = $("#tabla_docentes").bootstrapTable('getSelections');
+        if (seleccionados.length < 2) {
+            div_texto.innerText = "Se requieren al menos dos docentes a agrupar";
+            div_error.hidden = false;
+            return;
+        }
+
+        var UL_INICIO = "<ul class='list-group'>";
+        var UL_FIN = "</ul>";
+
+        var ids_docentes = [];
+        var apellido = '';
+        var nombre = '';
+        var materias_que_dicta_agrupadas = [];
+
+        for(var i=0; i<seleccionados.length; i++) {
+            var docente = seleccionados[i];
+            if (!apellido)
+                apellido = docente.apellido;
+
+            if (apellido != docente.apellido) {
+                div_texto.innerText = "No es posible agrupar docentes con diferentes apellidos.";
+                div_error.hidden = false;
+                return;
+            }
+
+            if (!nombre && docente.nombre)
+                nombre = docente.nombre
+
+            if (docente.nombre && nombre != docente.nombre) {
+                div_texto.innerText = "No es posible agrupar docentes con diferentes nombres.";
+                div_error.hidden = false;
+                return;
+            }
+
+            var l_materias = docente.materias.substring(UL_INICIO.length,docente.materias.length-UL_FIN.length);
+            l_materias = l_materias.split('</li>');
+            for (var j in l_materias) {
+                var nueva_linea = l_materias[j] + '</li>';
+                if (l_materias[j] && materias_que_dicta_agrupadas.indexOf(nueva_linea) < 0)
+                    materias_que_dicta_agrupadas.push(nueva_linea);
+            }
+
+            ids_docentes.push(docente.id_docente);
+        }
+
+        show_loading_mask();
+        agrupar_docentes_service('{{ csrf_token() }}', ids_docentes, function(status, response) {
+            var materias_agrupadas = UL_INICIO + materias_que_dicta_agrupadas.join('') + UL_FIN;
+
+            var docente_sobreviviente = seleccionados[0];
+            docente_sobreviviente.apellido = apellido;
+            docente_sobreviviente.nombre = nombre;
+            docente_sobreviviente.materias = materias_agrupadas;
+
+            for (var i=1; i< seleccionados.length; i++) {
+                var docente = seleccionados[i];
+                $("#tabla_docentes").bootstrapTable('removeByUniqueId', docente.id_docente);
+            }
+
+            div_success.hidden = false;
+            hide_loading_mask();
+        }, function(status, response) {
+            div_texto.innerText = "Se ha producido un error al agrupar los docentes. Por favor, intenta nuevamente"
+            div_error.hidden = false;
+            hide_loading_mask();
+        });
     }
 
 
@@ -131,6 +203,14 @@
     <div id="div_success" hidden="true">
         <div class="alert alert-success">Se ha eliminado el docente.
         </div>
+    </div>
+
+    <div id="div_error_agrupar" hidden="true">
+        <div class="alert alert-danger" id="text_div_error_agrupar"></div>
+    </div>
+
+    <div id="div_success_agrupar" hidden="true">
+        <div class="alert alert-success">Se han agrupado los docentes satisfactoriamente.</div>
     </div>
 
     <br>

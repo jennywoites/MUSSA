@@ -14,19 +14,20 @@ def generarJSON_docente(docente):
 
 
 def generarJSON_materias_docente(docente):
-    materias = {}
+    materias = []
 
     cursos_del_docente = CursosDocente.query.filter_by(docente_id=docente.id).all()
     for c in cursos_del_docente:
         curso = Curso.query.get(c.curso_id)
         materia = Materia.query.filter_by(codigo=curso.codigo_materia).first()
         carrera = Carrera.query.get(materia.carrera_id)
-        materias[materia.codigo] = {
+        materias.append({
+            "codigo": materia.codigo,
             "nombre": materia.nombre,
             "id_carrera": materia.carrera_id,
             "carrera": carrera.get_descripcion_carrera(),
             "curso": curso.codigo,
             "id_curso": curso.id
-        }
+        })
 
     return materias

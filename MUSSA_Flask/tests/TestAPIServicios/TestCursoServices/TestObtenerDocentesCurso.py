@@ -4,10 +4,10 @@ if __name__ == '__main__':
     sys.path.append("../..")
 
 from tests.TestAPIServicios.TestBase import TestBase
-from app import db
 from app.models.horarios_models import Curso, Horario, HorarioPorCurso, CarreraPorCurso
 from app.models.carreras_models import Carrera, TipoMateria, Materia
-from app.models.docentes_models import CursosDocente, Docente
+from tests.TestAPIServicios.DAOMock.DocenteDAOMock import *
+from tests.TestAPIServicios.DAOMock.CarreraDAOMock import CarreraDAOMock, INGENIERIA_EN_INFORMATICA_1986
 import json
 import datetime
 from app.API_Rest.codes import *
@@ -19,17 +19,6 @@ class TestObtenerDocentesCurso(TestBase):
     ##########################################################
 
     FECHA = datetime.datetime.now()
-
-    CARRERA_1 = {
-        "id": 1,
-        "codigo": "10",
-        "nombre": 'Ingeniería en Informática',
-        "duracion_estimada_en_cuatrimestres": 12,
-        "requiere_prueba_suficiencia_de_idioma": False
-    }
-
-    def get_carreras_bd(self):
-        return [self.CARRERA_1]
 
     HORARIO_1 = {
         "id": 1,
@@ -54,52 +43,33 @@ class TestObtenerDocentesCurso(TestBase):
         "puntaje_total_encuestas": 105,
         "fecha_actualizacion": FECHA,
         "horarios": [HORARIO_1],
-        "carreras": [CARRERA_1]
+        "carreras": [INGENIERIA_EN_INFORMATICA_1986]
     }
 
     def get_cursos_bd(self):
         return [self.CURSO]
 
-    DOCENTE_CON_NOMBRE = {
-        "id": 1,
-        "apellido": "Woites",
-        "nombre": "Jennifer",
-        "nombre_completo": "Woites, Jennifer",
-        "materias_que_dicta": {
-            "7540": "Materia test"
-        }
-    }
-
-    DOCENTE_SIN_NOMBRE = {
-        "id": 2,
-        "apellido": "Wainer",
-        "nombre": "",
-        "nombre_completo": "Wainer",
-        "materias_que_dicta": {
-            "7540": "Materia test"
-        }
-    }
-
-    def get_docentes(self):
-        return [self.DOCENTE_CON_NOMBRE, self.DOCENTE_SIN_NOMBRE]
-
     def get_test_name(self):
         return "test_obtener_docentes_curso"
 
     def crear_datos_bd(self):
-        for carrera in self.get_carreras_bd():
-            self.agregar_carrera(carrera)
+        carreraDAO = CarreraDAOMock()
+        carreraDAO.crear_ingenieria_informatica_1986()
 
         self.agregar_materia()
 
         for horario in self.get_horarios_bd():
             self.agregar_horario(horario)
 
+        docenteDAO = DocenteDAOMock()
         for curso in self.get_cursos_bd():
-            self.agregar_curso(curso)
+            curso_db = self.agregar_curso(curso)
 
-            for docente in self.get_docentes():
-                self.agregar_docente_al_curso(docente, curso)
+            docenteDAO.crear_docente_sin_nombre()
+            docenteDAO.agregar_curso_dictado(DOCENTE_SIN_NOMBRE, curso_db)
+
+            docenteDAO.crear_docente_Woites_Jennifer()
+            docenteDAO.agregar_curso_dictado(DOCENTE_WOITES_JENNIFER, curso_db)
 
             for c_horario in curso["horarios"]:
                 self.agregar_horario_por_curso(curso, c_horario)
@@ -119,19 +89,8 @@ class TestObtenerDocentesCurso(TestBase):
             creditos_minimos_para_cursarla=10,
             creditos=24,
             tipo_materia_id=tipo_materia.id,
-            carrera_id=self.CARRERA_1["id"]
+            carrera_id=INGENIERIA_EN_INFORMATICA_1986["id"]
         ))
-
-    def agregar_docente_al_curso(self, docente, curso):
-        doc = Docente(apellido=docente["apellido"], nombre=docente["nombre"])
-        db.session.add(doc)
-        db.session.commit()
-
-        db.session.add(CursosDocente(
-            docente_id=doc.id,
-            curso_id=curso["id"]
-        ))
-        db.session.commit()
 
     def agregar_carrera(self, datos):
         db.session.add(Carrera(
@@ -143,7 +102,7 @@ class TestObtenerDocentesCurso(TestBase):
         db.session.commit()
 
     def agregar_curso(self, datos):
-        db.session.add(Curso(
+        curso = Curso(
             codigo_materia=datos["codigo_materia"],
             codigo=datos["codigo"],
             se_dicta_primer_cuatrimestre=datos["se_dicta_primer_cuatrimestre"],
@@ -151,8 +110,10 @@ class TestObtenerDocentesCurso(TestBase):
             cantidad_encuestas_completas=datos["cantidad_encuestas_completas"],
             puntaje_total_encuestas=datos["puntaje_total_encuestas"],
             fecha_actualizacion=datos["fecha_actualizacion"],
-        ))
+        )
+        db.session.add(curso)
         db.session.commit()
+        return curso
 
     def agregar_horario(self, datos):
         db.session.add(Horario(
@@ -188,21 +149,18 @@ class TestObtenerDocentesCurso(TestBase):
         return False
 
     def los_docentes_son_iguales(self, docente_servicio, docente_origen):
-        return (docente_servicio["id_docente"] == docente_origen["id"] and
-                docente_servicio["apellido"] == docente_origen["apellido"] and
-                docente_servicio["nombre"] == docente_origen["nombre"] and
-                docente_servicio["nombre_completo"] == docente_origen["nombre_completo"] and
+        return (docente_servicio["id_docente"] == docente_origen[P_ID] and
+                docente_servicio["apellido"] == docente_origen[P_APELLIDO] and
+                docente_servicio["nombre"] == docente_origen[P_NOMBRE] and
+                docente_servicio["nombre_completo"] == docente_origen[P_NOMBRE_COMPLETO] and
                 self.dictan_las_mismas_materias(docente_origen, docente_servicio))
 
     def dictan_las_mismas_materias(self, docente_origen, docente_servicio):
-        for cod_materia_servicio in docente_servicio["materias_que_dicta"]:
-            if not cod_materia_servicio in docente_origen["materias_que_dicta"]:
-                return False
-            if (docente_origen["materias_que_dicta"][cod_materia_servicio] !=
-                    docente_servicio["materias_que_dicta"][cod_materia_servicio]):
+        for grupo_curso_servicio in docente_servicio["materias_que_dicta"]:
+            if not grupo_curso_servicio["id_curso"] in docente_origen[P_CURSOS_QUE_DICTA]:
                 return False
 
-        return len(docente_servicio["materias_que_dicta"]) == len(docente_origen["materias_que_dicta"])
+        return len(docente_servicio["materias_que_dicta"]) == len(docente_origen[P_CURSOS_QUE_DICTA])
 
     ##########################################################
     ##                      Tests                           ##
@@ -224,8 +182,8 @@ class TestObtenerDocentesCurso(TestBase):
 
         curso = json.loads(response.get_data(as_text=True))
 
-        self.se_encuentra_el_docente(self.DOCENTE_CON_NOMBRE, curso)
-        self.se_encuentra_el_docente(self.DOCENTE_SIN_NOMBRE, curso)
+        self.se_encuentra_el_docente(DOCENTE_WOITES_JENNIFER, curso)
+        self.se_encuentra_el_docente(DOCENTE_SIN_NOMBRE, curso)
 
 
 if __name__ == '__main__':
