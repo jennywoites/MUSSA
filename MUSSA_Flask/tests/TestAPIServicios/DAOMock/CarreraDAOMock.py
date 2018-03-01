@@ -78,10 +78,6 @@ INGENIERIA_EN_INFORMATICA_1986 = {
 
 
 class CarreraDAOMock:
-    def crear_todas_las_carreras(self):
-        self.crear_licenciatura_en_sistemas_1986()
-        self.crear_ingenieria_informatica_1986()
-
     def crear_licenciatura_en_sistemas_1986(self):
         return self.crear_carrera(LICENCIATURA_EN_SISTEMAS_1986)
 
