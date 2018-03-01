@@ -44,6 +44,7 @@ class DocenteDAOMock:
             nombre=datos[P_NOMBRE])
         db.session.add(doc)
         db.session.commit()
+        datos[P_ID] = doc.id
         return doc
 
     def agregar_curso_dictado(self, datos_docente, curso):
