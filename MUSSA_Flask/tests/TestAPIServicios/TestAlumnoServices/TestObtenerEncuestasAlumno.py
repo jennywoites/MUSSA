@@ -8,10 +8,11 @@ from app.API_Rest.codes import *
 from app.DAO.MateriasDAO import *
 from app.models.respuestas_encuesta_models import EncuestaAlumno
 from app.models.alumno_models import Alumno, MateriasAlumno
-from app.models.carreras_models import Carrera, Materia, TipoMateria
+from app.models.carreras_models import Materia, TipoMateria
 from app.models.horarios_models import Curso
 import json
 from datetime import datetime
+from tests.TestAPIServicios.DAOMock.CarreraDAOMock import CarreraDAOMock
 
 
 class TestObtenerEncuestasAlumno(TestBase):
@@ -30,7 +31,6 @@ class TestObtenerEncuestasAlumno(TestBase):
         "creditos_minimos_para_cursarla": 0,
         "creditos": 0,
         "tipo_materia_id": 1,
-        "carrera": "Licenciatura en Análisis de Sistemas (1986)",
         "cuatrimestre_aprobacion_cursada": "1",
         "anio_aprobacion_cursada": "2016",
         'aprobacion_cursada': "1C / 2016",
@@ -44,7 +44,6 @@ class TestObtenerEncuestasAlumno(TestBase):
         "creditos_minimos_para_cursarla": 0,
         "creditos": 0,
         "tipo_materia_id": 1,
-        "carrera": "Licenciatura en Análisis de Sistemas (1986)",
         "cuatrimestre_aprobacion_cursada": "2",
         "anio_aprobacion_cursada": "2017",
         'aprobacion_cursada': "2C / 2017",
@@ -63,7 +62,6 @@ class TestObtenerEncuestasAlumno(TestBase):
         "creditos_minimos_para_cursarla": 0,
         "creditos": 0,
         "tipo_materia_id": 1,
-        "carrera": "Licenciatura en Análisis de Sistemas (1986)",
         "cuatrimestre_aprobacion_cursada": "2",
         "anio_aprobacion_cursada": "2017",
         'aprobacion_cursada': "2C / 2017",
@@ -83,6 +81,7 @@ class TestObtenerEncuestasAlumno(TestBase):
         "hora_desde_reloj": "07:30",
         "hora_hasta_reloj": "11:00"
     }
+
     CURSO = {
         "codigo_materia": "1572",
         "codigo": "1572-CursoA",
@@ -96,7 +95,6 @@ class TestObtenerEncuestasAlumno(TestBase):
     ENCUESTA = {
         "alumno_id": 1,
         "materia_alumno_id": MATERIA_FINAL_DESAPROBADA["id"],
-        "carrera": "9 - Licenciatura",
         "materia": "6122 - Una materia",
         "curso": "25: Apellido-Apellido2",
         "cuatrimestre_aprobacion_cursada": "1",
@@ -106,14 +104,8 @@ class TestObtenerEncuestasAlumno(TestBase):
     }
 
     def crear_datos_bd(self):
-        carrera = Carrera(
-            codigo='9',
-            nombre='Licenciatura en Análisis de Sistemas',
-            duracion_estimada_en_cuatrimestres=9,
-            requiere_prueba_suficiencia_de_idioma=False,
-            plan="1986"
-        )
-        db.session.add(carrera)
+        carreraDAO = CarreraDAOMock()
+        carrera = carreraDAO.crear_licenciatura_en_sistemas_1986()
 
         tipo_materia = TipoMateria(descripcion="Tipo Materia Test")
         db.session.add(tipo_materia)
