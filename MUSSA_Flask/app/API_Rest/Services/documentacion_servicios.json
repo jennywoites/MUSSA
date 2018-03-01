@@ -673,6 +673,47 @@
         }
       }
     },
+    "/docente/agrupar": {
+      "post": {
+        "tags": [
+          "docente"
+        ],
+        "summary": "Agrupa los docentes de los ids indicados dejando solo uno de los docentes activo",
+        "description": "Agrupa los docentes de los ids seleccionados tomando el apellido del primero  el primer nombre no nulo (si ninguno posee nombre queda vacío). Agrega como cursos (sin repetir) la unión de los cursos de todos ellos.",
+        "produces": [
+          "application/json"
+        ],
+        "consumes": [
+          "multipart/form-data"
+        ],
+        "parameters": [
+          {
+            "in": "formData",
+            "name": "ids_docentes",
+            "required": true,
+            "type": "array",
+            "description": "Lista de ids de docentes a agrupar",
+            "items": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "OK. Sin contenido"
+          },
+          "400": {
+            "description": "BAD REQUEST. Uno o más parámetros no cumplen con las condiciones requeridas."
+          },
+          "401": {
+            "description": "La información de autorización no fue enviada o es inválida."
+          },
+          "404": {
+            "description": "Uno o más docentes de los IDs especificados no fueron encontrados."
+          }
+        }
+      }
+    },
     "/alumno": {
       "get": {
         "tags": [
@@ -1522,10 +1563,15 @@
     "MateriasDocente": {
       "type": "object",
       "properties": {
+        "codigo": {
+          "type": "string",
+          "description": "Codigo de la materia.",
+          "example": 7540
+        },
         "nombre": {
           "type": "string",
           "description": "Nombre de la materia.",
-          "example": "7540 - Algoritmos y Programación I"
+          "example": "Algoritmos y Programación I"
         },
         "id_carrera": {
           "type": "integer",
@@ -1536,6 +1582,16 @@
           "type": "string",
           "description": "Descripcion de la carrera (codigo, nombre y plan) a la que pertenece la materia.",
           "example": "10 - Ingeniería en Informática (Plan 1986)"
+        },
+        "id_curso": {
+          "type": "integer",
+          "description": "ID del curso en el que dicta la materia.",
+          "example": 1
+        },
+        "curso": {
+          "type": "string",
+          "description": "Nombre del curso en el que dicta la materia",
+          "example": "2A"
         }
       }
     },
