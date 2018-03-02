@@ -25,7 +25,6 @@
             return;
 
         var preguntas = {{preguntas | safe}};
-        debugger;
         while(preguntas.length > 0) {
             if ($.isEmptyObject(respuestas))
                 return;
@@ -95,8 +94,8 @@
             //    return cargarRespuestaNumero(pregunta, respuesta);
             //case "Horario":
             //    return cargarRespuestaHorario(pregunta, respuesta);
-            //case "Docente":
-            //    return cargarRespuestaDocentes(pregunta, respuesta);
+            case "Docente":
+                return cargarRespuestaDocentes(pregunta, respuesta);
             //case "Correlativa":
             //    return cargarRespuestaCorrelativas(pregunta, respuesta);
             //case "Estrellas":
@@ -177,14 +176,22 @@
     }
 
     function cargarRespuestaDocentes(pregunta, respuesta) {
-        var idPregunta = pregunta["pregunta_id"];
-        for (var i=0; i<respuesta["comentarios_docentes"].length; i++) {
-            var datos_comentario_docente = respuesta["comentarios_docentes"][i];
-            var idDocente = datos_comentario_docente["id_docente"].toString();
-            var comentario = datos_comentario_docente["comentario"];
-            var nombreDocente = datos_comentario_docente["nombre_completo"];
-            agregarComentarioDocenteALaTabla(idPregunta, idDocente, nombreDocente, comentario);
+        var docentes = respuesta["docentes"];
+
+        var html = "</br>";
+        for(var id_docente in docentes) {
+            var docente = docentes[id_docente];
+            html += "<p style='font-style: italic; color: purple; font-size: large;'>" + docente["nombre_completo"] + "</p>";
+            var comentarios = docente["comentarios"];
+            for(var i=0; i<comentarios.length; i++) {
+                html += "<textarea class='form-control' rows='5' disabled>";
+                html += comentarios[i];
+                html += "</textarea>";
+                html += "</br>";
+            }
         }
+
+        actualizar_HTML_respuesta(pregunta, html);
     }
 
     function cargarRespuestaHorario(pregunta, respuesta) {
@@ -347,30 +354,6 @@
         selector.selectedIndex = indexSelected;
     }
 
-    function agregarComentarioDocenteALaTabla(idPregunta, idDocente, nombreDocente, comentario) {
-        var tabla_docentes = document.getElementById("tabla_docentes-" + idPregunta);
-
-        var filas = tabla_docentes.rows;
-        var indice = filas.length;
-        var row = tabla_docentes.insertRow(indice);
-        var ultimo_id = filas[indice-1].id
-        var numero_id = parseInt(ultimo_id.substr(ultimo_id.indexOf("_")+1)) + 1;
-        if (isNaN(numero_id))
-            numero_id = 0;
-
-        row.id = "entradaTablaDocente_" + numero_id + "_" + idPregunta;
-
-        var celdaId = row.insertCell(0);
-        celdaId.innerHTML = idDocente;
-        celdaId.hidden = true;
-
-        row.insertCell(1).innerHTML = nombreDocente;
-        row.insertCell(2).innerHTML = comentario;
-
-        var div_tabla_docentes = document.getElementById("div-tabla-docentes-" + idPregunta);
-        div_tabla_docentes.hidden = false;
-    }
-
     function agregarTematicaSeleccionada(idPregunta, opcionElegida) {
         var selector = document.getElementById("selector_tematica_" + idPregunta);
 
@@ -445,6 +428,7 @@
         return etiqueta;
     }
 
+
 </script>
 
 <!--- Begin Botonera -->
@@ -480,7 +464,7 @@
 
     <br>
 
-    <label><span class="glyphicon glyphicon-chevron-right"></span>  {{pregunta["pregunta"]}}</label>
+    <label><span class="glyphicon glyphicon-chevron-right"></span> {{pregunta["pregunta"]}}</label>
 
     <br>
 
@@ -494,7 +478,8 @@
         <tr>
             <td>{{pregunta["texto_min"]}}</td>
             {% for i in range(1,6) %}
-            <td><input type="radio" name="input_puntaje1a5-id-{{pregunta['pregunta_id']}}" value="{{i}}" style="margin:10px;" disabled></td>
+            <td><input type="radio" name="input_puntaje1a5-id-{{pregunta['pregunta_id']}}" value="{{i}}"
+                       style="margin:10px;" disabled></td>
             {% endfor %}
             <td>{{pregunta["texto_max"]}}</td>
         </tr>
@@ -514,7 +499,7 @@
     <div id="div-subpregunta-si-pregunta-id-{{pregunta['pregunta_id']}}" hidden="True">
         <br>
 
-        <label><span class="glyphicon glyphicon-chevron-right"></span>  {{subpregunta["pregunta"]}}</label>
+        <label><span class="glyphicon glyphicon-chevron-right"></span> {{subpregunta["pregunta"]}}</label>
 
         <br>
         <br>
@@ -532,7 +517,7 @@
     <div id="div-subpregunta-no-pregunta-id-{{pregunta['pregunta_id']}}" hidden="True">
         <br>
 
-        <label><span class="glyphicon glyphicon-chevron-right"></span>  {{subpregunta["pregunta"]}}</label>
+        <label><span class="glyphicon glyphicon-chevron-right"></span> {{subpregunta["pregunta"]}}</label>
 
         <br>
         <br>
@@ -561,28 +546,6 @@
             </table>
         </div>
     </div>
-
-    {% elif pregunta["tipo"] == "Docente" %}
-
-    <div class="form-group" id="div-tabla-docentes-{{pregunta['pregunta_id']}}" hidden="true">
-        <div class='table-responsive'>
-            <table class='table table-hover' id="tabla_docentes-{{pregunta['pregunta_id']}}">
-                <tr class="header_tabla">
-                    <th hidden="true">Id Docente</th>
-                    <th>Docente</th>
-                    <th>Comentarios</th>
-                </tr>
-                </thead>
-                <tbody>
-                </tbody>
-            </table>
-        </div>
-    </div>
-
-    <br>
-    <label id="label-ningun-comentario-docentes-{{pregunta['pregunta_id']}}" hidden="true">
-        No se ha ingresado ningún comentario de los docentes.
-    </label>
 
     {% elif pregunta["tipo"] == "Correlativa" %}
 
@@ -621,7 +584,9 @@
 
     <div class="row">
         <div class="col-sm-2">
-            <input type="number" class="form-control" name="numero_{{pregunta['pregunta_id']}}" id="numero_{{pregunta['pregunta_id']}}" value="{{pregunta['numero_min']}}" min="{{pregunta['numero_min']}}" max="{{pregunta['numero_max']}}" step="1" disabled>
+            <input type="number" class="form-control" name="numero_{{pregunta['pregunta_id']}}"
+                   id="numero_{{pregunta['pregunta_id']}}" value="{{pregunta['numero_min']}}"
+                   min="{{pregunta['numero_min']}}" max="{{pregunta['numero_max']}}" step="1" disabled>
         </div>
     </div>
 
@@ -652,7 +617,8 @@
         <div class="row">
             <div class="col-sm-3">
                 <div class="form-group">
-                    <select class="form-control" id="selector_tematica_{{pregunta['pregunta_id']}}" name="selector_tematica_{{pregunta['pregunta_id']}}">
+                    <select class="form-control" id="selector_tematica_{{pregunta['pregunta_id']}}"
+                            name="selector_tematica_{{pregunta['pregunta_id']}}">
                         <option id="nueva_tematica_{{pregunta['pregunta_id']}}" value="-1">Nueva Temática</option>
                     </select>
                 </div>
@@ -675,12 +641,16 @@
     <br>
 
     <div>
-        <div class = "pull-left" id="boton_anterior">
-            <button type="button" class="btn btn-default" style="background-color: transparent;border-color: transparent;font-size: 30px;color: #9634c1;"><span class='glyphicon glyphicon-arrow-left'></span></button>
+        <div class="pull-left" id="boton_anterior">
+            <button type="button" class="btn btn-default"
+                    style="background-color: transparent;border-color: transparent;font-size: 30px;color: #9634c1;">
+                <span class='glyphicon glyphicon-arrow-left'></span></button>
         </div>
 
-        <div class = "pull-right" id="boton_siguiente">
-            <button type="button" class="btn btn-default" style="background-color: transparent;border-color: transparent;font-size: 30px;color: #9634c1;"><span class='glyphicon glyphicon-arrow-right'></span></button>
+        <div class="pull-right" id="boton_siguiente">
+            <button type="button" class="btn btn-default"
+                    style="background-color: transparent;border-color: transparent;font-size: 30px;color: #9634c1;">
+                <span class='glyphicon glyphicon-arrow-right'></span></button>
         </div>
     </div>
 
