@@ -2,6 +2,8 @@
 
 {% block content %}
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.2/Chart.bundle.min.js"></script>
+
 <script>
 
     $( function () {
@@ -87,8 +89,8 @@
         switch(tipo_pregunta) {
             case "Texto Libre":
                 return cargarRespuestaTextoLibre(pregunta, respuesta);
-            //case "Puntaje de 1 a 5":
-            //    return cargarRespuestaPuntaje1a5(pregunta, respuesta);
+            case "Puntaje de 1 a 5":
+                return cargarRespuestaPuntaje1a5(pregunta, respuesta);
             //case "Numero":
             //    return cargarRespuestaNumero(pregunta, respuesta);
             //case "Horario":
@@ -205,9 +207,53 @@
     }
 
     function cargarRespuestaPuntaje1a5(pregunta, respuesta) {
-        var table = document.getElementById("puntaje1a5-id-" + pregunta['pregunta_id']);
-        var index = respuesta["puntaje"];
-        table.rows[0].cells[index].children[0].checked = true;
+        debugger;
+        var html = '      <div class="row">'
+        html +='                 <div class="col-md-6">'
+        html +='                <canvas id="myChart" width="300" height="150"></canvas>'
+        html +='           </div><div class="col-md-6">culo</div></div>';
+        actualizar_HTML_respuesta(pregunta, html);
+        var ctx = document.getElementById("myChart").getContext('2d');
+        var bar_data = [];
+        for (var i=1; i<6; i++){
+            bar_data.push(respuesta.puntajes[i]);
+        }
+        var myChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: pregunta.textos,
+                datasets: [{
+                    label: 'Cantidad de respuestas',
+                    data: bar_data,
+                    backgroundColor: [
+                        'rgba(255, 99, 132, 0.2)',
+                        'rgba(54, 162, 235, 0.2)',
+                        'rgba(255, 206, 86, 0.2)',
+                        'rgba(75, 192, 192, 0.2)',
+                        'rgba(153, 102, 255, 0.2)'
+                    ],
+                    borderColor: [
+                        'rgba(255,99,132,1)',
+                        'rgba(54, 162, 235, 1)',
+                        'rgba(255, 206, 86, 1)',
+                        'rgba(75, 192, 192, 1)',
+                        'rgba(153, 102, 255, 1)',
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    yAxes: [{
+                        ticks: {
+                            beginAtZero:true,
+                            min: 0,
+                            stepSize: 1,
+                        }
+                    }]
+                }
+            }
+        });
     }
 
     function cargarRespuestaTextoLibre(pregunta, respuesta) {
@@ -469,7 +515,7 @@
 
     <div id="resultados_pregunta_{{pregunta['pregunta_id']}}"></div>
 
-    {% elif pregunta["tipo"] == "Si o No" %}
+    {% if pregunta["tipo"] == "Si o No" %}
 
     <div class="radio" id="check-si-{{pregunta['pregunta_id']}}">
         <label><input type="radio" name="optradio-{{pregunta['pregunta_id']}}" disabled>Si</label>
