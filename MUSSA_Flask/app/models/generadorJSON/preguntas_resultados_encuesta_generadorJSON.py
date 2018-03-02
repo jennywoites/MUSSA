@@ -45,12 +45,7 @@ def agregarJSON_datos_pregunta(pregunta, pregunta_resultado, datos):
 
 def agregarJSON_datos_encuesta_puntaje(pregunta_resultado, datos):
     e_puntaje = PreguntaResultadoEncuestaPuntaje.query.filter_by(pregunta_resultado_id=pregunta_resultado.id).first()
-
-    datos["texto_1"] = e_puntaje.texto_1
-    datos["texto_2"] = e_puntaje.texto_2
-    datos["texto_3"] = e_puntaje.texto_3
-    datos["texto_4"] = e_puntaje.texto_4
-    datos["texto_5"] = e_puntaje.texto_5
+    datos["textos"] = [e_puntaje.texto_1, e_puntaje.texto_2, e_puntaje.texto_3, e_puntaje.texto_4, e_puntaje.texto_5]
 
 
 def agregarJSON_datos_encuesta_si_no(pregunta, datos):
