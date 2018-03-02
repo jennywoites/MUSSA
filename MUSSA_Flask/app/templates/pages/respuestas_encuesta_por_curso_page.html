@@ -16,7 +16,7 @@
         }
 
         agregarAccionesBotonesAnteriorYSiguiente();
-        //cargarLasRespuestasGuardadas();
+        cargarLasRespuestasGuardadas();
     });
 
     function cargarLasRespuestasGuardadas() {
@@ -25,6 +25,7 @@
             return;
 
         var preguntas = {{preguntas | safe}};
+        debugger;
         while(preguntas.length > 0) {
             if ($.isEmptyObject(respuestas))
                 return;
@@ -84,29 +85,30 @@
     }
 
     function cargarRespuestaGuardada(pregunta, tipo_pregunta, respuesta) {
+        debugger;
         switch(tipo_pregunta) {
             case "Texto Libre":
                 return cargarRespuestaTextoLibre(pregunta, respuesta);
-            case "Puntaje de 1 a 5":
-                return cargarRespuestaPuntaje1a5(pregunta, respuesta);
-            case "Numero":
-                return cargarRespuestaNumero(pregunta, respuesta);
-            case "Horario":
-                return cargarRespuestaHorario(pregunta, respuesta);
-            case "Docente":
-                return cargarRespuestaDocentes(pregunta, respuesta);
-            case "Correlativa":
-                return cargarRespuestaCorrelativas(pregunta, respuesta);
-            case "Estrellas":
-                return cargarRespuestaEstrellas(pregunta, respuesta);
-            case "Temática de la Materia":
-                return cargarRespuestaTematicas(pregunta, respuesta);
-            case "Tags / Palabras Clave":
-                return cargarRespuestaPalabrasClave(pregunta, respuesta);
-            case "Si o No":
-                return cargarRespuestaSioNo(pregunta, respuesta);
-            case "Texto Subpregunta":
-                return cargarRespuestaTextoSubpregunta(pregunta, respuesta);
+            //case "Puntaje de 1 a 5":
+            //    return cargarRespuestaPuntaje1a5(pregunta, respuesta);
+            //case "Numero":
+            //    return cargarRespuestaNumero(pregunta, respuesta);
+            //case "Horario":
+            //    return cargarRespuestaHorario(pregunta, respuesta);
+            //case "Docente":
+            //    return cargarRespuestaDocentes(pregunta, respuesta);
+            //case "Correlativa":
+            //    return cargarRespuestaCorrelativas(pregunta, respuesta);
+            //case "Estrellas":
+            //    return cargarRespuestaEstrellas(pregunta, respuesta);
+            //case "Temática de la Materia":
+            //    return cargarRespuestaTematicas(pregunta, respuesta);
+            //case "Tags / Palabras Clave":
+            //    return cargarRespuestaPalabrasClave(pregunta, respuesta);
+            //case "Si o No":
+            //    return cargarRespuestaSioNo(pregunta, respuesta);
+            //case "Texto Subpregunta":
+            //    return cargarRespuestaTextoSubpregunta(pregunta, respuesta);
             default:
                 console.log(tipo_pregunta)
                 console.log(respuesta)
@@ -203,8 +205,21 @@
     }
 
     function cargarRespuestaTextoLibre(pregunta, respuesta) {
-        var texto_div = document.getElementById('textolibre-id-' + pregunta['pregunta_id']);
-        texto_div.value = respuesta["texto"];
+        var textos = respuesta["textos"];
+        var html = "";
+        for(var i=0; i<textos.length; i++) {
+            html += "<textarea class='form-control' rows='5' disabled>";
+            html += textos[i];
+            html += "</textarea>";
+            html += "</br>";
+        }
+
+        actualizar_HTML_respuesta(pregunta, html);
+    }
+
+    function actualizar_HTML_respuesta(pregunta, html) {
+        var div_respuesta = document.getElementById('resultados_pregunta_' + pregunta['pregunta_id']);
+        div_respuesta.innerHTML = html;
     }
 
     function cargarRespuestaTextoSubpregunta(pregunta, respuesta) {
@@ -469,6 +484,8 @@
 
     <br>
 
+    <div id="resultados_pregunta_{{pregunta['pregunta_id']}}"></div>
+
     {% if pregunta["tipo"] == "Puntaje de 1 a 5" %}
 
     <br>
@@ -483,10 +500,6 @@
         </tr>
         </tbody>
     </table>
-
-    {% elif pregunta["tipo"] == "Texto Libre" %}
-
-    <textarea class="form-control" rows="5" id="textolibre-id-{{pregunta['pregunta_id']}}" disabled></textarea>
 
     {% elif pregunta["tipo"] == "Si o No" %}
 
