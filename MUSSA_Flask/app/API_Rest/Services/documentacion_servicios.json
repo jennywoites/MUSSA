@@ -33,7 +33,7 @@
     },
     {
       "name": "encuesta",
-      "description": "Acceso a la estructura de encuestas. Las encuestas se dividen en tres secciones 1) 'encuesta' --> contiene las preguntas de las encuestas, las agrupaciones por categoría, etc; 2) 'respuestas alumno' --> contiene las respuestas del alumno para una determinada encuesta. Es accesible a través del alumno; 3) 'resultados encuesta' --> contiene las respuestas generales como resultados de las encuestas para un curso o un docente, es accesible a través de resultados encuesta."
+      "description": "Acceso a la estructura de encuestas. Las encuestas se dividen en tres secciones 1) 'encuesta' --> contiene las preguntas de las encuestas, las agrupaciones por categoría, etc; 2) 'respuestas alumno' --> contiene las respuestas del alumno para una determinada encuesta. Es accesible a través del alumno; 3) 'resultados' --> contiene las respuestas generales como resultados de las encuestas para un curso o un docente, es accesible a través de resultados encuesta."
     }
   ],
   "schemes": [
@@ -1370,9 +1370,74 @@
           }
         }
       }
+    },
+    "/encuesta/resultados/curso/{idCurso}/cuatrimestres": {
+      "get": {
+        "tags": [
+          "encuesta"
+        ],
+        "summary": "Devuelve una lista con los cuatrimestres en los que el curso tiene alguna encuesta completa.",
+        "description": "Devuelve una lista con los cuatrimestres en los que el curso tiene alguna encuesta completa. Si no hay encuestas completas devuelve una lista vacía.",
+        "produces": [
+          "application/json"
+        ],
+        "consumes": [
+          "multipart/form-data"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "idCurso",
+            "required": true,
+            "type": "integer",
+            "description": "El ID del curso del cual se desea saber los cuatrimestres en los que tiene encuestas completas."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/ListaCuatrimestres"
+            }
+          },
+          "401": {
+            "description": "La información de autorización no fue enviada o es inválida."
+          },
+          "404": {
+            "description": "El id del curso no existe o es inválido."
+          }
+        }
+      }
     }
   },
   "definitions": {
+    "ListaCuatrimestres": {
+      "type": "object",
+      "properties": {
+        "cuatrimestres": {
+          "type": "array",
+          "description": "Lista de cuatrimestres",
+          "items": {
+            "$ref": "#/definitions/Cuatrimestre"
+          }
+        }
+      }
+    },
+    "Cuatrimestre": {
+      "type": "object",
+      "properties": {
+        "anio": {
+          "type": "string",
+          "description": "Año al que pertenece el cuatrimestre",
+          "example": 2016
+        },
+        "cuatrimestre": {
+          "type": "integer",
+          "description": "Numero de cuatrimestre",
+          "example": 2
+        }
+      }
+    },
     "ListaMaterias": {
       "type": "object",
       "properties": {
