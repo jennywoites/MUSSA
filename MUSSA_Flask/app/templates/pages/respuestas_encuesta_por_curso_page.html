@@ -107,8 +107,8 @@
             //    return cargarRespuestaPalabrasClave(pregunta, respuesta);
             //case "Si o No":
             //    return cargarRespuestaSioNo(pregunta, respuesta);
-            //case "Texto Subpregunta":
-            //    return cargarRespuestaTextoSubpregunta(pregunta, respuesta);
+            case "Texto Subpregunta":
+                return cargarRespuestaTextoLibre(pregunta, respuesta);
             default:
                 console.log(tipo_pregunta)
                 console.log(respuesta)
@@ -550,47 +550,30 @@
 
     {% if pregunta["tipo"] == "Si o No" %}
 
-    <div class="radio" id="check-si-{{pregunta['pregunta_id']}}">
-        <label><input type="radio" name="optradio-{{pregunta['pregunta_id']}}" disabled>Si</label>
-    </div>
-    <div class="radio" id="check-no-{{pregunta['pregunta_id']}}">
-        <label><input type="radio" name="optradio-{{pregunta['pregunta_id']}}" disabled>No</label>
-    </div>
-
-    {% for subpregunta in pregunta["rta_si"] %}
-    <div id="div-subpregunta-si-pregunta-id-{{pregunta['pregunta_id']}}" hidden="True">
-        <br>
-
-        <label><span class="glyphicon glyphicon-chevron-right"></span> {{subpregunta["pregunta"]}}</label>
+    {% for subpregunta_si in pregunta["rta_si"] %}
 
         <br>
+
+        <label><span class="glyphicon glyphicon-chevron-right"></span> {{subpregunta_si["pregunta"]}}</label>
+
         <br>
 
-        {% if subpregunta["tipo"] == "Texto Libre" %}
-
-        <textarea class="form-control" rows="5" id="subpregunta-si-{{subpregunta['pregunta_id']}}"></textarea>
-
-        {% endif %}
-
-    </div>
+        <div id="resultados_pregunta_{{subpregunta_si['pregunta_id']}}"></div>
     {% endfor %}
 
-    {% for subpregunta in pregunta["rta_no"] %}
-    <div id="div-subpregunta-no-pregunta-id-{{pregunta['pregunta_id']}}" hidden="True">
-        <br>
-
-        <label><span class="glyphicon glyphicon-chevron-right"></span> {{subpregunta["pregunta"]}}</label>
+    {% for subpregunta_no in pregunta["rta_no"] %}
 
         <br>
+
+        <label><span class="glyphicon glyphicon-chevron-right"></span> {{subpregunta_no["pregunta"]}}</label>
+
         <br>
 
-        {% if subpregunta["tipo"] == "Texto Libre" %}
+        <div id="resultados_pregunta_{{subpregunta_no['pregunta_id']}}"></div>
 
-        <textarea class="form-control" rows="5" id="subpregunta-no-{{subpregunta['pregunta_id']}}"></textarea>
-
-        {% endif %}
-    </div>
     {% endfor %}
+
+
 
     {% elif pregunta["tipo"] == "Horario" %}
 
