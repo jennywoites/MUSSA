@@ -70,8 +70,6 @@ class ResultadosEncuestaCursoService(BaseService):
                 respuestas_JSON[id_pregunta_resultados] = generar_estructura_respuesta_por_tipo(rta_encuesta.tipo_id)
             actualizar_respuesta_JSON(rta_encuesta, respuestas_JSON[id_pregunta_resultados], rta_encuesta.tipo_id)
 
-
-
         result = ({"resultados_encuesta": respuestas_JSON}, SUCCESS_OK)
         self.logg_resultado(result)
 

@@ -50,6 +50,19 @@ class PreguntaEncuestaPuntaje(db.Model):
         return "{} - Min: {} - Max: {}".format(self.encuesta_id, self.texto_min, self.texto_max)
 
 
+class PreguntaResultadoEncuestaPuntaje(db.Model):
+    __tablename__ = 'pregunta_resultado_encuesta_puntaje'
+
+    id = db.Column(db.Integer, primary_key=True)
+
+    pregunta_resultado_id = db.Column(db.Integer(), db.ForeignKey('pregunta_resultado_encuesta.id'), nullable=False)
+    texto_1 = db.Column(db.String(25), nullable=False, server_default='')
+    texto_2 = db.Column(db.String(25), nullable=False, server_default='')
+    texto_3 = db.Column(db.String(25), nullable=False, server_default='')
+    texto_4 = db.Column(db.String(25), nullable=False, server_default='')
+    texto_5 = db.Column(db.String(25), nullable=False, server_default='')
+
+
 class PreguntaEncuestaNumero(db.Model):
     __tablename__ = 'pregunta_encuesta_numero'
 
