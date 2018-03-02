@@ -26,11 +26,13 @@ class CuatrimestresResultadosEncuestaCursoService(BaseService):
 
         query_materias_del_curso = MateriasAlumno.query.with_entities(MateriasAlumno.id).filter_by(curso_id=idCurso)
 
-        datos = EncuestaAlumno.query.with_entities(EncuestaAlumno.anio_aprobacion_cursada,
-                                                   EncuestaAlumno.cuatrimestre_aprobacion_cursada).filter(
-            EncuestaAlumno.materia_alumno_id.in_(query_materias_del_curso)).group_by(
-            EncuestaAlumno.anio_aprobacion_cursada, EncuestaAlumno.cuatrimestre_aprobacion_cursada).order_by(
-            EncuestaAlumno.anio_aprobacion_cursada.desc()).order_by(EncuestaAlumno.anio_aprobacion_cursada.desc()).all()
+        datos = EncuestaAlumno.query \
+            .with_entities(EncuestaAlumno.anio_aprobacion_cursada, EncuestaAlumno.cuatrimestre_aprobacion_cursada) \
+            .filter_by(finalizada=True) \
+            .filter(EncuestaAlumno.materia_alumno_id.in_(query_materias_del_curso)) \
+            .group_by(EncuestaAlumno.anio_aprobacion_cursada, EncuestaAlumno.cuatrimestre_aprobacion_cursada) \
+            .order_by(EncuestaAlumno.anio_aprobacion_cursada.desc()) \
+            .order_by(EncuestaAlumno.anio_aprobacion_cursada.desc()).all()
 
         resultados_json = []
         for anio, cuatrimestre in datos:
