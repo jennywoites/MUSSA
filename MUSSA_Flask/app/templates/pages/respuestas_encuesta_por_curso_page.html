@@ -207,40 +207,78 @@
     }
 
     function cargarRespuestaPuntaje1a5(pregunta, respuesta) {
-        debugger;
-        var html = '      <div class="row">'
-        html +='                 <div class="col-md-6">'
-        html +='                <canvas id="bar_chart" width="300" height="150"></canvas>'
-        html +='           </div><div class="col-md-6"><canvas id="pie_chart" width="300" height="150"></canvas></div></div>';
-        actualizar_HTML_respuesta(pregunta, html);
-        var bar_ctx = document.getElementById("bar_chart").getContext('2d');
-        var pie_ctx = document.getElementById("pie_chart").getContext('2d');
+        var html =  '<div class="row">';
+        html +=         '<div class="col-md-6">';
+        html +=             '<canvas id="bar_chart_' + pregunta["pregunta_id"] + '" width="300" height="150"></canvas>';
+        html +=         '</div>';
+        html +=         '<div class="col-md-6">';
+        html +=             '<canvas id="pie_chart_' + pregunta["pregunta_id"] + '" width="300" height="150"></canvas>';
+        html +=         '</div>';
+        html +=     '</div>';
 
+        actualizar_HTML_respuesta(pregunta, html);
+
+        var MAX_PUNTAJE = 5;
         var bar_data = [];
-        for (var i=1; i<6; i++){
+        for (var i=1; i<MAX_PUNTAJE+1; i++){
             bar_data.push(respuesta.puntajes[i]);
         }
-        var bar_chart = new Chart(bar_ctx, {
+        generar_grafico_barras('bar_chart_' + pregunta["pregunta_id"], pregunta.textos, bar_data);
+
+        var pie_data = [];
+        for (var i=1; i<MAX_PUNTAJE+1; i++){
+            pie_data.push(respuesta.puntajes[i]*100/respuesta.total_encuestas);
+        }
+
+        generar_grafico_de_torta('pie_chart_' + pregunta["pregunta_id"], pregunta.textos, bar_data);
+    }
+
+    function generar_grafico_de_torta(id_canvas, labels, datos_grafico) {
+        var pie_ctx = document.getElementById(id_canvas).getContext('2d');
+        new Chart(pie_ctx,{
+            type: 'pie',
+            data:  {
+                    datasets: [{
+                        data: datos_grafico,
+                        backgroundColor: get_colores_relleno_grafico(),
+                        borderColor: get_colores_borde_grafico(),
+                        borderWidth: 1
+                        }],
+                    labels: labels,
+
+                },
+            options: {
+				responsive: true,
+				tooltips: {
+                    callbacks: {
+                        label: function(tooltipItem, data) {
+                            var allData = data.datasets[tooltipItem.datasetIndex].data;
+                            var tooltipLabel = data.labels[tooltipItem.index];
+                            var tooltipData = allData[tooltipItem.index];
+                            var total = 0;
+                            for (var i in allData) {
+                                total += allData[i];
+                            }
+                            var tooltipPercentage = Math.round((tooltipData / total) * 100);
+                            return tooltipLabel + ': ' + tooltipPercentage + '%';
+                        }
+                    }
+                }
+			}
+        });
+    }
+
+    function generar_grafico_barras(id_canvas, labels, datos_grafico) {
+        var bar_ctx = document.getElementById(id_canvas).getContext('2d');
+        new Chart(bar_ctx, {
             type: 'bar',
             data: {
-                labels: pregunta.textos,
+                labels: labels,
                 datasets: [{
                     label: 'Cantidad de respuestas',
-                    data: bar_data,
-                    backgroundColor: [
-                        'rgba(255, 99, 132, 0.2)',
-                        'rgba(54, 162, 235, 0.2)',
-                        'rgba(255, 206, 86, 0.2)',
-                        'rgba(75, 192, 192, 0.2)',
-                        'rgba(153, 102, 255, 0.2)'
-                    ],
-                    borderColor: [
-                        'rgba(255,99,132,1)',
-                        'rgba(54, 162, 235, 1)',
-                        'rgba(255, 206, 86, 1)',
-                        'rgba(75, 192, 192, 1)',
-                        'rgba(153, 102, 255, 1)',
-                    ],
+                    data: datos_grafico,
+                    backgroundColor: get_colores_relleno_grafico(),
+                    borderColor: get_colores_borde_grafico(),
                     borderWidth: 1
                 }]
             },
@@ -256,37 +294,26 @@
                 }
             }
         });
+    }
 
+    function get_colores_relleno_grafico() {
+        return [
+            'rgba(255,99,132, 0.2)',
+            'rgba(246,184,36, 0.2)',
+            'rgba(244,246,36, 0.2)',
+            'rgba(17,212,207, 0.2)',
+            'rgba(53,212,17, 0.2)'
+        ]
+    }
 
-        var myPieChart = new Chart(pie_ctx,{
-            type: 'pie',
-            data:  {
-                    datasets: [{
-                        data: bar_data,
-                        backgroundColor: [
-                        'rgba(255, 99, 132, 0.2)',
-                        'rgba(54, 162, 235, 0.2)',
-                        'rgba(255, 206, 86, 0.2)',
-                        'rgba(75, 192, 192, 0.2)',
-                        'rgba(153, 102, 255, 0.2)'
-                        ],
-                        borderColor: [
-                            'rgba(255,99,132,1)',
-                            'rgba(54, 162, 235, 1)',
-                            'rgba(255, 206, 86, 1)',
-                            'rgba(75, 192, 192, 1)',
-                            'rgba(153, 102, 255, 1)',
-                        ],
-                        borderWidth: 1
-                        }],
-                    labels: pregunta.textos,
-
-                },
-            options: {
-				responsive: true
-			}
-        });
-
+    function get_colores_borde_grafico() {
+        return [
+            'rgba(255,99,132, 1)',
+            'rgba(246,184,36, 1)',
+            'rgba(244,246,36, 1)',
+            'rgba(17,212,207, 1)',
+            'rgba(53,212,17, 1)'
+        ];
     }
 
     function cargarRespuestaTextoLibre(pregunta, respuesta) {
@@ -305,12 +332,6 @@
     function actualizar_HTML_respuesta(pregunta, html) {
         var div_respuesta = document.getElementById('resultados_pregunta_' + pregunta['pregunta_id']);
         div_respuesta.innerHTML = html;
-    }
-
-    function cargarRespuestaTextoSubpregunta(pregunta, respuesta) {
-        var tipo = pregunta["tipo_respuesta_si_no"];
-        var texto_div = document.getElementById('subpregunta-' + tipo + '-' + pregunta['pregunta_id']);
-        texto_div.value = respuesta["texto"];
     }
 
     function cargarRespuestaNumero(pregunta, respuesta) {
