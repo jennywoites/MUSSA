@@ -363,18 +363,18 @@ class MateriaAlumnoService(BaseService):
 
         materia.estado_id = EstadoMateria.query.filter_by(estado=datos_materia["estado"]).first().id
 
+        if datos_materia["cuatrimestre_aprobacion"]:
+            materia.cuatrimestre_aprobacion_cursada = datos_materia["cuatrimestre_aprobacion"]
+
+        if datos_materia["anio_aprobacion"]:
+            materia.anio_aprobacion_cursada = datos_materia["anio_aprobacion"]
+
         # Si es -1 significa que no hay un curso designado
         if (datos_materia["idCurso"] is not None and datos_materia["idCurso"] != "-1"):
             materia.curso_id = int(datos_materia["idCurso"])
             if datos_materia["estado"] in [ESTADO_MATERIA[FINAL_PENDIENTE], ESTADO_MATERIA[APROBADA],
                                            ESTADO_MATERIA[DESAPROBADA]]:
                 self.crear_encuesta(materia)
-
-        if datos_materia["cuatrimestre_aprobacion"]:
-            materia.cuatrimestre_aprobacion_cursada = datos_materia["cuatrimestre_aprobacion"]
-
-        if datos_materia["anio_aprobacion"]:
-            materia.anio_aprobacion_cursada = datos_materia["anio_aprobacion"]
 
         if datos_materia["fecha_aprobacion"]:
             anio, mes, dia = datos_materia["fecha_aprobacion"].split("-")
