@@ -20,11 +20,14 @@ SALTO_DE_LINEA = "<br />"
 
 class GeneradorPDF:
     def __init__(self, ruta):
+        self.pagesize = A4
+        self.leftmargin = 72
+        self.rightmargin = 72
         self.doc = SimpleDocTemplate(
             ruta,
-            pagesize=A4,
-            rightMargin=72,
-            leftMargin=72,
+            pagesize=self.pagesize,
+            rightMargin=self.rightmargin,
+            leftMargin=self.leftmargin,
             topMargin=20,
             bottomMargin=18
         )
@@ -61,9 +64,12 @@ class GeneradorPDF:
             Image(logo_fiuba, 1.5 * inch, 0.5 * inch, hAlign='RIGTH')
         ]]
 
-        tbl = Table(tbl_data)
+        ancho_columna = (self.pagesize[0] - self.leftmargin - self.rightmargin) / 2
+        tbl = Table(tbl_data,  colWidths=ancho_columna)
         tbl.setStyle(TableStyle([
-            ('ALIGN', (0, 0), (1, 0), 'LEFT')
+            ('ALIGN', (0, 0), (0, 0), 'LEFT'),
+            ('ALIGN', (1, 0), (1, 0), 'RIGHT'),
+            ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
         ]))
         self.story.append(tbl)
 
