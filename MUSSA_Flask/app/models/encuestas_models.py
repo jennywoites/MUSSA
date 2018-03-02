@@ -25,6 +25,18 @@ class PreguntaEncuesta(db.Model):
         return self.pregunta
 
 
+class PreguntaResultadoEncuesta(db.Model):
+    __tablename__ = 'pregunta_resultado_encuesta'
+
+    id = db.Column(db.Integer, primary_key=True)
+
+    pregunta = db.Column(db.String(250), nullable=False, server_default='')
+    pregunta_encuesta_id = db.Column(db.Integer(), db.ForeignKey('pregunta_encuesta.id'), nullable=False)
+
+    def __str__(self):
+        return self.pregunta
+
+
 class PreguntaEncuestaPuntaje(db.Model):
     __tablename__ = 'pregunta_encuesta_puntaje'
 
