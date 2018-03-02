@@ -16,7 +16,7 @@
     {% if cuatrimestres_con_encuestas | length > 0 %}
 
     <button type="button"
-            onclick="redirigir_a('{{url_for('main.resultados_encuestas_por_curso_todos_los_resultados_page', idCurso=curso['id_curso'])}}')"
+            onclick="redirigir_a('{{url_for('main.resultados_encuestas_por_curso_todos_los_resultados_general_page', idCurso=curso['id_curso'])}}')"
             class="btn btn-mussa-default">Ver todos los resultados
     </button>
 
@@ -37,7 +37,7 @@
                 <td>{{dato["anio"]}}</td>
                 <td>{{dato["cuatrimestre"]}}</td>
                 <td>
-                    <a href="{{ url_for('main.resultados_encuestas_por_curso_resultados_para_un_cuatrimestre_page', idCurso=curso['id_curso'], anio=dato['anio'], cuatrimestre=dato['cuatrimestre']) }}">
+                    <a href="{{ url_for('main.resultados_encuestas_por_curso_resultados_para_un_cuatrimestre_general_page', idCurso=curso['id_curso'], anio=dato['anio'], cuatrimestre=dato['cuatrimestre']) }}">
                         <span class='glyphicon glyphicon-search'></span>
                     </a>
                 </td>

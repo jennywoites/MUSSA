@@ -110,10 +110,19 @@ class ClienteAPI:
         """URL: '/api/encuesta/preguntas'"""
         return self.BASE_URL + '/encuesta/preguntas'
 
+    def get_url_get_resultados_encuesta(self, idCurso):
+        """URLs:
+        '/api/encuesta/resultados/curso/<int:idCurso>'"""
+        return self.BASE_URL + '/encuesta/resultados/curso/' + str(idCurso)
+
     def get_url_get_cuatrimestres_resultados_encuesta(self, idCurso):
         """URLs:
         '/api/encuesta/resultados/curso/<int:idCurso>/cuatrimestres'"""
         return self.BASE_URL + '/encuesta/resultados/curso/' + str(idCurso) + '/cuatrimestres'
+
+    def get_url_preguntas_resultados_encuesta(self):
+        """URL: '/api/encuesta/resultados/preguntas'"""
+        return self.BASE_URL + '/encuesta/resultados/preguntas'
 
     def get_url_get_alumno(self):
         """URL: '/api/alumno'"""
@@ -321,6 +330,38 @@ class ClienteAPI:
     def get_cuatrimestres_con_resultados_encuesta_para_un_curso(self, cookies, idCurso):
         url_servicio = self.get_url_get_cuatrimestres_resultados_encuesta(idCurso)
         return self.invocar_get(url_servicio, cookies)["cuatrimestres"]
+
+    def obtener_preguntas_resultados_encuesta(self, cookie, l_categorias=[]):
+        url_servicio = self.get_url_preguntas_resultados_encuesta()
+
+        parametros = {}
+        if l_categorias:
+            parametros["categorias"] = json.dumps(l_categorias)
+
+        response = self.invocar_get(url_servicio, cookie, parametros)
+        return response["preguntas"]
+
+    def obtener_repuestas_resultados_encuesta(self, cookies, idCurso, num_categoria, anio='', cuatrimestre=''):
+        url_servicio = self.get_url_get_resultados_encuesta(idCurso)
+
+        parametros = {}
+        if anio:
+            parametros["anio"] = anio
+        if cuatrimestre:
+            parametros["cuatrimestre"] = cuatrimestre
+
+        preguntas = self.obtener_preguntas_encuesta(cookies, [num_categoria])
+        ids_preguntas = []
+        for pregunta in preguntas:
+            ids_preguntas.append(pregunta["pregunta_id"])
+            if pregunta["tipo_num"] == SI_NO:
+                for subpregunta in (pregunta["rta_si"] + pregunta["rta_no"]):
+                    ids_preguntas.append(subpregunta["pregunta_id"])
+        if ids_preguntas:
+            parametros["ids_preguntas"] = json.dumps(ids_preguntas)
+
+        response = self.invocar_get(url_servicio, cookies, parametros)
+        return response["respuestas_encuestas"]
 
     ################################################
     ##            Servicios ALUMNO                ##

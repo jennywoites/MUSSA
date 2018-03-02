@@ -21,6 +21,7 @@ class ResultadosEncuestaCursoService(BaseService):
 
         cuatrimestre = self.obtener_parametro("cuatrimestre")
         anio = self.obtener_parametro("anio")
+        ids_preguntas = self.obtener_lista("ids_preguntas")
 
         if (cuatrimestre and not anio) or (not cuatrimestre and anio):
             msj = "El grupo cuatrimestre/año no está completo"
@@ -43,7 +44,8 @@ class ResultadosEncuestaCursoService(BaseService):
                 self.FUNCIONES_VALIDACION: [
                     (self.es_numero_valido, [])
                 ]
-            })
+            }),
+            self.get_validaciones_entidad_basica("ids_preguntas", ids_preguntas, PreguntaEncuesta, True)
         ]))
 
         if not parametros_son_validos:
@@ -60,7 +62,8 @@ class ResultadosEncuestaCursoService(BaseService):
                 .filter_by(anio_aprobacion_cursada=anio)
 
         respuestas_encuesta = RespuestaEncuestaAlumno.query \
-            .filter(RespuestaEncuestaAlumno.encuesta_alumno_id.in_(query_encuestas)).all()
+            .filter(RespuestaEncuestaAlumno.encuesta_alumno_id.in_(query_encuestas))\
+            .filter(RespuestaEncuestaAlumno.pregunta_encuesta_id.in_(ids_preguntas)).all()
 
         respuestas_JSON = {}
         for rta_encuesta in respuestas_encuesta:
@@ -70,7 +73,7 @@ class ResultadosEncuestaCursoService(BaseService):
                 respuestas_JSON[id_pregunta_resultados] = generar_estructura_respuesta_por_tipo(rta_encuesta.tipo_id)
             actualizar_respuesta_JSON(rta_encuesta, respuestas_JSON[id_pregunta_resultados], rta_encuesta.tipo_id)
 
-        result = ({"resultados_encuesta": respuestas_JSON}, SUCCESS_OK)
+        result = ({"respuestas_encuestas": respuestas_JSON}, SUCCESS_OK)
         self.logg_resultado(result)
 
         return result
