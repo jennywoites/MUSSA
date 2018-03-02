@@ -84,7 +84,6 @@
     }
 
     function cargarRespuestaGuardada(pregunta, tipo_pregunta, respuesta) {
-        debugger;
         switch(tipo_pregunta) {
             case "Texto Libre":
                 return cargarRespuestaTextoLibre(pregunta, respuesta);
@@ -469,22 +468,6 @@
     <br>
 
     <div id="resultados_pregunta_{{pregunta['pregunta_id']}}"></div>
-
-    {% if pregunta["tipo"] == "Puntaje de 1 a 5" %}
-
-    <br>
-    <table border="0" id="puntaje1a5-id-{{pregunta['pregunta_id']}}" style="background-color: transparent;">
-        <tbody>
-        <tr>
-            <td>{{pregunta["texto_min"]}}</td>
-            {% for i in range(1,6) %}
-            <td><input type="radio" name="input_puntaje1a5-id-{{pregunta['pregunta_id']}}" value="{{i}}"
-                       style="margin:10px;" disabled></td>
-            {% endfor %}
-            <td>{{pregunta["texto_max"]}}</td>
-        </tr>
-        </tbody>
-    </table>
 
     {% elif pregunta["tipo"] == "Si o No" %}
 
