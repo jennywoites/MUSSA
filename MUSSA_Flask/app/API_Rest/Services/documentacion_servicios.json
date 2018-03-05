@@ -652,10 +652,29 @@
         "tags": [
           "docente"
         ],
-        "summary": "Devuelve todos los docentes con sus datos",
-        "description": "Devuelve una lista con los datos de cada docente",
+        "summary": "Devuelve todos los docentes con sus datos.",
+        "description": "Devuelve una lista con los datos de cada docente. Si se envió el parámetro nombre o apellido se filtra aquellos que contengan en su apellido o en su nombre la cadena enviada.",
         "produces": [
           "application/json"
+        ],
+        "consumes": [
+          "multipart/form-data"
+        ],
+        "parameters": [
+          {
+            "in": "formData",
+            "name": "nombre",
+            "required": false,
+            "type": "integer",
+            "description": "Parte del nombre"
+          },
+          {
+            "in": "formData",
+            "name": "apellido",
+            "required": false,
+            "type": "integer",
+            "description": "Parte del apellido"
+          }
         ],
         "responses": {
           "200": {
@@ -666,6 +685,9 @@
           },
           "204": {
             "description": "OK. No hay datos para enviar."
+          },
+          "400": {
+            "description": "BAD REQUEST. Uno o más parámetros contienen errores."
           },
           "401": {
             "description": "La información de autorización no fue enviada o es inválida."

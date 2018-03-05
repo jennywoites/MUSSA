@@ -12,14 +12,22 @@ class AllDocentesService(BaseService):
     def get(self):
         self.logg_parametros_recibidos()
 
-        nombre_o_apellido = self.obtener_texto("nombre_o_apellido")
+        nombre = self.obtener_texto("nombre")
+        apellido = self.obtener_texto("apellido")
 
         parametros_son_validos, msj, codigo = self.validar_parametros(dict([
-            ("nombre_o_apellido", {
-                self.PARAMETRO: nombre_o_apellido,
+            ("nombre", {
+                self.PARAMETRO: nombre,
                 self.ES_OBLIGATORIO: False,
                 self.FUNCIONES_VALIDACION: [
-                    (self.validar_contenido_y_longitud_texto, [1, 40 + 35 + 1])
+                    (self.validar_contenido_y_longitud_texto, [1, 40])
+                ]
+            }),
+            ("apellido", {
+                self.PARAMETRO: apellido,
+                self.ES_OBLIGATORIO: False,
+                self.FUNCIONES_VALIDACION: [
+                    (self.validar_contenido_y_longitud_texto, [1, 35])
                 ]
             })
         ]))
@@ -32,9 +40,11 @@ class AllDocentesService(BaseService):
 
         query = Docente.query
 
-        if nombre_o_apellido:
-            filtro = "%" + nombre_o_apellido + "%"
-            query = query.filter(or_(Docente.apellido.like(filtro), Docente.nombre.like(filtro)))
+        if nombre:
+            query = query.filter(Docente.apellido.like("%" + nombre + "%"))
+
+        if apellido:
+            query = query.filter(Docente.apellido.like("%" + apellido + "%"))
 
         docentes = query.order_by(Docente.apellido.asc()).order_by(Docente.nombre.asc()).all()
 

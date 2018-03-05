@@ -53,9 +53,10 @@
     function search_docentes() {
         show_loading_mask();
 
+        var apellido = $("#apellido").val();
         var nombre = $("#nombre").val();
 
-        obtener_todos_los_docentes_service('{{ csrf_token() }}', nombre, function(state, result) {
+        obtener_todos_los_docentes_service('{{ csrf_token() }}', apellido, nombre, function(state, result) {
             content = generar_tabla_de_resultados(result);
             $("#search_results").html(content);
             hide_loading_mask();
@@ -74,9 +75,16 @@
 
     <form action="{{ url_for('main.buscar_docentes_page') }}" method="GET">
         <div class="form-group">
-            <label for="nombre">Nombre o Apellido:</label>
+            <label for="apellido">Apellido:</label>
+            <input type="text" class="form-control" id="apellido" name="apellido">
+        </div>
+
+        <div class="form-group">
+            <label for="nombre">Nombre:</label>
             <input type="text" class="form-control" id="nombre" name="nombre">
         </div>
+
+        <br>
 
         <button type="button" onclick="search_docentes()" class="btn btn-mussa-default">Buscar</button>
 
