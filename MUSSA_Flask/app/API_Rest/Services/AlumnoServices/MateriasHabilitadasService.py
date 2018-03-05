@@ -55,7 +55,13 @@ class MateriasHabilitadasService(BaseService):
             reverse=False
         )
 
-        result = ({'materias': materias_result}, SUCCESS_OK)
+        materias_por_carrera = {}
+        for materia in materias_result:
+            materias = materias_por_carrera.get(materia["carrera"], [])
+            materias.append(materia)
+            materias_por_carrera[materia["carrera"]] = materias
+
+        result = ({'materias_por_carrera': materias_por_carrera}, SUCCESS_OK)
         self.logg_resultado(result)
         return result
 
