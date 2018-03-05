@@ -48,23 +48,6 @@
         }
     }
 
-    function mostrarLabelSinResultados(tipo_pregunta, idPregunta) {
-        switch(tipo_pregunta) {
-            case "Docente":
-                return mostrarLabel('label-ningun-comentario-docentes-' + idPregunta);
-            case "Correlativa":
-                return mostrarLabel('label_correlativas_no_elegidas_' + idPregunta);
-            default:
-                console.log(tipo_pregunta)
-                return;
-        }
-    }
-
-    function mostrarLabel(id_label) {
-        var label = document.getElementById(id_label);
-        label.hidden = false;
-    }
-
     function agregarSubpreguntasSiNo(preguntas, pregunta_si_no) {
         agregarSubpreguntas(preguntas, pregunta_si_no["rta_si"], 'si');
         agregarSubpreguntas(preguntas, pregunta_si_no["rta_no"], 'no');
@@ -105,8 +88,8 @@
             //    return cargarRespuestaTematicas(pregunta, respuesta);
             //case "Tags / Palabras Clave":
             //    return cargarRespuestaPalabrasClave(pregunta, respuesta);
-            //case "Si o No":
-            //    return cargarRespuestaSioNo(pregunta, respuesta);
+            case "Si o No":
+                return cargarRespuestaSioNo(pregunta, respuesta);
             case "Texto Subpregunta":
                 return cargarRespuestaTextoLibre(pregunta, respuesta);
             default:
@@ -117,63 +100,20 @@
     }
 
     function cargarRespuestaSioNo(pregunta, respuesta) {
-        var idPregunta = pregunta['pregunta_id'];
+        var html =  '<div class="row">';
+        html +=         '<div class="col-md-6">';
+        html +=             '<canvas id="pie_chart_' + pregunta["pregunta_id"] + '" width="100" height="40"></canvas>';
+        html +=         '</div>';
+        html +=     '</div>';
 
-        var check_si = document.getElementById('check-si-' + idPregunta);
-        var check_no = document.getElementById('check-no-' + idPregunta);
+        actualizar_HTML_respuesta(pregunta, html);
 
-        var esta_marcado_si = (respuesta["respuesta"] == "Si");
+        var datos_graficos = [respuesta.SI, respuesta.NO];
+        var labels = ["Si", "No"];
 
-        check_si.children[0].children[0].checked = esta_marcado_si;
-        check_no.children[0].children[0].checked = !esta_marcado_si;
-
-        mostrarSubpreguntas(esta_marcado_si, idPregunta);
-    }
-
-    function cargarRespuestaPalabrasClave(pregunta, respuesta) {
-        var idPregunta = pregunta['pregunta_id'];
-        var palabras_clave = respuesta["palabras_clave"];
-        for (var i=0; i<palabras_clave.length; i++) {
-            var idx_palabra = (i + 1);
-            var palabra_clave = palabras_clave[i].palabra_clave;
-            document.getElementById('palabra-' + idx_palabra + '-' + idPregunta).value = palabra_clave;
-        }
-
-        MAX_PALABRAS_CLAVE = 3;
-        for (var i=palabras_clave.length; i<MAX_PALABRAS_CLAVE; i++) {
-            var idx_palabra = (i + 1);
-            document.getElementById('palabra-' + idx_palabra + '-' + idPregunta).hidden = true;
-        }
-    }
-
-    function cargarRespuestaTematicas(pregunta, respuesta) {
-        var idPregunta = pregunta['pregunta_id'];
-        var selector = document.getElementById("selector_tematica_" + idPregunta);
-
-        var tematicas = respuesta["tematicas"];
-        for (var i=0; i<tematicas.length; i++) {
-            var tematica = tematicas[i].tematica;
-            var opcionElegida = selector[0];
-            document.getElementById("texto_nueva_tematica_" + idPregunta).value = tematica;
-            agregarTematicaSeleccionada(idPregunta, opcionElegida);
-        }
-    }
-
-    function cargarRespuestaEstrellas(pregunta, respuesta) {
-        var div_estrellas = document.getElementById("ec-stars-wrapper-" + pregunta['pregunta_id']);
-        var cantidad_estrellas = respuesta["estrellas"];
-        pintarEstrellas(div_estrellas, cantidad_estrellas);
-    }
-
-    function cargarRespuestaCorrelativas(pregunta, respuesta) {
-        var idPregunta = pregunta["pregunta_id"];
-
-        for (var i=0; i<respuesta["materias_correlativas"].length; i++) {
-            var materiaCorrelativa = respuesta["materias_correlativas"][i];
-            var idMateria = materiaCorrelativa["id_materia"];
-            var nombreMateria = materiaCorrelativa["codigo"] + " - " + materiaCorrelativa["nombre"];
-            agregarMateriaCorrelativaALaTabla(idMateria, nombreMateria, idPregunta);
-        }
+        var colores_borde = get_colores_borde_grafico_si_o_no();
+        var colores_relleno = get_colores_relleno_grafico_si_o_no();
+        generar_grafico_de_torta('pie_chart_' + pregunta["pregunta_id"], labels, datos_graficos, colores_borde, colores_relleno);
     }
 
     function cargarRespuestaDocentes(pregunta, respuesta) {
@@ -195,53 +135,39 @@
         actualizar_HTML_respuesta(pregunta, html);
     }
 
-    function cargarRespuestaHorario(pregunta, respuesta) {
-        for (var i in respuesta["horarios"]) {
-            var horario = respuesta["horarios"][i];
-            var idPregunta = pregunta["pregunta_id"];
-            var dia = horario["dia"];
-            var hora_desde = horario["hora_desde"];
-            var hora_hasta = horario["hora_hasta"];
-            agregarHorarioATabla(dia, hora_desde, hora_hasta, idPregunta);
-        }
-    }
-
     function cargarRespuestaPuntaje1a5(pregunta, respuesta) {
         var html =  '<div class="row">';
         html +=         '<div class="col-md-6">';
-        html +=             '<canvas id="bar_chart_' + pregunta["pregunta_id"] + '" width="300" height="150"></canvas>';
+        html +=             '<canvas id="bar_chart_' + pregunta["pregunta_id"] + '" width="100" height="40"></canvas>';
         html +=         '</div>';
         html +=         '<div class="col-md-6">';
-        html +=             '<canvas id="pie_chart_' + pregunta["pregunta_id"] + '" width="300" height="150"></canvas>';
+        html +=             '<canvas id="pie_chart_' + pregunta["pregunta_id"] + '" width="100" height="40"></canvas>';
         html +=         '</div>';
         html +=     '</div>';
 
         actualizar_HTML_respuesta(pregunta, html);
 
         var MAX_PUNTAJE = 5;
-        var bar_data = [];
+        var datos_grafico = [];
         for (var i=1; i<MAX_PUNTAJE+1; i++){
-            bar_data.push(respuesta.puntajes[i]);
-        }
-        generar_grafico_barras('bar_chart_' + pregunta["pregunta_id"], pregunta.textos, bar_data);
-
-        var pie_data = [];
-        for (var i=1; i<MAX_PUNTAJE+1; i++){
-            pie_data.push(respuesta.puntajes[i]*100/respuesta.total_encuestas);
+            datos_grafico.push(respuesta.puntajes[i]);
         }
 
-        generar_grafico_de_torta('pie_chart_' + pregunta["pregunta_id"], pregunta.textos, bar_data);
+        var colores_borde = get_colores_borde_grafico_puntaje();
+        var colores_relleno = get_colores_relleno_grafico_puntaje();
+        generar_grafico_barras('bar_chart_' + pregunta["pregunta_id"], pregunta.textos, datos_grafico, colores_borde, colores_relleno);
+        generar_grafico_de_torta('pie_chart_' + pregunta["pregunta_id"], pregunta.textos, datos_grafico, colores_borde, colores_relleno);
     }
 
-    function generar_grafico_de_torta(id_canvas, labels, datos_grafico) {
+    function generar_grafico_de_torta(id_canvas, labels, datos_grafico, colores_borde, colores_relleno) {
         var pie_ctx = document.getElementById(id_canvas).getContext('2d');
         new Chart(pie_ctx,{
             type: 'pie',
             data:  {
                     datasets: [{
                         data: datos_grafico,
-                        backgroundColor: get_colores_relleno_grafico(),
-                        borderColor: get_colores_borde_grafico(),
+                        backgroundColor: colores_relleno,
+                        borderColor: colores_borde,
                         borderWidth: 1
                         }],
                     labels: labels,
@@ -260,7 +186,9 @@
                                 total += allData[i];
                             }
                             var tooltipPercentage = Math.round((tooltipData / total) * 100);
-                            return tooltipLabel + ': ' + tooltipPercentage + '%';
+                            var label_rta = (tooltipData > 1) ? " respuestas" : " respuesta";
+                            var msj = tooltipLabel + ': ' + tooltipPercentage + '% (' + tooltipData + label_rta + ')';
+                            return msj;
                         }
                     }
                 }
@@ -268,7 +196,7 @@
         });
     }
 
-    function generar_grafico_barras(id_canvas, labels, datos_grafico) {
+    function generar_grafico_barras(id_canvas, labels, datos_grafico, colores_borde, colores_relleno) {
         var bar_ctx = document.getElementById(id_canvas).getContext('2d');
         new Chart(bar_ctx, {
             type: 'bar',
@@ -277,8 +205,8 @@
                 datasets: [{
                     label: 'Cantidad de respuestas',
                     data: datos_grafico,
-                    backgroundColor: get_colores_relleno_grafico(),
-                    borderColor: get_colores_borde_grafico(),
+                    backgroundColor: colores_relleno,
+                    borderColor: colores_borde,
                     borderWidth: 1
                 }]
             },
@@ -296,7 +224,7 @@
         });
     }
 
-    function get_colores_relleno_grafico() {
+    function get_colores_relleno_grafico_puntaje() {
         return [
             'rgba(255,99,132, 0.2)',
             'rgba(246,184,36, 0.2)',
@@ -306,13 +234,27 @@
         ]
     }
 
-    function get_colores_borde_grafico() {
+    function get_colores_borde_grafico_puntaje() {
         return [
             'rgba(255,99,132, 1)',
             'rgba(246,184,36, 1)',
             'rgba(244,246,36, 1)',
             'rgba(17,212,207, 1)',
             'rgba(53,212,17, 1)'
+        ];
+    }
+
+    function get_colores_relleno_grafico_si_o_no() {
+        return [
+            'rgba(17,212,207, 0.2)',
+            'rgba(246,184,36, 0.2)'
+        ]
+    }
+
+    function get_colores_borde_grafico_si_o_no() {
+        return [
+            'rgba(17,212,207, 1)',
+            'rgba(246,184,36, 1)'
         ];
     }
 
@@ -332,11 +274,6 @@
     function actualizar_HTML_respuesta(pregunta, html) {
         var div_respuesta = document.getElementById('resultados_pregunta_' + pregunta['pregunta_id']);
         div_respuesta.innerHTML = html;
-    }
-
-    function cargarRespuestaNumero(pregunta, respuesta) {
-        var div_numero = document.getElementById('numero_' + pregunta['pregunta_id']);
-        div_numero.value = respuesta["numero"];
     }
 
     function agregarAccionesBotonesAnteriorYSiguiente() {
@@ -364,169 +301,6 @@
         boton += "<span class='glyphicon glyphicon-arrow-" + lado + "'></span></button>";
         return boton;
     }
-
-    function setStarsValue(value, id) {
-        var estrellas_element = document.getElementById(id);
-        pintarEstrellas(estrellas_element, value);
-    }
-
-    function pintarEstrellas(element, cantidad_estrellas) {
-        var MAX_ESTRELLAS = 5;
-
-        for(var i=1; i<=cantidad_estrellas; i++)
-            element.children[i-1].style["color"] = "#A348CC";
-
-        for (var i=(cantidad_estrellas + 1); i <= MAX_ESTRELLAS; i++)
-            element.children[i-1].style["color"] = "#7592A7"
-    }
-
-    function mostrarSubpreguntas(es_rta_si, id) {
-        div_si = document.getElementById("div-subpregunta-si-pregunta-id-" + id);
-        div_no = document.getElementById("div-subpregunta-no-pregunta-id-" + id);
-
-        if (div_si)
-            div_si.hidden = !es_rta_si;
-
-        if (div_no)
-            div_no.hidden = es_rta_si;
-    }
-
-    function agregarHorarioATabla(dia, hora_desde, hora_hasta, idPregunta) {
-        var horarios_table = document.getElementById("tabla_cursos_guardados-" + idPregunta);
-        var horarios = horarios_table.rows;
-
-        var indice = horarios_table.rows.length;
-        var row = horarios_table.insertRow(indice);
-        var ultimo_id = horarios_table.rows[indice-1].id
-        var numero_id = parseInt(ultimo_id.substr(ultimo_id.indexOf("_")+1)) + 1;
-        if (isNaN(numero_id))
-            numero_id = 0;
-
-        row.id = "horario_" + numero_id;
-        row.insertCell(0).innerHTML = dia;
-        row.insertCell(1).innerHTML = hora_desde;
-        row.insertCell(2).innerHTML = hora_hasta;
-
-        var div_tabla_horarios = document.getElementById("div-tabla-" + idPregunta);
-        div_tabla_horarios.hidden = false;
-    }
-
-    function convertirHorario(horario) {
-        hora = parseInt(horario.substring(0,2))
-        minutos = parseInt(horario.substring(3))
-        if (minutos == 30)
-            hora += 0.5
-        return hora
-    }
-
-    function agregarMateriaCorrelativaALaTabla(idMateria, nombre_materia, idEncuesta) {
-        var correlativas_table = document.getElementById("tabla_correlativas_" + idEncuesta);
-        var correlativas = correlativas_table.rows;
-
-        var indice = correlativas.length;
-        var row = correlativas_table.insertRow(indice);
-        var ultimo_id = correlativas[indice-1].id
-        var numero_id = parseInt(ultimo_id.substr(ultimo_id.indexOf("_")+1)) + 1;
-        if (isNaN(numero_id))
-            numero_id = 0;
-
-        row.id = "materia_" + numero_id + "_" + idEncuesta;
-        row.insertCell(0).innerHTML = nombre_materia;
-
-        var celdaId = row.insertCell(1);
-        celdaId.innerHTML = idMateria;
-        celdaId.hidden = true;
-
-        var div_tabla_correlativas = document.getElementById("div_tabla_correlativas_" + idEncuesta);
-        div_tabla_correlativas.hidden = false;
-    }
-
-    function showFirstNotHidden(selector) {
-        var indexSelected = -1;
-        for (var i=0; i<selector.options.length; i++) {
-            var opcionMateria = selector.options[i];
-            if (!opcionMateria.hidden) {
-                indexSelected = i;
-                break;
-            }
-        }
-        selector.selectedIndex = indexSelected;
-    }
-
-    function agregarTematicaSeleccionada(idPregunta, opcionElegida) {
-        var selector = document.getElementById("selector_tematica_" + idPregunta);
-
-        var idTema = "";
-        var texto = "";
-        if (opcionElegida.id == ("nueva_tematica_" + idPregunta)) {
-            idTema = -1;
-
-            var texto_nueva_tematica = document.getElementById("texto_nueva_tematica_" + idPregunta);
-            texto = getCleanedString(texto_nueva_tematica.value);
-            texto_nueva_tematica.value = "";
-
-            for(var j=0; j<selector.options.length; j++) {
-                var opcion = selector.options[j];
-                if (opcion.innerText == texto && !opcion.hidden) {
-                    opcion.hidden = true;
-                    agregarTematica(opcion.innerText, opcion.value, opcion, idPregunta);
-                    return;
-                }
-            }
-
-            var etiquetas_ya_elegidas = $("[id*=texto_id_etiqueta_]");
-            for (var i=0; i<etiquetas_ya_elegidas.length; i++) {
-                if (etiquetas_ya_elegidas[i].value == texto)
-                    return;
-            }
-
-        } else {
-            idTema = opcionElegida.value;
-            texto = opcionElegida.innerText;
-            opcionElegida.hidden = true;
-        }
-
-        agregarTematica(texto, idTema, opcionElegida, idPregunta);
-    }
-
-    function agregarTematica(texto, idTema, opcionElegida, idPregunta) {
-        var tematicas_elegidas = document.getElementById("tematicas_elegidas_" + idPregunta);
-
-        var nueva_etiqueta = crearEtiquetaTematica(texto, idTema, opcionElegida.id, idPregunta);
-        tematicas_elegidas.innerHTML += nueva_etiqueta;
-
-        tematicas_elegidas.hidden = false;
-    }
-
-    function getCleanedString(cadena){
-       var specialChars = "!@#$^&%*()+=-[]\/{}|:<>?,.;";
-
-       for (var i = 0; i < specialChars.length; i++) {
-           cadena= cadena.replace(new RegExp("\\" + specialChars[i], 'gi'), '');
-       }
-
-       cadena = cadena.toUpperCase();
-
-       cadena = cadena.replace(/Á/gi,"A");
-       cadena = cadena.replace(/É/gi,"E");
-       cadena = cadena.replace(/Í/gi,"I");
-       cadena = cadena.replace(/Ó/gi,"O");
-       cadena = cadena.replace(/Ú/gi,"U");
-       return cadena;
-    }
-
-    function crearEtiquetaTematica(texto, idEtiqueta, opcion, idPregunta) {
-        etiqueta = "";
-        etiqueta += "<div class='col-lg-3' id='div_etiqueta_" + idEtiqueta + "_" + idPregunta + "' style='margin-bottom:5px;'>";
-        etiqueta += "<div class='input-group'>";
-        etiqueta += "<input type='text' class='form-control' style='background-color: #e8d2f2;' id='texto_id_etiqueta_" + idEtiqueta + "' value='" + texto + "' disabled/>";
-        etiqueta += "</button>";
-        etiqueta += "</span>";
-        etiqueta += "</div>";
-        etiqueta += "</div>";
-        return etiqueta;
-    }
-
 
 </script>
 
@@ -567,7 +341,7 @@
 
     <br>
 
-    <div id="resultados_pregunta_{{pregunta['pregunta_id']}}"></div>
+    <div id="resultados_pregunta_{{pregunta['pregunta_id']}}">No hay respuestas para esta pregunta.</div>
 
     {% if pregunta["tipo"] == "Si o No" %}
 
@@ -579,7 +353,7 @@
 
         <br>
 
-        <div id="resultados_pregunta_{{subpregunta_si['pregunta_id']}}"></div>
+        <div id="resultados_pregunta_{{subpregunta_si['pregunta_id']}}">No hay respuestas para esta pregunta.</div>
     {% endfor %}
 
     {% for subpregunta_no in pregunta["rta_no"] %}
@@ -590,49 +364,9 @@
 
         <br>
 
-        <div id="resultados_pregunta_{{subpregunta_no['pregunta_id']}}"></div>
+        <div id="resultados_pregunta_{{subpregunta_no['pregunta_id']}}">No hay respuestas para esta pregunta.</div>
 
     {% endfor %}
-
-
-
-    {% elif pregunta["tipo"] == "Horario" %}
-
-    <div class="form-group" id="div-tabla-{{pregunta['pregunta_id']}}" hidden="true">
-        <div class='table-responsive'>
-            <table class='table table-hover' id="tabla_cursos_guardados-{{pregunta['pregunta_id']}}">
-                <tr class="header_tabla">
-                    <th>Dia</th>
-                    <th>De</th>
-                    <th>A</th>
-                </tr>
-                </thead>
-                <tbody>
-                </tbody>
-            </table>
-        </div>
-    </div>
-
-    {% elif pregunta["tipo"] == "Correlativa" %}
-
-    <div class="form-group" id="div_tabla_correlativas_{{pregunta['pregunta_id']}}" hidden="true">
-        <div class='table-responsive'>
-            <table class='table table-hover' id="tabla_correlativas_{{pregunta['pregunta_id']}}">
-                <tr class="header_tabla">
-                    <th>Materia</th>
-                    <th hidden="true">Id Materia</th>
-                </tr>
-                </thead>
-                <tbody>
-                </tbody>
-            </table>
-        </div>
-    </div>
-
-    <br>
-    <label id="label_correlativas_no_elegidas_{{pregunta['pregunta_id']}}" hidden="true">
-        No se ha seleccionado ninguna correlativa para esta materia.
-    </label>
 
     {% elif pregunta["tipo"] == "Estrellas" %}
 
@@ -644,61 +378,6 @@
     </div>
     <br>
 
-    {% elif pregunta["tipo"] == "Numero" %}
-
-    <br>
-
-    <div class="row">
-        <div class="col-sm-2">
-            <input type="number" class="form-control" name="numero_{{pregunta['pregunta_id']}}"
-                   id="numero_{{pregunta['pregunta_id']}}" value="{{pregunta['numero_min']}}"
-                   min="{{pregunta['numero_min']}}" max="{{pregunta['numero_max']}}" step="1" disabled>
-        </div>
-    </div>
-
-    <br>
-
-    {% elif pregunta["tipo"] == "Tags / Palabras Clave" %}
-
-    <br>
-
-    <div class="row">
-        {% for i in range(1,4) %}
-        <div class="col-sm-3">
-            <div class="form-group has-feedback">
-                <input type="text" class="form-control" id="palabra-{{i}}-{{pregunta['pregunta_id']}}" disabled/>
-                <i class="glyphicon glyphicon-tag form-control-feedback"></i>
-            </div>
-        </div>
-        {% endfor %}
-    </div>
-
-    <br>
-
-    {% elif pregunta["tipo"] == "Temática de la Materia" %}
-
-    <br>
-
-    <div id="div_permitir_agregar_mas_etiquetas_{{pregunta['pregunta_id']}}" hidden="true">
-        <div class="row">
-            <div class="col-sm-3">
-                <div class="form-group">
-                    <select class="form-control" id="selector_tematica_{{pregunta['pregunta_id']}}"
-                            name="selector_tematica_{{pregunta['pregunta_id']}}">
-                        <option id="nueva_tematica_{{pregunta['pregunta_id']}}" value="-1">Nueva Temática</option>
-                    </select>
-                </div>
-            </div>
-            <div class="col-sm-3" id="div_texto_nueva_tematica_{{pregunta['pregunta_id']}}">
-                <input type="text" class="form-control" id="texto_nueva_tematica_{{pregunta['pregunta_id']}}"/>
-            </div>
-        </div>
-
-    </div>
-
-    <div class="row" id="tematicas_elegidas_{{pregunta['pregunta_id']}}" hidden="true"></div>
-
-    <br>
 
     {% endif %}
 
