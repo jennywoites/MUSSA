@@ -3,6 +3,14 @@
 {% block content %}
 <script>
 
+   $( function () {
+        var carreras = {{carreras | safe }};
+        if (carreras.length == 1) {
+            var opcion = document.getElementById('carrera_' + carreras[0]["id_carrera"]);
+            opcion.checked = true;
+        }
+    });
+
     function descargarFormulario() {
         var ids_carreras = getCarrerasElegidas();
         var tipos = getTiposMateriasAIncluir();
@@ -52,6 +60,7 @@
         return tipos;
     }
 
+
 </script>
 
 <div class="container">
@@ -60,12 +69,25 @@
 
     <br>
 
+    {% if carreras | length == 0 %}
+
+    <p style="font-style: italic; color: purple; font-size: large;">
+        No tenés ninguna carrera en la que estés registrado.
+    </p>
+    <p style="font-style: italic; color: purple; font-size: large;">
+        Cuando te registres en alguna carrera podrás generar el listado de las materias aprobadas, desaprobadas, en
+        final y/o en curso que tengas registradas.
+    </p>
+
+    {% else %}
+
     <form onsubmit="return false;">
         <div class="form-group">
             <label>Carreras:</label>
             {% for carrera in carreras %}
             <div class="form-check">
-                <input class="form-check-input" type="checkbox" value="{{carrera['id_carrera']}}" id="carrera_{{carrera['id_carrera']}}">
+                <input class="form-check-input" type="checkbox" value="{{carrera['id_carrera']}}"
+                       id="carrera_{{carrera['id_carrera']}}">
                 {{carrera['descripcion']}}
             </div>
             {% endfor %}
@@ -99,15 +121,21 @@
 
         <div>
             <div class="pull-left">
-                <button type="button" class="btn btn-mussa-default" onclick="redirigir_a('{{url_for('main.notas_y_tramites_page')}}')">Volver</button>
+                <button type="button" class="btn btn-mussa-default"
+                        onclick="redirigir_a('{{url_for('main.notas_y_tramites_page')}}')">Volver
+                </button>
             </div>
 
             <div class="pull-right">
-                <button type="button" class="btn btn-mussa-default" onclick="descargarFormulario()">Descargar Formulario</button>
+                <button type="button" class="btn btn-mussa-default" onclick="descargarFormulario()">Descargar
+                    Formulario
+                </button>
             </div>
         </div>
 
     </form>
+
+    {% endif %}
 
 </div>
 
