@@ -74,8 +74,8 @@
                 return cargarRespuestaTextoLibre(pregunta, respuesta);
             case "Puntaje de 1 a 5":
                 return cargarRespuestaPuntaje1a5(pregunta, respuesta);
-            //case "Numero":
-            //    return cargarRespuestaNumero(pregunta, respuesta);
+            case "Numero":
+                return cargarRespuestaNumero(pregunta, respuesta);
             //case "Horario":
             //    return cargarRespuestaHorario(pregunta, respuesta);
             case "Docente":
@@ -157,6 +157,28 @@
         var colores_relleno = get_colores_relleno_grafico_puntaje();
         generar_grafico_barras('bar_chart_' + pregunta["pregunta_id"], pregunta.textos, datos_grafico, colores_borde, colores_relleno);
         generar_grafico_de_torta('pie_chart_' + pregunta["pregunta_id"], pregunta.textos, datos_grafico, colores_borde, colores_relleno);
+    }
+
+    function cargarRespuestaNumero(pregunta, respuesta) {
+        var html =  '<div class="row">';
+        html +=         '<div class="col-md-6">';
+        html +=             '<canvas id="bar_chart_' + pregunta["pregunta_id"] + '" width="100" height="40"></canvas>';
+        html +=         '</div>';
+        html +=     '</div>';
+
+        actualizar_HTML_respuesta(pregunta, html);
+
+        var datos_grafico = [];
+        var labels = [];
+        for(var numero in respuesta.numeros){
+            datos_grafico.push(respuesta.numeros[numero]);
+            labels.push(numero);
+        }
+
+        var colores = get_color_borde_y_relleno_multiples_datos(datos_grafico.length);
+        var colores_borde = colores[0];
+        var colores_relleno = colores[1];
+        generar_grafico_barras('bar_chart_' + pregunta["pregunta_id"], labels, datos_grafico, colores_borde, colores_relleno);
     }
 
     function generar_grafico_de_torta(id_canvas, labels, datos_grafico, colores_borde, colores_relleno) {
@@ -256,6 +278,29 @@
             'rgba(17,212,207, 1)',
             'rgba(246,184,36, 1)'
         ];
+    }
+
+    function get_color_borde_y_relleno_multiples_datos(cant_datos) {
+        var colores_borde = [];
+        var colores_relleno = [];
+
+        for(var i=0;i<cant_datos;i++) {
+            var color = obtener_color_random();
+            var r = color[0];
+            var g = color[1];
+            var b = color[2];
+            colores_borde.push("rgba(" + r + "," + g + "," + b + ", 1)");
+            colores_relleno.push("rgba(" + r + "," + g + "," + b + ", 0.2)");
+        }
+
+        return [colores_borde, colores_relleno];
+    }
+
+    function obtener_color_random() {
+        var r = Math.floor(Math.random() * 255);
+        var g = Math.floor(Math.random() * 255);
+        var b = Math.floor(Math.random() * 255);
+        return [r,g,b];
     }
 
     function cargarRespuestaTextoLibre(pregunta, respuesta) {
