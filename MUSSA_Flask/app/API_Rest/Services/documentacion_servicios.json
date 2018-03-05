@@ -1512,9 +1512,73 @@
           }
         }
       }
+    },
+    "/encuesta/resultados/docente/{idDocente}": {
+      "get": {
+        "tags": [
+          "encuesta"
+        ],
+        "summary": "Devuelve una lista con los datos de las materias que el docente dicta y asociada a ella, los comentarios que ha recibido el docente en las encuestas finalizadas.",
+        "description": "Devuelve una lista con los datos de las materias que el docente dicta y asociada a ella, los comentarios que ha recibido el docente en las encuestas finalizadas. Si el docente no tuvo comentarios para la materia, tendrá una lista vacía para esa materia. Si se envian el cuatrimestre y el año solo se obtienen los comentarios correspondientes a esa fecha.",
+        "produces": [
+          "application/json"
+        ],
+        "consumes": [
+          "multipart/form-data"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "idDocente",
+            "required": true,
+            "type": "integer",
+            "description": "El ID del docente del cual se desea saber los cuatrimestres en los que tiene encuestas completas con comentarios."
+          },
+          {
+            "in": "formData",
+            "name": "cuatrimestre",
+            "required": false,
+            "type": "integer",
+            "description": "Cuatrimestre por el que se quieren filtrar los datos."
+          },
+          {
+            "in": "formData",
+            "name": "anio",
+            "required": false,
+            "type": "string",
+            "description": "Año por el que se quieren filtrar los datos."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/ListaRespuestaEncuestaDocente"
+            }
+          },
+          "401": {
+            "description": "La información de autorización no fue enviada o es inválida."
+          },
+          "404": {
+            "description": "El id del docente no existe o es inválido."
+          }
+        }
+      }
     }
   },
   "definitions": {
+    "ListaRespuestaEncuestaDocente": {
+      "type": "object",
+      "properties": {
+        "respuestas_encuestas": {
+          "type": "array",
+          "description": "Lista de respuestas encuesta docente",
+          "items": {
+            "$ref": "#/definitions/RespuestaEncuestaDocente"
+          }
+        }
+      }
+    },
     "ListaCuatrimestres": {
       "type": "object",
       "properties": {
@@ -1725,6 +1789,49 @@
           "description": "Lista de materias que dicta el docente en las diferentes carreras. Si la materia que dicta la dicta en dos carreras, son dos elementos diferentes en la lista.",
           "items": {
             "$ref": "#/definitions/MateriasDocente"
+          }
+        }
+      }
+    },
+    "RespuestaEncuestaDocente": {
+      "type": "object",
+      "properties": {
+        "codigo": {
+          "type": "string",
+          "description": "Codigo de la materia.",
+          "example": 7540
+        },
+        "nombre": {
+          "type": "string",
+          "description": "Nombre de la materia.",
+          "example": "Algoritmos y Programación I"
+        },
+        "id_carrera": {
+          "type": "integer",
+          "description": "ID de la carrera a la que pertenece la materia.",
+          "example": 1
+        },
+        "carrera": {
+          "type": "string",
+          "description": "Descripcion de la carrera (codigo, nombre y plan) a la que pertenece la materia.",
+          "example": "10 - Ingeniería en Informática (Plan 1986)"
+        },
+        "id_curso": {
+          "type": "integer",
+          "description": "ID del curso en el que dicta la materia.",
+          "example": 1
+        },
+        "curso": {
+          "type": "string",
+          "description": "Nombre del curso en el que dicta la materia",
+          "example": "2A"
+        },
+        "comentarios": {
+          "type": "array",
+          "description": "Lista de comentarios realizados apra el docente",
+          "items": {
+            "type": "string",
+            "example": "Esto es un comentario"
           }
         }
       }
