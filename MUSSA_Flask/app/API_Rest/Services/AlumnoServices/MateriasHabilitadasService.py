@@ -34,6 +34,10 @@ class MateriasHabilitadasService(BaseService):
         ids_materias_aprobadas = query.with_entities(MateriasAlumno.materia_id) \
             .filter(MateriasAlumno.estado_id == estado_aprobado.id).all()
 
+        creditos_actuales = 0
+        for id_materia in ids_materias_aprobadas:
+            creditos_actuales += Materia.query.get(id_materia).creditos
+
         materias_result = []
         for materia_alumno in materias_pendientes:
             correlativas_aprobadas = True
@@ -47,7 +51,9 @@ class MateriasHabilitadasService(BaseService):
                 continue
 
             materia = Materia.query.get(materia_alumno.materia_id)
-            materias_result.append(generarJSON_materia(materia))
+
+            if materia.creditos_minimos_para_cursarla <= creditos_actuales:
+                materias_result.append(generarJSON_materia(materia))
 
         MAX_LONGITUD_CODIGO = 4
         materias_result.sort(
