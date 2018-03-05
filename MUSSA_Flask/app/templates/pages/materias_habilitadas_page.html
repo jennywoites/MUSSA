@@ -1,0 +1,44 @@
+{% extends "common/page_base.html" %}
+
+{% block content %}
+<div class="container">
+
+    <h2>{%trans%}Materias habilitadas para cursar{%endtrans%}</h2>
+
+    <br>
+
+    {% if materias_habilitadas | length > 0 %}
+    <div class='table-responsive'>
+        <table class='table table-hover' id="tabla_cursos_guardados">
+            <tr class="header_tabla">
+                <th>Codigo</th>
+                <th>Materia</th>
+                <th>Carrera</th>
+                <th>Ver</th>
+            </tr>
+            <tbody>
+            {% for materia in materias_habilitadas %}
+            <tr>
+                <td>{{materia["codigo"]}}</td>
+                <td>{{materia["nombre"]}}</td>
+                <td>{{materia["carrera"]}}</td>
+                <td>
+                    <a href='/materias/{{materia["id_materia"]}}'><span class='glyphicon glyphicon-search'></span></a>
+                </td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    {% else %}
+
+    <p style="font-style: italic; color: purple; font-size: large;">
+        No tenés ninguna materia habilitada para cursar.
+    </p>
+
+    {% endif %}
+
+</div>
+
+{% endblock %}

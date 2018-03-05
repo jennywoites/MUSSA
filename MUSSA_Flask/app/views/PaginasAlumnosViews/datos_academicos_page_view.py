@@ -7,6 +7,18 @@ from flask_babel import gettext
 from app.API_Rest.codes import *
 
 
+@main_blueprint.route('/materias_habilitadas', methods=['GET'])
+@login_required
+def materias_habilitadas_page():
+    cookie = request.cookies
+    cliente = ClienteAPI()
+
+    materias_habilitadas = cliente.obtener_materias_habilitadas(cookie)
+
+    return render_template('pages/materias_habilitadas_page.html',
+                           materias_habilitadas=materias_habilitadas)
+
+
 @main_blueprint.route('/datos_academicos', methods=['GET'])
 @login_required
 def datos_academicos_page():

@@ -2,8 +2,8 @@ from app.API_Rest.codes import *
 from flask_user import login_required
 from app.API_Rest.Services.BaseService import BaseService
 from app.models.generadorJSON.alumno_generadorJSON import generarJSON_materia_alumno
-from app.models.filtros.alumno_filter import filtrar_materias_alumno
 from app.models.carreras_models import Carrera
+from app.models.filtros.alumno_filter import filtrar_materias_alumno
 from app.DAO.MateriasDAO import *
 import functools
 
