@@ -22,6 +22,28 @@ def resultados_encuestas_por_curso_page(idCurso):
 #######################################################################################################################
 @main_blueprint.route('/docentes/encuestas/<int:idDocente>', methods=['GET'])
 def resultados_encuestas_por_docente_page(idDocente):
+    cookies = request.cookies
+    cliente = ClienteAPI()
+
+    docente = cliente.get_docente(cookies, idDocente)
+    cuatrimestres_con_encuestas = cliente.get_cuatrimestres_con_resultados_encuesta_para_un_docente(cookies, idDocente)
+
+    return render_template('pages/resultados_encuestas_por_docente_page.html',
+                           docente=docente,
+                           cuatrimestres_con_encuestas=cuatrimestres_con_encuestas)
+
+@main_blueprint.route('/docentes/encuestas/<int:idDocente>/resultados/<string:anio>/<int:cuatrimestre>',
+                      methods=['GET'])
+def resultados_encuestas_por_docente_resultados_para_un_cuatrimestre_page(idDocente, anio, cuatrimestre):
+    return visualizar_resultados_encuesta_docente(idDocente, anio, cuatrimestre, request.cookies)
+
+@main_blueprint.route('/docentes/encuestas/<int:idDocente>/resultados',
+                      methods=['GET'])
+def resultados_encuestas_por_docente_resultados_todos_los_resultados_page(idDocente):
+    return visualizar_resultados_encuesta_docente(idDocente, '', '', request.cookies)
+
+def visualizar_resultados_encuesta_docente(idDocente, anio, cuatrimestre, cookies):
+    cliente = ClienteAPI()
     return "No implementado"
 
 #######################################################################################################################

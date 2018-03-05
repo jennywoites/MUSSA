@@ -1,0 +1,83 @@
+{% extends "common/page_base.html" %}
+
+{% block content %}
+<div class="container">
+
+    <h2>{{docente["nombre_completo"]}}</h2>
+
+    <br>
+
+    <h4>Materias que dicta:</h4>
+
+    <br>
+
+    <div class='table-responsive'>
+        <table class='table table-hover'>
+            <tr class="header_tabla">
+                <th>Código</th>
+                <th>Materia</th>
+                <th>Curso</th>
+                <th>Carrera</th>
+            </tr>
+            </thead>
+            <tbody>
+
+            {% for materia in docente["materias_que_dicta"] %}
+            <tr>
+                <td>{{materia["codigo"]}}</td>
+                <td>{{materia["nombre"]}}</td>
+                <td>{{materia["curso"]}}</td>
+                <td>{{materia["carrera"]}}</td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <h4>Encuestas:</h4>
+
+    {% if cuatrimestres_con_encuestas | length > 0 %}
+
+    <button type="button"
+            onclick="redirigir_a('{{url_for('main.resultados_encuestas_por_docente_resultados_todos_los_resultados_page', idDocente=docente['id_docente'])}}')"
+            class="btn btn-mussa-default">Ver todos los resultados
+    </button>
+
+    <br>
+    <br>
+
+    <div class='table-responsive'>
+        <table class='table table-hover' id="tabla_cursos_guardados">
+            <tr class="header_tabla">
+                <th>Año</th>
+                <th>Cuatrimestre</th>
+                <th>Resultados de la encuesta</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for dato in cuatrimestres_con_encuestas %}
+            <tr>
+                <td>{{dato["anio"]}}</td>
+                <td>{{dato["cuatrimestre"]}}</td>
+                <td>
+                    <a href="{{ url_for('main.resultados_encuestas_por_docente_resultados_para_un_cuatrimestre_page', idDocente=docente['id_docente'], anio=dato['anio'], cuatrimestre=dato['cuatrimestre']) }}">
+                        <span class='glyphicon glyphicon-search'></span>
+                    </a>
+                </td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    {% else %}
+
+    <p style="font-style: italic; color: purple; font-size: large;">
+        Aún no hay ninguna encuesta completa con comentarios para este docente.
+    </p>
+
+    {% endif %}
+
+</div>
+
+{% endblock %}

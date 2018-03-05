@@ -120,6 +120,11 @@ class ClienteAPI:
         '/api/encuesta/resultados/curso/<int:idCurso>/cuatrimestres'"""
         return self.BASE_URL + '/encuesta/resultados/curso/' + str(idCurso) + '/cuatrimestres'
 
+    def get_url_get_cuatrimestres_resultados_encuesta_docente(self, idDocente):
+        """URLs:
+        '/api/encuesta/resultados/docente/<int:idDocente>/cuatrimestres'"""
+        return self.BASE_URL + '/encuesta/resultados/docente/' + str(idDocente) + '/cuatrimestres'
+
     def get_url_preguntas_resultados_encuesta(self):
         """URL: '/api/encuesta/resultados/preguntas'"""
         return self.BASE_URL + '/encuesta/resultados/preguntas'
@@ -329,6 +334,10 @@ class ClienteAPI:
 
     def get_cuatrimestres_con_resultados_encuesta_para_un_curso(self, cookies, idCurso):
         url_servicio = self.get_url_get_cuatrimestres_resultados_encuesta(idCurso)
+        return self.invocar_get(url_servicio, cookies)["cuatrimestres"]
+
+    def get_cuatrimestres_con_resultados_encuesta_para_un_docente(self, cookies, idDocente):
+        url_servicio = self.get_url_get_cuatrimestres_resultados_encuesta_docente(idDocente)
         return self.invocar_get(url_servicio, cookies)["cuatrimestres"]
 
     def obtener_preguntas_resultados_encuesta(self, cookie, l_categorias=[]):
