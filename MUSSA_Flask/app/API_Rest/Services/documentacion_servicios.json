@@ -1474,6 +1474,44 @@
           }
         }
       }
+    },
+    "/encuesta/resultados/docente/{idDocente}/cuatrimestres": {
+      "get": {
+        "tags": [
+          "encuesta"
+        ],
+        "summary": "Devuelve una lista con los cuatrimestres en los que el docente tiene alguna encuesta completa con comentarios.",
+        "description": "Devuelve una lista con los cuatrimestres en los que el docente tiene alguna encuesta completa con comentarios. Si no hay encuestas completas devuelve una lista vacía.",
+        "produces": [
+          "application/json"
+        ],
+        "consumes": [
+          "multipart/form-data"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "idDocente",
+            "required": true,
+            "type": "integer",
+            "description": "El ID del docente del cual se desea saber los cuatrimestres en los que tiene encuestas completas con comentarios."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/ListaCuatrimestres"
+            }
+          },
+          "401": {
+            "description": "La información de autorización no fue enviada o es inválida."
+          },
+          "404": {
+            "description": "El id del docente no existe o es inválido."
+          }
+        }
+      }
     }
   },
   "definitions": {

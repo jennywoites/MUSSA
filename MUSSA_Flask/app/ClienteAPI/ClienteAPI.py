@@ -115,6 +115,11 @@ class ClienteAPI:
         '/api/encuesta/resultados/curso/<int:idCurso>'"""
         return self.BASE_URL + '/encuesta/resultados/curso/' + str(idCurso)
 
+    def get_url_get_resultados_docente_encuesta(self, idDocente):
+        """URLs:
+        '/api/encuesta/resultados/docente/<int:idDocente>'"""
+        return self.BASE_URL + '/encuesta/resultados/docente/' + str(idDocente)
+
     def get_url_get_cuatrimestres_resultados_encuesta(self, idCurso):
         """URLs:
         '/api/encuesta/resultados/curso/<int:idCurso>/cuatrimestres'"""
@@ -368,6 +373,18 @@ class ClienteAPI:
                     ids_preguntas.append(subpregunta["pregunta_id"])
         if ids_preguntas:
             parametros["ids_preguntas"] = json.dumps(ids_preguntas)
+
+        response = self.invocar_get(url_servicio, cookies, parametros)
+        return response["respuestas_encuestas"]
+
+    def obtener_repuestas_resultados_docentes_encuesta(self, cookies, idDocente, anio='', cuatrimestre=''):
+        url_servicio = self.get_url_get_resultados_docente_encuesta(idDocente)
+
+        parametros = {}
+        if anio:
+            parametros["anio"] = anio
+        if cuatrimestre:
+            parametros["cuatrimestre"] = cuatrimestre
 
         response = self.invocar_get(url_servicio, cookies, parametros)
         return response["respuestas_encuestas"]

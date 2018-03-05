@@ -44,7 +44,15 @@ def resultados_encuestas_por_docente_resultados_todos_los_resultados_page(idDoce
 
 def visualizar_resultados_encuesta_docente(idDocente, anio, cuatrimestre, cookies):
     cliente = ClienteAPI()
-    return "No implementado"
+
+    docente = cliente.get_docente(cookies, idDocente)
+    respuestas = cliente.obtener_repuestas_resultados_docentes_encuesta(cookies, idDocente, anio, cuatrimestre)
+
+    return render_template('pages/respuestas_encuesta_por_docente_page.html',
+                           anio=anio,
+                           cuatrimestre=cuatrimestre,
+                           docente=docente,
+                           respuestas=respuestas)
 
 #######################################################################################################################
 @main_blueprint.route('/materias/encuestas/<int:idCurso>/resultados/<string:anio>/<int:cuatrimestre>/general',

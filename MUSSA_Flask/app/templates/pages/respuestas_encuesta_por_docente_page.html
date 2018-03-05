@@ -1,0 +1,36 @@
+{% extends "common/page_base.html" %}
+
+{% block content %}
+
+<div class="container">
+
+    <div>
+        <h2>{{docente["nombre_completo"]}}</h2>
+
+        {% if cuatrimestre and anio %}
+        <h3>{{cuatrimestre}} cuatrimestre / Año: {{anio}}</h3>
+        {% endif %}
+    </div>
+
+    <br>
+
+    {% for datos in respuestas %}
+        <label><span class="glyphicon glyphicon-chevron-right"></span> {{datos['codigo']}} - {{datos['nombre']}} | Curso
+            {{datos['curso']}} | {{datos['carrera']}}</label>
+        <br>
+
+        {% if datos['comentarios'] | length == 0 %}
+        <p style='font-style: italic; color: purple; font-size: small;'>No se han hecho comentarios al docente en este
+            curso.</p>
+        {% endif %}
+
+        {% for comentario in datos['comentarios'] %}
+            <br>
+            <textarea class='form-control' rows='3' disabled>{{comentario}}</textarea>
+        {% endfor %}
+
+    {% endfor %}
+
+</div>
+
+{% endblock %}

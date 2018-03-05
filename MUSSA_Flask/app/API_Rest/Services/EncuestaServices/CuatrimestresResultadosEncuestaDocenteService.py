@@ -37,7 +37,7 @@ class CuatrimestresResultadosEncuestaDocenteService(BaseService):
             .filter(EncuestaAlumno.id.in_(query_ids_encuestas)) \
             .group_by(EncuestaAlumno.anio_aprobacion_cursada, EncuestaAlumno.cuatrimestre_aprobacion_cursada) \
             .order_by(EncuestaAlumno.anio_aprobacion_cursada.desc()) \
-            .order_by(EncuestaAlumno.anio_aprobacion_cursada.desc()).all()
+            .order_by(EncuestaAlumno.cuatrimestre_aprobacion_cursada.desc()).all()
 
         resultados_json = []
         for anio, cuatrimestre in datos:
