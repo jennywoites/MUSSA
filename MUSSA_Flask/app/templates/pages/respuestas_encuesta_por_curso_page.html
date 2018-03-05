@@ -82,8 +82,8 @@
                 return cargarRespuestaDocentes(pregunta, respuesta);
             //case "Correlativa":
             //    return cargarRespuestaCorrelativas(pregunta, respuesta);
-            //case "Estrellas":
-            //    return cargarRespuestaEstrellas(pregunta, respuesta);
+            case "Estrellas":
+                return cargarRespuestaEstrellas(pregunta, respuesta);
             //case "Temática de la Materia":
             //    return cargarRespuestaTematicas(pregunta, respuesta);
             //case "Tags / Palabras Clave":
@@ -158,6 +158,37 @@
         generar_grafico_barras('bar_chart_' + pregunta["pregunta_id"], pregunta.textos, datos_grafico, colores_borde, colores_relleno);
         generar_grafico_de_torta('pie_chart_' + pregunta["pregunta_id"], pregunta.textos, datos_grafico, colores_borde, colores_relleno);
     }
+
+    function cargarRespuestaEstrellas(pregunta, respuesta) {
+        var promedio = respuesta.suma_estrellas / respuesta.total_encuestas;
+
+        var html =  '</br>';
+        html +=     '<p style="font-style: italic; color: purple; font-size: medium;">Calificación promedio: ' + promedio + '</p>';
+        html +=     '<div class="row">';
+        html +=         '<div class="col-md-6">';
+        html +=             '<canvas id="bar_chart_' + pregunta["pregunta_id"] + '" width="100" height="40"></canvas>';
+        html +=         '</div>';
+        html +=     '</div>';
+
+        actualizar_HTML_respuesta(pregunta, html);
+
+        var datos_grafico = [];
+        var labels = [];
+        var MAX_ESTRELLAS = 5;
+        for(var i=1; i<MAX_ESTRELLAS+1; i++) {
+            var texto_estrellas = "";
+            for(var j=0; j<i; j++){
+                texto_estrellas += "★";
+            }
+            datos_grafico.push(respuesta.estrellas[i]);
+            labels.push(texto_estrellas);
+        }
+
+        var colores_borde = get_colores_borde_grafico_puntaje();
+        var colores_relleno = get_colores_relleno_grafico_puntaje();
+        generar_grafico_barras('bar_chart_' + pregunta["pregunta_id"], labels, datos_grafico, colores_borde, colores_relleno);
+    }
+
 
     function cargarRespuestaNumero(pregunta, respuesta) {
         var html =  '<div class="row">';
@@ -412,17 +443,6 @@
         <div id="resultados_pregunta_{{subpregunta_no['pregunta_id']}}">No hay respuestas para esta pregunta.</div>
 
     {% endfor %}
-
-    {% elif pregunta["tipo"] == "Estrellas" %}
-
-    <br>
-    <div class="ec-stars-wrapper" id="ec-stars-wrapper-{{pregunta['pregunta_id']}}">
-        {% for i in range(1,6) %}
-        <a href="#" data-value="{{i}}">&#9733;</a>
-        {% endfor %}
-    </div>
-    <br>
-
 
     {% endif %}
 
