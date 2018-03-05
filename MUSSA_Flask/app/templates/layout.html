@@ -61,7 +61,13 @@
                             </ul>
                         </li>
                         {% endif %}
-                        <li><a href="/buscar_materias">Buscar materias</a></li>
+                        <li class="dropdown">
+                        <li class="dropdown"><a class="dropdown-toggle" data-toggle="dropdown" href="#">Buscar <span class="caret"></span></a>
+                            <ul class="dropdown-menu">
+                                <li><a href="{{ url_for('main.buscar_materias_page') }}">Materias</a></li>
+                                <li><a href="{{ url_for('main.buscar_docentes_page') }}">Docentes</a></li>
+                            </ul>
+                        </li>
                         {% if current_user.is_authenticated %}
                             <li class="dropdown">
                             <li class="dropdown"><a class="dropdown-toggle" data-toggle="dropdown" href="#">Académico <span class="caret"></span></a>

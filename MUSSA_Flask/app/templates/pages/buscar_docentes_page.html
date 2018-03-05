@@ -1,0 +1,99 @@
+{% extends "common/page_base.html" %}
+
+{% block content %}
+
+<script>
+
+    function generar_tabla_de_resultados(docentes) {
+        if (!docentes || docentes.length == 0)
+            return "<p>No se encontraron resultados</p>";
+
+        html = "";
+        html += "<div class='table-responsive'>";
+        html += "<table class='table'>";
+        html += "<tr class='header_tabla'>";
+        html += "<th>Nombre</th>";
+        html += "<th>Apellido</th>";
+        html += "<th>Materias</th>";
+        html += "<th>Encuestas</th>";
+        html += "</tr>";
+        html += "</thead>";
+
+        html += "<tbody>";
+
+        for (i = 0; i<docentes.length; i++) {
+            var docente = docentes[i];
+
+            html += "<tr>";
+            html += "<td>" + docente["nombre"] + "</td>";
+            html += "<td>" + docente["apellido"] + "</td>";
+            html += "<td>" + format_lista_materias(docente["materias_que_dicta"]) + "</td>";
+            html += "<td>" + "<a href='/docentes/encuestas/" + docente["id_docente"] + "'><span class='glyphicon glyphicon-search'></span></a>" + "</td>";
+            html += "</tr>";
+        }
+
+        html += "</tbody>";
+        html += "</table>";
+        html += "</div>";
+
+        return html;
+    }
+
+    function format_lista_materias(materias){
+        res = '<ul class="list-group">'
+        for(var index in materias){
+            res += '<li style="border-color: transparent; background-color: transparent;">';
+            res +=  materias[index]['codigo'] + " - " + materias[index]['nombre'] + " | Curso: " + materias[index]['curso'];
+            res += '</li>';
+        }
+        res += "</ul>"
+        return res;
+    }
+
+    function search_docentes() {
+        show_loading_mask();
+
+        var apellido = $("#apellido").val();
+        var nombre = $("#nombre").val();
+
+        obtener_todos_los_docentes_service('{{ csrf_token() }}', apellido, nombre, function(state, result) {
+            content = generar_tabla_de_resultados(result);
+            $("#search_results").html(content);
+            hide_loading_mask();
+        }, function(state, result){
+            content = "<p>Ha ocurrido un problema. Por favor intentá nuevamente</p>";
+            $("#search_results").html(content);
+            hide_loading_mask();
+        });
+    }
+
+</script>
+
+<div class="container">
+
+    <h2>{%trans%}Buscar Docentes{%endtrans%}</h2>
+
+    <form action="{{ url_for('main.buscar_docentes_page') }}" method="GET">
+        <div class="form-group">
+            <label for="apellido">Apellido:</label>
+            <input type="text" class="form-control" id="apellido" name="apellido">
+        </div>
+
+        <div class="form-group">
+            <label for="nombre">Nombre:</label>
+            <input type="text" class="form-control" id="nombre" name="nombre">
+        </div>
+
+        <br>
+
+        <button type="button" onclick="search_docentes()" class="btn btn-mussa-default">Buscar</button>
+
+    </form>
+
+    <br>
+
+    <div id="search_results"></div>
+
+</div>
+
+{% endblock %}

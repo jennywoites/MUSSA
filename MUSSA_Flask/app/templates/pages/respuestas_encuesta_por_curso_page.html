@@ -406,6 +406,10 @@
     <div>
         <h2>{{materia["codigo"]}} - {{materia["nombre"]}} | Curso {{curso["codigo_curso"]}} | {{curso["docentes"]}}</h2>
 
+        {% if cuatrimestre and anio %}
+            <h3>{{cuatrimestre}} cuatrimestre / Año: {{anio}}</h3>
+        {% endif %}
+
         <h3>Sección {{paso_activo+1}}: {{titulos[paso_activo]["titulo"]}}</h3>
     </div>
 

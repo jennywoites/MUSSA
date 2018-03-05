@@ -1,35 +1,40 @@
 from app.API_Rest.Services.BaseService import BaseService
-from app.models.horarios_models import Curso
+from app.models.docentes_models import Docente
 from app.API_Rest.codes import *
-from app.models.respuestas_encuesta_models import EncuestaAlumno
-from app.models.alumno_models import MateriasAlumno
+from app.models.respuestas_encuesta_models import EncuestaAlumno, RespuestaEncuestaDocente, RespuestaEncuestaAlumno
 
 
-class CuatrimestresResultadosEncuestaCursoService(BaseService):
+class CuatrimestresResultadosEncuestaDocenteService(BaseService):
     def getNombreClaseServicio(self):
-        return "Cuatrimestres Resultados Encuesta Curso Service"
+        return "Cuatrimestres Resultados Encuesta Docente Service"
 
     ##########################################
     ##                Servicios             ##
     ##########################################
 
-    def get(self, idCurso):
+    def get(self, idDocente):
         self.logg_parametros_recibidos()
 
         parametros_son_validos, msj, codigo = self.validar_parametros(dict([
-            self.get_validaciones_entidad_basica("idCurso", idCurso, Curso, True)
+            self.get_validaciones_entidad_basica("idDocente", idDocente, Docente, True)
         ]))
 
         if not parametros_son_validos:
             self.logg_error(msj)
             return {'Error': msj}, codigo
 
-        query_materias_del_curso = MateriasAlumno.query.with_entities(MateriasAlumno.id).filter_by(curso_id=idCurso)
+        query_docentes = RespuestaEncuestaDocente.query \
+            .with_entities(RespuestaEncuestaDocente.rta_encuesta_alumno_id) \
+            .filter_by(docente_id=idDocente)
+
+        query_ids_encuestas = RespuestaEncuestaAlumno.query \
+            .with_entities(RespuestaEncuestaAlumno.encuesta_alumno_id) \
+            .filter(RespuestaEncuestaAlumno.id.in_(query_docentes))
 
         datos = EncuestaAlumno.query \
             .with_entities(EncuestaAlumno.anio_aprobacion_cursada, EncuestaAlumno.cuatrimestre_aprobacion_cursada) \
             .filter_by(finalizada=True) \
-            .filter(EncuestaAlumno.materia_alumno_id.in_(query_materias_del_curso)) \
+            .filter(EncuestaAlumno.id.in_(query_ids_encuestas)) \
             .group_by(EncuestaAlumno.anio_aprobacion_cursada, EncuestaAlumno.cuatrimestre_aprobacion_cursada) \
             .order_by(EncuestaAlumno.anio_aprobacion_cursada.desc()) \
             .order_by(EncuestaAlumno.cuatrimestre_aprobacion_cursada.desc()).all()
@@ -48,8 +53,8 @@ class CuatrimestresResultadosEncuestaCursoService(BaseService):
 
 
 #########################################
-CLASE = CuatrimestresResultadosEncuestaCursoService
+CLASE = CuatrimestresResultadosEncuestaDocenteService
 URLS_SERVICIOS = (
-    '/api/encuesta/resultados/curso/<int:idCurso>/cuatrimestres',
+    '/api/encuesta/resultados/docente/<int:idDocente>/cuatrimestres',
 )
 #########################################

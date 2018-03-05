@@ -2,6 +2,7 @@ from app.API_Rest.codes import *
 from app.models.docentes_models import Docente
 from app.models.generadorJSON.docentes_generadorJSON import generarJSON_docente
 from app.API_Rest.Services.BaseService import BaseService
+from sqlalchemy import or_
 
 
 class AllDocentesService(BaseService):
@@ -11,9 +12,40 @@ class AllDocentesService(BaseService):
     def get(self):
         self.logg_parametros_recibidos()
 
+        nombre = self.obtener_texto("nombre")
+        apellido = self.obtener_texto("apellido")
+
+        parametros_son_validos, msj, codigo = self.validar_parametros(dict([
+            ("nombre", {
+                self.PARAMETRO: nombre,
+                self.ES_OBLIGATORIO: False,
+                self.FUNCIONES_VALIDACION: [
+                    (self.validar_contenido_y_longitud_texto, [1, 40])
+                ]
+            }),
+            ("apellido", {
+                self.PARAMETRO: apellido,
+                self.ES_OBLIGATORIO: False,
+                self.FUNCIONES_VALIDACION: [
+                    (self.validar_contenido_y_longitud_texto, [1, 35])
+                ]
+            })
+        ]))
+
+        if not parametros_son_validos:
+            self.logg_error(msj)
+            return {'Error': msj}, codigo
+
         docentes_result = []
 
         query = Docente.query
+
+        if nombre:
+            query = query.filter(Docente.apellido.like("%" + nombre + "%"))
+
+        if apellido:
+            query = query.filter(Docente.apellido.like("%" + apellido + "%"))
+
         docentes = query.order_by(Docente.apellido.asc()).order_by(Docente.nombre.asc()).all()
 
         for docente in docentes:
