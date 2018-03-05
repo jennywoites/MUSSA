@@ -2,8 +2,8 @@ from app.API_Rest.codes import *
 from flask_user import login_required
 from app.API_Rest.Services.BaseService import BaseService
 from app.models.generadorJSON.alumno_generadorJSON import generarJSON_materia_alumno
-from app.models.filtros.alumno_filter import filtrar_materias_alumno
 from app.models.carreras_models import Carrera
+from app.models.alumno_models import MateriasAlumno
 from app.DAO.MateriasDAO import *
 import functools
 
@@ -55,22 +55,15 @@ class AllMateriasAlumnoService(BaseService):
             self.logg_error(msj)
             return {'Error': msj}, codigo
 
-        filtro = {}
-        filtro["id_alumno"] = alumno.id
+        estado = EstadoMateria.query.filter_by(estado=ESTADO_MATERIA[PENDIENTE]).first()
 
-        if not estados:
-            estados = []
-            for est in [PENDIENTE, EN_CURSO, FINAL_PENDIENTE, APROBADA, DESAPROBADA]:
-                if est not in estados_invalidos:
-                    estados.append(est)
+        query = MateriasAlumno.query.filter_by(alumno_id=alumno.id)
+        query = query.filter(MateriasAlumno.estado_id == estado.id)
 
-        filtro["estados"] = estados
-
-        if id_carrera:
-            filtro["id_carrera"] = id_carrera
+        materias = query.all()
 
         materias_alumno_result = []
-        for materia_alumno in filtrar_materias_alumno(filtro):
+        for materia_alumno in materias:
             materias_alumno_result.append(generarJSON_materia_alumno(materia_alumno))
 
         materias_alumno_result = sorted(materias_alumno_result, key=functools.cmp_to_key(cmp_materias_result))

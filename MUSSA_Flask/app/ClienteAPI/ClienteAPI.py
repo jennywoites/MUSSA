@@ -148,6 +148,10 @@ class ClienteAPI:
         """URL: '/api/alumno/materia/all'"""
         return self.BASE_URL + '/alumno/materia/all'
 
+    def get_url_get_materias_habilitadas_alumno(self):
+        """URL: '/api/alumno/materia/habilitadas'"""
+        return self.BASE_URL + '/alumno/materia/habilitadas'
+
     def get_url_get_materias_pendientes_alumno(self):
         """URL: '/api/alumno/materia/pendientes'"""
         return self.BASE_URL + '/alumno/materia/pendientes'
@@ -476,6 +480,10 @@ class ClienteAPI:
             parametros["id_carrera"] = id_carrera
 
         return self.invocar_get(url_servicio, cookie, parametros)["materias_alumno"]
+
+    def obtener_materias_habilitadas(self, cookie):
+        url_servicio = self.get_url_get_materias_habilitadas_alumno()
+        return self.invocar_get(url_servicio, cookie, {})["materias"]
 
     def obtener_carreras_alumno(self, cookie):
         url_servicio = self.get_url_get_carreras_alumno()
