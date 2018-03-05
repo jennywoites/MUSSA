@@ -7,6 +7,7 @@ from app.views.PaginasPublicasViews.materia_page_view import materia_page
 from app.views.PaginasPublicasViews.comisiones_por_carrera_view import comisiones_por_carrera_page
 from app.views.PaginasPublicasViews.links_utiles_view import links_utiles_page
 from app.views.PaginasPublicasViews.resultados_encuestas_view import *
+from app.views.PaginasPublicasViews.buscar_docente_page_view import buscar_docentes_page
 
 
 @main_blueprint.route('/')

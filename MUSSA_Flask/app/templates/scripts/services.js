@@ -113,9 +113,14 @@ function agrupar_docentes_service(token, ids_docentes, onSucces, onError) {
     do_request('POST', url_servicio, token, parametros, onSucces, onError);
 }
 
-function obtener_todos_los_docentes_service(token, onSuccess, onError) {
+function obtener_todos_los_docentes_service(token, nombre, onSuccess, onError) {
     var url_servicio = BASE_URL + '/docente/all';
-    do_request('GET', url_servicio, token, {}, function(status, response) {
+
+    var parametros = {};
+    if (nombre)
+        parametros["nombre_o_apellido"] = nombre;
+
+    do_request('GET', url_servicio, token, parametros, function(status, response) {
         onSuccess(status, response["docentes"]);
     }, onError);
 }

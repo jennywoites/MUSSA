@@ -1,0 +1,85 @@
+{% extends "common/page_base.html" %}
+
+{% block content %}
+
+<script>
+
+        function generar_tabla_de_resultados(docentes) {
+            debugger;
+            if (!docentes || docentes.length == 0)
+                return "<p>No se encontraron resultados</p>";
+
+            html = "";
+            html += "<div class='table-responsive'>";
+            html += "<table class='table'>";
+            html += "<tr class='header_tabla'>";
+            html += "<th>Nombre</th>";
+            html += "<th>Apellido</th>";
+            html += "<th>Materias</th>";
+            html += "<th>Encuestas</th>";
+            html += "</tr>";
+            html += "</thead>";
+
+            html += "<tbody>";
+
+            for (i = 0; i<docentes.length; i++) {
+                var docente = docentes[i];
+
+                html += "<tr>";
+                html += "<td>" + docente["nombre"] + "</td>";
+                html += "<td>" + docente["apellido"] + "</td>";
+                html += "<td>" + '******' + "</td>";
+
+                var url_encuesta = '{{url}}'
+
+                html += "<td>" + "<a href='/materias/" + materia["id_materia"] + "'><span class='glyphicon glyphicon-search'></span></a>" + "</td>";
+                html += "</tr>";
+            }
+
+            html += "</tbody>";
+            html += "</table>";
+            html += "</div>";
+
+            return html;
+        }
+
+        function search_docentes() {
+            show_loading_mask();
+
+            var nombre = $("#nombre").val();
+
+            obtener_todos_los_docentes_service('{{ csrf_token() }}', nombre, function(state, result) {
+                content = generar_tabla_de_resultados(result);
+                $("#search_results").html(content);
+                hide_loading_mask();
+            }, function(state, result){
+                content = "<p>Ha ocurrido un problema. Por favor intentá nuevamente</p>";
+                $("#search_results").html(content);
+                hide_loading_mask();
+            });
+        }
+
+
+</script>
+
+<div class="container">
+
+    <h2>{%trans%}Buscar Docentes{%endtrans%}</h2>
+
+    <form action="{{ url_for('main.buscar_docentes_page') }}" method="GET">
+        <div class="form-group">
+            <label for="nombre">Nombre o Apellido:</label>
+            <input type="text" class="form-control" id="nombre" name="nombre">
+        </div>
+
+        <button type="button" onclick="search_docentes()" class="btn btn-mussa-default">Buscar</button>
+
+    </form>
+
+    <br>
+
+    <div id="search_results"></div>
+
+</div>
+
+{% endblock %}

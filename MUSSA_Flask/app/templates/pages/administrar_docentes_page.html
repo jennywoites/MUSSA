@@ -37,7 +37,7 @@
                 columns: {{ tabla_docentes_columnas|tojson|safe }},
             });
         });
-        obtener_todos_los_docentes_service("{{ csrf_token() }}", populate_data_docentes, console.log);
+        obtener_todos_los_docentes_service("{{ csrf_token() }}", '', populate_data_docentes, console.log);
     }));
 
     function format_lista_materias(materias){
