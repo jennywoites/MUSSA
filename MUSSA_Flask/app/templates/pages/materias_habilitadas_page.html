@@ -8,28 +8,35 @@
     <br>
 
     {% if materias_habilitadas | length > 0 %}
-    <div class='table-responsive'>
-        <table class='table table-hover' id="tabla_cursos_guardados">
-            <tr class="header_tabla">
-                <th>Codigo</th>
-                <th>Materia</th>
-                <th>Carrera</th>
-                <th>Ver</th>
-            </tr>
-            <tbody>
-            {% for materia in materias_habilitadas %}
-            <tr>
-                <td>{{materia["codigo"]}}</td>
-                <td>{{materia["nombre"]}}</td>
-                <td>{{materia["carrera"]}}</td>
-                <td>
-                    <a href='/materias/{{materia["id_materia"]}}'><span class='glyphicon glyphicon-search'></span></a>
-                </td>
-            </tr>
-            {% endfor %}
-            </tbody>
-        </table>
-    </div>
+
+    {% for carrera in materias_habilitadas %}
+
+        <p style="font-style: italic; color: purple; font-size: medium;">{{carrera}}</p>
+
+        <div class='table-responsive'>
+            <table class='table table-hover' id="tabla_cursos_guardados">
+                <tr class="header_tabla">
+                    <th>Codigo</th>
+                    <th>Materia</th>
+                    <th>Tipo de materia</th>
+                    <th>Ver</th>
+                </tr>
+                <tbody>
+                {% for materia in materias_habilitadas[carrera] %}
+                <tr>
+                    <td>{{materia["codigo"]}}</td>
+                    <td>{{materia["nombre"]}}</td>
+                    <td>{{materia["tipo_materia"]}}</td>
+                    <td>
+                        <a href='/materias/{{materia["id_materia"]}}'><span class='glyphicon glyphicon-search'></span></a>
+                    </td>
+                </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+    {% endfor %}
 
     {% else %}
 

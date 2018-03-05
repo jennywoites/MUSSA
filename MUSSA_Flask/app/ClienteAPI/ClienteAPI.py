@@ -483,7 +483,7 @@ class ClienteAPI:
 
     def obtener_materias_habilitadas(self, cookie):
         url_servicio = self.get_url_get_materias_habilitadas_alumno()
-        return self.invocar_get(url_servicio, cookie, {})["materias"]
+        return self.invocar_get(url_servicio, cookie, {})["materias_por_carrera"]
 
     def obtener_carreras_alumno(self, cookie):
         url_servicio = self.get_url_get_carreras_alumno()

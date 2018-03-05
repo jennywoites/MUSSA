@@ -14,6 +14,7 @@
             html += "<tr class='header_tabla'>";
             html += "<th>Código</th>";
             html += "<th>Materia</th>";
+            html += "<th>Tipo de materia</th>";
             html += "<th>Carrera</th>";
             html += "<th>Acciones</th>";
             html += "</tr>";
@@ -27,6 +28,7 @@
                 html += "<tr>";
                 html += "<td>" + materia["codigo"] + "</td>";
                 html += "<td>" + materia["nombre"] + "</td>";
+                html += "<td>" + materia["tipo_materia"] + "</td>";
                 html += "<td>" + materia["carrera"] + "</td>";
                 html += "<td>" + "<a href='/materias/" + materia["id_materia"] + "'><span class='glyphicon glyphicon-search'></span></a>" + "</td>";
                 html += "</tr>";
