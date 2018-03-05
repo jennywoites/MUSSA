@@ -4,61 +4,67 @@
 
 <script>
 
-        function generar_tabla_de_resultados(docentes) {
-            debugger;
-            if (!docentes || docentes.length == 0)
-                return "<p>No se encontraron resultados</p>";
+    function generar_tabla_de_resultados(docentes) {
+        if (!docentes || docentes.length == 0)
+            return "<p>No se encontraron resultados</p>";
 
-            html = "";
-            html += "<div class='table-responsive'>";
-            html += "<table class='table'>";
-            html += "<tr class='header_tabla'>";
-            html += "<th>Nombre</th>";
-            html += "<th>Apellido</th>";
-            html += "<th>Materias</th>";
-            html += "<th>Encuestas</th>";
+        html = "";
+        html += "<div class='table-responsive'>";
+        html += "<table class='table'>";
+        html += "<tr class='header_tabla'>";
+        html += "<th>Nombre</th>";
+        html += "<th>Apellido</th>";
+        html += "<th>Materias</th>";
+        html += "<th>Encuestas</th>";
+        html += "</tr>";
+        html += "</thead>";
+
+        html += "<tbody>";
+
+        for (i = 0; i<docentes.length; i++) {
+            var docente = docentes[i];
+
+            html += "<tr>";
+            html += "<td>" + docente["nombre"] + "</td>";
+            html += "<td>" + docente["apellido"] + "</td>";
+            html += "<td>" + format_lista_materias(docente["materias_que_dicta"]) + "</td>";
+            html += "<td>" + "<a href='/docentes/encuestas/" + docente["id_docente"] + "'><span class='glyphicon glyphicon-search'></span></a>" + "</td>";
             html += "</tr>";
-            html += "</thead>";
-
-            html += "<tbody>";
-
-            for (i = 0; i<docentes.length; i++) {
-                var docente = docentes[i];
-
-                html += "<tr>";
-                html += "<td>" + docente["nombre"] + "</td>";
-                html += "<td>" + docente["apellido"] + "</td>";
-                html += "<td>" + '******' + "</td>";
-
-                var url_encuesta = '{{url}}'
-
-                html += "<td>" + "<a href='/materias/" + materia["id_materia"] + "'><span class='glyphicon glyphicon-search'></span></a>" + "</td>";
-                html += "</tr>";
-            }
-
-            html += "</tbody>";
-            html += "</table>";
-            html += "</div>";
-
-            return html;
         }
 
-        function search_docentes() {
-            show_loading_mask();
+        html += "</tbody>";
+        html += "</table>";
+        html += "</div>";
 
-            var nombre = $("#nombre").val();
+        return html;
+    }
 
-            obtener_todos_los_docentes_service('{{ csrf_token() }}', nombre, function(state, result) {
-                content = generar_tabla_de_resultados(result);
-                $("#search_results").html(content);
-                hide_loading_mask();
-            }, function(state, result){
-                content = "<p>Ha ocurrido un problema. Por favor intentá nuevamente</p>";
-                $("#search_results").html(content);
-                hide_loading_mask();
-            });
+    function format_lista_materias(materias){
+        res = '<ul class="list-group">'
+        for(var index in materias){
+            res += '<li style="border-color: transparent; background-color: transparent;">';
+            res +=  materias[index]['codigo'] + " - " + materias[index]['nombre'] + " | Curso: " + materias[index]['curso'];
+            res += '</li>';
         }
+        res += "</ul>"
+        return res;
+    }
 
+    function search_docentes() {
+        show_loading_mask();
+
+        var nombre = $("#nombre").val();
+
+        obtener_todos_los_docentes_service('{{ csrf_token() }}', nombre, function(state, result) {
+            content = generar_tabla_de_resultados(result);
+            $("#search_results").html(content);
+            hide_loading_mask();
+        }, function(state, result){
+            content = "<p>Ha ocurrido un problema. Por favor intentá nuevamente</p>";
+            $("#search_results").html(content);
+            hide_loading_mask();
+        });
+    }
 
 </script>
 

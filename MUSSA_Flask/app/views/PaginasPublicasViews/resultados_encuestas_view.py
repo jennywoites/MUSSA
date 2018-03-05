@@ -19,6 +19,10 @@ def resultados_encuestas_por_curso_page(idCurso):
                            curso=curso,
                            cuatrimestres_con_encuestas=cuatrimestres_con_encuestas)
 
+#######################################################################################################################
+@main_blueprint.route('/docentes/encuestas/<int:idDocente>', methods=['GET'])
+def resultados_encuestas_por_docente_page(idDocente):
+    return "No implementado"
 
 #######################################################################################################################
 @main_blueprint.route('/materias/encuestas/<int:idCurso>/resultados/<string:anio>/<int:cuatrimestre>/general',
