@@ -13,6 +13,7 @@ from app.views.PaginasAlumnosViews.generacion_plan_de_estudios_view import *
 from app.views.PaginasAlumnosViews.visualizar_respuesta_encuestas_view import *
 from app.views.PaginasAlumnosViews.notas_y_tramites_view import *
 
+
 @main_blueprint.route('/js/<path:path>')
 def send_js(path):
     return send_from_directory('templates/scripts', path)

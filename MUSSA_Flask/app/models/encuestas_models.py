@@ -25,6 +25,18 @@ class PreguntaEncuesta(db.Model):
         return self.pregunta
 
 
+class PreguntaResultadoEncuesta(db.Model):
+    __tablename__ = 'pregunta_resultado_encuesta'
+
+    id = db.Column(db.Integer, primary_key=True)
+
+    pregunta = db.Column(db.String(250), nullable=False, server_default='')
+    pregunta_encuesta_id = db.Column(db.Integer(), db.ForeignKey('pregunta_encuesta.id'), nullable=False)
+
+    def __str__(self):
+        return self.pregunta
+
+
 class PreguntaEncuestaPuntaje(db.Model):
     __tablename__ = 'pregunta_encuesta_puntaje'
 
@@ -36,6 +48,19 @@ class PreguntaEncuestaPuntaje(db.Model):
 
     def __str__(self):
         return "{} - Min: {} - Max: {}".format(self.encuesta_id, self.texto_min, self.texto_max)
+
+
+class PreguntaResultadoEncuestaPuntaje(db.Model):
+    __tablename__ = 'pregunta_resultado_encuesta_puntaje'
+
+    id = db.Column(db.Integer, primary_key=True)
+
+    pregunta_resultado_id = db.Column(db.Integer(), db.ForeignKey('pregunta_resultado_encuesta.id'), nullable=False)
+    texto_1 = db.Column(db.String(25), nullable=False, server_default='')
+    texto_2 = db.Column(db.String(25), nullable=False, server_default='')
+    texto_3 = db.Column(db.String(25), nullable=False, server_default='')
+    texto_4 = db.Column(db.String(25), nullable=False, server_default='')
+    texto_5 = db.Column(db.String(25), nullable=False, server_default='')
 
 
 class PreguntaEncuestaNumero(db.Model):

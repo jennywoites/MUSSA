@@ -33,7 +33,7 @@
     },
     {
       "name": "encuesta",
-      "description": "Acceso a la estructura de encuestas. Las encuestas se dividen en tres secciones 1) 'encuesta' --> contiene las preguntas de las encuestas, las agrupaciones por categoría, etc; 2) 'respuestas alumno' --> contiene las respuestas del alumno para una determinada encuesta. Es accesible a través del alumno; 3) 'resultados encuesta' --> contiene las respuestas generales como resultados de las encuestas para un curso o un docente, es accesible a través de resultados encuesta."
+      "description": "Acceso a la estructura de encuestas. Las encuestas se dividen en tres secciones 1) 'encuesta' --> contiene las preguntas de las encuestas, las agrupaciones por categoría, etc; 2) 'respuestas alumno' --> contiene las respuestas del alumno para una determinada encuesta. Es accesible a través del alumno; 3) 'resultados' --> contiene las respuestas generales como resultados de las encuestas para un curso o un docente, es accesible a través de resultados encuesta."
     }
   ],
   "schemes": [
@@ -1370,9 +1370,118 @@
           }
         }
       }
+    },
+    "/encuesta/resultados/preguntas": {
+      "get": {
+        "tags": [
+          "encuesta"
+        ],
+        "summary": "Devuelve las preguntas para los resultados de la encuesta.",
+        "description": "Devuelve las preguntas para los resultados de la encuesta. Existe una única encuesta por lo que no es requerido el ID de la misma. Las preguntas difieren de las preguntas comunes ya que a diferencia de ellas, estas son para el conjunto de alumnos y por tanto, un poco más genéricas.",
+        "produces": [
+          "application/json"
+        ],
+        "consumes": [
+          "multipart/form-data"
+        ],
+        "parameters": [
+          {
+            "in": "formData",
+            "name": "categorias",
+            "required": true,
+            "type": "array",
+            "description": "Lista de Categorías / Grupos en los que se agrupan las preguntas de encuestas que se quieren buscar. Las categorías son las siguientes [GRUPO_ENCUESTA_GENERAL = 0, GRUPO_ENCUESTA_CONTENIDO = 1, GRUPO_ENCUESTA_CLASES = 2, GRUPO_ENCUESTA_EXAMENES = 3, GRUPO_ENCUESTA_DOCENTES = 4]",
+            "items": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/ListaPreguntasResultados"
+            }
+          },
+          "400": {
+            "description": "BAD REQUEST. Una o más categorías no son números."
+          },
+          "401": {
+            "description": "La información de autorización no fue enviada o es inválida."
+          },
+          "404": {
+            "description": "Una o más categorías enviadas no existen."
+          }
+        }
+      }
+    },
+    "/encuesta/resultados/curso/{idCurso}/cuatrimestres": {
+      "get": {
+        "tags": [
+          "encuesta"
+        ],
+        "summary": "Devuelve una lista con los cuatrimestres en los que el curso tiene alguna encuesta completa.",
+        "description": "Devuelve una lista con los cuatrimestres en los que el curso tiene alguna encuesta completa. Si no hay encuestas completas devuelve una lista vacía.",
+        "produces": [
+          "application/json"
+        ],
+        "consumes": [
+          "multipart/form-data"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "idCurso",
+            "required": true,
+            "type": "integer",
+            "description": "El ID del curso del cual se desea saber los cuatrimestres en los que tiene encuestas completas."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/ListaCuatrimestres"
+            }
+          },
+          "401": {
+            "description": "La información de autorización no fue enviada o es inválida."
+          },
+          "404": {
+            "description": "El id del curso no existe o es inválido."
+          }
+        }
+      }
     }
   },
   "definitions": {
+    "ListaCuatrimestres": {
+      "type": "object",
+      "properties": {
+        "cuatrimestres": {
+          "type": "array",
+          "description": "Lista de cuatrimestres",
+          "items": {
+            "$ref": "#/definitions/Cuatrimestre"
+          }
+        }
+      }
+    },
+    "Cuatrimestre": {
+      "type": "object",
+      "properties": {
+        "anio": {
+          "type": "string",
+          "description": "Año al que pertenece el cuatrimestre",
+          "example": 2016
+        },
+        "cuatrimestre": {
+          "type": "integer",
+          "description": "Numero de cuatrimestre",
+          "example": 2
+        }
+      }
+    },
     "ListaMaterias": {
       "type": "object",
       "properties": {
@@ -1757,6 +1866,18 @@
         }
       }
     },
+    "ListaPreguntasResultados": {
+      "type": "object",
+      "properties": {
+        "preguntas": {
+          "type": "array",
+          "description": "Lista de preguntas para los resultados de las encuestas",
+          "items": {
+            "$ref": "#/definitions/PreguntaResultados"
+          }
+        }
+      }
+    },
     "Pregunta": {
       "type": "object",
       "properties": {
@@ -1838,6 +1959,135 @@
           "items": {
             "$ref": "#/definitions/Subpregunta"
           }
+        }
+      }
+    },
+    "PreguntaResultados": {
+      "type": "object",
+      "properties": {
+        "grupo_id": {
+          "type": "integer",
+          "description": "ID del grupo / categoría a la que pertenece la pregunta",
+          "example": 1
+        },
+        "grupo": {
+          "type": "string",
+          "description": "Descripción del grupo / categoría a la que pertenece la pregunta",
+          "example": "Aspectos generales"
+        },
+        "excluir_si": {
+          "type": "string",
+          "description": "Indica en qué casos se debe excluir esta pregunta (por ejemplo, cuando es una materia obligatoria de un único curso).",
+          "example": "Nunca"
+        },
+        "orden": {
+          "type": "integer",
+          "description": "Relación de orden entre las preguntas de una categoría. La pregunta de orden 0 es la primer pregunta.",
+          "example": 0
+        },
+        "pregunta_id": {
+          "type": "integer",
+          "description": "ID de la pregunta resultado",
+          "example": 1
+        },
+        "pregunta": {
+          "type": "string",
+          "description": "Texto que conforma la pregunta",
+          "example": "¿Qué te pareció el curso en general?"
+        },
+        "tipo_num": {
+          "type": "integer",
+          "description": "Número de tipo de pregunta. Los tipos de preguntas pueden ser [PUNTAJE_1_A_5 = 0; TEXTO_LIBRE = 1; SI_NO = 2; HORARIO = 3; DOCENTE = 4; CORRELATIVA = 5; ESTRELLAS = 6; NUMERO = 7; TAG = 8; TEMATICA = 9]",
+          "example": 1
+        },
+        "tipo": {
+          "type": "string",
+          "description": "Descripción del tipo de pregunta",
+          "example": "Estrellas"
+        },
+        "texto_1": {
+          "type": "string",
+          "description": "SOLO PARA PREGUNTAS DE TIPO 'PUNTAJE_1_A_5' --> Texto para el valor 1 de la selección de puntajes",
+          "example": "Nada"
+        },
+        "texto_2": {
+          "type": "string",
+          "description": "SOLO PARA PREGUNTAS DE TIPO 'PUNTAJE_1_A_5' --> Texto para el valor 2 de la selección de puntajes",
+          "example": "Nada"
+        },
+        "texto_3": {
+          "type": "string",
+          "description": "SOLO PARA PREGUNTAS DE TIPO 'PUNTAJE_1_A_5' --> Texto para el valor 3 de la selección de puntajes",
+          "example": "Nada"
+        },
+        "texto_4": {
+          "type": "string",
+          "description": "SOLO PARA PREGUNTAS DE TIPO 'PUNTAJE_1_A_5' --> Texto para el valor 4 de la selección de puntajes",
+          "example": "Nada"
+        },
+        "texto_5": {
+          "type": "string",
+          "description": "SOLO PARA PREGUNTAS DE TIPO 'PUNTAJE_1_A_5' --> Texto para el valor 5 de la selección de puntajes",
+          "example": "Nada"
+        },
+        "rta_si": {
+          "type": "array",
+          "description": "SOLO PARA PREGUNTAS DE TIPO 'SI_O_NO' --> Subpreguntas de tipo Texto libre en el caso de que se responda positivamente a la pregunta en cuestión.",
+          "items": {
+            "$ref": "#/definitions/SubpreguntaResultado"
+          }
+        },
+        "rta_no": {
+          "type": "array",
+          "description": "SOLO PARA PREGUNTAS DE TIPO 'SI_O_NO' --> Subpreguntas de tipo Texto libre en el caso de que se responda negativamente a la pregunta en cuestión.",
+          "items": {
+            "$ref": "#/definitions/SubpreguntaResultado"
+          }
+        }
+      }
+    },
+    "SubpreguntaResultado": {
+      "type": "object",
+      "properties": {
+        "grupo_id": {
+          "type": "integer",
+          "description": "ID del grupo / categoría a la que pertenece la pregunta",
+          "example": 1
+        },
+        "grupo": {
+          "type": "string",
+          "description": "Descripción del grupo / categoría a la que pertenece la pregunta",
+          "example": "Aspectos generales"
+        },
+        "excluir_si": {
+          "type": "string",
+          "description": "Indica en qué casos se debe excluir esta pregunta (por ejemplo, cuando es una materia obligatoria de un único curso).",
+          "example": "Nunca"
+        },
+        "orden": {
+          "type": "integer",
+          "description": "Relación de orden entre las preguntas de una categoría. La pregunta de orden 0 es la primer pregunta.",
+          "example": 0
+        },
+        "pregunta_id": {
+          "type": "integer",
+          "description": "ID de la pregunta resultado",
+          "example": 1
+        },
+        "pregunta": {
+          "type": "string",
+          "description": "Texto que conforma la pregunta",
+          "example": "¿Qué te pareció el curso en general?"
+        },
+        "tipo_num": {
+          "type": "integer",
+          "description": "Número de tipo de pregunta. Para las subpreguntas este campo siempre es de tipo TEXTO_LIBRE = 1.",
+          "example": 1
+        },
+        "tipo": {
+          "type": "string",
+          "description": "Descripción del tipo de pregunta",
+          "example": "Texto Libre"
         }
       }
     },

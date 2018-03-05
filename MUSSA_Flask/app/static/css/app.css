@@ -14,6 +14,11 @@ hr { border-color: #cccccc; margin: 0px; }
 
 /***************** Varios *******************/
 
+canvas {
+  width: 100%;
+  height: auto;
+}
+
 .lista-con-colores-ocultos {
     background-color: transparent;
     border-color: transparent;
@@ -21,7 +26,7 @@ hr { border-color: #cccccc; margin: 0px; }
 }
 
 .header_tabla {
-    background-color: #a348cc;
+    background-color: #4F1675;
     color: white;
 }
 /*************** CARROUSEL *****************/
@@ -454,3 +459,4 @@ fieldset[disabled] .btn-mussa-default.active {
      transform: rotate(360deg);
    }
  }
+

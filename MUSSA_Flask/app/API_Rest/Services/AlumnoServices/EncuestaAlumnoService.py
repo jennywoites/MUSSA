@@ -103,7 +103,6 @@ class EncuestaAlumnoService(BaseService):
         curso.cantidad_encuestas_completas += 1
         db.session.commit()
 
-
     def agregarPalabrasClavesALasMaterias(self, encuesta, id_materia):
         respuestas = RespuestaEncuestaTags.query.filter_by(rta_encuesta_alumno_id=encuesta.id).all()
         for respuesta in respuestas:
