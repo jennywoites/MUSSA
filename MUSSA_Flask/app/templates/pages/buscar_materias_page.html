@@ -52,11 +52,28 @@
             return carreras;
         }
 
+        function es_codigo_invalido(codigo) {
+            if (!codigo)
+                return false;
+
+            var longitud_invalida = (codigo.length < 1) || (codigo.length > 4);
+
+            return isNaN(codigo) || longitud_invalida;
+        }
+
         function search_materias() {
+            var codigo = $("#codigo_materia").val();
+
+            var div_error = document.getElementById("div_error_codigo");
+            div_error.hidden = true;
+            if (codigo &&  es_codigo_invalido(codigo)){
+                div_error.hidden = false;
+                return false;
+            }
+
             show_loading_mask();
 
             var csrf_token = '{{ csrf_token() }}';
-            var codigo = $("#codigo_materia").val();
             var nombre = $("#nombre_materia").val();
             var ids_carreras = obtener_parametro_ids_carreras();
 
@@ -91,6 +108,10 @@
         <form action="{{ url_for('main.buscar_materias_page') }}" method="GET">
             <div class="form-group">
                 <label for="codigo_materia">Codigo de materia:</label>
+                <div id="div_error_codigo" hidden="true">
+                    <div class="alert alert-danger">El código de materia debe ser un número con un largo de 1 a 4 dígitos.
+                    </div>
+                </div>
                 <input type="text" class="form-control" id="codigo_materia" name="codigo_materia">
             </div>
 

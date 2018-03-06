@@ -18,7 +18,13 @@ class AllMateriasService(BaseService):
         ids_carreras = self.obtener_lista("ids_carreras")
 
         parametros_son_validos, msj, codigo = self.validar_parametros(dict([
-            self.get_validaciones_codigo_materia("codigo", codigo_materia, False),
+            ("codigo", {
+                self.PARAMETRO: codigo_materia,
+                self.ES_OBLIGATORIO: False,
+                self.FUNCIONES_VALIDACION: [
+                    (self.es_numero_valido, [])
+                ]
+            }),
             ("nombre", {
                 self.PARAMETRO: nombre,
                 self.ES_OBLIGATORIO: False,
