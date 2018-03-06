@@ -11,6 +11,11 @@ def links_utiles_page():
             "DESCRIPCION": 'Página oficial de la Facultad de Ingeniería de la Universidad de Buenos Aires'
         },
         {
+            "URL": 'https://francospada.github.io/organizador-fiuba/',
+            "MSJ_URL": 'Organizador de Horarios',
+            "DESCRIPCION": 'Organizador de Horarios para que puedas probar combinaciones de horarios para el cuatrimestre actual en base a los horarios publicados por la facultad.'
+        },
+        {
             "URL": 'http://campus.fi.uba.ar/',
             "MSJ_URL": 'Campus',
             "DESCRIPCION": 'Campus virtual FIUBA. Algunas materias utilizan el campus como vía de comunicación o para compartir archivos, subir trabajos prácticos, etc.'
