@@ -1,7 +1,3 @@
-# Copyright 2014 SolidBuilds.com. All rights reserved
-#
-# Authors: Ling Thio <ling.thio@gmail.com>
-
 from flask_user import UserMixin
 from flask_user.forms import RegisterForm
 from flask_wtf import FlaskForm
@@ -19,7 +15,7 @@ class User(db.Model, UserMixin):
     email = db.Column(db.Unicode(255), nullable=False, server_default=u'', unique=True)
     confirmed_at = db.Column(db.DateTime())
     password = db.Column(db.String(255), nullable=False, server_default='')
-    # reset_password_token = db.Column(db.String(100), nullable=False, server_default='')
+    #reset_password_token = db.Column(db.String(100), nullable=False, server_default='')
     active = db.Column(db.Boolean(), nullable=False, server_default='0')
 
     # User information
@@ -67,4 +63,4 @@ class UserProfileForm(FlaskForm):
     last_name = StringField(gettext('Apellido'), validators=[
         validators.DataRequired(gettext('Debes escribir tu apellido.'))])
 
-    submit = SubmitField(gettext('Guardar'))
+    submit = SubmitField(gettext('Guardar'), render_kw={'class': 'btn btn-mussa-default'})

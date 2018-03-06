@@ -629,6 +629,21 @@
         tabla.rows["tematica_" + idTematica].remove();
         actualizar_porcentaje_restante();
     }
+
+    function mostrar_ocultar_opciones_avanzadas() {
+        var div_opciones = document.getElementById("divOpcionesAvanzadas");
+        div_opciones.hidden = !div_opciones.hidden;
+
+        var up_or_down = (div_opciones.hidden) ? "down": "up";
+
+        var html = "Opciones Avanzadas&nbsp;&nbsp;";
+        html += "<span class='glyphicon glyphicon-chevron-" + up_or_down + "'></span>";
+
+        var btn_avanzadas = document.getElementById("btn_opciones_avanzadas");
+        btn_avanzadas.innerHTML = html;
+    }
+
+
 </script>
 
 <div class="container">
@@ -644,6 +659,7 @@
     <br>
 
     <form onsubmit="return false;">
+
         <div class="row">
             <div class="col-sm-6">
                 <label>>> Carrera:</label>
@@ -691,32 +707,14 @@
         </div>
 
         <br>
-        <div class="row">
-            <div class="col-sm-6">
-                <div class="form-group">
-                    <label>>> Máxima cantidad de cuatrimestres de duración: <span
-                            class="glyphicon glyphicon-question-sign" aria-hidden="true" data-toggle="tooltip"
-                            title="No incluyen los dos cuatrimestres que requiere el CBC (o un cuatrimestre si tenés al menos 3 de las materias aprobadas). Si ya tenés el CBC aprobado no se agregarán cuatrimestres extras."></span>
-                    </label>
-                    <div id="div_error_max_cant_cuatrimestres" hidden="true">
-                        <div class="alert alert-danger">La cantidad de cuatrimestres máxima de duración debe ser un número entre 1 y 24 cuatrimestres.
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-sm-4">
-                            <input type="number" class="form-control" name="maxima_cantidad_cuatrimestres"
-                                   id="maxima_cantidad_cuatrimestres" value="10"
-                                   min="1" max="24" step="1">
-                        </div>
-                    </div>
-                </div>
-            </div>
 
+        <div class="row">
             <div class="col-sm-6">
                 <div class="form-group">
                     <label>>> Máxima cantidad de materias por cuatrimestre:</label>
                     <div id="div_error_maxima_cantidad_materias_por_cuatrimestre" hidden="true">
-                        <div class="alert alert-danger">La cantidad de materias por cuatrimestre debe estar entre 1 y 10 materias.
+                        <div class="alert alert-danger">La cantidad de materias por cuatrimestre debe estar entre 1 y 10
+                            materias.
                         </div>
                     </div>
                     <div class="row">
@@ -728,99 +726,7 @@
                     </div>
                 </div>
             </div>
-        </div>
 
-        <div class="row">
-            <div class="col-sm-6">
-                <div class="form-group">
-                    <label>>> Máxima cantidad de horas de cursada por semana:</label>
-                    <div id="div_error_maxima_cantidad_hs_por_semana" hidden="true">
-                        <div class="alert alert-danger">La cantidad de horas por semana de cursada debe ser un número entre 1 y 144.
-                            Considerá que una materia de 6 créditos suele tener 6 horas de cursada semanales.
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-sm-4">
-                            <input type="number" class="form-control" name="maxima_cantidad_hs_por_semana"
-                                   id="maxima_cantidad_hs_por_semana" value="28"
-                                   min="1" max="144" step="1">
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-sm-6">
-                <div class="form-group">
-                    <label>>> Máxima cantidad de horas extra que le querés dedicar por semana al conjunto de
-                        materias:</label>
-                    <div id="div_error_maxima_hs_extra_por_semana" hidden="true">
-                        <div class="alert alert-danger">La cantidad de horas extras por semana (para estudiar, hacer ejercicios, TPs, etc) debe ser un número entre 1 y 168.
-                            Considerá que una materia de 6 créditos suele tener alrededor de 6 horas extras para trabajos semanalmente.
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-sm-4">
-                            <input type="number" class="form-control" name="maxima_hs_extra_por_semana"
-                                   id="maxima_hs_extra_por_semana" value="28"
-                                   min="1" max="168" step="1">
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="row">
-            <div class="col-sm-6">
-                <div class="form-group">
-                    <label>
-                        >> Puntaje mínimo requerido para los cursos a seleccionar:
-                        <span class="glyphicon glyphicon-question-sign" aria-hidden="true" data-toggle="tooltip" title="Los cursos no puntuados tienen un puntaje de 0.
-                La restricción de puntaje no es tenida en cuenta en el caso de los cursos que se seleccionan manualmente.
-                Las materias que se elijan no tendrán un puntaje menor al seleccionado a menos que sean el único curso disponible en el caso de las obligatorias o que las electivas disponibles con esos puntajes no alcancen a cubrir el total de electivas requerido. En estos casos siempre se seleccionará en orden la de mayor puntaje con mayor cantidad de encuestas completas."></span>
-                    </label>
-                    <div id="div_error_puntaje_minimo" hidden="true">
-                        <div class="alert alert-danger">El puntaje debe ser un número entre 0 y 5 inclusives.
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-sm-4">
-                            <input type="number" class="form-control" name="puntaje_minimo"
-                                   id="puntaje_minimo" value="3" min="0" max="5" step="1">
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-sm-6">
-                <div class="form-group">
-                    <label>
-                        >> Cuatrimestre y año de inicio del plan:
-                        <span class="glyphicon glyphicon-question-sign" aria-hidden="true" data-toggle="tooltip"
-                              title="En qué momento se desea comenzar a cursar las primeras materias que surjan de este plan. Es necesario diferenciar entre primer y segundo cuatrimestre ya que no todas las materias se dictan en ambos cuatrimestres."></span>
-                    </label>
-                    <div class="row">
-                        <div class="col-sm-6">
-                            <div class="form-group">
-                                <label>Número de cuatrimestre:</label>
-                                <select class="form-control" id="numero_cuatrimestre" name="numero_cuatrimestre">
-                                    <option id="cuatrimestre_1">1</option>
-                                    <option id="cuatrimestre_2">2</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="col-sm-6">
-                            <div class="form-group">
-                                <label>Año:</label>
-                                <select class="form-control" id="anio" name="anio">
-                                    {% for i in anios %}
-                                    <option>{{i}}</option>
-                                    {% endfor %}
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
         </div>
 
         <label>>> Horarios en los cuales no podés cursar:</label>
@@ -896,59 +802,6 @@
                     </tr>
                     </thead>
                     <tbody>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-
-        <label>>> Porcentaje de cada temática deseada con el que querés que sean elegidas las materias electivas:
-            <span class="glyphicon glyphicon-question-sign" aria-hidden="true" data-toggle="tooltip" title="Esto indica el porcentaje de créditos de materias electivas que deben ser de cada temática, no se tendrá en cuenta las temáticas de materias electivas o de materias seleccionadas especialmente para cursar.
-            Te recomendamos dejar un porcentaje libre para que la carrera no se alargue debido a incompatibilidad horaria de algunas de esas materias"></span>
-        </label>
-
-        <br>
-        <br>
-
-        <div class="row" id="div_seleccionar_tematicas">
-            <div class="col-sm-3">
-                <div class="form-group">
-                    <select class="form-control" id="selector_tematica" name="selector_tematica">
-                        {% for tematica in tematicas %}
-                        <option id="tematica_opcion_{{tematica['id_tematica']}}" value="{{tematica['id_tematica']}}">
-                            {{tematica["tematica"]}}
-                        </option>
-                        {% endfor %}
-                    </select>
-                </div>
-            </div>
-            <div class="col-sm-3">
-                <input type="number" class="form-control" name="porcentaje_tematica"
-                       id="porcentaje_tematica" min="0" max="100" step="1">
-            </div>
-            <div class="col-sm-2">
-                <button class="btn btn-mussa-default"
-                        onclick="agregar_tematica()">Agregar
-                </button>
-            </div>
-
-        </div>
-
-        <div class="alert alert-danger" id="error_label_tematica" hidden="true"></div>
-
-        <div class="form-group" id="div-tabla-tematicas">
-            <div class='table-responsive'>
-                <table class='table table-hover' id="tabla_tematicas">
-                    <tr class="header_tabla">
-                        <th>Temática</th>
-                        <th>Porcentaje</th>
-                        <th>Eliminar</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <tr id="tematica_0">
-                        <th>Cualquier temática</th>
-                        <th>100 %</th>
-                    </tr>
                     </tbody>
                 </table>
             </div>
@@ -1055,6 +908,193 @@ Si por algún motivo no quieres considerar que esta materia va a estar aprobada 
         </div>
 
         <br>
+        <br>
+
+        <!-- Opciones Avanzadas -->
+        <button type="button" class="btn btn-mussa-default" id="btn_opciones_avanzadas"
+                onclick="mostrar_ocultar_opciones_avanzadas()">
+            Opciones Avanzadas&nbsp;&nbsp;<span class="glyphicon glyphicon-chevron-down"></span>
+        </button>
+
+        <div id="divOpcionesAvanzadas"
+             style="border: #0fbdb7;border-style: double;padding: 10px;margin-top: 10px;margin-bottom: 10px;"
+             hidden="true">
+            <div class="row">
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        <label>>> Máxima cantidad de cuatrimestres de duración: <span
+                                class="glyphicon glyphicon-question-sign" aria-hidden="true" data-toggle="tooltip"
+                                title="No incluyen los dos cuatrimestres que requiere el CBC (o un cuatrimestre si tenés al menos 3 de las materias aprobadas). Si ya tenés el CBC aprobado no se agregarán cuatrimestres extras."></span>
+                        </label>
+                        <div id="div_error_max_cant_cuatrimestres" hidden="true">
+                            <div class="alert alert-danger">La cantidad de cuatrimestres máxima de duración debe ser un
+                                número entre 1 y 24 cuatrimestres.
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-4">
+                                <input type="number" class="form-control" name="maxima_cantidad_cuatrimestres"
+                                       id="maxima_cantidad_cuatrimestres" value="24"
+                                       min="1" max="24" step="1">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        <label>
+                            >> Puntaje mínimo requerido para los cursos a seleccionar:
+                            <span class="glyphicon glyphicon-question-sign" aria-hidden="true" data-toggle="tooltip"
+                                  title="Los cursos no puntuados tienen un puntaje de 0.
+            La restricción de puntaje no es tenida en cuenta en el caso de los cursos que se seleccionan manualmente.
+            Las materias que se elijan no tendrán un puntaje menor al seleccionado a menos que sean el único curso disponible en el caso de las obligatorias o que las electivas disponibles con esos puntajes no alcancen a cubrir el total de electivas requerido. En estos casos siempre se seleccionará en orden la de mayor puntaje con mayor cantidad de encuestas completas."></span>
+                        </label>
+                        <div id="div_error_puntaje_minimo" hidden="true">
+                            <div class="alert alert-danger">El puntaje debe ser un número entre 0 y 5 inclusive.
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-4">
+                                <input type="number" class="form-control" name="puntaje_minimo"
+                                       id="puntaje_minimo" value="0" min="0" max="5" step="1">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        <label>>> Máxima cantidad de horas de cursada por semana:</label>
+                        <div id="div_error_maxima_cantidad_hs_por_semana" hidden="true">
+                            <div class="alert alert-danger">La cantidad de horas por semana de cursada debe ser un
+                                número entre 1 y 144.
+                                Considerá que una materia de 6 créditos suele tener 6 horas de cursada semanales.
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-4">
+                                <input type="number" class="form-control" name="maxima_cantidad_hs_por_semana"
+                                       id="maxima_cantidad_hs_por_semana" value="28"
+                                       min="1" max="144" step="1">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        <label>>> Máxima cantidad de horas extra que le querés dedicar por semana al conjunto de
+                            materias:</label>
+                        <div id="div_error_maxima_hs_extra_por_semana" hidden="true">
+                            <div class="alert alert-danger">La cantidad de horas extras por semana (para estudiar, hacer
+                                ejercicios, TPs, etc) debe ser un número entre 1 y 168.
+                                Considerá que una materia de 6 créditos suele tener alrededor de 6 horas extras para
+                                trabajos semanalmente.
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-4">
+                                <input type="number" class="form-control" name="maxima_hs_extra_por_semana"
+                                       id="maxima_hs_extra_por_semana" value="28"
+                                       min="1" max="168" step="1">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <br>
+            <div class="row">
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        <label>
+                            >> Cuatrimestre y año de inicio del plan:
+                            <span class="glyphicon glyphicon-question-sign" aria-hidden="true" data-toggle="tooltip"
+                                  title="En qué momento se desea comenzar a cursar las primeras materias que surjan de este plan. Es necesario diferenciar entre primer y segundo cuatrimestre ya que no todas las materias se dictan en ambos cuatrimestres."></span>
+                        </label>
+                        <div class="row">
+                            <div class="col-sm-6">
+                                <div class="form-group">
+                                    <label>Número de cuatrimestre:</label>
+                                    <select class="form-control" id="numero_cuatrimestre" name="numero_cuatrimestre">
+                                        <option id="cuatrimestre_1">1</option>
+                                        <option id="cuatrimestre_2">2</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-sm-6">
+                                <div class="form-group">
+                                    <label>Año:</label>
+                                    <select class="form-control" id="anio" name="anio">
+                                        {% for i in anios %}
+                                        <option>{{i}}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <label>>> Porcentaje de cada temática deseada con el que querés que sean elegidas las materias electivas:
+                <span class="glyphicon glyphicon-question-sign" aria-hidden="true" data-toggle="tooltip" title="Esto indica el porcentaje de créditos de materias electivas que deben ser de cada temática, no se tendrá en cuenta las temáticas de materias electivas o de materias seleccionadas especialmente para cursar.
+            Te recomendamos dejar un porcentaje libre para que la carrera no se alargue debido a incompatibilidad horaria de algunas de esas materias"></span>
+            </label>
+
+            <br>
+            <br>
+
+            <div class="row" id="div_seleccionar_tematicas">
+                <div class="col-sm-3">
+                    <div class="form-group">
+                        <select class="form-control" id="selector_tematica" name="selector_tematica">
+                            {% for tematica in tematicas %}
+                            <option id="tematica_opcion_{{tematica['id_tematica']}}"
+                                    value="{{tematica['id_tematica']}}">
+                                {{tematica["tematica"]}}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                <div class="col-sm-3">
+                    <input type="number" class="form-control" name="porcentaje_tematica"
+                           id="porcentaje_tematica" min="0" max="100" step="1">
+                </div>
+                <div class="col-sm-2">
+                    <button class="btn btn-mussa-default"
+                            onclick="agregar_tematica()">Agregar
+                    </button>
+                </div>
+
+            </div>
+
+            <div class="alert alert-danger" id="error_label_tematica" hidden="true"></div>
+
+            <div class="form-group" id="div-tabla-tematicas">
+                <div class='table-responsive'>
+                    <table class='table table-hover' id="tabla_tematicas">
+                        <tr class="header_tabla">
+                            <th>Temática</th>
+                            <th>Porcentaje</th>
+                            <th>Eliminar</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr id="tematica_0">
+                            <th>Cualquier temática</th>
+                            <th>100 %</th>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <!-- End Opciones Avanzadas -->
 
     </form>
 
@@ -1073,7 +1113,9 @@ Si por algún motivo no quieres considerar que esta materia va a estar aprobada 
     <br>
 
     <div id="div_success_generar_plan_de_estudios" hidden="true">
-        <div class="alert alert-success">El plan de estudios optimizado se está generando. <br />Cuando el plan esté listo se te enviará una notificación para que puedas visualizarlo.</div>
+        <div class="alert alert-success">El plan de estudios optimizado se está generando. <br/>Cuando el plan esté
+            listo se te enviará una notificación para que puedas visualizarlo.
+        </div>
     </div>
 
     <div id="div_error_generar_plan_de_estudios" hidden="true">

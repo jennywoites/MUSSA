@@ -3,7 +3,7 @@ from app.API_Rest.GeneradorPlanCarreras.modelos.Materia import ELECTIVA, OBLIGAT
 PLAN_NO_GENERADO = False
 PLAN_GENERADO_CORRECTAMENTE = True
 
-MAX_COMBINACIONES = 16 * 15 * 14 * 13 * 12  # 16 cursos posibles, 5 materias max
+MAX_COMBINACIONES = 15 * 14 * 13 * 12  * 11 # 15 cursos posibles, 5 materias max
 
 PARAMETROS_ACTUALES = "parametros_actuales"
 CREDITOS_TOTALES = "creditos_totales"
