@@ -313,12 +313,12 @@ def actualizar_datos_al_agregar_materia_trabajo_final(parametros, materia):
 def actualizar_datos_al_agregar_materia_con_curso(parametros, materia, franjas_curso, franjas_cuatrimestre):
     ocupar_franjas_del_curso(franjas_curso, franjas_cuatrimestre)
 
-    if materia.codigo in parametros.materias_incompatibles:
-        for cod_incompatible in parametros.materias_incompatibles[materia.codigo]:
-            parametros.quitar_materia_por_codigo(cod_incompatible, False)
+    if materia.id_materia in parametros.materias_incompatibles:
+        for id_incompatible in parametros.materias_incompatibles[materia.id_materia]:
+            parametros.quitar_materia_por_id(id_incompatible, False)
 
     parametros.actualizar_creditos_tematicas_electivas(materia)
-    parametros.quitar_materia_por_codigo(materia.codigo, True)
+    parametros.quitar_materia_por_id(materia.id_materia, True)
 
 
 def ocupar_franjas_del_curso(franjas_curso, franjas_cuatrimestre):

@@ -1,3 +1,6 @@
+from app.API_Rest.GeneradorPlanCarreras.modelos.Horario import Horario
+
+
 class Curso:
     def __init__(self, id_curso, cod_materia, nombre_curso, horarios, se_dicta_primer_cuatrimestre,
                  se_dicta_segundo_cuatrimestre, puntaje=0):
@@ -8,6 +11,37 @@ class Curso:
         self.se_dicta_primer_cuatrimestre = se_dicta_primer_cuatrimestre
         self.se_dicta_segundo_cuatrimestre = se_dicta_segundo_cuatrimestre
         self.puntaje = puntaje
+
+    def generar_JSON(self):
+        horarios = []
+        for horario in self.horarios:
+            horarios.append(horario.generar_JSON())
+
+        return {
+            "id_curso": self.id_curso,
+            "cod": self.cod,
+            "nombre": self.nombre,
+            "horarios": horarios,
+            "se_dicta_primer_cuatrimestre": self.se_dicta_primer_cuatrimestre,
+            "se_dicta_segundo_cuatrimestre": self.se_dicta_segundo_cuatrimestre,
+            "puntaje": self.puntaje
+        }
+
+    def actualizar_datos_desde_JSON(self, datos_json):
+        self.id_curso = datos_json["id_curso"]
+        self.cod = datos_json["cod"]
+        self.nombre = datos_json["nombre"]
+
+        horarios = []
+        for datos_horario in datos_json["id_curso"]:
+            horario = Horario()
+            horario.actualizar_datos_desde_JSON(datos_horario)
+            horarios.append(horario)
+        self.horarios = horarios
+
+        self.se_dicta_primer_cuatrimestre = datos_json["se_dicta_primer_cuatrimestre"]
+        self.se_dicta_segundo_cuatrimestre = datos_json["se_dicta_segundo_cuatrimestre"]
+        self.puntaje = datos_json["puntaje"]
 
     def copia_profunda(self):
         horarios = []

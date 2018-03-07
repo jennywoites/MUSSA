@@ -7,6 +7,18 @@ class Horario:
         self.hora_inicio = hora_inicio
         self.hora_fin = hora_fin
 
+    def generar_JSON(self):
+        return {
+            "dia": self.dia,
+            "hora_inicio": self.hora_inicio,
+            "hora_fin": self.hora_fin
+        }
+
+    def actualizar_datos_desde_JSON(self, datos_json):
+        self.dia = datos_json["dia"]
+        self.hora_inicio = datos_json["hora_inicio"]
+        self.hora_fin = datos_json["hora_fin"]
+
     def copia_profunda(self):
         return Horario(
             dia=self.dia,

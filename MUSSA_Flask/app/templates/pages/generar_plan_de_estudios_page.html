@@ -167,9 +167,9 @@
         var tabla = document.getElementById("cursos_seleccionados_para_cursar");
         for(var i=1;i<tabla.rows.length; i++) {
             var curso = tabla.rows[i].cells;
-            var codigo = curso[2].innerText.substring(0,curso[2].innerText.indexOf(" - "));
+            var id_materia = curso[0].innerText;
             var id_curso = curso[1].innerText;
-            cursos_seleccionados[codigo] = id_curso;
+            cursos_seleccionados[id_materia] = id_curso;
         }
         return cursos_seleccionados;
     }
@@ -184,11 +184,10 @@
         for (var i=1; i<tabla.rows.length; i++) {
             var fila = tabla.rows[i];
             if (!fila.hidden) {
-                var codigo = fila.cells[2].innerText;
                 var id_materia = fila.cells[0].innerText;
 
                 var selector = document.getElementById('final_aprobado_' + id_materia)
-                estado_finales[codigo] = selector[selector.selectedIndex].value;
+                estado_finales[id_materia] = selector[selector.selectedIndex].value;
             }
         }
         return estado_finales;

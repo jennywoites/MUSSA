@@ -61,6 +61,63 @@ class Parametros:
 
         self.plan_generado = []
 
+    def generar_parametros_json(self):
+        parametros_JSON = {}
+        parametros_JSON["primer_cuatrimestre_es_impar"] = self.primer_cuatrimestre_es_impar
+
+        parametros_JSON["plan"] = dict(self.plan)
+
+        parametros_JSON["materias"] = {}
+        for id_materia in self.materias:
+            materia = self.materias[id_materia]
+            parametros_JSON["materias"][id_materia] = materia.generar_JSON()
+
+        parametros_JSON["horarios"] = {}
+        for id_materia in self.horarios:
+            horarios = []
+            for curso in self.horarios[id_materia]:
+                horarios.append(curso.generar_JSON())
+            parametros_JSON["horarios"][id_materia] = horarios
+
+        parametros_JSON["creditos_minimos_electivas"] = self.creditos_minimos_electivas
+
+        parametros_JSON["nombre_archivo_pulp"] = self.nombre_archivo_pulp
+        parametros_JSON["nombre_archivo_resultados_pulp"] = self.nombre_archivo_resultados_pulp
+        parametros_JSON["nombre_archivo_pulp_optimizado"] = self.nombre_archivo_pulp_optimizado
+
+        parametros_JSON["franja_minima"] = self.franja_minima
+        parametros_JSON["franja_maxima"] = self.franja_maxima
+        parametros_JSON["dias"] = self.dias
+
+        parametros_JSON["max_cuatrimestres"] = self.max_cuatrimestres
+        parametros_JSON["max_cant_materias_por_cuatrimestre"] = self.max_cant_materias_por_cuatrimestre
+
+        parametros_JSON["materias_CBC_pendientes"] = self.materias_CBC_pendientes[:]
+
+        parametros_JSON["orientacion"] = self.orientacion
+        parametros_JSON["id_carrera"] = self.id_carrera
+
+        parametros_JSON["cuatrimestre_minimo_para_materia"] = dict(self.cuatrimestre_minimo_para_materia)
+        parametros_JSON["creditos_minimos_tematicas"] = dict(self.creditos_minimos_tematicas)
+
+        parametros_JSON["cuatrimestre_inicio"] = self.cuatrimestre_inicio
+        parametros_JSON["anio_inicio"] = self.anio_inicio
+
+        parametros_JSON["materias_incompatibles"] = dict(self.materias_incompatibles)
+
+        parametros_JSON["max_horas_cursada"] = self.max_horas_cursada
+        parametros_JSON["max_horas_extras"] = self.max_horas_extras
+
+        parametros_JSON["materia_trabajo_final"] = []
+        for materia in self.materia_trabajo_final:
+            parametros_JSON["materia_trabajo_final"].append(materia.generar_JSON())
+
+        parametros_JSON["plan_generado"] = []
+        for cuatrimestre_plan in self.plan_generado:
+            parametros_JSON["plan_generado"].append(cuatrimestre_plan.copy())
+
+        return parametros_JSON
+
     def copia_profunda(self):
         copia_parametros = Parametros()
 
@@ -140,31 +197,31 @@ class Parametros:
         self.franja_minima = minima
         self.franja_maxima = maxima
 
-    def quitar_materia_por_codigo(self, codigo, actualizar_creditos=False):
-        if not codigo in self.materias:
+    def quitar_materia_por_id(self, id_materia, actualizar_creditos=False):
+        if not id_materia in self.materias:
             return
 
-        materia = self.materias.pop(codigo)
+        materia = self.materias.pop(id_materia)
         if materia.tipo == ELECTIVA and actualizar_creditos and self.creditos_minimos_electivas > 0:
             self.creditos_minimos_electivas -= materia.creditos
             if self.creditos_minimos_electivas < 0:
                 self.creditos_minimos_electivas = 0
 
-        correlativas_plan = self.plan[codigo] if codigo in self.plan else []
-        for cod_materia_que_la_tiene_de_correlativa in correlativas_plan:
-            if not cod_materia_que_la_tiene_de_correlativa in self.materias:
+        correlativas_plan = self.plan[id_materia] if id_materia in self.plan else []
+        for id_materia_que_la_tiene_de_correlativa in correlativas_plan:
+            if not id_materia_que_la_tiene_de_correlativa in self.materias:
                 continue
-            materia_actual = self.materias[cod_materia_que_la_tiene_de_correlativa]
-            if codigo in materia_actual.correlativas:
-                materia_actual.correlativas.remove(codigo)
+            materia_actual = self.materias[id_materia_que_la_tiene_de_correlativa]
+            if id_materia in materia_actual.correlativas:
+                materia_actual.correlativas.remove(id_materia)
 
-        for cod_correlativa in materia.correlativas:
-            if not cod_correlativa in self.plan or not materia.codigo in self.plan[cod_correlativa]:
+        for id_correlativa in materia.correlativas:
+            if not id_correlativa in self.plan or not materia.codigo in self.plan[id_correlativa]:
                 continue
-            self.plan[cod_correlativa].remove(materia.codigo)
+            self.plan[id_correlativa].remove(materia.id_materia)
 
-        if codigo in self.plan:
-            del (self.plan[codigo])
+        if id_materia in self.plan:
+            del (self.plan[id_materia])
 
     def plan_esta_finalizado(self):
         electivas_completas = self.creditos_en_electivas_estan_completos()
@@ -180,7 +237,7 @@ class Parametros:
                 if not electivas_completas:
                     break
             elif electivas_completas:
-                self.quitar_materia_por_codigo(cod_materia, False)
+                self.quitar_materia_por_id(cod_materia, False)
 
         return not hay_obligatorias_pendientes and electivas_completas and not self.materia_trabajo_final
 
@@ -220,7 +277,7 @@ class Parametros:
             key=cmp_to_key(self.cmp_materias_electivas)
         )
 
-        #FIXME: Decidir la mejor manera de colocarlas (si concatenadas o seguidas)
+        # FIXME: Decidir la mejor manera de colocarlas (si concatenadas o seguidas)
         # disponibles = self.concatenar_listas_por_horarios(disponibles_obligatorias,
         #                                                   disponibles_electivas_prioritarias)
         disponibles = disponibles_obligatorias + disponibles_electivas_prioritarias
