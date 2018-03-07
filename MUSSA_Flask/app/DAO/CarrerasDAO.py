@@ -222,12 +222,8 @@ def find_or_create_tipo_materia(tipo_materia):
 
 
 def find_or_create_correlativa(id_materia_actual, id_materia_correlativa):
-    materia_id = db.Column(db.Integer, db.ForeignKey('materia.id'))
-    materia_correlativa_id = db.Column(db.Integer, db.ForeignKey('materia.id'))
-
-    query = Correlativas.query.filter_by(materia_id=id_materia_actual)
-    query = query.filter_by(materia_correlativa_id=id_materia_correlativa)
-    correlatividad = query.first()
+    correlatividad = Correlativas.query.filter_by(materia_id=id_materia_actual)\
+        .filter_by(materia_correlativa_id=id_materia_correlativa).first()
 
     if not correlatividad:
         correlatividad = Correlativas(materia_id=id_materia_actual, materia_correlativa_id=id_materia_correlativa)
@@ -240,7 +236,7 @@ def guardar_correlativas(dic_correlativas, carrera):
         materia_actual = Materia.query.filter_by(codigo=cod).filter_by(carrera_id=carrera.id).first()
 
         for correlativa in dic_correlativas[cod]:
-            materia_correlativa = Materia.query.filter(Materia.codigo == correlativa).first()
+            materia_correlativa = Materia.query.filter_by(codigo=correlativa).filter_by(carrera_id=carrera.id).first()
 
             if not materia_actual or not materia_correlativa:
                 print(materia_actual)
