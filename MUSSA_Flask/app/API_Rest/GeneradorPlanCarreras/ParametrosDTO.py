@@ -1,5 +1,7 @@
 from app.API_Rest.GeneradorPlanCarreras.Constantes import *
 from app.utils import cmp_to_key
+from app.API_Rest.GeneradorPlanCarreras.modelos.Materia import Materia
+from app.API_Rest.GeneradorPlanCarreras.modelos.Curso import Curso
 
 CREDITOS_MINIMOS_ELECTIVAS = 5
 NUM_EJEMPLO_MATERIAS = 4
@@ -58,6 +60,145 @@ class Parametros:
 
         # Estas materias son largas y se las divide en dos cuatrimestres pero es la misma materia
         self.materia_trabajo_final = []
+
+        self.plan_generado = []
+
+    def __str__(self):
+        SALTO = "\n"
+        parametros = "{" + SALTO
+        parametros += "primer_cuatrimestre_es_impar: " + str(self.primer_cuatrimestre_es_impar) + SALTO
+
+        parametros += "Plan: {" + SALTO
+        for id_materia in self.plan:
+            parametros += "{}: {}".format(id_materia, self.plan[id_materia]) + SALTO
+        parametros += "}" + SALTO
+
+        parametros += "Materias: {" + SALTO
+        for id_materia in self.materias:
+            parametros += str(id_materia) + ": " + SALTO
+            parametros += str(self.materias[id_materia]) + SALTO
+        parametros += "}" + SALTO
+
+        parametros += "Horarios: {" + SALTO
+        for id_materia in self.horarios:
+            parametros += str(id_materia) + ": [" + SALTO
+            for curso in self.horarios[id_materia]:
+                parametros += str(curso) + SALTO
+            parametros += "]" + SALTO
+        parametros += "}" + SALTO
+
+        parametros += "horarios_no_permitidos: " + str(self.horarios_no_permitidos) + SALTO
+        parametros += "creditos_minimos_electivas: " + str(self.creditos_minimos_electivas) + SALTO
+
+        parametros += "nombre_archivo_pulp: " + self.nombre_archivo_pulp + SALTO
+        parametros += "nombre_archivo_resultados_pulp: " + self.nombre_archivo_resultados_pulp + SALTO
+        parametros += "nombre_archivo_pulp_optimizado: " + self.nombre_archivo_pulp_optimizado + SALTO
+
+        parametros += "franja_minima: " + str(self.franja_minima) + SALTO
+        parametros += "franja_maxima: " + str(self.franja_maxima) + SALTO
+        parametros += "dias: " + str(self.dias) + SALTO
+
+        parametros += "max_cuatrimestres: " + str(self.max_cuatrimestres) + SALTO
+        parametros += "max_cant_materias_por_cuatrimestre: " + str(self.max_cant_materias_por_cuatrimestre) + SALTO
+
+        parametros += "materias_CBC_pendientes: " + str(self.materias_CBC_pendientes) + SALTO
+
+        parametros += "orientacion: " + str(self.orientacion) + SALTO
+        parametros += "id_carrera: " + str(self.id_carrera) + SALTO
+
+        parametros += "cuatrimestre_minimo_para_materia: {" + SALTO
+        for id_materia in self.cuatrimestre_minimo_para_materia:
+            parametros += str(id_materia) + ": " + str(self.cuatrimestre_minimo_para_materia[id_materia]) + SALTO
+        parametros += "}" + SALTO
+
+        parametros += "creditos_minimos_tematicas: {" + SALTO
+        for id_tematica in self.creditos_minimos_tematicas:
+            parametros += str(id_tematica) + ": " + str(self.creditos_minimos_tematicas[id_tematica]) + SALTO
+        parametros += "}" + SALTO
+
+        parametros += "cuatrimestre_inicio: " + str(self.cuatrimestre_inicio) + SALTO
+        parametros += "anio_inicio: " + str(self.anio_inicio) + SALTO
+
+        parametros += "materias_incompatibles: {" + SALTO
+        for id_materia in self.materias_incompatibles:
+            parametros += str(id_materia) + ": " + str(self.materias_incompatibles[id_materia]) + SALTO
+        parametros += "}" + SALTO
+
+        parametros += "max_horas_cursada: " + str(self.max_horas_cursada) + SALTO
+        parametros += "max_horas_extras: " + str(self.max_horas_extras) + SALTO
+
+        parametros += "materia_trabajo_final: [" + SALTO
+        for materia in self.materia_trabajo_final:
+            parametros += str(id_materia) + ": " + str(materia) + SALTO
+        parametros += "]" + SALTO
+
+        return parametros
+
+    def actualizar_valores_desde_JSON(self, parametros_JSON):
+        self.primer_cuatrimestre_es_impar = parametros_JSON["primer_cuatrimestre_es_impar"]
+
+        self.plan = {}
+        for id_materia in parametros_JSON["plan"]:
+            correlativas = []
+            for id_correlativa in parametros_JSON["plan"][id_materia]:
+                correlativas.append(int(id_correlativa))
+            self.plan[int(id_materia)] = correlativas
+
+        self.materias = {}
+        for id_materia in parametros_JSON["materias"]:
+            self.materias[int(id_materia)] = Materia(datos_JSON=parametros_JSON["materias"][id_materia])
+
+        self.horarios = {}
+        for id_materia in parametros_JSON["horarios"]:
+            cursos = []
+            for datos_curso in parametros_JSON["horarios"][id_materia]:
+                cursos.append(Curso(datos_JSON=datos_curso))
+            self.horarios[int(id_materia)] = cursos
+
+        self.creditos_minimos_electivas = int(parametros_JSON["creditos_minimos_electivas"])
+
+        self.nombre_archivo_pulp = parametros_JSON["nombre_archivo_pulp"]
+        self.nombre_archivo_resultados_pulp = parametros_JSON["nombre_archivo_resultados_pulp"]
+        self.nombre_archivo_pulp_optimizado = parametros_JSON["nombre_archivo_pulp_optimizado"]
+
+        self.franja_minima = int(parametros_JSON["franja_minima"])
+        self.franja_maxima = int(parametros_JSON["franja_maxima"])
+        self.dias = parametros_JSON["dias"]
+
+        self.max_cuatrimestres = int(parametros_JSON["max_cuatrimestres"])
+        self.max_cant_materias_por_cuatrimestre = int(parametros_JSON["max_cant_materias_por_cuatrimestre"])
+
+        self.materias_CBC_pendientes = []
+        for id_materia in parametros_JSON["materias_CBC_pendientes"]:
+            self.materias_CBC_pendientes.append(int(id_materia))
+
+        self.orientacion = parametros_JSON["orientacion"]
+        self.id_carrera = int(parametros_JSON["id_carrera"])
+
+        self.cuatrimestre_minimo_para_materia = {}
+        for id_materia in parametros_JSON["cuatrimestre_minimo_para_materia"]:
+            self.cuatrimestre_minimo_para_materia[int(id_materia)] = int(parametros_JSON["cuatrimestre_minimo_para_materia"][id_materia])
+
+        self.creditos_minimos_tematicas = {}
+        for id_tematica in parametros_JSON["creditos_minimos_tematicas"]:
+            self.creditos_minimos_tematicas[int(id_tematica)] = int(parametros_JSON["creditos_minimos_tematicas"][id_tematica])
+
+        self.cuatrimestre_inicio = int(parametros_JSON["cuatrimestre_inicio"])
+        self.anio_inicio = parametros_JSON["anio_inicio"]
+
+        self.materias_incompatibles = {}
+        for id_materia in parametros_JSON["materias_incompatibles"]:
+            l_materias = []
+            for id_materia_incompt in parametros_JSON["materias_incompatibles"][id_materia]:
+                l_materias.append(int(id_materia_incompt))
+            self.materias_incompatibles[int(id_materia)] = l_materias
+
+        self.max_horas_cursada = int(parametros_JSON["max_horas_cursada"])
+        self.max_horas_extras = int(parametros_JSON["max_horas_extras"])
+
+        self.materia_trabajo_final = []
+        for datos_materia in parametros_JSON["materia_trabajo_final"]:
+            self.materia_trabajo_final.append(Materia(datos_JSON=datos_materia))
 
         self.plan_generado = []
 
@@ -473,8 +614,8 @@ class Parametros:
         if menor_curso != self.CMP_SON_IGUALES:
             return menor_curso
 
-        correlativas_liberadas_a = self.plan[materia_a.codigo]
-        correlativas_liberadas_b = self.plan[materia_b.codigo]
+        correlativas_liberadas_a = self.plan[materia_a.id_materia]
+        correlativas_liberadas_b = self.plan[materia_b.id_materia]
 
         if correlativas_liberadas_a > correlativas_liberadas_b:
             return self.CMP_PRIMERO_ES_MENOR
@@ -557,8 +698,8 @@ class Parametros:
         if franjas_a > franjas_b:
             return self.CMP_SEGUNDO_ES_MENOR
 
-        correlativas_liberadas_a = self.plan[materia_a.codigo]
-        correlativas_liberadas_b = self.plan[materia_b.codigo]
+        correlativas_liberadas_a = self.plan[materia_a.id_materia]
+        correlativas_liberadas_b = self.plan[materia_b.id_materia]
 
         if correlativas_liberadas_a > correlativas_liberadas_b:
             return self.CMP_PRIMERO_ES_MENOR

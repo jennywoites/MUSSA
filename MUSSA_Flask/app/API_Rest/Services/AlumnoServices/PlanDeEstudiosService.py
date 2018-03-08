@@ -15,7 +15,7 @@ from app.API_Rest.GeneradorPlanCarreras.modelos.Curso import Curso as Modelo_Cur
 from app.API_Rest.GeneradorPlanCarreras.modelos.Horario import Horario as Modelo_Horario
 from datetime import datetime
 from app.models.generadorJSON.plan_de_estudios_generadorJSON import generarJSON_materias_plan_de_estudios
-from AsyncTasks.broker_generador_greedy import generar_plan_greedy
+from AsyncTasks.broker_generador_greedy import tarea_generar_plan_greedy
 
 class PlanDeEstudiosService(BaseService):
     def getNombreClaseServicio(self):
@@ -191,7 +191,7 @@ class PlanDeEstudiosService(BaseService):
         self.actualizar_horarios_con_franjas_minimas_y_maximas(parametros)
 
         ALGORITMOS_VALIDOS = {
-            ALGORITMO_GREEDY: generar_plan_greedy,
+            ALGORITMO_GREEDY: tarea_generar_plan_greedy,
             ALGORITMO_PROGRAMACION_LINEAL_ENTERA: ''
         }
 

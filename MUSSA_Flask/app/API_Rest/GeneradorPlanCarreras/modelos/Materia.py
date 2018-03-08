@@ -2,8 +2,29 @@ from app.API_Rest.GeneradorPlanCarreras.Constantes import *
 
 
 class Materia:
-    def __init__(self, id_materia, codigo, nombre, creditos, tipo, cred_min=0, correlativas=[],
-                 tematicas_principales=[], medias_horas_extras_cursada=0):
+    def inicializar_con_JSON(self, datos_json):
+        self.id_materia = int(datos_json["id_materia"])
+        self.codigo = datos_json["codigo"]
+        self.nombre = datos_json["nombre"]
+        self.creditos = int(datos_json["creditos"])
+        self.tipo = datos_json["tipo"]
+        self.creditos_minimos_aprobados = int(datos_json["creditos_minimos_aprobados"])
+
+        self.correlativas = []
+        for id_correlativa in datos_json["correlativas"]:
+            self.correlativas.append(int(id_correlativa))
+
+        self.tematicas_principales = []
+        for id_tematica in datos_json["tematicas_principales"]:
+            self.tematicas_principales.append(int(id_tematica))
+
+        self.medias_horas_extras_cursada = int(datos_json["medias_horas_extras_cursada"])
+
+    def __init__(self, id_materia='', codigo='', nombre='', creditos=0, tipo='', cred_min=0, correlativas=[],
+                 tematicas_principales=[], medias_horas_extras_cursada=0, datos_JSON=''):
+        if datos_JSON:
+            return self.inicializar_con_JSON(datos_JSON)
+
         self.id_materia = id_materia
         self.codigo = codigo
         self.nombre = nombre
@@ -13,6 +34,21 @@ class Materia:
         self.correlativas = correlativas
         self.tematicas_principales = tematicas_principales
         self.medias_horas_extras_cursada = medias_horas_extras_cursada
+
+    def __str__(self):
+        SALTO = "\n"
+        materia = "{" + SALTO
+        materia += "id_materia:" + str(self.id_materia) + SALTO
+        materia += "codigo:" + str(self.codigo) + SALTO
+        materia += "nombre:" + str(self.nombre) + SALTO
+        materia += "creditos:" + str(self.creditos) + SALTO
+        materia += "tipo:" + str(self.tipo) + SALTO
+        materia += "creditos_minimos_aprobados:" + str(self.creditos_minimos_aprobados) + SALTO
+        materia += "correlativas:" + str(self.correlativas) + SALTO
+        materia += "tematicas_principales:" + str(self.tematicas_principales) + SALTO
+        materia += "medias_horas_extras_cursada:" + str(self.medias_horas_extras_cursada) + SALTO
+        materia += "}" + SALTO
+        return materia
 
     def generar_JSON(self):
         return {
@@ -26,17 +62,6 @@ class Materia:
             "tematicas_principales": self.tematicas_principales[:],
             "medias_horas_extras_cursada": self.medias_horas_extras_cursada,
         }
-
-    def actualizar_datos_desde_JSON(self, datos_json):
-        self.id_materia = datos_json["id_materia"]
-        self.codigo = datos_json["codigo"]
-        self.nombre = datos_json["nombre"]
-        self.creditos = datos_json["creditos"]
-        self.tipo = datos_json["tipo"]
-        self.creditos_minimos_aprobados = datos_json["creditos_minimos_aprobados"]
-        self.correlativas = datos_json["correlativas"]
-        self.tematicas_principales = datos_json["tematicas_principales"]
-        self.medias_horas_extras_cursada = datos_json["medias_horas_extras_cursada"]
 
     def copia_profunda(self):
         return Materia(
@@ -53,7 +78,3 @@ class Materia:
 
     def get_str_tipo(self):
         return TIPOS_MATERIAS[self.tipo]
-
-    def __str__(self):
-        return "{} - {} - {} - {} min aprobados - {}".format(self.codigo, self.nombre, self.creditos,
-                                                             self.creditos_minimos_aprobados, self.correlativas)

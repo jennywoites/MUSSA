@@ -1,11 +1,28 @@
 class Horario:
-    def __init__(self, dia, hora_inicio, hora_fin):
+    def inicializar_con_JSON(self, datos_json):
+        self.dia = datos_json["dia"]
+        self.hora_inicio = float(datos_json["hora_inicio"])
+        self.hora_fin = float(datos_json["hora_fin"])
+
+    def __init__(self, dia='', hora_inicio='', hora_fin='', datos_JSON=''):
         """
         Hora_inicio, Hora_fin: Numeros enteros si son horas en punto. Decimales, ejemplo 7.5 si son las 07:30
         """
+        if datos_JSON:
+            return self.inicializar_con_JSON(datos_JSON)
+
         self.dia = dia
         self.hora_inicio = hora_inicio
         self.hora_fin = hora_fin
+
+    def __str__(self):
+        SALTO = "\n"
+        horario = "{" + SALTO
+        horario += "dia: " + str(self.dia) + SALTO
+        horario += "hora_inicio: " + str(self.hora_inicio) + SALTO
+        horario += "hora_fin: " + str(self.hora_fin) + SALTO
+        horario += "}" + SALTO
+        return horario
 
     def generar_JSON(self):
         return {
@@ -13,11 +30,6 @@ class Horario:
             "hora_inicio": self.hora_inicio,
             "hora_fin": self.hora_fin
         }
-
-    def actualizar_datos_desde_JSON(self, datos_json):
-        self.dia = datos_json["dia"]
-        self.hora_inicio = datos_json["hora_inicio"]
-        self.hora_fin = datos_json["hora_fin"]
 
     def copia_profunda(self):
         return Horario(
@@ -50,6 +62,3 @@ class Horario:
         franja_inicio = self.convertir_a_franja(self.hora_inicio)
         franja_final = self.convertir_a_franja(self.hora_fin)
         return [x for x in range(franja_inicio, franja_final)]
-
-    def __str__(self):
-        return "Horario: {} - Desde: {} A: {}".format(self.dia, self.hora_inicio, self.hora_fin)
