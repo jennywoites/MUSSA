@@ -131,7 +131,7 @@ class Parametros:
 
         parametros += "materia_trabajo_final: [" + SALTO
         for materia in self.materia_trabajo_final:
-            parametros += str(id_materia) + ": " + str(materia) + SALTO
+            parametros += str(materia.id_materia) + ": " + str(materia) + SALTO
         parametros += "]" + SALTO
 
         parametros += "id_plan_estudios:" + str(self.id_plan_estudios)
@@ -474,8 +474,9 @@ class Parametros:
 
     def concatenar_materias_trabajo_final(self, disponibles, creditos_actuales):
         # Luego de las materias electivas que aportan creditos de tematicas y obligatorias, si están habilitadas
-        # concateno las dos partes del trabajo final (tesis o tp si corresponde)
-        for materia_tp in self.materia_trabajo_final:
+        # concateno la primer parte disponible del trabajo final (tesis o tp si corresponde)
+        if self.materia_trabajo_final:
+            materia_tp = self.materia_trabajo_final[0]
             if not materia_tp.correlativas and materia_tp.creditos_minimos_aprobados <= creditos_actuales:
                 disponibles.append((materia_tp, None))
 

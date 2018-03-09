@@ -210,8 +210,6 @@ class PlanDeEstudiosService(BaseService):
         parametros.id_plan_estudios = plan_de_estudios.id
         parametros_tarea = parametros.generar_parametros_json()
 
-        #se_genero_plan_compatible = generar_plan_greedy(parametros)
-
         tarea = tarea_algoritmo.delay(parametros_tarea)
 
         if not tarea:
@@ -315,7 +313,7 @@ class PlanDeEstudiosService(BaseService):
                 creditos=materia_trabajo_final_parte_1.creditos,
                 tipo=materia_trabajo_final_parte_1.tipo,
                 cred_min=materia_trabajo_final_parte_1.creditos_minimos_aprobados,
-                correlativas=materia_trabajo_final_parte_1.correlativas[:] + [codigo_parte_1],
+                correlativas=materia_trabajo_final_parte_1.correlativas[:],
                 tematicas_principales=materia_trabajo_final_parte_1.tematicas_principales[:],
                 medias_horas_extras_cursada=materia_trabajo_final_parte_1.medias_horas_extras_cursada
             )

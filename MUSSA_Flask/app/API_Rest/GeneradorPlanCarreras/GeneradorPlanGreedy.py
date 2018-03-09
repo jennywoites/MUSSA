@@ -3,7 +3,7 @@ from app.API_Rest.GeneradorPlanCarreras.modelos.Materia import ELECTIVA, OBLIGAT
 PLAN_NO_GENERADO = False
 PLAN_GENERADO_CORRECTAMENTE = True
 
-MAX_COMBINACIONES = 15 * 14 * 13 * 12  * 11 # 15 cursos posibles, 5 materias max
+MAX_COMBINACIONES = 15 * 14 * 13 * 12 * 11  # 15 cursos posibles, 5 materias max
 
 PARAMETROS_ACTUALES = "parametros_actuales"
 CREDITOS_TOTALES = "creditos_totales"
@@ -71,7 +71,7 @@ def generar_combinacion_base(parametros, creditos_totales):
 def agregar_segunda_parte_del_trabajo_final_consecutiva_a_la_primera_parte(parametros, combinacion_actual):
     # Si el tp o tesis fue agregado el cuatrimestre anterior, se lo agrega para este cuatrimestre
     if len(parametros.materia_trabajo_final) == 1:
-        id_parte_a = parametros.materia_trabajo_final[0].id_materia #es el mismo id que la parte b
+        id_parte_a = parametros.materia_trabajo_final[0].id_materia  # es el mismo id que la parte b
         if id_parte_a in parametros.plan_generado[-1]:
             materia_tp = parametros.materia_trabajo_final[0]
             agregar_materia_a_combinacion_actualizar_creditos_y_horas(combinacion_actual, materia_tp)
@@ -285,8 +285,7 @@ def es_posible_agregar_materia_y_curso(materia, franjas_curso, horas_cursada, co
 
 def agregar_materia_y_actualizar_creditos(materia, curso, franjas_curso, parametros, materias_cuatrimestre_actual,
                                           franjas_cuatrimestre):
-
-    #No hay problema con las materias de trabajo final ya que si bien tienen el mismo id SIEMPRE estaran
+    # No hay problema con las materias de trabajo final ya que si bien tienen el mismo id SIEMPRE estaran
     # en cuatrimestres separados
     materias_cuatrimestre_actual[materia.id_materia] = curso.id_curso if curso else -1
 
