@@ -20,15 +20,11 @@
     }
 
     function generar_plan_greedy() {
-        generar_plan_de_estudios(generar_plan_de_estudios_greedy_service, function(status, response){
-            redirigir_a(response);
-        });
+        generar_plan_de_estudios(generar_plan_de_estudios_greedy_service);
     }
 
     function generar_plan_PLE() {
-        generar_plan_de_estudios(generar_plan_de_estudios_PLE_service, function(status, response) {
-            showElementById('div_success_generar_plan_de_estudios');
-        });
+        generar_plan_de_estudios(generar_plan_de_estudios_PLE_service);
     }
 
     function ocultar_errores() {
@@ -50,7 +46,7 @@
         }
     }
 
-    function generar_plan_de_estudios(f_servicio, onSuccess) {
+    function generar_plan_de_estudios(f_servicio) {
         ocultar_errores();
 
         var es_valido = true;
@@ -146,8 +142,8 @@
         f_servicio('{{ csrf_token() }}', carrera, max_cant_cuatrimestres, max_cant_materias, max_horas_cursada,
         max_horas_extras, puntaje_minimo_cursos, cuatrimestre_inicio, anio_inicio, horarios_invalidos, tematicas,
         aprobacion_finales, cursos_preseleccionados, trabajo_final, orientacion, function (status, response) {
+            showElementById('div_success_generar_plan_de_estudios');
             hide_loading_mask();
-            onSuccess(status, response);
         }, function (status, response) {
             var div_error = document.getElementById('div_error_generar_plan_de_estudios');
             div_error.innerHTML = '';
@@ -644,6 +640,7 @@
 
 
 
+
 </script>
 
 <div class="container">
@@ -1108,7 +1105,7 @@
     <br>
 
     <div id="div_success_generar_plan_de_estudios" hidden="true">
-        <div class="alert alert-success">El plan de estudios optimizado se está generando. <br/>Cuando el plan esté
+        <div class="alert alert-success">El plan de estudios se está generando. <br/>Cuando el plan esté
             listo se te enviará una notificación para que puedas visualizarlo.
         </div>
     </div>
