@@ -210,15 +210,15 @@ class PlanDeEstudiosService(BaseService):
         parametros.id_plan_estudios = plan_de_estudios.id
         parametros_tarea = parametros.generar_parametros_json()
 
-        se_genero_plan_compatible = generar_plan_greedy(parametros)
+        #se_genero_plan_compatible = generar_plan_greedy(parametros)
 
-        # tarea = tarea_algoritmo.delay(parametros_tarea)
+        tarea = tarea_algoritmo.delay(parametros_tarea)
 
-        # if not tarea:
-        #    result = {"mensaje": "No se pudo enviar a generar el plan."
-        #                         " Por favor, intentá nuevamente"}, CLIENT_ERROR_BAD_REQUEST
-        #    self.logg_resultado(result)
-        #    return result
+        if not tarea:
+            result = {"mensaje": "No se pudo enviar a generar el plan."
+                                 " Por favor, intentá nuevamente"}, CLIENT_ERROR_BAD_REQUEST
+            self.logg_resultado(result)
+            return result
 
         result = SUCCESS_NO_CONTENT
         self.logg_resultado(result)
