@@ -16,6 +16,8 @@ from app.API_Rest.GeneradorPlanCarreras.modelos.Horario import Horario as Modelo
 from datetime import datetime
 from app.models.generadorJSON.plan_de_estudios_generadorJSON import generarJSON_materias_plan_de_estudios
 from AsyncTasks.broker_generador_greedy import tarea_generar_plan_greedy
+from app.API_Rest.GeneradorPlanCarreras.GeneradorPlanGreedy import generar_plan_greedy
+
 
 class PlanDeEstudiosService(BaseService):
     def getNombreClaseServicio(self):
@@ -208,13 +210,15 @@ class PlanDeEstudiosService(BaseService):
         parametros.id_plan_estudios = plan_de_estudios.id
         parametros_tarea = parametros.generar_parametros_json()
 
-        tarea = tarea_algoritmo.delay(parametros_tarea)
+        se_genero_plan_compatible = generar_plan_greedy(parametros)
 
-        if not tarea:
-            result = {"mensaje": "No se pudo enviar a generar el plan."
-                                 " Por favor, intentá nuevamente"}, CLIENT_ERROR_BAD_REQUEST
-            self.logg_resultado(result)
-            return result
+        # tarea = tarea_algoritmo.delay(parametros_tarea)
+
+        # if not tarea:
+        #    result = {"mensaje": "No se pudo enviar a generar el plan."
+        #                         " Por favor, intentá nuevamente"}, CLIENT_ERROR_BAD_REQUEST
+        #    self.logg_resultado(result)
+        #    return result
 
         result = SUCCESS_NO_CONTENT
         self.logg_resultado(result)

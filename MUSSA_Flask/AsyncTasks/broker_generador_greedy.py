@@ -20,7 +20,6 @@ def tarea_generar_plan_greedy(parametros_tarea):
     parametros.actualizar_valores_desde_JSON(parametros_tarea)
 
     se_genero_plan_compatible = generar_plan_greedy(parametros)
-    print(parametros.plan_generado)
 
     parametros.estado_plan_de_estudios = PLAN_INCOMPATIBLE if not se_genero_plan_compatible else PLAN_FINALIZADO
 

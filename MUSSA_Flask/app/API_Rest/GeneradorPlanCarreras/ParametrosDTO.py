@@ -312,7 +312,6 @@ class Parametros:
 
         copia_parametros.franja_minima = self.franja_minima
         copia_parametros.franja_maxima = self.franja_maxima
-
         copia_parametros.dias = self.dias
         copia_parametros.max_cuatrimestres = self.max_cuatrimestres
         copia_parametros.max_cant_materias_por_cuatrimestre = self.max_cant_materias_por_cuatrimestre
@@ -325,8 +324,9 @@ class Parametros:
         copia_parametros.id_carrera = self.id_carrera
 
         copia_parametros.cuatrimestre_minimo_para_materia = {}
-        for cod in self.cuatrimestre_minimo_para_materia:
-            copia_parametros.cuatrimestre_minimo_para_materia[cod] = self.cuatrimestre_minimo_para_materia[cod]
+        for id_materia in self.cuatrimestre_minimo_para_materia:
+            copia_parametros.cuatrimestre_minimo_para_materia[id_materia] = self.cuatrimestre_minimo_para_materia[
+                id_materia]
 
         copia_parametros.creditos_minimos_tematicas = {}
         for tematica in self.creditos_minimos_tematicas:
@@ -336,8 +336,8 @@ class Parametros:
         copia_parametros.anio_inicio = self.anio_inicio
 
         copia_parametros.materias_incompatibles = {}
-        for cod in self.materias_incompatibles:
-            copia_parametros.materias_incompatibles[cod] = self.materias_incompatibles[cod][:]
+        for id_materia in self.materias_incompatibles:
+            copia_parametros.materias_incompatibles[id_materia] = self.materias_incompatibles[id_materia][:]
 
         copia_parametros.max_horas_cursada = self.max_horas_cursada
         copia_parametros.max_horas_extras = self.max_horas_extras
@@ -349,8 +349,8 @@ class Parametros:
         copia_parametros.plan_generado = []
         for cuatrimestre in self.plan_generado:
             copia_materias_cuatrimestre = {}
-            for cod in cuatrimestre:
-                copia_materias_cuatrimestre[cod] = cuatrimestre[cod]
+            for id_materia in cuatrimestre:
+                copia_materias_cuatrimestre[id_materia] = cuatrimestre[id_materia]
             copia_parametros.plan_generado.append(copia_materias_cuatrimestre)
 
         copia_parametros.id_plan_estudios = self.id_plan_estudios
@@ -392,17 +392,17 @@ class Parametros:
         electivas_completas = self.creditos_en_electivas_estan_completos()
 
         hay_obligatorias_pendientes = False
-        for cod_materia in list(self.plan.keys()):
-            if not cod_materia in self.materias:
+        for id_materia in list(self.plan.keys()):
+            if not id_materia in self.materias:
                 continue
 
-            materia = self.materias[cod_materia]
+            materia = self.materias[id_materia]
             if materia.tipo == OBLIGATORIA:
                 hay_obligatorias_pendientes = True
                 if not electivas_completas:
                     break
             elif electivas_completas:
-                self.quitar_materia_por_id(cod_materia, False)
+                self.quitar_materia_por_id(id_materia, False)
 
         return not hay_obligatorias_pendientes and electivas_completas and not self.materia_trabajo_final
 
@@ -421,11 +421,11 @@ class Parametros:
         disponibles_electivas_prioritarias = []
         disponibles_electivas_secundarias = []
 
-        for cod_materia in self.plan:
-            materia = self.materias[cod_materia]
+        for id_materia in self.plan:
+            materia = self.materias[id_materia]
 
             if self.la_materia_esta_habilitada(materia, creditos_actuales):
-                for curso in self.horarios[cod_materia]:
+                for curso in self.horarios[id_materia]:
                     self.agregar_materia_al_listado_correspondiente(materia, curso, disponibles_obligatorias,
                                                                     disponibles_electivas_prioritarias,
                                                                     disponibles_electivas_secundarias)
@@ -793,3 +793,5 @@ class Parametros:
         self.max_horas_extras = parametros_actuales.max_horas_extras
         self.materia_trabajo_final = parametros_actuales.materia_trabajo_final
         self.plan_generado = parametros_actuales.plan_generado
+        self.id_plan_estudios = parametros_actuales.id_plan_estudios
+        self.estado_plan_de_estudios = parametros_actuales.estado_plan_de_estudios
