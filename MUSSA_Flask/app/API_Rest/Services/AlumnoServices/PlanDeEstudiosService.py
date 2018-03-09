@@ -205,8 +205,8 @@ class PlanDeEstudiosService(BaseService):
     def crear_tarea_para_generar_plan_de_estudios(self, tarea_algoritmo, parametros):
         plan_de_estudios = self.alta_nuevo_plan_de_estudios(parametros)
 
+        parametros.id_plan_estudios = plan_de_estudios.id
         parametros_tarea = parametros.generar_parametros_json()
-        parametros_tarea["id_plan_de_estudios"] = plan_de_estudios.id
 
         tarea = tarea_algoritmo.delay(parametros_tarea)
 

@@ -1,7 +1,40 @@
-from app import db
+from app import db, create_app
 from app.models.plan_de_estudios_models import EstadoPlanDeEstudios, MateriaPlanDeEstudios
 from app.models.carreras_models import Materia
 from datetime import datetime
+from celery import Celery
+from app.API_Rest.GeneradorPlanCarreras.ParametrosDTO import Parametros
+from app.models.plan_de_estudios_models import PlanDeEstudios
+from app.DAO.PlanDeCarreraDAO import PLAN_EN_CURSO, PLAN_INCOMPATIBLE, PLAN_FINALIZADO
+
+broker_guadar_plan_de_estudios = Celery('broker', broker='redis://localhost')
+broker_guadar_plan_de_estudios.conf.update({
+    'task_reject_on_worker_lost': True,
+    'task_acks_late': True,
+})
+
+@broker_guadar_plan_de_estudios.task(acks_late=True)
+def tarea_guadar_plan_de_estudios(parametros_tarea):
+    print("INICIO guardado plan con id {}".format(parametros_tarea["id_plan_estudios"]))
+    app = create_app()
+
+    parametros = Parametros()
+    parametros.actualizar_valores_desde_JSON(parametros_tarea)
+
+    with app.app_context():
+        plan_de_estudios = PlanDeEstudios.query.get(parametros_tarea["id_plan_estudios"])
+        print(plan_de_estudios)
+
+        if not parametros.estado_plan_de_estudios == PLAN_INCOMPATIBLE:
+            actualizar_plan(plan_de_estudios, PLAN_INCOMPATIBLE)
+            print("FIN guardado plan con id {}: (INCOMPATIBLE)".format(parametros_tarea["id_plan_estudios"]))
+            return
+
+        agregar_materias_generadas_al_plan(parametros, plan_de_estudios)
+        actualizar_plan(plan_de_estudios, PLAN_FINALIZADO)
+
+        print("FIN guardado plan con id {} (COMPATIBLE)".format(parametros_tarea["id_plan_estudios"]))
+
 
 def actualizar_plan(plan_de_estudios, nuevo_estado):
     estado = EstadoPlanDeEstudios.query.filter_by(numero=nuevo_estado).first()

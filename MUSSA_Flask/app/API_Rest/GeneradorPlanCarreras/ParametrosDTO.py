@@ -62,6 +62,8 @@ class Parametros:
         self.materia_trabajo_final = []
 
         self.plan_generado = []
+        self.id_plan_estudios = -1
+        self.estado_plan_de_estudios = -1
 
     def __str__(self):
         SALTO = "\n"
@@ -132,6 +134,9 @@ class Parametros:
             parametros += str(id_materia) + ": " + str(materia) + SALTO
         parametros += "]" + SALTO
 
+        parametros += "id_plan_estudios:" + str(self.id_plan_estudios)
+        parametros += "estado_plan_de_estudios:" + str(self.estado_plan_de_estudios)
+
         return parametros
 
     def actualizar_valores_desde_JSON(self, parametros_JSON):
@@ -177,11 +182,13 @@ class Parametros:
 
         self.cuatrimestre_minimo_para_materia = {}
         for id_materia in parametros_JSON["cuatrimestre_minimo_para_materia"]:
-            self.cuatrimestre_minimo_para_materia[int(id_materia)] = int(parametros_JSON["cuatrimestre_minimo_para_materia"][id_materia])
+            self.cuatrimestre_minimo_para_materia[int(id_materia)] = int(
+                parametros_JSON["cuatrimestre_minimo_para_materia"][id_materia])
 
         self.creditos_minimos_tematicas = {}
         for id_tematica in parametros_JSON["creditos_minimos_tematicas"]:
-            self.creditos_minimos_tematicas[int(id_tematica)] = int(parametros_JSON["creditos_minimos_tematicas"][id_tematica])
+            self.creditos_minimos_tematicas[int(id_tematica)] = int(
+                parametros_JSON["creditos_minimos_tematicas"][id_tematica])
 
         self.cuatrimestre_inicio = int(parametros_JSON["cuatrimestre_inicio"])
         self.anio_inicio = parametros_JSON["anio_inicio"]
@@ -201,6 +208,14 @@ class Parametros:
             self.materia_trabajo_final.append(Materia(datos_JSON=datos_materia))
 
         self.plan_generado = []
+        for cuatrimestre_plan in parametros_JSON["plan_generado"]:
+            cuatrimeste = {}
+            for id_materia in cuatrimestre_plan:
+                cuatrimeste[int(id_materia)] = int(cuatrimestre_plan[id_materia])
+            self.plan_generado.append(cuatrimeste)
+
+        self.id_plan_estudios = int(parametros_JSON["id_plan_estudios"])
+        self.estado_plan_de_estudios = int(parametros_JSON["estado_plan_de_estudios"])
 
     def generar_parametros_json(self):
         parametros_JSON = {}
@@ -255,7 +270,13 @@ class Parametros:
 
         parametros_JSON["plan_generado"] = []
         for cuatrimestre_plan in self.plan_generado:
-            parametros_JSON["plan_generado"].append(cuatrimestre_plan.copy())
+            cuatrimeste = {}
+            for id_materia in cuatrimestre_plan:
+                cuatrimeste[id_materia] = cuatrimestre_plan[id_materia]
+            parametros_JSON["plan_generado"].append(cuatrimeste)
+
+        parametros_JSON["id_plan_estudios"] = self.id_plan_estudios
+        parametros_JSON["estado_plan_de_estudios"] = self.estado_plan_de_estudios
 
         return parametros_JSON
 
@@ -265,19 +286,19 @@ class Parametros:
         copia_parametros.primer_cuatrimestre_es_impar = self.primer_cuatrimestre_es_impar
 
         copia_parametros.plan = {}
-        for codigo in self.plan:
-            copia_parametros.plan[codigo] = self.plan[codigo][:]
+        for id_materia in self.plan:
+            copia_parametros.plan[id_materia] = self.plan[id_materia][:]
 
         copia_parametros.materias = {}
-        for codigo in self.materias:
-            copia_parametros.materias[codigo] = self.materias[codigo].copia_profunda()
+        for id_materia in self.materias:
+            copia_parametros.materias[id_materia] = self.materias[id_materia].copia_profunda()
 
         copia_parametros.horarios = {}
-        for codigo in self.horarios:
+        for id_materia in self.horarios:
             l_cursos = []
-            for curso in self.horarios[codigo]:
+            for curso in self.horarios[id_materia]:
                 l_cursos.append(curso.copia_profunda())
-            copia_parametros.horarios[codigo] = l_cursos
+            copia_parametros.horarios[id_materia] = l_cursos
 
         copia_parametros.horarios_no_permitidos = []
         for horario in self.horarios_no_permitidos:
@@ -332,6 +353,9 @@ class Parametros:
                 copia_materias_cuatrimestre[cod] = cuatrimestre[cod]
             copia_parametros.plan_generado.append(copia_materias_cuatrimestre)
 
+        copia_parametros.id_plan_estudios = self.id_plan_estudios
+        copia_parametros.estado_plan_de_estudios = self.estado_plan_de_estudios
+
         return copia_parametros
 
     def set_franjas(self, minima, maxima):
@@ -357,7 +381,7 @@ class Parametros:
                 materia_actual.correlativas.remove(id_materia)
 
         for id_correlativa in materia.correlativas:
-            if not id_correlativa in self.plan or not materia.codigo in self.plan[id_correlativa]:
+            if not id_correlativa in self.plan or not materia.id_materia in self.plan[id_correlativa]:
                 continue
             self.plan[id_correlativa].remove(materia.id_materia)
 
@@ -434,19 +458,19 @@ class Parametros:
     def la_materia_esta_habilitada(self, materia, creditos_actuales):
         return (not materia.correlativas and
                 materia.creditos_minimos_aprobados <= creditos_actuales and
-                self.tiene_cuatrimestre_minimo_cumplido(materia.codigo))
+                self.tiene_cuatrimestre_minimo_cumplido(materia.id_materia))
 
-    def tiene_cuatrimestre_minimo_cumplido(self, cod_materia):
-        if not cod_materia in self.cuatrimestre_minimo_para_materia:
+    def tiene_cuatrimestre_minimo_cumplido(self, id_materia):
+        if not id_materia in self.cuatrimestre_minimo_para_materia:
             return True
 
-        return self.cuatrimestre_minimo_para_materia[cod_materia] < len(self.plan_generado)
+        return self.cuatrimestre_minimo_para_materia[id_materia] < len(self.plan_generado)
 
-    def se_encuentra_materia_en_plan_generado(self, cod_materia, materias_cuatrimestre_actual):
+    def se_encuentra_materia_en_plan_generado(self, id_materia, materias_cuatrimestre_actual):
         for cuatrimestre in self.plan_generado:
-            if cod_materia in cuatrimestre:
+            if id_materia in cuatrimestre:
                 return True
-        return cod_materia in materias_cuatrimestre_actual
+        return id_materia in materias_cuatrimestre_actual
 
     def concatenar_materias_trabajo_final(self, disponibles, creditos_actuales):
         # Luego de las materias electivas que aportan creditos de tematicas y obligatorias, si están habilitadas
