@@ -79,7 +79,6 @@
             var nombre = $("#nombre_materia").val();
             var ids_carreras = obtener_parametro_ids_carreras();
 
-            debugger;
             get_materias_con_filtro_service(csrf_token, codigo, nombre, ids_carreras, palabras_clave, function(state, result) {
                 content = generar_tabla_de_resultados(result);
                 $("#search_results").html(content);
@@ -195,7 +194,9 @@
 
             <!-- Palabras clave -->
             <div class="form-group">
-                <label for="palabra_clave">Palabras Clave:</label>
+                <label for="palabra_clave">Palabras Clave:&nbsp<span
+                        class="glyphicon glyphicon-question-sign" aria-hidden="true" data-toggle="tooltip"
+                        title="Se buscarán todas las materias que tengan al menos una de las palabras clave seleccionadas."></span></label>
                 <div class="row">
                     <div class="col-sm-3">
                         <input type="text" class="form-control" id="palabra_clave" name="palabra_clave">
