@@ -607,7 +607,7 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
         parametros = {"categorias": json.dumps([paso_actual])}
         response = client.get(self.get_url_preguntas_encuesta(), query_string=parametros)
         preguntas = json.loads(response.get_data(as_text=True))["preguntas"]
-        preguntas = [preguntas[0], preguntas[3], preguntas[6]]
+        preguntas = [preguntas[0], preguntas[3], preguntas[5]]
 
         encuesta = EncuestaAlumno.query.first()
 
@@ -674,7 +674,7 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
         assert (estados_pasos.estadoPaso4 == PASO_ENCUESTA_NO_INICIADO)  # GRUPO_ENCUESTA_EXAMENES
         assert (estados_pasos.estadoPaso5 == PASO_ENCUESTA_FINALIZADO)  # GRUPO_ENCUESTA_DOCENTES
 
-        preguntas = [preguntas[0], preguntas[3], preguntas[6]]
+        preguntas = [preguntas[0], preguntas[3], preguntas[5]]
         parametros["respuestas"] = self.crear_respuestas_alumno(preguntas, self.get_datos_respuestas_default())
         response = client.post(self.get_url_guardar_respuestas_encuesta_alumno(encuesta.id), data=parametros)
         assert (response.status_code == SUCCESS_OK)
@@ -765,7 +765,7 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
 
         parametros = {}
         parametros["categoria"] = paso_actual
-        preguntas1 = [preguntas[0], preguntas[3], preguntas[6]]
+        preguntas1 = [preguntas[0], preguntas[3], preguntas[5]]
         parametros["respuestas"] = self.crear_respuestas_alumno(preguntas1, self.get_datos_respuestas_default())
         response = client.post(self.get_url_guardar_respuestas_encuesta_alumno(encuesta.id), data=parametros)
         assert (response.status_code == SUCCESS_OK)
@@ -820,7 +820,7 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
 
         parametros = {}
         parametros["categoria"] = paso_actual
-        preguntas1 = [preguntas[0], preguntas[3], preguntas[6]]
+        preguntas1 = [preguntas[0], preguntas[3], preguntas[5]]
         parametros["respuestas"] = self.crear_respuestas_alumno(preguntas1, self.get_datos_respuestas_default())
         response = client.post(self.get_url_guardar_respuestas_encuesta_alumno(encuesta.id), data=parametros)
         assert (response.status_code == SUCCESS_OK)
@@ -1050,7 +1050,7 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
         respuestas = self.obtener_respuestas_guardadas_alumno(preguntas, encuesta, client)
 
         assert (len(respuestas) == 1)
-        assert (respuestas['27']["puntaje"] == puntaje_inicial)
+        assert (respuestas['26']["puntaje"] == puntaje_inicial)
 
         puntaje_nuevo = 2
         parametros["respuestas"] = self.crear_respuestas_alumno(preguntas, {
@@ -1064,7 +1064,7 @@ class TestGuardarRespuestasEncuestaAlumno(TestBase):
         respuestas_nuevas = self.obtener_respuestas_guardadas_alumno(preguntas, encuesta, client)
 
         assert (len(respuestas_nuevas) == 1)
-        assert (respuestas_nuevas['27']["puntaje"] == puntaje_nuevo)
+        assert (respuestas_nuevas['26']["puntaje"] == puntaje_nuevo)
 
     def test_guardar_respuesta_de_tipo_puntaje_permite_puntajes_del_1_al_5_inclusives(self):
         paso_actual = GRUPO_ENCUESTA_CLASES
