@@ -3,7 +3,7 @@ from app.models.plan_de_estudios_models import EstadoPlanDeEstudios, MateriaPlan
 from datetime import datetime
 from celery import Celery
 from app.API_Rest.GeneradorPlanCarreras.ParametrosDTO import Parametros
-from app.models.plan_de_estudios_models import PlanDeEstudios
+from app.models.plan_de_estudios_models import PlanDeEstudios, PlanDeEstudiosFinalizadoProcesar
 from app.DAO.PlanDeCarreraDAO import PLAN_INCOMPATIBLE, PLAN_FINALIZADO
 
 broker_guadar_plan_de_estudios = Celery('broker', broker='redis://localhost')
@@ -39,6 +39,11 @@ def actualizar_plan(plan_de_estudios, nuevo_estado):
 
     plan_de_estudios.fecha_ultima_actualizacion = datetime.today()
     plan_de_estudios.estado_id = estado.id
+
+    db.session.add(PlanDeEstudiosFinalizadoProcesar(
+        alumno_id=plan_de_estudios.alumno_id,
+        plan_estudios_id=plan_de_estudios.id
+    ))
 
     db.session.commit()
 

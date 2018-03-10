@@ -34,6 +34,10 @@
     {
       "name": "encuesta",
       "description": "Acceso a la estructura de encuestas. Las encuestas se dividen en tres secciones 1) 'encuesta' --> contiene las preguntas de las encuestas, las agrupaciones por categoría, etc; 2) 'respuestas alumno' --> contiene las respuestas del alumno para una determinada encuesta. Es accesible a través del alumno; 3) 'resultados' --> contiene las respuestas generales como resultados de las encuestas para un curso o un docente, es accesible a través de resultados encuesta."
+    },
+    {
+      "name": "notificaciones",
+      "description": "Acceso a las notificaciones de los usuarios"
     }
   ],
   "schemes": [
@@ -1564,9 +1568,52 @@
           }
         }
       }
+    },
+    "/notificaciones": {
+      "get": {
+        "tags": [
+          "notificaciones"
+        ],
+        "summary": "Devuelve un diccionario con las notificaciones que estan pendientes.",
+        "description": "Devuelve un diccionario con las notificaciones que estan pendientes.",
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/Notificaciones"
+            }
+          },
+          "401": {
+            "description": "La información de autorización no fue enviada o es inválida."
+          }
+        }
+      }
     }
   },
   "definitions": {
+    "Notificaciones": {
+      "type": "object",
+      "properties": {
+        "notificaciones": {
+          "type": "object",
+          "properties": {
+            "encuestas": {
+              "type": "integer",
+              "description": "Cantidad de encuestas pendientes",
+              "example": 3
+            },
+            "planes_de_estudio": {
+              "type": "integer",
+              "description": "Cantidad de planes de estudio generados que aun no se han visto.",
+              "example": 2
+            }
+          }
+        }
+      }
+    },
     "ListaRespuestaEncuestaDocente": {
       "type": "object",
       "properties": {

@@ -18,6 +18,15 @@ class PlanDeEstudios(db.Model):
         return "Plan de Estudios {}".format(self.id)
 
 
+class PlanDeEstudiosFinalizadoProcesar(db.Model):
+    __tablename__ = 'plan_de_estudios_finalizado_de_procesar'
+
+    id = db.Column(db.Integer, primary_key=True)
+
+    alumno_id = db.Column(db.Integer, db.ForeignKey('alumno.id'))
+    plan_estudios_id = db.Column(db.Integer, db.ForeignKey('plan_de_estudios.id'))
+
+
 class EstadoPlanDeEstudios(db.Model):
     __tablename__ = 'estado_plan_de_estudios'
 

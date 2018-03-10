@@ -10,7 +10,8 @@
             opcion.checked = true;
             onChangeCarrera(opcion.id);
         }
-        seleccionar_inicio_del_plan_valido();
+        if (cant_carreras > 0)
+            seleccionar_inicio_del_plan_valido();
     });
 
     function seleccionar_inicio_del_plan_valido() {
@@ -832,9 +833,8 @@
                             <th>{{materia["nombre"]}}</th>
                             <th>
                                 <select class="form-control"
-                                        id="final_aprobado_{{materia['id_materia_alumno']}}"
-                                        name="final_aprobado_{{materia['id_materia_alumno']}}">
-                                    <option value="-1">Volver a cursar la materia</option>
+                                        id="final_aprobado_{{materia['id_materia']}}"
+                                        name="final_aprobado_{{materia['id_materia']}}">
                                     <option value="0">Considerar la materia como aprobada</option>
                                     <option value="1">La materia estará aprobada para el comienzo del segundo
                                         cuatrimestre
