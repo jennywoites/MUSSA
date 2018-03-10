@@ -104,7 +104,11 @@ class EncuestaAlumnoService(BaseService):
         db.session.commit()
 
     def agregarPalabrasClavesALasMaterias(self, encuesta, id_materia):
-        respuestas = RespuestaEncuestaTags.query.filter_by(rta_encuesta_alumno_id=encuesta.id).all()
+        respuestas = RespuestaEncuestaTags.query\
+            .filter(RespuestaEncuestaTags.rta_encuesta_alumno_id.in_(
+                RespuestaEncuestaAlumno.query.with_entities(RespuestaEncuestaAlumno.id)
+                .filter_by(encuesta_alumno_id=encuesta.id)
+            )).all()
         for respuesta in respuestas:
             entrada = PalabrasClaveParaMateria.query.filter_by(materia_id=id_materia)\
                 .filter_by(palabra_clave_id=respuesta.palabra_clave_id).first()
@@ -121,7 +125,11 @@ class EncuestaAlumnoService(BaseService):
             db.session.commit()
 
     def agregarTematicasALasMaterias(self, encuesta, id_materia):
-        respuestas = RespuestaEncuestaTematica.query.filter_by(rta_encuesta_alumno_id=encuesta.id).all()
+        respuestas = RespuestaEncuestaTematica.query \
+            .filter(RespuestaEncuestaTematica.rta_encuesta_alumno_id.in_(
+            RespuestaEncuestaAlumno.query.with_entities(RespuestaEncuestaAlumno.id)
+                .filter_by(encuesta_alumno_id=encuesta.id)
+        )).all()
         for respuesta in respuestas:
             entrada = TematicaPorMateria.query.filter_by(materia_id=id_materia).\
                 filter_by(tematica_id=respuesta.tematica_id).first()

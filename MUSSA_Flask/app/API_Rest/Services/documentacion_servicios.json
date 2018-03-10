@@ -198,6 +198,16 @@
             "items": {
               "type": "integer"
             }
+          },
+          {
+            "in": "formData",
+            "name": "palabras_clave",
+            "required": false,
+            "type": "array",
+            "description": "Lista de palabras clave por la que se quiere filtrar a las materias. Se filtraran todas aquellas materias que contengan al menos una palabra clave.",
+            "items": {
+              "type": "string"
+            }
           }
         ],
         "responses": {

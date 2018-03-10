@@ -71,13 +71,15 @@
                 return false;
             }
 
+            palabras_clave = obtenerPalabrasClave();
+
             show_loading_mask();
 
             var csrf_token = '{{ csrf_token() }}';
             var nombre = $("#nombre_materia").val();
             var ids_carreras = obtener_parametro_ids_carreras();
 
-            get_materias_con_filtro_service(csrf_token, codigo, nombre, ids_carreras, function(state, result) {
+            get_materias_con_filtro_service(csrf_token, codigo, nombre, ids_carreras, palabras_clave, function(state, result) {
                 content = generar_tabla_de_resultados(result);
                 $("#search_results").html(content);
                 hide_loading_mask();
@@ -97,6 +99,57 @@
             } else {
                 $("input:checkbox[name^='check_todas_las_carreras']")[0].checked = false;
             }
+        }
+
+        var ULTIMO_ID_AGREGADO = 0;
+
+        function agregar_palabra_clave() {
+            var div_palabra = document.getElementById("palabra_clave");
+            var palabra = div_palabra.value;
+
+            if (!palabra)
+                return;
+
+            div_palabra.value = "";
+
+            var div_palabra = document.createElement('div');
+            div_palabra.id = "palabra_agregada_" + ULTIMO_ID_AGREGADO;
+            div_palabra.className = "col-sm-3";
+            div_palabra.style.marginBottom = "5px";
+
+            ULTIMO_ID_AGREGADO += 1;
+
+            var html = "<div class='input-group'>";
+            html += "<input type='text' class='form-control' style='background-color: #e8d2f2;' id='input_" + div_palabra.id + "' value='" + palabra + "' disabled/>";
+            html += "<span class='input-group-btn'>";
+            html += "<button class='btn btn-mussa-default' type='button'"
+            html += 'onclick="eliminarPalabra(\''+ div_palabra.id +'\')">';
+            html += "<span class='glyphicon glyphicon-trash'></span>";
+            html += "</button>";
+            html += "</span>";
+            html += "</div>";
+
+            div_palabra.innerHTML = html;
+
+            var div_palabras_elegidas = document.getElementById("palabras_clave_elegidas");
+            div_palabras_elegidas.appendChild(div_palabra);
+        }
+
+        function eliminarPalabra(id_div_palabra) {
+            var div_palabras = document.getElementById("palabras_clave_elegidas");
+            var div_a_eliminar = document.getElementById(id_div_palabra);
+            div_palabras.removeChild(div_a_eliminar);
+        }
+
+        function obtenerPalabrasClave() {
+            var palabras = [];
+            var div_palabras = document.getElementById("palabras_clave_elegidas");
+            for(var i=0; i<div_palabras.children.length; i++){
+                var id_palabra_actual = "input_" + div_palabras.children[i].id;
+                var div_palabra_actual = document.getElementById(id_palabra_actual);
+                palabras.push(div_palabra_actual.value);
+            }
+            return palabras;
         }
 
     </script>
@@ -139,7 +192,28 @@
 
             </div>
 
-            <!--div>Agregar la seleccion de palabras clave</div-->
+            <!-- Palabras clave -->
+            <div class="form-group">
+                <label for="palabra_clave">Palabras Clave:&nbsp<span
+                        class="glyphicon glyphicon-question-sign" aria-hidden="true" data-toggle="tooltip"
+                        title="Se buscarán todas las materias que tengan al menos una de las palabras clave seleccionadas."></span></label>
+                <div class="row">
+                    <div class="col-sm-3">
+                        <input type="text" class="form-control" id="palabra_clave" name="palabra_clave">
+                    </div>
+                    <div class="col-sm-2">
+                        <button type="button" onclick="agregar_palabra_clave()" class="btn btn-mussa-default">Agregar</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="row" id="palabras_clave_elegidas">
+                </div>
+            </div>
+            <!-- Fin palabras clave -->
+
+            <br>
 
             <button type="button" onclick="search_materias()" class="btn btn-mussa-default">Buscar</button>
 

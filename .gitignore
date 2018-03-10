@@ -111,4 +111,8 @@ propuesta.synctex.gz
 tests/TestResolucionPlanDeEstudios/resultados_tests
 
 #Archivos temporales
-MUSSA_Flask/app/tmp/
+MUSSA_Flask/app/tmp/.
+
+#Base de datos
+app.sqlite
+
