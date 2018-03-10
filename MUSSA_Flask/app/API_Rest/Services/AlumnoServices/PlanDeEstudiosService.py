@@ -1,6 +1,5 @@
 from app.API_Rest.codes import *
 from flask_user import login_required
-from flask import url_for
 from app.API_Rest.Services.BaseService import BaseService
 from app.DAO.PlanDeCarreraDAO import *
 from app.API_Rest.GeneradorPlanCarreras.ParametrosDTO import Parametros
@@ -16,6 +15,7 @@ from app.API_Rest.GeneradorPlanCarreras.modelos.Curso import Curso as Modelo_Cur
 from app.API_Rest.GeneradorPlanCarreras.modelos.Horario import Horario as Modelo_Horario
 from datetime import datetime
 from app.models.generadorJSON.plan_de_estudios_generadorJSON import generarJSON_materias_plan_de_estudios
+from AsyncTasks.broker_generador_greedy import tarea_generar_plan_greedy
 from app.API_Rest.GeneradorPlanCarreras.GeneradorPlanGreedy import generar_plan_greedy
 
 
@@ -88,7 +88,6 @@ class PlanDeEstudiosService(BaseService):
         if not parametros_son_validos:
             self.logg_error(msj)
             return {'Error': msj}, codigo
-
 
         MateriaPlanDeEstudios.query.filter_by(plan_estudios_id=idPlanDeEstudios).delete()
         db.session.commit()
@@ -179,7 +178,7 @@ class PlanDeEstudiosService(BaseService):
 
         obligatorias_tienen_cursos, msj = self.validar_cursos_materias_obligatorias(parametros)
         if not obligatorias_tienen_cursos:
-            result = msj, CLIENT_ERROR_BAD_REQUEST
+            result = {"mensaje": msj}, CLIENT_ERROR_BAD_REQUEST
             self.logg_resultado(result)
             return result
 
@@ -187,37 +186,53 @@ class PlanDeEstudiosService(BaseService):
 
         electivas_cubren_creditos_requeridos, msj = self.validar_creditos_requeridos_electivas(parametros)
         if not electivas_cubren_creditos_requeridos:
-            result = msj, CLIENT_ERROR_BAD_REQUEST
+            result = {"mensaje": msj}, CLIENT_ERROR_BAD_REQUEST
             self.logg_resultado(result)
             return result
 
         self.actualizar_horarios_con_franjas_minimas_y_maximas(parametros)
 
+        ALGORITMOS_VALIDOS = {
+            ALGORITMO_GREEDY: tarea_generar_plan_greedy,
+            ALGORITMO_PROGRAMACION_LINEAL_ENTERA: ''
+        }
+
+        if algoritmo in ALGORITMOS_VALIDOS:
+            return self.crear_tarea_para_generar_plan_de_estudios(ALGORITMOS_VALIDOS[algoritmo], parametros)
+
+        result = {"mensaje": "El algoritmo introducido no es valido"}, CLIENT_ERROR_BAD_REQUEST
+        self.logg_resultado(result)
+        return result
+
+    def crear_tarea_para_generar_plan_de_estudios(self, tarea_algoritmo, parametros):
         plan_de_estudios = self.alta_nuevo_plan_de_estudios(parametros)
 
-        if algoritmo == ALGORITMO_GREEDY:
-            return self.generar_plan_de_cursada_greedy(parametros, plan_de_estudios)
+        parametros.id_plan_estudios = plan_de_estudios.id
+        parametros_tarea = parametros.generar_parametros_json()
 
-        if algoritmo == ALGORITMO_PROGRAMACION_LINEAL_ENTERA:
-            return self.generar_plan_de_cursada_programacion_lineal_entera(parametros, plan_de_estudios)
+        tarea = tarea_algoritmo.delay(parametros_tarea)
 
-        result = "El algoritmo introducido no es valido", CLIENT_ERROR_BAD_REQUEST
+        if not tarea:
+            result = {"mensaje": "No se pudo enviar a generar el plan."
+                                 " Por favor, intentá nuevamente"}, CLIENT_ERROR_BAD_REQUEST
+            self.logg_resultado(result)
+            return result
+
+        result = SUCCESS_NO_CONTENT
         self.logg_resultado(result)
         return result
 
     def cargar_materias_incompatibles(self, parametros):
         parametros.materias_incompatibles = {}
 
-        for cod_materia in parametros.materias:
-            incompatibles = MateriasIncompatibles.query. \
-                filter_by(materia_id=parametros.materias[cod_materia].id_materia).all()
+        for id_materia in parametros.materias:
+            incompatibles = MateriasIncompatibles.query.filter_by(materia_id=id_materia).all()
             if not incompatibles:
                 continue
 
-            parametros.materias_incompatibles[cod_materia] = []
+            parametros.materias_incompatibles[id_materia] = []
             for grupo_materia_incompatible in incompatibles:
-                materia_incompatible = Materia.query.get(grupo_materia_incompatible.materia_incompatible_id)
-                parametros.materias_incompatibles[cod_materia].append(materia_incompatible.codigo)
+                parametros.materias_incompatibles[id_materia].append(grupo_materia_incompatible.materia_incompatible_id)
 
     def actualizar_creditos_minimos_por_tematica(self, parametros, tematicas):
         parametros.creditos_minimos_tematicas = {}
@@ -230,8 +245,8 @@ class PlanDeEstudiosService(BaseService):
     def configurar_plan_de_carrera_origen(self, id_carrera, parametros):
         """
         Guarda para el id de carrera especificado en el campo plan de los parámetros, un
-        diccionario con el codigo de materia como clave y como valor una lista con los
-        códigos de materia que tienen a la materia clave de correlativa.
+        diccionario con el id de materia como clave y como valor una lista con los
+        ids de materia que tienen a la materia clave de correlativa.
         Actualiza la cantidad de creditos requeridos en materias electivas.
         """
         parametros.plan = {}
@@ -239,27 +254,28 @@ class PlanDeEstudiosService(BaseService):
         parametros.materias_CBC_pendientes = []
 
         for materia in Materia.query.filter_by(carrera_id=id_carrera).all():
-            if not materia.codigo in parametros.plan:
-                parametros.plan[materia.codigo] = []
+            if not materia.id in parametros.plan:
+                parametros.plan[materia.id] = []
 
             self.agregar_materia_a_parametros(parametros, materia)
 
             correlativas_de_materia_actual = Correlativas.query.filter_by(materia_id=materia.id).all()
             for materia_correlativa in correlativas_de_materia_actual:
-                materia_correlativa_db = Materia.query.get(materia_correlativa.materia_correlativa_id)
-                materias_correlativas = parametros.plan.get(materia_correlativa_db.codigo, [])
+                id_correlativa = materia_correlativa.materia_correlativa_id
+                materias_correlativas = parametros.plan.get(id_correlativa, [])
 
-                if not materia.codigo in materias_correlativas:
-                    materias_correlativas.append(materia.codigo)
-                parametros.plan[materia_correlativa_db.codigo] = materias_correlativas
+                if not materia.id in materias_correlativas:
+                    materias_correlativas.append(materia.id)
+
+                parametros.plan[id_correlativa] = materias_correlativas
 
     def filtrar_materias_CBC_y_trabajos_finales(self, trabajo_final, parametros):
         # Las materias del CBC se trabajan de forma independiente
         tipo_CBC = TipoMateria.query.filter_by(descripcion='CBC').first().id
         for materia in Materia.query.filter_by(carrera_id=parametros.id_carrera).filter_by(tipo_materia_id=tipo_CBC):
-            if materia.codigo in parametros.materias:
-                parametros.materias_CBC_pendientes.append(materia)
-                parametros.quitar_materia_por_codigo(materia.codigo, True)
+            if materia.id in parametros.materias:
+                parametros.materias_CBC_pendientes.append(materia.id)
+                parametros.quitar_materia_por_id(materia.id, True)
 
         tipo_tesis = TipoMateria.query.filter_by(descripcion='TESIS').first().id
         tesis = Materia.query.filter_by(carrera_id=parametros.id_carrera).filter_by(tipo_materia_id=tipo_tesis) \
@@ -267,7 +283,7 @@ class PlanDeEstudiosService(BaseService):
 
         # Si no hace tesis, quitar la materia de tesis
         if trabajo_final != "TESIS" and tesis:
-            parametros.quitar_materia_por_codigo(tesis.codigo, False)
+            parametros.quitar_materia_por_id(tesis.id, False)
 
         tipo_tp_profesional = TipoMateria.query.filter_by(descripcion='TP_PROFESIONAL').first().id
         tp = Materia.query.filter_by(carrera_id=parametros.id_carrera) \
@@ -275,17 +291,17 @@ class PlanDeEstudiosService(BaseService):
 
         # Si no hace trabajo profesional, quitar la materia de trabajo profesional
         if trabajo_final != "TP_PROFESIONAL" and tp:
-            parametros.quitar_materia_por_codigo(tp.codigo, False)
+            parametros.quitar_materia_por_id(tp.id, False)
 
         # Los trabajos finales se trabajan de forma independiente
-        codigo = ''
+        id_trabajo = ''
         if trabajo_final == "TESIS":
-            codigo = tesis.codigo
+            id_trabajo = tesis.id
         if trabajo_final == "TP_PROFESIONAL":
-            codigo = tp.codigo
+            id_trabajo = tp.id
 
-        if codigo and codigo in parametros.materias:
-            materia_trabajo_final_parte_1 = parametros.materias[codigo]
+        if id_trabajo and id_trabajo in parametros.materias:
+            materia_trabajo_final_parte_1 = parametros.materias[id_trabajo]
             codigo_parte_1 = materia_trabajo_final_parte_1.codigo + '_PARTE_A'
 
             materia_trabajo_final_parte_1.medias_horas_extras_cursada /= 2
@@ -297,14 +313,14 @@ class PlanDeEstudiosService(BaseService):
                 creditos=materia_trabajo_final_parte_1.creditos,
                 tipo=materia_trabajo_final_parte_1.tipo,
                 cred_min=materia_trabajo_final_parte_1.creditos_minimos_aprobados,
-                correlativas=materia_trabajo_final_parte_1.correlativas[:] + [codigo_parte_1],
+                correlativas=materia_trabajo_final_parte_1.correlativas[:],
                 tematicas_principales=materia_trabajo_final_parte_1.tematicas_principales[:],
                 medias_horas_extras_cursada=materia_trabajo_final_parte_1.medias_horas_extras_cursada
             )
 
             materia_trabajo_final_parte_1.codigo = codigo_parte_1
 
-            parametros.quitar_materia_por_codigo(codigo, False)
+            parametros.quitar_materia_por_id(materia_trabajo_final_parte_1.id_materia, False)
             parametros.materia_trabajo_final.append(materia_trabajo_final_parte_1)
             parametros.materia_trabajo_final.append(materia_trabajo_final_parte_2)
 
@@ -319,7 +335,7 @@ class PlanDeEstudiosService(BaseService):
             parametros.creditos_minimos_electivas = creditos.creditos_electivas_general
 
     def agregar_materia_a_parametros(self, parametros, materia):
-        if materia.codigo in parametros.materias:
+        if materia.id in parametros.materias:
             return
 
         # Si la materia es TESIS / TP_PROFESIONAL --> TRABAJO_FINAL
@@ -335,7 +351,7 @@ class PlanDeEstudiosService(BaseService):
         correlativas = []
         correlativas_de_materia_actual = Correlativas.query.filter_by(materia_id=materia.id).all()
         for correlativa in correlativas_de_materia_actual:
-            correlativas.append(Materia.query.get(correlativa.materia_correlativa_id).codigo)
+            correlativas.append(correlativa.materia_correlativa_id)
 
         tematicas_principales = []
         MAX_TEMATICAS = 3
@@ -347,7 +363,7 @@ class PlanDeEstudiosService(BaseService):
         # TODO: Si se tienen suficientes encuestas modificar para que las horas extras se saquen con ese valor
         medias_horas_extra_cursada = materia.creditos * 2  # Se multiplica por dos para obtener las medias horas
 
-        parametros.materias[materia.codigo] = Modelo_Materia(
+        parametros.materias[materia.id] = Modelo_Materia(
             id_materia=materia.id,
             codigo=materia.codigo,
             nombre=materia.nombre,
@@ -367,32 +383,34 @@ class PlanDeEstudiosService(BaseService):
         estado_aprobado = EstadoMateria.query.filter_by(estado=ESTADO_MATERIA[APROBADA]).first()
 
         # Borro las materias que se van a dar por aprobadas
-        for codigo in aprobacion_finales:
-            cuatrimestre = int(aprobacion_finales[codigo])
-            self.setear_cuatrimestre_minimo_correlativas(codigo, cuatrimestre, parametros)
+        for id_materia in aprobacion_finales:
+            cuatrimestre = int(aprobacion_finales[id_materia])
+            self.setear_cuatrimestre_minimo_correlativas(id_materia, cuatrimestre, parametros)
             if cuatrimestre > -1:
-                parametros.quitar_materia_por_codigo(codigo, True)
+                parametros.quitar_materia_por_id(id_materia, True)
 
         materias_aprobadas = MateriasAlumno.query.filter_by(alumno_id=alumno.id).filter_by(carrera_id=carrera). \
             filter_by(estado_id=estado_aprobado.id).all()
         for materia_alumno in materias_aprobadas:
-            materia = Materia.query.get(materia_alumno.materia_id)
-            parametros.quitar_materia_por_codigo(materia.codigo, True)
+            parametros.quitar_materia_por_id(materia_alumno.materia_id, True)
 
-    def setear_cuatrimestre_minimo_correlativas(self, codigo, cuatrimestre, parametros):
-        if cuatrimestre <= 0 or not codigo in parametros.plan:
+    def setear_cuatrimestre_minimo_correlativas(self, id_materia, cuatrimestre, parametros):
+        if cuatrimestre <= 0 or not id_materia in parametros.plan:
             return
+
+        materia = Materia.query.get(id_materia)
 
         # Si la materia es del CBC no modifica los cuatrimestres de inicio
         tipo_CBC = TipoMateria.query.filter_by(descripcion='CBC').first().id
-        if Materia.query.filter_by(carrera_id=parametros.id_carrera).filter_by(codigo=codigo) \
-                .filter_by(tipo_materia_id=tipo_CBC).first():
+        if materia.tipo_materia_id == tipo_CBC:
             return
 
-        materias_que_la_tienen_de_correlativa = parametros.plan[codigo]
-        for cod_materia in materias_que_la_tienen_de_correlativa:
-            cuatri_actual = parametros.cuatrimestre_minimo_para_materia.get(cod_materia, cuatrimestre)
-            parametros.cuatrimestre_minimo_para_materia[cod_materia] = max(cuatri_actual, cuatrimestre)
+        materias_que_la_tienen_de_correlativa = parametros.plan[id_materia]
+        for id_materia_q_tiene_de_correlativa in materias_que_la_tienen_de_correlativa:
+            cuatri_actual = parametros.cuatrimestre_minimo_para_materia.get(id_materia_q_tiene_de_correlativa,
+                                                                            cuatrimestre)
+            parametros.cuatrimestre_minimo_para_materia[id_materia_q_tiene_de_correlativa] = max(cuatri_actual,
+                                                                                                 cuatrimestre)
 
     def configurar_horarios_y_seleccionar_cursos_obligatorios(self, horarios_invalidos, cursos_preseleccionados,
                                                               puntaje_minimo_cursos, parametros):
@@ -400,15 +418,15 @@ class PlanDeEstudiosService(BaseService):
         horarios_invalidos = self.normalizar_dias_y_franjas_invalidas(horarios_invalidos)
 
         parametros.horarios = {}
-        for cod in parametros.materias:
-            materia = parametros.materias[cod]
+        for id_materia in parametros.materias:
+            materia = parametros.materias[id_materia]
 
             # Si la materia fue seleccionada, agrego solo el curso correspondiente
             # además, si es una materia electiva se la pasa a obligatoria para forzar
             # que se elija ese curso en algun momento.
-            if materia.codigo in cursos_preseleccionados:
-                curso_db = Curso.query.get(cursos_preseleccionados[materia.codigo])
-                parametros.horarios[materia.codigo] = [self.generar_curso(curso_db)]
+            if materia.id_materia in cursos_preseleccionados:
+                curso_db = Curso.query.get(cursos_preseleccionados[materia.id_materia])
+                parametros.horarios[materia.id_materia] = [self.generar_curso(curso_db)]
 
                 if materia.tipo == ELECTIVA:
                     materia.tipo = OBLIGATORIA
@@ -419,7 +437,8 @@ class PlanDeEstudiosService(BaseService):
 
     def generar_curso(self, curso_db):
         horarios = []
-        for horario_por_curso in HorarioPorCurso.query.filter_by(curso_id=curso_db.id).filter_by(es_horario_activo=True).all():
+        for horario_por_curso in HorarioPorCurso.query.filter_by(curso_id=curso_db.id).filter_by(
+                es_horario_activo=True).all():
             horario = Horario.query.get(horario_por_curso.horario_id)
             horarios.append(Modelo_Horario(
                 dia=horario.dia,
@@ -466,7 +485,7 @@ class PlanDeEstudiosService(BaseService):
             cursos_materia.append(posibles_cursos_materia.pop()[CURSO_POS])
 
         if cursos_materia:
-            parametros.horarios[materia.codigo] = cursos_materia
+            parametros.horarios[materia.id_materia] = cursos_materia
 
     def curso_tiene_horario_valido(self, curso, horarios_invalidos):
         for horario_curso in HorarioPorCurso.query.filter_by(curso_id=curso.id).filter_by(es_horario_activo=True).all():
@@ -488,9 +507,9 @@ class PlanDeEstudiosService(BaseService):
 
     def validar_cursos_materias_obligatorias(self, parametros):
         materias_obligatorias_sin_curso = []
-        for codigo in parametros.plan:
-            materia = parametros.materias[codigo]
-            if materia.tipo == OBLIGATORIA and not codigo in parametros.horarios:
+        for id_materia in parametros.plan:
+            materia = parametros.materias[id_materia]
+            if materia.tipo == OBLIGATORIA and not id_materia in parametros.horarios:
                 materias_obligatorias_sin_curso.append(materia)
 
         if not materias_obligatorias_sin_curso:
@@ -512,17 +531,17 @@ class PlanDeEstudiosService(BaseService):
         return False, msj
 
     def eliminar_materias_sin_cursos(self, parametros):
-        codigos_plan = list(parametros.plan.keys())
-        for cod_materia in codigos_plan:
-            if not cod_materia in parametros.horarios:
-                self.eliminar_materia_y_correlativas_recursivo(cod_materia, parametros)
+        ids_plan = list(parametros.plan.keys())
+        for id_materia in ids_plan:
+            if not id_materia in parametros.horarios:
+                self.eliminar_materia_y_correlativas_recursivo(id_materia, parametros)
 
-    def eliminar_materia_y_correlativas_recursivo(self, cod_materia, parametros):
-        correlativas = parametros.plan[cod_materia] if cod_materia in parametros.plan else []
-        parametros.quitar_materia_por_codigo(cod_materia, False)
+    def eliminar_materia_y_correlativas_recursivo(self, id_materia, parametros):
+        correlativas = parametros.plan[id_materia] if id_materia in parametros.plan else []
+        parametros.quitar_materia_por_id(id_materia, False)
 
-        for cod_correlativa in correlativas:
-            self.eliminar_materia_y_correlativas_recursivo(cod_correlativa, parametros)
+        for id_correlativa in correlativas:
+            self.eliminar_materia_y_correlativas_recursivo(id_correlativa, parametros)
 
     def normalizar_dias_y_franjas_invalidas(self, horarios_invalidos):
         horarios_normalizados = {}
@@ -554,8 +573,8 @@ class PlanDeEstudiosService(BaseService):
         min_inicio = 33
         max_inicio = 1
         dias = []
-        for cod_materia in parametros.horarios:
-            for curso in parametros.horarios[cod_materia]:
+        for id_materia in parametros.horarios:
+            for curso in parametros.horarios[id_materia]:
                 for horario in curso.horarios:
                     if horario.dia not in dias:
                         dias.append(horario.dia)
@@ -567,8 +586,8 @@ class PlanDeEstudiosService(BaseService):
         parametros.franja_maxima = max_inicio + 1
         parametros.dias = dias
 
-        for cod_materia in parametros.horarios:
-            for curso in parametros.horarios[cod_materia]:
+        for id_materia in parametros.horarios:
+            for curso in parametros.horarios[id_materia]:
                 for horario in curso.horarios:
                     hora_maxima = horario.convertir_franja_a_hora(parametros.franja_maxima)
                     if horario.hora_fin > hora_maxima:
@@ -577,8 +596,8 @@ class PlanDeEstudiosService(BaseService):
     def validar_creditos_requeridos_electivas(self, parametros):
         creditos_tematicas = parametros.creditos_minimos_tematicas.copy()
         creditos = 0
-        for cod_materia in parametros.materias:
-            materia = parametros.materias[cod_materia]
+        for id_materia in parametros.materias:
+            materia = parametros.materias[id_materia]
             if materia.tipo == ELECTIVA:
                 creditos += materia.creditos
                 self.actualizar_creditos_tematicas(creditos_tematicas, materia)
@@ -629,90 +648,6 @@ class PlanDeEstudiosService(BaseService):
             return False, 'El plan indicado no puede eliminarse porque se encuentra en curso', CLIENT_ERROR_NOT_FOUND
 
         return self.mensaje_OK(nombre_parametro)
-
-    def actualizar_plan(self, plan_de_estudios, nuevo_estado):
-        estado = EstadoPlanDeEstudios.query.filter_by(numero=nuevo_estado).first()
-
-        plan_de_estudios.fecha_ultima_actualizacion = datetime.today()
-        plan_de_estudios.estado_id = estado.id
-
-        db.session.commit()
-
-    def agregar_materia_al_plan(self, plan_de_estudios, id_materia, id_curso, cuatrimestre):
-        materia_plan = MateriaPlanDeEstudios(
-            plan_estudios_id=plan_de_estudios.id,
-            materia_id=id_materia,
-            orden=cuatrimestre
-        )
-
-        if id_curso:
-            materia_plan.curso_id = id_curso
-
-        db.session.add(materia_plan)
-        db.session.commit()
-
-    def agregar_materias_CBC_al_plan_generado(self, parametros):
-        if not parametros.materias_CBC_pendientes:
-            return
-
-        grupos_CBC = []
-        grupo_actual = {}
-        for index, materia in enumerate(parametros.materias_CBC_pendientes):
-            grupo_actual[materia.codigo] = {
-                "id_materia": materia.id,
-                "id_curso": None
-            }
-            if (index + 1) % 3 == 0:
-                grupos_CBC.append(grupo_actual)
-                grupo_actual = {}
-
-        if grupo_actual: #En caso de tener menos materias por cuatrimestre
-            grupos_CBC.append(grupo_actual)
-
-        for i in range(len(grupos_CBC)-1,-1,-1):
-            grupo_cuatrimestre = grupos_CBC[i]
-            parametros.plan_generado.insert(0, grupo_cuatrimestre)
-
-    def agregar_materias_generadas_al_plan(self, parametros, plan_de_estudios):
-        self.agregar_materias_CBC_al_plan_generado(parametros)
-
-        for cuatrimestre, grupo_materias in enumerate(parametros.plan_generado):
-            for cod_materia in grupo_materias:
-                id_materia = grupo_materias[cod_materia]["id_materia"]
-                id_curso = grupo_materias[cod_materia]["id_curso"]
-                self.agregar_materia_al_plan(plan_de_estudios, id_materia, id_curso, cuatrimestre)
-
-    ########################################################################
-    ##              Algoritmos de generación de plan de carrera           ##
-    ########################################################################
-
-    def generar_plan_de_cursada_greedy(self, parametros, plan_de_estudios):
-        se_genero_plan_compatible = generar_plan_greedy(parametros)
-
-        if not se_genero_plan_compatible:
-            self.actualizar_plan(plan_de_estudios, PLAN_INCOMPATIBLE)
-            result = 'No es posible generar un plan con todas las restricciones impuestas.<br />' \
-                     'Flexibilizá algunas condiciones o seleccioná algunos cursos manualmente y' \
-                     'luego volvé a generar el plan de estudios.', CLIENT_ERROR_BAD_REQUEST
-            self.logg_resultado(result)
-            return result
-
-        self.agregar_materias_generadas_al_plan(parametros, plan_de_estudios)
-        self.actualizar_plan(plan_de_estudios, PLAN_FINALIZADO)
-
-        url = url_for('main.visualizar_plan_de_estudios_page', idPlanEstudios=plan_de_estudios.id)
-        result = url, SUCCESS_OK
-        self.logg_resultado(result)
-        return result
-
-    def generar_plan_de_cursada_programacion_lineal_entera(self, parametros, plan_de_estudios):
-        # parametros.nombre_archivo_pulp = ARCHIVO_PULP
-        # parametros.nombre_archivo_resultados_pulp = ARCHIVO_RESULTADO_PULP
-        # parametros.nombre_archivo_pulp_optimizado = ARCHIVO_PULP_OPTIMIZADO
-
-        result = "El algoritmo no ha sido implementado", CLIENT_ERROR_NOT_FOUND
-        self.logg_resultado(result)
-        return result
 
 
 #########################################

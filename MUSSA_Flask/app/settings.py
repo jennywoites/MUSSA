@@ -27,6 +27,9 @@ USER_ENABLE_USERNAME = False  # Register and Login with username
 USER_AFTER_LOGIN_ENDPOINT = 'main.member_page'
 USER_AFTER_LOGOUT_ENDPOINT = 'main.home_page'
 
+# Brokers Celery
+CELERY_BROKER_URL = 'redis://localhost'
+
 # available languages
 LANGUAGES = {
     'en': 'English',

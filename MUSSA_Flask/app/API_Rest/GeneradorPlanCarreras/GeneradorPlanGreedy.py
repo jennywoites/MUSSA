@@ -3,7 +3,7 @@ from app.API_Rest.GeneradorPlanCarreras.modelos.Materia import ELECTIVA, OBLIGAT
 PLAN_NO_GENERADO = False
 PLAN_GENERADO_CORRECTAMENTE = True
 
-MAX_COMBINACIONES = 15 * 14 * 13 * 12  * 11 # 15 cursos posibles, 5 materias max
+MAX_COMBINACIONES = 15 * 14 * 13 * 12 * 11  # 15 cursos posibles, 5 materias max
 
 PARAMETROS_ACTUALES = "parametros_actuales"
 CREDITOS_TOTALES = "creditos_totales"
@@ -71,9 +71,8 @@ def generar_combinacion_base(parametros, creditos_totales):
 def agregar_segunda_parte_del_trabajo_final_consecutiva_a_la_primera_parte(parametros, combinacion_actual):
     # Si el tp o tesis fue agregado el cuatrimestre anterior, se lo agrega para este cuatrimestre
     if len(parametros.materia_trabajo_final) == 1:
-        codigo_base = parametros.materia_trabajo_final[0].codigo[:-1]
-        codigo_parte_a = codigo_base + "A"
-        if codigo_parte_a in parametros.plan_generado[-1]:
+        id_parte_a = parametros.materia_trabajo_final[0].id_materia  # es el mismo id que la parte b
+        if id_parte_a in parametros.plan_generado[-1]:
             materia_tp = parametros.materia_trabajo_final[0]
             agregar_materia_a_combinacion_actualizar_creditos_y_horas(combinacion_actual, materia_tp)
 
@@ -152,9 +151,9 @@ def agregar_materia_a_combinacion_actualizar_creditos_y_horas(combinacion_actual
         combinacion_actual[CANT_CREDITOS_ELECTIVAS] += materia.creditos
         combinacion_actual[CANT_CREDITOS_TEMATICAS] += parametros.calcular_creditos_aportados_tematicas(materia)
 
-    if materia.codigo in parametros.plan:
-        for cod_correlativa_liberada in parametros.plan[materia.codigo]:
-            if parametros.materias[cod_correlativa_liberada].tipo == OBLIGATORIA:
+    if materia.id_materia in parametros.plan:
+        for id_correlativa_liberada in parametros.plan[materia.id_materia]:
+            if parametros.materias[id_correlativa_liberada].tipo == OBLIGATORIA:
                 combinacion_actual[CANT_OBLIGATORIAS_QUE_LIBERA] += 1
 
     agregar_materia_y_actualizar_creditos(materia, curso, franjas_curso, parametros,
@@ -223,8 +222,8 @@ def copiar_combinacion(combinacion):
         franjas[dia] = combinacion[FRANJAS_CUATRIMESTRE][dia][:]
 
     materias = {}
-    for cod in combinacion[MATERIAS_CUATRI_ACTUAL]:
-        materias[cod] = combinacion[MATERIAS_CUATRI_ACTUAL][cod]
+    for id_materia in combinacion[MATERIAS_CUATRI_ACTUAL]:
+        materias[id_materia] = combinacion[MATERIAS_CUATRI_ACTUAL][id_materia]
 
     return {
         PARAMETROS_ACTUALES: combinacion[PARAMETROS_ACTUALES].copia_profunda(),
@@ -249,7 +248,7 @@ def es_posible_agregar_materia_y_curso(materia, franjas_curso, horas_cursada, co
 
     # Verifico que no se haya agregado ya la materia en este cuatrimestre y este sea otro de los horarios
     # disponibles para el mismo código de materia
-    if (materia.codigo in materias_cuatrimestre_actual):
+    if (materia.id_materia in materias_cuatrimestre_actual):
         return False
 
     # Si ya alcance la cantidad de materias en el cuatrimestre, no se puede agregar
@@ -270,9 +269,9 @@ def es_posible_agregar_materia_y_curso(materia, franjas_curso, horas_cursada, co
         return False
 
     # Verifico que la materia no sea incompatible con otras que ya han sido agregadas:
-    if materia.codigo in parametros.materias_incompatibles:
-        for cod_incompatible in parametros.materias_incompatibles[materia.codigo]:
-            if parametros.se_encuentra_materia_en_plan_generado(cod_incompatible, materias_cuatrimestre_actual):
+    if materia.id_materia in parametros.materias_incompatibles:
+        for id_incompatible in parametros.materias_incompatibles[materia.id_materia]:
+            if parametros.se_encuentra_materia_en_plan_generado(id_incompatible, materias_cuatrimestre_actual):
                 return False
 
     # Verifico que el horario sea compatible
@@ -286,10 +285,9 @@ def es_posible_agregar_materia_y_curso(materia, franjas_curso, horas_cursada, co
 
 def agregar_materia_y_actualizar_creditos(materia, curso, franjas_curso, parametros, materias_cuatrimestre_actual,
                                           franjas_cuatrimestre):
-    materias_cuatrimestre_actual[materia.codigo] = {
-        "id_materia": materia.id_materia,
-        "id_curso": curso.id_curso if curso else -1
-    }
+    # No hay problema con las materias de trabajo final ya que si bien tienen el mismo id SIEMPRE estaran
+    # en cuatrimestres separados
+    materias_cuatrimestre_actual[materia.id_materia] = curso.id_curso if curso else -1
 
     if not curso:
         actualizar_datos_al_agregar_materia_trabajo_final(parametros, materia)
@@ -299,12 +297,11 @@ def agregar_materia_y_actualizar_creditos(materia, curso, franjas_curso, paramet
 
 def actualizar_datos_al_agregar_materia_trabajo_final(parametros, materia):
     index = -1
-    codigo = materia.codigo
     for i, materia_tp in enumerate(parametros.materia_trabajo_final):
         if materia_tp.codigo == materia.codigo:
             index = i
-        if codigo in materia_tp.correlativas:
-            materia_tp.correlativas.remove(codigo)
+        if materia.id_materia in materia_tp.correlativas:
+            materia_tp.correlativas.remove(materia.id_materia)
 
     if index >= 0:
         parametros.materia_trabajo_final.pop(index)
@@ -313,12 +310,12 @@ def actualizar_datos_al_agregar_materia_trabajo_final(parametros, materia):
 def actualizar_datos_al_agregar_materia_con_curso(parametros, materia, franjas_curso, franjas_cuatrimestre):
     ocupar_franjas_del_curso(franjas_curso, franjas_cuatrimestre)
 
-    if materia.codigo in parametros.materias_incompatibles:
-        for cod_incompatible in parametros.materias_incompatibles[materia.codigo]:
-            parametros.quitar_materia_por_codigo(cod_incompatible, False)
+    if materia.id_materia in parametros.materias_incompatibles:
+        for id_incompatible in parametros.materias_incompatibles[materia.id_materia]:
+            parametros.quitar_materia_por_id(id_incompatible, False)
 
     parametros.actualizar_creditos_tematicas_electivas(materia)
-    parametros.quitar_materia_por_codigo(materia.codigo, True)
+    parametros.quitar_materia_por_id(materia.id_materia, True)
 
 
 def ocupar_franjas_del_curso(franjas_curso, franjas_cuatrimestre):

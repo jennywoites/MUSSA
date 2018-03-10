@@ -2,7 +2,8 @@ from app.API_Rest.codes import *
 from flask_user import login_required
 from app.API_Rest.Services.BaseService import BaseService
 from app.models.generadorJSON.plan_de_estudios_generadorJSON import generarJSON_plan_de_estudios
-from app.models.plan_de_estudios_models import PlanDeEstudios
+from app.models.plan_de_estudios_models import PlanDeEstudios, PlanDeEstudiosFinalizadoProcesar
+from app import db
 
 
 class AllPlanesDeEstudiosService(BaseService):
@@ -31,14 +32,23 @@ class AllPlanesDeEstudiosService(BaseService):
         for encuesta in query.all():
             result_planes.append(generarJSON_plan_de_estudios(encuesta))
 
+        self.actualizar_notificaciones_planes_visualizados(alumno)
+
         result = ({"planes_de_estudio": result_planes}, SUCCESS_OK)
         self.logg_resultado(result)
 
         return result
 
-    #########################################
+    def actualizar_notificaciones_planes_visualizados(self, alumno):
+        """
+        Elimina todas las notificaciones del planes sin visualizar para
+        el alumno ya que se ha accedido a ver el listado de los planes.
+        """
+        PlanDeEstudiosFinalizadoProcesar.query.filter_by(alumno_id=alumno.id).delete()
+        db.session.commit()
 
 
+#########################################
 CLASE = AllPlanesDeEstudiosService
 URLS_SERVICIOS = (
     '/api/alumno/planDeEstudios/all',

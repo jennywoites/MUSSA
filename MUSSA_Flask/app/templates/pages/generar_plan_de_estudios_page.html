@@ -10,7 +10,8 @@
             opcion.checked = true;
             onChangeCarrera(opcion.id);
         }
-        seleccionar_inicio_del_plan_valido();
+        if (cant_carreras > 0)
+            seleccionar_inicio_del_plan_valido();
     });
 
     function seleccionar_inicio_del_plan_valido() {
@@ -20,15 +21,11 @@
     }
 
     function generar_plan_greedy() {
-        generar_plan_de_estudios(generar_plan_de_estudios_greedy_service, function(status, response){
-            redirigir_a(response);
-        });
+        generar_plan_de_estudios(generar_plan_de_estudios_greedy_service);
     }
 
     function generar_plan_PLE() {
-        generar_plan_de_estudios(generar_plan_de_estudios_PLE_service, function(status, response) {
-            showElementById('div_success_generar_plan_de_estudios');
-        });
+        generar_plan_de_estudios(generar_plan_de_estudios_PLE_service);
     }
 
     function ocultar_errores() {
@@ -50,7 +47,7 @@
         }
     }
 
-    function generar_plan_de_estudios(f_servicio, onSuccess) {
+    function generar_plan_de_estudios(f_servicio) {
         ocultar_errores();
 
         var es_valido = true;
@@ -146,8 +143,8 @@
         f_servicio('{{ csrf_token() }}', carrera, max_cant_cuatrimestres, max_cant_materias, max_horas_cursada,
         max_horas_extras, puntaje_minimo_cursos, cuatrimestre_inicio, anio_inicio, horarios_invalidos, tematicas,
         aprobacion_finales, cursos_preseleccionados, trabajo_final, orientacion, function (status, response) {
+            showElementById('div_success_generar_plan_de_estudios');
             hide_loading_mask();
-            onSuccess(status, response);
         }, function (status, response) {
             var div_error = document.getElementById('div_error_generar_plan_de_estudios');
             div_error.innerHTML = '';
@@ -167,9 +164,9 @@
         var tabla = document.getElementById("cursos_seleccionados_para_cursar");
         for(var i=1;i<tabla.rows.length; i++) {
             var curso = tabla.rows[i].cells;
-            var codigo = curso[2].innerText.substring(0,curso[2].innerText.indexOf(" - "));
+            var id_materia = curso[0].innerText;
             var id_curso = curso[1].innerText;
-            cursos_seleccionados[codigo] = id_curso;
+            cursos_seleccionados[id_materia] = id_curso;
         }
         return cursos_seleccionados;
     }
@@ -184,11 +181,10 @@
         for (var i=1; i<tabla.rows.length; i++) {
             var fila = tabla.rows[i];
             if (!fila.hidden) {
-                var codigo = fila.cells[2].innerText;
                 var id_materia = fila.cells[0].innerText;
 
                 var selector = document.getElementById('final_aprobado_' + id_materia)
-                estado_finales[codigo] = selector[selector.selectedIndex].value;
+                estado_finales[id_materia] = selector[selector.selectedIndex].value;
             }
         }
         return estado_finales;
@@ -645,6 +641,7 @@
 
 
 
+
 </script>
 
 <div class="container">
@@ -836,9 +833,8 @@
                             <th>{{materia["nombre"]}}</th>
                             <th>
                                 <select class="form-control"
-                                        id="final_aprobado_{{materia['id_materia_alumno']}}"
-                                        name="final_aprobado_{{materia['id_materia_alumno']}}">
-                                    <option value="-1">Volver a cursar la materia</option>
+                                        id="final_aprobado_{{materia['id_materia']}}"
+                                        name="final_aprobado_{{materia['id_materia']}}">
                                     <option value="0">Considerar la materia como aprobada</option>
                                     <option value="1">La materia estará aprobada para el comienzo del segundo
                                         cuatrimestre
@@ -1109,7 +1105,7 @@
     <br>
 
     <div id="div_success_generar_plan_de_estudios" hidden="true">
-        <div class="alert alert-success">El plan de estudios optimizado se está generando. <br/>Cuando el plan esté
+        <div class="alert alert-success">El plan de estudios se está generando. <br/>Cuando el plan esté
             listo se te enviará una notificación para que puedas visualizarlo.
         </div>
     </div>

@@ -80,6 +80,17 @@ BASE_API = "/api"
 BASE_URL = HTTP + IP + PUERTO + BASE_API
 
 //*********************************************************//
+//                      Notificaciones                     //
+//*********************************************************//
+
+function get_notificaciones_service(token, onSuccess, onError) {
+    var url_servicio = BASE_URL + '/notificaciones';
+    do_request('GET', url_servicio, token, {}, function(status, response){
+        onSuccess(status, response["notificaciones"]);
+    }, onError);
+}
+
+//*********************************************************//
 //                  Servicios Docentes                     //
 //*********************************************************//
 
