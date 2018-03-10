@@ -6,7 +6,7 @@
 
         function ver_materia_otra_carrera(id_carrera, codigo_materia) {
             var csrf_token = '{{ csrf_token() }}';
-            get_materias_con_filtro_service(csrf_token, codigo_materia, '', [id_carrera], function(state, result) {
+            get_materias_con_filtro_service(csrf_token, codigo_materia, '', [id_carrera], [], function(state, result) {
                 var idMateria = result[0]["id_materia"];
                 var url = '/materias/' + idMateria;
                 window.location.href = url;

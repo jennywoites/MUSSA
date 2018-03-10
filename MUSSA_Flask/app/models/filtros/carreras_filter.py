@@ -1,4 +1,5 @@
 from app.models.carreras_models import Carrera, Materia
+from app.models.palabras_clave_models import PalabrasClaveParaMateria, PalabraClave
 
 
 def filtrar_carrera(filtros):
@@ -32,5 +33,14 @@ def filtrar_materia(filtros):
 
     if "ids_carreras" in filtros:
         query = query.filter(Materia.carrera.has(Carrera.id.in_(filtros["ids_carreras"])))
+
+    if "palabras_clave" in filtros:
+        query_ids_materias_con_palabras = PalabrasClaveParaMateria.query \
+            .with_entities(PalabrasClaveParaMateria.materia_id) \
+            .filter(PalabrasClaveParaMateria.palabra_clave_id.in_(
+            PalabraClave.query.with_entities(PalabraClave.id)
+                .filter(PalabraClave.palabra.in_(filtros["palabras_clave"]))
+        ))
+        query = query.filter(Materia.id.in_(query_ids_materias_con_palabras))
 
     return query.order_by(Materia.codigo.asc()).all()

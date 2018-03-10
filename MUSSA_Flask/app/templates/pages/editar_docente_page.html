@@ -159,7 +159,7 @@
         if (id_carrera <= 0)
             return;
 
-        get_materias_con_filtro_service('{{ csrf_token() }}', '', '', [id_carrera], function(status, responseText){
+        get_materias_con_filtro_service('{{ csrf_token() }}', '', '', [id_carrera], [], function(status, responseText){
             fill_dropdown('materias_disponibles', format_materias_dropdown, responseText);
             $("#materias_disponibles").prop('disabled', false);
         }, function(status, responseText){

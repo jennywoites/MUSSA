@@ -176,7 +176,7 @@ function get_materia_service(token, idMateria, onSucces, onError) {
     do_request('GET', url_servicio, token, {}, onSucces, onError);
 }
 
-function get_materias_con_filtro_service(token, codigo, nombre, ids_carreras, onSuccess, onError) {
+function get_materias_con_filtro_service(token, codigo, nombre, ids_carreras, l_palabras_clave, onSuccess, onError) {
     var url_servicio = BASE_URL + '/materia/all';
 
     parametros = {};
@@ -188,6 +188,9 @@ function get_materias_con_filtro_service(token, codigo, nombre, ids_carreras, on
 
     if (!$.isEmptyObject(ids_carreras))
         parametros["ids_carreras"] = JSON.stringify(ids_carreras);
+
+    if (!$.isEmptyObject(l_palabras_clave))
+        parametros["palabras_clave"] = JSON.stringify(l_palabras_clave);
 
     do_request('GET', url_servicio, token, parametros, function(status, response) {
         onSuccess(status, response["materias"]);

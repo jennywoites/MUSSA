@@ -16,6 +16,7 @@ class AllMateriasService(BaseService):
         codigo_materia = self.obtener_parametro("codigo")
         nombre = self.obtener_texto("nombre")
         ids_carreras = self.obtener_lista("ids_carreras")
+        palabras_clave = self.obtener_lista("palabras_clave")
 
         parametros_son_validos, msj, codigo = self.validar_parametros(dict([
             ("codigo", {
@@ -43,6 +44,7 @@ class AllMateriasService(BaseService):
         if codigo_materia: filtros["codigo"] = codigo_materia
         if nombre: filtros["nombre"] = sustituir_todos_los_acentos(nombre)
         if ids_carreras: filtros["ids_carreras"] = ids_carreras
+        if palabras_clave: filtros["palabras_clave"] = palabras_clave
 
         materias_result = []
         for materia in filtrar_materia(filtros):
