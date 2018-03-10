@@ -30,7 +30,7 @@ class TestObtenerPreguntasEncuesta(TestBase):
         assert (response.status_code == SUCCESS_OK)
 
         preguntas = json.loads(response.get_data(as_text=True))["preguntas"]
-        assert (len(preguntas) == 32)
+        assert (len(preguntas) == 31)
 
     def test_obtener_todas_las_preguntas_de_una_categoria_solo_devuelve_las_de_dicha_categoria(self):
         parametros = {}

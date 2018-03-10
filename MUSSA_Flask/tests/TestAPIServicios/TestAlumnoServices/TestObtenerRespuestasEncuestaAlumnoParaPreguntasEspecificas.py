@@ -383,7 +383,7 @@ class TestObtenerRespuestasEncuestaAlumnoParaPreguntasEspecificas(TestBase):
         assert (response.status_code == SUCCESS_OK)
 
         respuestas_encuestas = json.loads(response.get_data(as_text=True))["respuestas_encuestas"]
-        assert (len(respuestas_encuestas) == 32)
+        assert (len(respuestas_encuestas) == 31)
 
     def test_obtener_las_respuestas_de_preguntas_especificas_solo_obtiene_esas(self):
         client = self.loguear_usuario()
@@ -439,7 +439,7 @@ class TestObtenerRespuestasEncuestaAlumnoParaPreguntasEspecificas(TestBase):
         assert (response.status_code == SUCCESS_OK)
 
         respuestas_encuestas = json.loads(response.get_data(as_text=True))["respuestas_encuestas"]
-        assert (len(respuestas_encuestas) == 32)
+        assert (len(respuestas_encuestas) == 31)
 
     def test_obtener_las_respuestas_con_ids_de_preguntas_inexistentes_da_error(self):
         client = self.loguear_administrador()

@@ -241,13 +241,16 @@ class TestBuscarMaterias(TestBase):
         response = client.get(self.get_url_get_materias(), query_string=parametros)
         assert (response.status_code == CLIENT_ERROR_BAD_REQUEST)
 
-    def test_buscar_materias_con_codigo_numerico_no_existente_devuelve_not_found(self):
+    def test_buscar_materias_con_codigo_numerico_no_existente_devuelve_lista_vacia(self):
         parametros = {}
         parametros["codigo"] = "89899"
 
         client = self.app.test_client()
         response = client.get(self.get_url_get_materias(), query_string=parametros)
-        assert (response.status_code == CLIENT_ERROR_NOT_FOUND)
+        assert (response.status_code == SUCCESS_OK)
+
+        materias = json.loads(response.get_data(as_text=True))["materias"]
+        assert (len(materias) == 0)
 
 
 if __name__ == '__main__':
