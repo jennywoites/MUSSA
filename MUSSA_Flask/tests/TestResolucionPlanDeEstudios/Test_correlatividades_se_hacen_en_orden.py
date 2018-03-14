@@ -25,9 +25,6 @@ class Test_correlatividades_se_hacen_en_orden(TestPulp):
             MATERIA_C_OBLIGATORIA.id_materia: [CURSO_1_MATERIA_C],
         }
 
-    def get_horarios_no_permitidos_test(self):
-        return []
-
     def get_dias(self):
         return [LUNES]
 

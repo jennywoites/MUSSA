@@ -223,6 +223,18 @@ MATERIA_E_OBLIGATORIA = Materia(
     medias_horas_extras_cursada=12
 )
 
+MATERIA_E_OBLIGATORIA_CREDITOS_MINIMOS = Materia(
+    id_materia='5',
+    codigo='E',
+    nombre='Materia E',
+    creditos=6,
+    tipo=OBLIGATORIA,
+    cred_min=7,
+    correlativas=[],
+    tematicas_principales=[],
+    medias_horas_extras_cursada=12
+)
+
 CURSO_1_MATERIA_E = Curso(
     id_curso='10',
     cod_materia='E',

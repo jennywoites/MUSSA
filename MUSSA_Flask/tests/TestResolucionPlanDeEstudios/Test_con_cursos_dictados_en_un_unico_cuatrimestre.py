@@ -25,9 +25,6 @@ class Test_con_cursos_dictados_en_un_unico_cuatrimestre(TestPulp):
             MATERIA_C_OBLIGATORIA.id_materia: [CURSO_1_MATERIA_C],
         }
 
-    def get_horarios_no_permitidos_test(self):
-        return []
-
     def get_dias(self):
         return [LUNES, MARTES]
 

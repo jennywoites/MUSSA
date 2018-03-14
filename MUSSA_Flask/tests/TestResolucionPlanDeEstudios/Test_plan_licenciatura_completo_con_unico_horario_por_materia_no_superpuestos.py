@@ -19,9 +19,6 @@ class Test_plan_licenciatura_completo_con_unico_horario_por_materia_no_superpues
     def get_horarios_test(self):
         return self.horarios
 
-    def get_horarios_no_permitidos_test(self):
-        return []
-
     def get_creditos_minimos_electivas(self):
         return 40
 

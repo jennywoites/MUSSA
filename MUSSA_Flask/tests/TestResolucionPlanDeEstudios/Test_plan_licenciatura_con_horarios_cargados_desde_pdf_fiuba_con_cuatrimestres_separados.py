@@ -21,9 +21,6 @@ class Test_plan_licenciatura_con_horarios_cargados_desde_pdf_fiuba_con_cuatrimes
     def get_horarios_test(self):
         return self.horarios
 
-    def get_horarios_no_permitidos_test(self):
-        return []
-
     def get_creditos_minimos_electivas(self):
         return 40
 

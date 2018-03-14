@@ -32,9 +32,6 @@ class TestPulp:
     def get_horarios_test(self):
         raise Exception("Obligatorio implementar en las clases hijas")
 
-    def get_horarios_no_permitidos_test(self):
-        raise Exception("Obligatorio implementar en las clases hijas")
-
     def get_nombre_archivo_pulp(self):
         return RUTA_EJECUCION_TEST + self.get_nombre_test() + "_pulp.py"
 
@@ -68,7 +65,7 @@ class TestPulp:
         parametros.plan = self.get_plan_carrera_test()
         parametros.materias = self.get_materias_test()
         parametros.horarios = self.get_horarios_test()
-        parametros.horarios_no_permitidos = self.get_horarios_no_permitidos_test()
+        parametros.horarios_no_permitidos = []
         parametros.creditos_minimos_electivas = self.get_creditos_minimos_electivas()
 
         parametros.nombre_archivo_pulp = self.get_nombre_archivo_pulp()
@@ -236,3 +233,13 @@ class TestPulp:
 
         return ((not curso.se_dicta_primer_cuatrimestre and not parametros.primer_cuatrimestre_es_impar)
                 or (not curso.se_dicta_segundo_cuatrimestre and parametros.primer_cuatrimestre_es_impar))
+
+    def los_creditos_minimos_acumulados_son_mayores_que_los_necesarios_para_cursar_la_materia(self, parametros,
+                                                                                              resultados):
+        for id_materia in parametros.materias:
+            materia = parametros.materias[id_materia]
+            cuatrimestre_cursada = resultados["C{}".format(id_materia)]
+            cuatri_anterior = cuatrimestre_cursada - 1
+            creditos_acumulados = resultados[
+                "CRED{}".format(get_str_cuatrimestre(cuatri_anterior))] if cuatri_anterior > 0 else 0
+            assert (creditos_acumulados >= materia.creditos_minimos_aprobados)
