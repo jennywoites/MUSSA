@@ -5,9 +5,9 @@ LINEA_GUARDAR = """    arch.write("{};{}".format(int(value({}))) + "\\n")"""
 
 
 def guardar_variable_materia_i_en_cuatri_j(arch, parametros):
-    for materia in parametros.plan:
+    for id_materia in parametros.plan:
         for cuatrimestre in range(1, parametros.max_cuatrimestres + 1):
-            variable = "Y_{}_{}".format(materia, get_str_cuatrimestre(cuatrimestre))
+            variable = "Y_{}_{}".format(id_materia, get_str_cuatrimestre(cuatrimestre))
             arch.write(LINEA_GUARDAR.format(variable, '{}', variable) + ENTER)
 
 

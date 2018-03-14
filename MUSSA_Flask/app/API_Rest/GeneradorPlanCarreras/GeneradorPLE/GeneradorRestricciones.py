@@ -80,7 +80,7 @@ def escribir_ecuacion_correlativa_depende_de_obligatoria(arch, parametros, id_ma
 def obtener_sumatoria_Y_cuatrimestres_para_materia(parametros, materia):
     sumatoria = ""
     for cuatrimestre in range(1, parametros.max_cuatrimestres + 1):
-        variable = "Y_{}_{}".format(materia.codigo, get_str_cuatrimestre(cuatrimestre))
+        variable = "Y_{}_{}".format(materia.id_materia, get_str_cuatrimestre(cuatrimestre))
         sumatoria += variable + " + "
     return sumatoria[:-3]
 
@@ -114,12 +114,12 @@ def generar_restriccion_maxima_cant_materias_por_cuatrimestre(arch, parametros):
     for cuatrimestre in range(1, parametros.max_cuatrimestres + 1):
         ecuacion = "prob += ("
         es_inicial = True
-        for materia in plan:
+        for id_materia in plan:
             ecuacion = ecuacion if es_inicial else (ecuacion + " + ")
             if es_inicial:
                 es_inicial = False
 
-            variable = "Y_{}_{}".format(materia, get_str_cuatrimestre(cuatrimestre))
+            variable = "Y_{}_{}".format(id_materia, get_str_cuatrimestre(cuatrimestre))
             ecuacion += variable
 
         ecuacion += " <= {})".format(parametros.max_cant_materias_por_cuatrimestre)
