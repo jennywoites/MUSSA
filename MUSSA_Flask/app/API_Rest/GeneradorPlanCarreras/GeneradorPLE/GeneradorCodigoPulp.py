@@ -1,14 +1,8 @@
 from app.API_Rest.GeneradorPlanCarreras.Constantes import *
-
+from app.API_Rest.GeneradorPlanCarreras.GeneradorPLE.GeneradorRestricciones import generar_restricciones
+from app.API_Rest.GeneradorPlanCarreras.GeneradorPLE.GeneradorVariables import definir_variables
+from app.API_Rest.GeneradorPlanCarreras.GeneradorPLE.ResultadosPulpDAO import guardar_variables
 from app.API_Rest.GeneradorPlanCarreras.ParametrosDTO import Parametros
-
-from app.API_Rest.GeneradorPlanCarreras.GeneradorRestricciones import generar_restricciones
-from app.API_Rest.GeneradorPlanCarreras.GeneradorVariables import definir_variables
-from app.API_Rest.GeneradorPlanCarreras.ResultadosPulpDAO import guardar_variables
-
-from app.API_Rest.GeneradorPlanCarreras.modelos.Materia import Materia
-from app.API_Rest.GeneradorPlanCarreras.modelos.Horario import Horario
-from app.API_Rest.GeneradorPlanCarreras.modelos.Curso import Curso
 
 
 def importar_pulp(arch):
@@ -30,7 +24,6 @@ def definir_funcion_objetivo(arch):
     arch.write("# Definicion de la funcion objetivo a minimizar." + ENTER + ENTER)
     funciones = []  # [(factor, variable)]
     funciones.append((10, "TOTAL_CUATRIMESTRES"))
-    # funciones.append((1,"HORAS_LIBRES_TOTALES"))
 
     ecuacion = "prob += "
     for (factor, variable) in funciones:

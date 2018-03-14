@@ -2,16 +2,12 @@ if __name__ == "__main__":
     import sys
     sys.path.append("../..")
 
-from tests.TestResolucionPlanDeEstudios.TestPulp import TestPulp
-
-from app.API_Rest.GeneradorPlanCarreras.GeneradorCodigoPulp import generar_archivo_pulp
-from app.API_Rest.GeneradorPlanCarreras.ParametrosDTO import Parametros
 from app.API_Rest.GeneradorPlanCarreras.Constantes import *
-from app.API_Rest.GeneradorPlanCarreras.my_utils import get_str_cuatrimestre
-
-from app.API_Rest.GeneradorPlanCarreras.modelos.Materia import Materia
 from app.API_Rest.GeneradorPlanCarreras.modelos.Curso import Curso
 from app.API_Rest.GeneradorPlanCarreras.modelos.Horario import Horario
+from app.API_Rest.GeneradorPlanCarreras.modelos.Materia import Materia
+from tests.TestResolucionPlanDeEstudios.TestPulp import TestPulp
+
 
 class Test_con_cursos_dictados_en_un_unico_cuatrimestre_comenzando_el_segundo_cuatrimestre(TestPulp):
 

@@ -4,14 +4,6 @@ if __name__ == "__main__":
 
 from tests.TestResolucionPlanDeEstudios.TestConHorariosPDF import TestConHorariosPDF
 
-from app.API_Rest.GeneradorPlanCarreras.GeneradorCodigoPulp import generar_archivo_pulp
-from app.API_Rest.GeneradorPlanCarreras.ParametrosDTO import Parametros
-from app.API_Rest.GeneradorPlanCarreras.Constantes import *
-from app.API_Rest.GeneradorPlanCarreras.my_utils import get_str_cuatrimestre
-
-from app.API_Rest.GeneradorPlanCarreras.modelos.Materia import Materia
-from app.API_Rest.GeneradorPlanCarreras.modelos.Curso import Curso
-from app.API_Rest.GeneradorPlanCarreras.modelos.Horario import Horario
 
 class Test_plan_licenciatura_con_horarios_cargados_desde_pdf_fiuba(TestConHorariosPDF):
 

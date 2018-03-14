@@ -1,74 +1,66 @@
 import os
 
-from app.API_Rest.GeneradorPlanCarreras.GeneradorCodigoPulp import generar_archivo_pulp
-from app.API_Rest.GeneradorPlanCarreras.ParametrosDTO import Parametros
 from app.API_Rest.GeneradorPlanCarreras.Constantes import *
-from app.API_Rest.GeneradorPlanCarreras.OptimizadorCodigoPulp import optimizar_codigo_pulp
+from app.API_Rest.GeneradorPlanCarreras.GeneradorPLE.GeneradorCodigoPulp import generar_archivo_pulp
+from app.API_Rest.GeneradorPlanCarreras.GeneradorPLE.OptimizadorCodigoPulp import optimizar_codigo_pulp
+from app.API_Rest.GeneradorPlanCarreras.ParametrosDTO import Parametros
 from app.API_Rest.GeneradorPlanCarreras.my_utils import get_str_cuatrimestre
-
-from app.API_Rest.GeneradorPlanCarreras.modelos.Materia import Materia
-from app.API_Rest.GeneradorPlanCarreras.modelos.Curso import Curso
-from app.API_Rest.GeneradorPlanCarreras.modelos.Horario import Horario
 
 RUTA_EJECUCION_TEST = "resultados_tests/"
 
-class TestPulp:
 
+class TestPulp:
     def get_nombre_test(self):
         raise Exception("Obligatorio implementar en las clases hijas")
 
-
     def get_plan_carrera_test(self):
-        raise Exception("Obligatorio implementar en las clases hijas")
-
+        plan = {}
+        materias = self.get_materias_test()
+        for id_materia in materias:
+            materia = materias[id_materia]
+            if not id_materia in plan:
+                plan[id_materia] = []
+            for id_correlativa in materia.correlativas:
+                correlativas = plan.get(id_correlativa, [])
+                correlativas.append(id_materia)
+                plan[id_correlativa] = correlativas
+        return plan
 
     def get_materias_test(self):
         raise Exception("Obligatorio implementar en las clases hijas")
 
-
     def get_horarios_test(self):
         raise Exception("Obligatorio implementar en las clases hijas")
-
 
     def get_horarios_no_permitidos_test(self):
         raise Exception("Obligatorio implementar en las clases hijas")
 
-
     def get_nombre_archivo_pulp(self):
         return RUTA_EJECUCION_TEST + self.get_nombre_test() + "_pulp.py"
-
 
     def get_nombre_archivo_resultados_pulp(self):
         return RUTA_EJECUCION_TEST + self.get_nombre_test() + "_resultados_pulp.py"
 
-
     def get_nombre_archivo_optimizado_pulp(self):
         return RUTA_EJECUCION_TEST + self.get_nombre_test() + "_optimizado_pulp.py"
-
 
     def get_dias(self):
         return [LUNES, MARTES, MIERCOLES, JUEVES, VIERNES, SABADO]
 
-
     def get_creditos_minimos_electivas(self):
         raise Exception("Obligatorio implementar en las clases hijas")
-
 
     def get_franjas_minima_y_maxima(self):
         return 1, 33
 
-
     def get_maxima_cantidad_cuatrimestres(self):
         return 10
-
 
     def get_maxima_cantidad_materias_por_cuatrimestre(self):
         return 4
 
-
     def comienza_en_primer_cuatrimestre(self):
         return True
-
 
     def configurar_parametros_test(self):
         parametros = Parametros()
@@ -93,10 +85,8 @@ class TestPulp:
 
         return parametros
 
-
     def ejecutar_codigo_pulp(self, parametros):
         os.system('python3 ' + parametros.nombre_archivo_pulp_optimizado)
-
 
     def obtener_resultados_pulp(self, parametros):
         resultados = {}
@@ -115,23 +105,20 @@ class TestPulp:
 
         return resultados
 
-
     def verificar_resultados(self, parametros, resultados):
         raise Exception("Obligatorio implementar en las clases hijas")
-
 
     def imprimir_plan_carrera(self, parametros, resultados):
         print()
         print("Plan de carrera generado:")
         plan_carrera = self.armar_plan(parametros, resultados)
-        for cuatrimestre in range(1, len(plan_carrera) +1):
+        for cuatrimestre in range(1, len(plan_carrera) + 1):
             msj = "{} Cuatrimestre: [ ".format(cuatrimestre)
             materias = plan_carrera[cuatrimestre]
             for materia in materias:
                 msj += materia + " - "
             msj = msj[:-3] + " ]"
             print(msj)
-
 
     def armar_plan(self, parametros, resultados):
         VARIABLE = 0
@@ -151,28 +138,26 @@ class TestPulp:
             plan_carrera[cuatri] = materias
         return plan_carrera
 
-
     def obtener_todas_las_materias_que_se_cursan(self, parametros, resultados):
         materias_cursadas = set()
 
-        for codigo in parametros.materias:
-            materia = parametros.materias[codigo]
+        for id_materia in parametros.materias:
+            materia = parametros.materias[id_materia]
 
             cont = 0
             for cuatri in range(1, parametros.max_cuatrimestres + 1):
-                variable = "Y_{}_{}".format(materia.codigo, get_str_cuatrimestre(cuatri))
+                variable = "Y_{}_{}".format(materia.id_materia, get_str_cuatrimestre(cuatri))
                 cont += resultados[variable]
 
             if (cont == 1):
-                materias_cursadas.add(codigo)
+                materias_cursadas.add(id_materia)
 
         return materias_cursadas
-
 
     def ejecutar_test(self):
         if not os.path.exists(RUTA_EJECUCION_TEST):
             os.system('mkdir {}'.format(RUTA_EJECUCION_TEST))
-    
+
         parametros = self.configurar_parametros_test()
         generar_archivo_pulp(parametros)
         optimizar_codigo_pulp(parametros)
@@ -188,45 +173,43 @@ class TestPulp:
     #################################################################
 
     def todas_las_materias_obligatorias_se_hacen(self, parametros, resultados):
-        for codigo in parametros.materias:
-            materia = parametros.materias[codigo]
+        for id_materia in parametros.materias:
+            materia = parametros.materias[id_materia]
             if materia.tipo == ELECTIVA:
                 continue
 
             cont = 0
             for cuatri in range(1, parametros.max_cuatrimestres + 1):
-                variable = "Y_{}_{}".format(materia.codigo, get_str_cuatrimestre(cuatri))
+                variable = "Y_{}_{}".format(materia.id_materia, get_str_cuatrimestre(cuatri))
                 cont += resultados[variable]
 
-            assert(cont == 1)
-
+            assert (cont == 1)
 
     def los_cuatrimestres_de_las_correlativas_son_menores(self, parametros, resultados):
         materias_cursadas = self.obtener_todas_las_materias_que_se_cursan(parametros, resultados)
 
-        for codigo in parametros.materias:
-            materia = parametros.materias[codigo]
-            
-            #Si la materia no se cursa no puede tener un numero de cuatrimestre
+        for id_materia in parametros.materias:
+            materia = parametros.materias[id_materia]
+
+            # Si la materia no se cursa no puede tener un numero de cuatrimestre
             if not materia in materias_cursadas:
                 continue
 
-            cod_actual = "C" + materia.codigo
-            for cor_materia in materia.correlativas:
-                cod_corr = "C" + cor_materia
-                assert(resultados[cod_actual] > resultados[cod_corr])
-
+            cuatri_actual = "C" + materia.id_materia
+            for id_cor_materia in materia.correlativas:
+                cuatri_corr = "C" + id_cor_materia
+                assert (resultados[cuatri_actual] > resultados[cuatri_corr])
 
     def los_creditos_en_electivas_cumplen_con_el_minimo(self, parametros, resultados):
         creditos_acumulados = 0
-        for codigo in parametros.materias:
-            materia = parametros.materias[codigo]
+        for id_materia in parametros.materias:
+            materia = parametros.materias[id_materia]
             if materia.tipo != ELECTIVA:
                 continue
 
             cont = 0
             for cuatri in range(1, parametros.max_cuatrimestres + 1):
-                variable = "Y_{}_{}".format(materia.codigo, get_str_cuatrimestre(cuatri))
+                variable = "Y_{}_{}".format(materia.id_materia, get_str_cuatrimestre(cuatri))
                 cont += resultados[variable]
 
             if (cont == 1):
@@ -234,4 +217,22 @@ class TestPulp:
             elif (cont > 1):
                 raise Exception("La materia electiva se está cursando en más de un cuatrimestre")
 
-        assert(creditos_acumulados >= parametros.creditos_minimos_electivas)       
+        assert (creditos_acumulados >= parametros.creditos_minimos_electivas)
+
+    def no_se_elige_un_horario_no_disponible_ese_cuatrimestre(self, parametros, resultados):
+        for id_materia in parametros.materias:
+            for curso in parametros.horarios[id_materia]:
+                for cuatrimestre in range(1, parametros.max_cuatrimestres + 1):
+                    if self.cuatrimestre_no_disponible(curso, parametros, cuatrimestre):
+                        variable_H = "H_{}_{}_{}".format(id_materia, curso.id_curso, get_str_cuatrimestre(cuatrimestre))
+                        assert (resultados[variable_H] == 0)
+
+    def cuatrimestre_no_disponible(self, curso, parametros, cuatrimestre):
+        cuatri = cuatrimestre % 2
+
+        if cuatri == 1:
+            return ((not curso.se_dicta_primer_cuatrimestre and parametros.primer_cuatrimestre_es_impar)
+                    or (not curso.se_dicta_segundo_cuatrimestre and not parametros.primer_cuatrimestre_es_impar))
+
+        return ((not curso.se_dicta_primer_cuatrimestre and not parametros.primer_cuatrimestre_es_impar)
+                or (not curso.se_dicta_segundo_cuatrimestre and parametros.primer_cuatrimestre_es_impar))

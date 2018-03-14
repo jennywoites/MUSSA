@@ -10,7 +10,6 @@ def es_par(num):
 
 def es_horario_valido_para_el_cuatrimestre(parametros, curso, cuatrimestre):
     if parametros.primer_cuatrimestre_es_impar:
-
         if not es_par(cuatrimestre): #Es un primer cuatrimestre del anio
             return curso.se_dicta_primer_cuatrimestre
 

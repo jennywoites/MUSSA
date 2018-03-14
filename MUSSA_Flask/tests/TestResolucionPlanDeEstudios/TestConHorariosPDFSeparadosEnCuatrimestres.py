@@ -1,14 +1,7 @@
-from tests.TestResolucionPlanDeEstudios.TestDesdeArchivoCSV import TestDesdeArchivoCSV
-
-from app.API_Rest.GeneradorPlanCarreras.GeneradorCodigoPulp import generar_archivo_pulp
-from app.API_Rest.GeneradorPlanCarreras.ParametrosDTO import Parametros
-from app.API_Rest.GeneradorPlanCarreras.Constantes import *
-from app.API_Rest.GeneradorPlanCarreras.my_utils import get_str_cuatrimestre
 from app.API_Rest.GeneradorPlanCarreras.ParserHorarios import parsear_pdf
-
-from app.API_Rest.GeneradorPlanCarreras.modelos.Materia import Materia
 from app.API_Rest.GeneradorPlanCarreras.modelos.Curso import Curso
 from app.API_Rest.GeneradorPlanCarreras.modelos.Horario import Horario
+from tests.TestResolucionPlanDeEstudios.TestDesdeArchivoCSV import TestDesdeArchivoCSV
 
 
 class TestConHorariosPDFSeparadosEnCuatrimestres(TestDesdeArchivoCSV):
