@@ -1,39 +1,29 @@
 if __name__ == "__main__":
     import sys
+
     sys.path.append("../..")
 
-from app.API_Rest.GeneradorPlanCarreras.Constantes import *
-from app.API_Rest.GeneradorPlanCarreras.modelos.Curso import Curso
-from app.API_Rest.GeneradorPlanCarreras.modelos.Horario import Horario
-from app.API_Rest.GeneradorPlanCarreras.modelos.Materia import Materia
 from tests.TestResolucionPlanDeEstudios.TestPulp import TestPulp
+from tests.TestResolucionPlanDeEstudios.MateriasDAOMock import *
 
 
 class Test_correlatividades_se_hacen_en_orden(TestPulp):
-
     def get_nombre_test(self):
         return "test_correlatividades_se_hacen_en_orden"
 
-    def get_plan_carrera_test(self):
-        return {
-        "A": ["C"],
-        "B": [],
-        "C": [],
-    }
-
     def get_materias_test(self):
         return {
-        "A": Materia("A", "A", 1, OBLIGATORIA, 0, []),
-        "B": Materia("B", "B", 1, OBLIGATORIA, 0, []),
-        "C": Materia("C", "C", 1, OBLIGATORIA, 0, ["A"]),
-    }
+            MATERIA_A_OBLIGATORIA.id_materia: MATERIA_A_OBLIGATORIA,
+            MATERIA_B_OBLIGATORIA.id_materia: MATERIA_B_OBLIGATORIA,
+            MATERIA_C_OBLIGATORIA.id_materia: MATERIA_C_OBLIGATORIA,
+        }
 
     def get_horarios_test(self):
         return {
-        "A": [Curso("A", "Curso1A", [Horario(LUNES, 7, 8)], True, True)],
-        "B": [Curso("B", "Curso1B", [Horario(LUNES, 8, 9)], True, True)],
-        "C": [Curso("C", "Curso1C", [Horario(LUNES, 9, 10)], True, True)],
-    }
+            MATERIA_A_OBLIGATORIA.id_materia: [CURSO_1_MATERIA_A, CURSO_2_MATERIA_A],
+            MATERIA_B_OBLIGATORIA.id_materia: [CURSO_1_MATERIA_B, CURSO_2_MATERIA_B],
+            MATERIA_C_OBLIGATORIA.id_materia: [CURSO_1_MATERIA_C],
+        }
 
     def get_horarios_no_permitidos_test(self):
         return []
