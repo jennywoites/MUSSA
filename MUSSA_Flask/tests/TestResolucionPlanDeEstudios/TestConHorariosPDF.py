@@ -11,15 +11,16 @@ class TestConHorariosPDF(TestDesdeArchivoCSV):
 
     def cargar_horarios_PDF(self):
         RUTA = "Horarios_TestFiles/" + self.get_nombre_test() + ".pdf"
+
+        # Los cursos precargados seran eliminados asi que la
+        # cuenta se reinicia
+        self.ultimo_id_curso = 0
+
         self.horarios = self.horarios_PDF_to_horarios_DTO(RUTA)
 
     def horarios_PDF_to_horarios_DTO(self, ruta):
         horariosDTO = {}
         horarios = parsear_pdf(ruta)
-
-        # Los cursos precargados seran eliminados asi que la
-        # cuenta se reinicia
-        self.ultimo_id_curso = 0
 
         for horario in horarios:
             id_materia = self.codigo_a_id.get(horario["Codigo"], -1)
