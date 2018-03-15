@@ -36,5 +36,9 @@ reportlab
 #Boostrap
 flask_bootstrap
 
+#Celery
+celery
+redis
+
 
 

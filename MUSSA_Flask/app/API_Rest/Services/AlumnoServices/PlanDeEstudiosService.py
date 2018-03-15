@@ -1,8 +1,7 @@
 from datetime import datetime
-
 from flask_user import login_required
-
 from AsyncTasks.broker_generador_greedy import tarea_generar_plan_greedy
+from AsyncTasks.broker_generador_plan_ple import tarea_generar_plan_ple
 from app.API_Rest.GeneradorPlanCarreras.Constantes import OBLIGATORIA, ELECTIVA, TRABAJO_FINAL
 from app.API_Rest.GeneradorPlanCarreras.ParametrosDTO import Parametros
 from app.API_Rest.GeneradorPlanCarreras.modelos.Curso import Curso as Modelo_Curso
@@ -195,7 +194,7 @@ class PlanDeEstudiosService(BaseService):
 
         ALGORITMOS_VALIDOS = {
             ALGORITMO_GREEDY: tarea_generar_plan_greedy,
-            ALGORITMO_PROGRAMACION_LINEAL_ENTERA: ''
+            ALGORITMO_PROGRAMACION_LINEAL_ENTERA: tarea_generar_plan_ple
         }
 
         if algoritmo in ALGORITMOS_VALIDOS:
@@ -209,9 +208,7 @@ class PlanDeEstudiosService(BaseService):
         plan_de_estudios = self.alta_nuevo_plan_de_estudios(parametros)
 
         parametros.id_plan_estudios = plan_de_estudios.id
-        parametros_tarea = parametros.generar_parametros_json()
-
-        tarea = tarea_algoritmo.delay(parametros_tarea)
+        tarea = tarea_algoritmo.delay(parametros.generar_parametros_json())
 
         if not tarea:
             result = {"mensaje": "No se pudo enviar a generar el plan."

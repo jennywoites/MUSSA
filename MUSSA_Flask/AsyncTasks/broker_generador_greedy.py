@@ -24,7 +24,7 @@ def tarea_generar_plan_greedy(parametros_tarea):
 
     parametros.estado_plan_de_estudios = PLAN_INCOMPATIBLE if not se_genero_plan_compatible else PLAN_FINALIZADO
 
-    print("FIN generación plan Greedy con id {} (COMPATIBLE)".format(parametros_tarea["id_plan_estudios"]))
+    print("FIN generación plan Greedy con id {}".format(parametros_tarea["id_plan_estudios"]))
 
     print("Se invoca al guardado para el plan Greedy con id {}".format(parametros_tarea["id_plan_estudios"]))
     tarea_guadar_plan_de_estudios.delay(parametros.generar_parametros_json())
