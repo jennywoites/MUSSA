@@ -1,8 +1,10 @@
 from celery import Celery
+
+from app.API_Rest.GeneradorPlanCarreras.GeneradorGreedy.GeneradorPlanGreedy import generar_plan_greedy
+from app.API_Rest.GeneradorPlanCarreras.GeneradorGreedy.broker_guardar_plan_generado import \
+    tarea_guadar_plan_de_estudios
 from app.API_Rest.GeneradorPlanCarreras.ParametrosDTO import Parametros
-from app.API_Rest.GeneradorPlanCarreras.GeneradorPlanGreedy import generar_plan_greedy
 from app.DAO.PlanDeCarreraDAO import PLAN_INCOMPATIBLE, PLAN_FINALIZADO
-from app.API_Rest.GeneradorPlanCarreras.broker_guardar_plan_generado import tarea_guadar_plan_de_estudios
 
 broker_generador_greedy = Celery('broker', broker='redis://localhost')
 broker_generador_greedy.conf.update({
@@ -22,7 +24,7 @@ def tarea_generar_plan_greedy(parametros_tarea):
 
     parametros.estado_plan_de_estudios = PLAN_INCOMPATIBLE if not se_genero_plan_compatible else PLAN_FINALIZADO
 
-    print("FIN generación plan Greedy con id {} (COMPATIBLE)".format(parametros_tarea["id_plan_estudios"]))
+    print("FIN generación plan Greedy con id {}".format(parametros_tarea["id_plan_estudios"]))
 
     print("Se invoca al guardado para el plan Greedy con id {}".format(parametros_tarea["id_plan_estudios"]))
     tarea_guadar_plan_de_estudios.delay(parametros.generar_parametros_json())
