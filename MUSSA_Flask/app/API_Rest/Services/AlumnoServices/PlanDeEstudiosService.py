@@ -17,6 +17,7 @@ from app.models.generadorJSON.plan_de_estudios_generadorJSON import generarJSON_
 from app.models.horarios_models import Curso, HorarioPorCurso, Horario, CarreraPorCurso
 from app.models.palabras_clave_models import TematicaPorMateria, TematicaMateria
 from app.models.plan_de_estudios_models import PlanDeEstudios, MateriaPlanDeEstudios
+from flask_user import current_user
 
 
 class PlanDeEstudiosService(BaseService):
@@ -157,6 +158,7 @@ class PlanDeEstudiosService(BaseService):
         parametros.max_horas_extras = max_horas_extras * 2
         parametros.cuatrimestre_inicio = cuatrimestre_inicio
         parametros.anio_inicio = anio_inicio
+        parametros.user_id = current_user.id
 
         self.configurar_plan_de_carrera_origen(carrera, parametros)
         self.actualizar_creditos(carrera, trabajo_final, parametros)
@@ -208,6 +210,10 @@ class PlanDeEstudiosService(BaseService):
         plan_de_estudios = self.alta_nuevo_plan_de_estudios(parametros)
 
         parametros.id_plan_estudios = plan_de_estudios.id
+        parametros.nombre_archivo_pulp = "pulp_generado_plan_{}.py".format(plan_de_estudios.id)
+        parametros.nombre_archivo_resultados_pulp = "pulp_resultados_plan_{}.py".format(plan_de_estudios.id)
+        parametros.nombre_archivo_pulp_optimizado = "pulp_optimizado_plan_{}.py".format(plan_de_estudios.id)
+
         tarea = tarea_algoritmo.delay(parametros.generar_parametros_json())
 
         if not tarea:

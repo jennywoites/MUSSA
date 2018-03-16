@@ -108,20 +108,22 @@ def escribir_ecuacion_correlativa_depende_de_electiva(arch, parametros, id_mater
 
 
 def generar_restriccion_maxima_cant_materias_por_cuatrimestre(arch, parametros):
-    plan = parametros.plan
-
     arch.write("# La cantidad de materias por cuatrimestre no puede superar un valor maximo" + ENTER + ENTER)
     for cuatrimestre in range(1, parametros.max_cuatrimestres + 1):
         ecuacion = "prob += ("
-        es_inicial = True
-        for id_materia in plan:
-            ecuacion = ecuacion if es_inicial else (ecuacion + " + ")
-            if es_inicial:
-                es_inicial = False
-
+        for id_materia in parametros.plan:
             variable = "Y_{}_{}".format(id_materia, get_str_cuatrimestre(cuatrimestre))
-            ecuacion += variable
+            ecuacion += variable + " + "
 
+        if not parametros.materia_trabajo_final:
+            ecuacion = ecuacion[:-2]
+
+        for materia in parametros.materia_trabajo_final:
+            variable = "Y_TP_FINAL_{}_{}_{}".format(materia.id_materia, materia.codigo,
+                                                    get_str_cuatrimestre(cuatrimestre))
+            ecuacion += variable + " + "
+
+        ecuacion = ecuacion[:-2]
         ecuacion += " <= {})".format(parametros.max_cant_materias_por_cuatrimestre)
         arch.write(ecuacion + ENTER)
 
@@ -129,14 +131,23 @@ def generar_restriccion_maxima_cant_materias_por_cuatrimestre(arch, parametros):
 
 
 def generar_restriccion_maximo_cuatrimestres_para_func_objetivo(arch, parametros):
-    arch.write("#TOTAL_CUATRIMESTRES es el maximo de los Ci" + ENTER + ENTER)
+    arch.write("#TOTAL_CUATRIMESTRES es el maximo de los Ci de las materias"
+               "y de lo C_TP_FINAL_i de las materias de trabajo final" + ENTER + ENTER)
 
     arch.write("prob += (TOTAL_CUATRIMESTRES >= 0)" + ENTER + ENTER)
+
     for id_materia in parametros.plan:
         var_materia = "C{}".format(id_materia)
         arch.write("prob += ({} <= TOTAL_CUATRIMESTRES)".format(var_materia) + ENTER)
         arch.write("prob += (-{} <= TOTAL_CUATRIMESTRES)".format(var_materia) + ENTER)
         arch.write(ENTER)
+
+    for materia in parametros.materia_trabajo_final:
+        var_materia = "C_TP_FINAL_{}_{}".format(materia.id_materia, materia.codigo)
+        arch.write("prob += ({} <= TOTAL_CUATRIMESTRES)".format(var_materia) + ENTER)
+        arch.write("prob += (-{} <= TOTAL_CUATRIMESTRES)".format(var_materia) + ENTER)
+        arch.write(ENTER)
+
     arch.write(ENTER)
 
 
@@ -147,7 +158,15 @@ def generar_restriccion_calculo_creditos_obtenidos_por_cuatrimestre(arch, parame
         ecuacion = "prob += ("
         for id_materia in parametros.plan:
             materia = parametros.materias[id_materia]
-            ecuacion += "{}*Y_{}_{} + ".format(materia.creditos, id_materia, get_str_cuatrimestre(i))
+            variable_Y = "Y_{}_{}".format(id_materia, get_str_cuatrimestre(i))
+            ecuacion += "{}*{} + ".format(materia.creditos, variable_Y)
+
+        if not parametros.materia_trabajo_final:
+            ecuacion = ecuacion[:-2]  # elimino el ultimo + agregado
+
+        for materia in parametros.materia_trabajo_final:
+            variable_Y = "Y_TP_FINAL_{}_{}_{}".format(materia.id_materia, materia.codigo, get_str_cuatrimestre(i))
+            ecuacion += "{}*{} + ".format(materia.creditos, variable_Y)
         ecuacion = ecuacion[:-2]  # elimino el ultimo + agregado
 
         if i > 1:
@@ -171,11 +190,6 @@ def generar_restriccion_creditos_minimos_ya_obtenidos_para_cursar(arch, parametr
             arch.write("prob += ({}*{} <= {})".format(materia.creditos_minimos_aprobados, var_Y, creditos) + ENTER)
         arch.write(ENTER)
     arch.write(ENTER)
-
-
-def generar_restriccion_creditos_minimos_para_cursar(arch, parametros):
-    generar_restriccion_calculo_creditos_obtenidos_por_cuatrimestre(arch, parametros)
-    generar_restriccion_creditos_minimos_ya_obtenidos_para_cursar(arch, parametros)
 
 
 def generar_restriccion_si_se_elige_un_curso_se_cursa_su_horario_completo(arch, parametros):
@@ -304,12 +318,98 @@ def generar_restriccion_horarios_cursos(arch, parametros):
     generar_restriccion_no_todos_los_cursos_se_dictan_ambos_cuatrimestres(arch, parametros)
 
 
+def generar_restriccion_el_trabajo_debe_cursarse_en_unico_cuatrimestre(arch, parametros):
+    arch.write("# La El trabajo final debe cursar (cada una de sus partes) "
+               "en un unico cuatrimestre. Ademas, es obligatorio" + ENTER + ENTER)
+    for materia in parametros.materia_trabajo_final:
+        ecuacion = "prob += ("
+        for cuatrimestre in range(1, parametros.max_cuatrimestres + 1):
+            if cuatrimestre > 1:
+                ecuacion += " + "
+            variable = "Y_TP_FINAL_{}_{}_{}".format(materia.id_materia, materia.codigo,
+                                                    get_str_cuatrimestre(cuatrimestre))
+            ecuacion += variable
+
+        arch.write(ecuacion + " <= 1)" + ENTER)
+        arch.write(ecuacion + " >= 1)" + ENTER)
+        arch.write(ENTER)
+
+    arch.write(ENTER)
+
+
+def generar_restriccion_valor_cuatrimestre_en_que_se_cursa_el_trabajo_final(arch, parametros):
+    arch.write("# Numero de cuatrimestre en que son "
+               "cursadas las partes del trabajo final" + ENTER + ENTER)
+    for materia in parametros.materia_trabajo_final:
+        ecuacion = "prob += ("
+        for cuatrimestre in range(1, parametros.max_cuatrimestres + 1):
+            if cuatrimestre > 1:
+                ecuacion += " + "
+            variable = "Y_TP_FINAL_{}_{}_{}".format(materia.id_materia, materia.codigo,
+                                                    get_str_cuatrimestre(cuatrimestre))
+            ecuacion += "{}*{}".format(cuatrimestre, variable)
+
+        variable_c_materia = "C_TP_FINAL_{}_{}".format(materia.id_materia, materia.codigo)
+        ecuacion_complementaria = ecuacion
+        ecuacion += "<= {})".format(variable_c_materia)
+        ecuacion_complementaria += ">= {})".format(variable_c_materia)
+
+        arch.write(ecuacion + ENTER)
+        arch.write(ecuacion_complementaria + ENTER)
+        arch.write(ENTER)
+    arch.write(ENTER)
+
+
+def generar_restriccion_creditos_minimos_ya_obtenidos_para_cursar_el_trabajo_final(arch, parametros):
+    arch.write("# Restriccion de creditos minimos para el trabajo final" + ENTER + ENTER)
+    for materia in parametros.materia_trabajo_final:
+        if materia.creditos_minimos_aprobados == 0:
+            continue
+        for i in range(1, parametros.max_cuatrimestres + 1):
+            creditos = "CRED{}".format(get_str_cuatrimestre(i - 1)) if i > 1 else "0"
+            variable_Y = "Y_TP_FINAL_{}_{}_{}".format(materia.id_materia, materia.codigo,
+                                                      get_str_cuatrimestre(get_str_cuatrimestre(i)))
+            arch.write("prob += ({}*{} <= {})".format(materia.creditos_minimos_aprobados, variable_Y, creditos) + ENTER)
+        arch.write(ENTER)
+    arch.write(ENTER)
+
+
+def generar_restriccion_las_partes_del_tp_se_deben_hacer_en_cuatrimestres_consecutivos(arch, parametros):
+    arch.write("# Las partes del tp se deben hacer en cuatrimestres consecutivos" + ENTER + ENTER)
+
+    for i in range(len(parametros.materia_trabajo_final) - 1):
+        materia_anterior = parametros.materia_trabajo_final[i]
+        materia_actual = parametros.materia_trabajo_final[i + 1]
+
+        variable_c_materia_anterior = "C_TP_FINAL_{}_{}".format(materia_anterior.id_materia, materia_anterior.codigo)
+        variable_c_materia_actual = "C_TP_FINAL_{}_{}".format(materia_actual.id_materia, materia_actual.codigo)
+
+        ecuacion = "prob += ({} + 1 {} {})".format(variable_c_materia_anterior, "{}", variable_c_materia_actual)
+
+        arch.write(ecuacion.format("<=") + ENTER)
+        arch.write(ecuacion.format(">=") + ENTER)
+        arch.write(ENTER)
+    arch.write(ENTER)
+
+
+def generar_restriccion_trabajo_final(arch, parametros):
+    if not parametros.materia_trabajo_final:
+        return
+
+    generar_restriccion_el_trabajo_debe_cursarse_en_unico_cuatrimestre(arch, parametros)
+    generar_restriccion_valor_cuatrimestre_en_que_se_cursa_el_trabajo_final(arch, parametros)
+    generar_restriccion_creditos_minimos_ya_obtenidos_para_cursar_el_trabajo_final(arch, parametros)
+    generar_restriccion_las_partes_del_tp_se_deben_hacer_en_cuatrimestres_consecutivos(arch, parametros)
+
+
 def generar_restricciones(arch, parametros):
     generar_restriccion_la_materia_debe_cursarse_en_unico_cuatrimestre(arch, parametros)
     generar_restriccion_valor_cuatrimestre_en_que_se_cursa_la_materia(arch, parametros)
     generar_restriccion_correlativas(arch, parametros)
+    generar_restriccion_calculo_creditos_obtenidos_por_cuatrimestre(arch, parametros)
+    generar_restriccion_creditos_minimos_ya_obtenidos_para_cursar(arch, parametros)
     generar_restriccion_maxima_cant_materias_por_cuatrimestre(arch, parametros)
     generar_restriccion_maximo_cuatrimestres_para_func_objetivo(arch, parametros)
-    generar_restriccion_creditos_minimos_para_cursar(arch, parametros)
     generar_restriccion_horarios_cursos(arch, parametros)
     generar_restriccion_creditos_minimos_electivas(arch, parametros)
+    generar_restriccion_trabajo_final(arch, parametros)

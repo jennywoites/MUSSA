@@ -43,8 +43,6 @@ class Parametros:
         self.max_cuatrimestres = MAX_CUATRIMESTRES_TOTALES
         self.max_cant_materias_por_cuatrimestre = MAX_CANTIDAD_MATERIAS_POR_CUATRIMESTRE
 
-        # Nuevos parametros a agregar
-
         self.materias_CBC_pendientes = []
         self.orientacion = ''
         self.id_carrera = ''
@@ -64,6 +62,8 @@ class Parametros:
         self.plan_generado = []
         self.id_plan_estudios = -1
         self.estado_plan_de_estudios = -1
+
+        self.user_id = -1
 
     def __str__(self):
         SALTO = "\n"
@@ -136,6 +136,8 @@ class Parametros:
 
         parametros += "id_plan_estudios:" + str(self.id_plan_estudios)
         parametros += "estado_plan_de_estudios:" + str(self.estado_plan_de_estudios)
+
+        parametros += "id_usuario: " + str(self.user_id)
 
         return parametros
 
@@ -217,6 +219,8 @@ class Parametros:
         self.id_plan_estudios = int(parametros_JSON["id_plan_estudios"])
         self.estado_plan_de_estudios = int(parametros_JSON["estado_plan_de_estudios"])
 
+        self.user_id = int(parametros_JSON["user_id"])
+
     def generar_parametros_json(self):
         parametros_JSON = {}
         parametros_JSON["primer_cuatrimestre_es_impar"] = self.primer_cuatrimestre_es_impar
@@ -277,6 +281,8 @@ class Parametros:
 
         parametros_JSON["id_plan_estudios"] = self.id_plan_estudios
         parametros_JSON["estado_plan_de_estudios"] = self.estado_plan_de_estudios
+
+        parametros_JSON["user_id"] = self.user_id
 
         return parametros_JSON
 
@@ -355,6 +361,8 @@ class Parametros:
 
         copia_parametros.id_plan_estudios = self.id_plan_estudios
         copia_parametros.estado_plan_de_estudios = self.estado_plan_de_estudios
+
+        copia_parametros.user_id = self.user_id
 
         return copia_parametros
 
@@ -796,3 +804,4 @@ class Parametros:
         self.plan_generado = parametros_actuales.plan_generado
         self.id_plan_estudios = parametros_actuales.id_plan_estudios
         self.estado_plan_de_estudios = parametros_actuales.estado_plan_de_estudios
+        self.user_id = parametros_actuales.user_id

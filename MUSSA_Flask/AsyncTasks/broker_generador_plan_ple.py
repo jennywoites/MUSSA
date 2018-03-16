@@ -21,13 +21,14 @@ def tarea_generar_plan_ple(parametros_tarea):
     parametros = Parametros()
     parametros.actualizar_valores_desde_JSON(parametros_tarea)
 
+    generar_ruta_archivo_pulp(parametros)
+
     generar_archivo_pulp(parametros)
     optimizar_codigo_pulp(parametros)
 
     ejecutar_codigo_pulp(parametros)
     resultados = obtener_resultados_pulp(parametros)
     armar_plan(parametros, resultados)
-    print("Plan: {}".format(parametros.plan_generado))
 
     parametros.estado_plan_de_estudios = PLAN_INCOMPATIBLE if not resultados else PLAN_FINALIZADO
 
@@ -35,6 +36,25 @@ def tarea_generar_plan_ple(parametros_tarea):
 
     print("Se invoca al guardado para el plan PLE con id {}".format(parametros_tarea["id_plan_estudios"]))
     tarea_guadar_plan_de_estudios.delay(parametros.generar_parametros_json())
+
+
+def generar_ruta_archivo_pulp(parametros):
+    os.chdir(os.path.join(os.getcwd(), 'app'))
+
+    if not os.path.isdir('tmp'):
+        os.mkdir('tmp')
+    os.chdir(os.path.join(os.getcwd(), 'tmp'))
+
+    if not os.path.isdir(str(parametros.user_id)):
+        os.mkdir(str(parametros.user_id))
+
+    os.chdir(os.path.join(os.getcwd(), '..', '..'))
+
+    # Actualizo la ruta de los archivos a la nueva ruta creada
+    ruta_archivos = os.path.join('app', 'tmp', parametros.user_id)
+    parametros.nombre_archivo_pulp = os.path.join(ruta_archivos, parametros.nombre_archivo_pulp)
+    parametros.nombre_archivo_pulp_optimizado = os.path.join(ruta_archivos, parametros.nombre_archivo_pulp_optimizado)
+    parametros.nombre_archivo_resultados_pulp = os.path.join(ruta_archivos, parametros.nombre_archivo_resultados_pulp)
 
 
 def ejecutar_codigo_pulp(parametros):
@@ -85,10 +105,19 @@ def armar_plan(parametros, resultados):
         max_cuatrimestre = max(max_cuatrimestre, cuatri)
         materias_por_cuatrimestre[cuatri] = materias_cuatri
 
+    for materia in parametros.materia_trabajo_final:
+        variable = "C_TP_FINAL_{}_{}".format(materia.id_materia, materia.codigo)
+        if variable in resultados:
+            cuatrimestre = int(resultados[variable])
+
+            materias_cuatri = materias_por_cuatrimestre.get(cuatrimestre, {})
+            materias_cuatri[id_materia] = -1  # No hay cursos
+            max_cuatrimestre = max(max_cuatrimestre, cuatrimestre)
+            materias_por_cuatrimestre[cuatri] = materias_cuatri
+
     parametros.plan_generado = []
     for i in range(max_cuatrimestre):
         parametros.plan_generado.append({})
 
     for cuatrimestre in materias_por_cuatrimestre:
         parametros.plan_generado[cuatrimestre - 1] = materias_por_cuatrimestre[cuatrimestre]
-
