@@ -50,6 +50,14 @@ def definir_auxiliar_para_maximo_cuatrimestres(arch, parametros):
                                                                                           parametros.max_cuatrimestres) + ENTER)
 
 
+def definir_auxiliar_para_creditos_electivas(arch, parametros):
+    arch.write(
+        "#CREDITOS_ELECTIVAS: Total de creditos en materias electivas que se cursan" + ENTER + ENTER)
+    variable = "CREDITOS_ELECTIVAS"
+    arch.write("{} = LpVariable(name='{}', lowBound=0, upBound={}, cat='Integer')".format(variable, variable,
+                                                                                          parametros.max_cuatrimestres) + ENTER)
+
+
 def definir_variable_cantidad_creditos_por_cuatrimestre(arch, parametros):
     arch.write("#CREDi: Cantidad de creditos al final del cuatrimestre i" + ENTER + ENTER)
     for cuatrimestre in range(1, parametros.max_cuatrimestres + 1):
@@ -122,3 +130,4 @@ def definir_variables(arch, parametros):
     definir_variable_cantidad_creditos_por_cuatrimestre(arch, parametros)
     definir_variables_horarios_de_materias(arch, parametros)
     definir_variables_trabajo_final(arch, parametros)
+    definir_auxiliar_para_creditos_electivas(arch, parametros)

@@ -291,8 +291,9 @@ def generar_restriccion_creditos_minimos_electivas(arch, parametros):
             ecuacion += Y + "*" + str(materia.creditos) + " + "
 
     ecuacion = ecuacion[:-3]
-    ecuacion = ecuacion + " >= " + str(parametros.creditos_minimos_electivas) + ")"
-    arch.write(ecuacion + ENTER + ENTER)
+    arch.write(ecuacion + " <= CREDITOS_ELECTIVAS)" + ENTER)
+    arch.write(ecuacion + " >= CREDITOS_ELECTIVAS)" + ENTER)
+    arch.write("CREDITOS_ELECTIVAS >= " + str(parametros.creditos_minimos_electivas) + ")" + ENTER + ENTER)
 
 
 def generar_restriccion_no_todos_los_cursos_se_dictan_ambos_cuatrimestres(arch, parametros):
