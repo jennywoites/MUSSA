@@ -46,6 +46,21 @@ def generar_restriccion_valor_cuatrimestre_en_que_se_cursa_la_materia(arch, para
     arch.write(ENTER)
 
 
+def generar_restriccion_cuatrimestre_minimo_en_que_se_puede_cursar_la_materia(arch, parametros):
+    if not parametros.cuatrimestre_minimo_para_materia:
+        return
+
+    arch.write("# Valor minimo para el cuatrimestre de una materia debido a que"
+               "el final de una correlativa se encuentra pendiente y sera aprobado"
+               "en ese cuatrimestre minimo" + ENTER + ENTER)
+    for id_materia in parametros.cuatrimestre_minimo_para_materia:
+        variable_c_materia = "C{}".format(id_materia)
+        cuatrimestre_min = parametros.cuatrimestre_minimo_para_materia[id_materia] + 1
+        ecuacion = "prob += ({} >= {})".format(variable_c_materia, cuatrimestre_min)
+        arch.write(ecuacion + ENTER + ENTER)
+    arch.write(ENTER)
+
+
 def generar_restriccion_correlativas(arch, parametros):
     arch.write("# Los cuatrimestres de las correlativas deben ser menores (cuando la materia se cursa)" + ENTER + ENTER)
     for id_materia in parametros.plan:
