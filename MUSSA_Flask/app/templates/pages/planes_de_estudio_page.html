@@ -43,15 +43,17 @@
             {% for plan in planes %}
             <tr>
                 <td>{{plan['fecha_generacion']}}</td>
-                <td>{{plan['estado']}}</td>
                 <td>
+                    {% if plan['carreras'] | length > 0%}
                     <ul class="list-group">
                         {% for carrera in plan['carreras'] %}
                             <li style="border-color: transparent; background-color: transparent;">
-                                {{carrera['descipcion']}}</li>
+                                {{carrera['descripcion']}}</li>
                         {% endfor %}
                     </ul>
+                    {% endif %}
                 </td>
+                <td>{{plan['estado']}}</td>
                 {% if plan['estado_numero'] == 1 %}<!-- Estado finalizado -->
                 <td>
                     <a href="{{url_for('main.visualizar_plan_de_estudios_page', idPlanEstudios=plan['id_plan'])}}"><span

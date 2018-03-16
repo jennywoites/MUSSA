@@ -12,6 +12,7 @@ broker_generador_ple.conf.update({
     'task_reject_on_worker_lost': True,
     'task_acks_late': True,
 })
+broker_generador_ple.conf.broker_transport_options = {'visibility_timeout': 14400}  # 3hs
 
 
 @broker_generador_ple.task(acks_late=True)

@@ -23,11 +23,10 @@ def generarJSON_plan_de_estudios(plan_de_estudios):
 
 
 def obtener_carreras_plan_generado(plan_de_estudios):
-    ids_carreras = CarrerasPlanDeEstudios.query.with_entities(CarrerasPlanDeEstudios.carrera_id) \
-        .filter_by(plan_estudios_id=plan_de_estudios.id).all()
+    carreras_plan = CarrerasPlanDeEstudios.query.filter_by(plan_estudios_id=plan_de_estudios.id).all()
     carreras = []
-    for id_carrera in ids_carreras:
-        carrera = Carrera.query.get(id_carrera)
+    for carrera_plan in carreras_plan:
+        carrera = Carrera.query.get(carrera_plan.carrera_id)
         carreras.append({
             'id_carrera': carrera.id,
             'codigo': carrera.codigo,
@@ -101,8 +100,11 @@ def agregar_materias_no_pendientes_no_contempladas_en_plan(plan_de_estudios, mat
     filtro["id_alumno"] = plan_de_estudios.alumno_id
     filtro["estados"] = [APROBADA, DESAPROBADA, FINAL_PENDIENTE, EN_CURSO]
     filtro["ids_a_excluir"] = ids_a_excluir_materias_aprobadas
-    filtro["ids_carrera"] = CarrerasPlanDeEstudios.query.with_entities(CarrerasPlanDeEstudios.carrera_id) \
-        .filter_by(plan_estudios_id=plan_de_estudios.id).all()
+
+    carreras = []
+    for carrera_plan in CarrerasPlanDeEstudios.query.filter_by(plan_estudios_id=plan_de_estudios.id).all():
+        carreras.append(carrera_plan.carrera_id)
+    filtro["ids_carrera"] = carreras
 
     for materia_alumno in filtrar_materias_alumno(filtro):
         materia = Materia.query.get(materia_alumno.materia_id)

@@ -121,12 +121,10 @@ class CarreraAlumnoService(BaseService):
         db.session.commit()
 
     def eliminar_planes_asociados_a_la_carrera(self, alumno_id, idCarrera):
-        ids_planes = CarrerasPlanDeEstudios.query \
-            .with_entities(CarrerasPlanDeEstudios.plan_estudios_id).filter_by(carrera_id=idCarrera).all()
-
+        planes_con_esta_carrera = CarrerasPlanDeEstudios.query.filter_by(carrera_id=idCarrera).all()
         service = PlanDeEstudiosService()
-        for id_plan in ids_planes:
-            service.eliminar_plan_de_estudios(id_plan)
+        for plan in planes_con_esta_carrera:
+            service.eliminar_plan_de_estudios(plan.plan_estudios_id)
         db.session.commit()
 
     def carrera_pertenece_al_alumno(self, nombre_parametro, id_carrera, es_obligatorio):
