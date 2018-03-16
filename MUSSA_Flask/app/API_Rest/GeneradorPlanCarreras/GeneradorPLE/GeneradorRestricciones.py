@@ -391,6 +391,25 @@ def generar_restriccion_las_partes_del_tp_se_deben_hacer_en_cuatrimestres_consec
         arch.write(ENTER)
     arch.write(ENTER)
 
+def generar_restriccion_materias_incompatibles(arch, parametros):
+    arch.write("# Si una materia es incompatible con otra, solo puede "
+               "cursarse una de ellas" + ENTER + ENTER)
+    for id_materia in parametros.materias_incompatibles:
+        incompatibles = parametros.materias_incompatibles[id_materia] + [id_materia]
+        ecuacion = "prob += ("
+        for id_incompatible in incompatibles:
+            for cuatrimestre in range(1, parametros.max_cuatrimestres + 1):
+                if cuatrimestre > 1:
+                    ecuacion += " + "
+
+                variable = "Y_{}_{}".format(id_incompatible, get_str_cuatrimestre(cuatrimestre))
+                ecuacion += variable
+
+        ecuacion += " <= 1)"
+        arch.write(ecuacion + ENTER)
+        arch.write(ENTER)
+    arch.write(ENTER)
+
 
 def generar_restriccion_trabajo_final(arch, parametros):
     if not parametros.materia_trabajo_final:
@@ -413,3 +432,4 @@ def generar_restricciones(arch, parametros):
     generar_restriccion_horarios_cursos(arch, parametros)
     generar_restriccion_creditos_minimos_electivas(arch, parametros)
     generar_restriccion_trabajo_final(arch, parametros)
+    generar_restriccion_materias_incompatibles(arch, parametros)
