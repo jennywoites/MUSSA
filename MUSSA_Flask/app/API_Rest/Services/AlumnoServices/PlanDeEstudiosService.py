@@ -395,7 +395,7 @@ class PlanDeEstudiosService(BaseService):
         # Borro las materias que se van a dar por aprobadas
         for id_materia in aprobacion_finales:
             cuatrimestre = int(aprobacion_finales[id_materia])
-            self.setear_cuatrimestre_minimo_correlativas(id_materia, cuatrimestre, parametros)
+            self.setear_cuatrimestre_minimo_correlativas(int(id_materia), cuatrimestre, parametros)
             if cuatrimestre > -1:
                 parametros.quitar_materia_por_id(id_materia, True)
 

@@ -55,7 +55,7 @@ def generar_restriccion_cuatrimestre_minimo_en_que_se_puede_cursar_la_materia(ar
                "en ese cuatrimestre minimo" + ENTER + ENTER)
     for id_materia in parametros.cuatrimestre_minimo_para_materia:
         variable_c_materia = "C{}".format(id_materia)
-        cuatrimestre_min = parametros.cuatrimestre_minimo_para_materia[id_materia] + 1
+        cuatrimestre_min = parametros.cuatrimestre_minimo_para_materia[id_materia]
         ecuacion = "prob += ({} >= {})".format(variable_c_materia, cuatrimestre_min)
         arch.write(ecuacion + ENTER + ENTER)
     arch.write(ENTER)

@@ -472,7 +472,7 @@ class Parametros:
         if not id_materia in self.cuatrimestre_minimo_para_materia:
             return True
 
-        return self.cuatrimestre_minimo_para_materia[id_materia] < len(self.plan_generado)
+        return self.cuatrimestre_minimo_para_materia[id_materia] <= len(self.plan_generado)
 
     def se_encuentra_materia_en_plan_generado(self, id_materia, materias_cuatrimestre_actual):
         for cuatrimestre in self.plan_generado:
