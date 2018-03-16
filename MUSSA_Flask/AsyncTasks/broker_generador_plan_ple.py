@@ -51,7 +51,7 @@ def generar_ruta_archivo_pulp(parametros):
     os.chdir(os.path.join(os.getcwd(), '..', '..'))
 
     # Actualizo la ruta de los archivos a la nueva ruta creada
-    ruta_archivos = os.path.join('app', 'tmp', parametros.user_id)
+    ruta_archivos = os.path.join('app', 'tmp', str(parametros.user_id))
     parametros.nombre_archivo_pulp = os.path.join(ruta_archivos, parametros.nombre_archivo_pulp)
     parametros.nombre_archivo_pulp_optimizado = os.path.join(ruta_archivos, parametros.nombre_archivo_pulp_optimizado)
     parametros.nombre_archivo_resultados_pulp = os.path.join(ruta_archivos, parametros.nombre_archivo_resultados_pulp)

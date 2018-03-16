@@ -16,7 +16,7 @@ from app.models.carreras_models import Materia, Correlativas, Creditos, TipoMate
 from app.models.generadorJSON.plan_de_estudios_generadorJSON import generarJSON_materias_plan_de_estudios
 from app.models.horarios_models import Curso, HorarioPorCurso, Horario, CarreraPorCurso
 from app.models.palabras_clave_models import TematicaPorMateria, TematicaMateria
-from app.models.plan_de_estudios_models import PlanDeEstudios, MateriaPlanDeEstudios
+from app.models.plan_de_estudios_models import PlanDeEstudios, MateriaPlanDeEstudios, CarrerasPlanDeEstudios
 from flask_user import current_user
 
 
@@ -90,15 +90,21 @@ class PlanDeEstudiosService(BaseService):
             self.logg_error(msj)
             return {'Error': msj}, codigo
 
-        MateriaPlanDeEstudios.query.filter_by(plan_estudios_id=idPlanDeEstudios).delete()
-        db.session.commit()
-
-        PlanDeEstudios.query.filter_by(id=idPlanDeEstudios).delete()
-        db.session.commit()
+        self.eliminar_plan_de_estudios(idPlanDeEstudios)
 
         result = SUCCESS_NO_CONTENT
         self.logg_resultado(result)
         return result
+
+    def eliminar_plan_de_estudios(self, idPlanDeEstudios):
+        MateriaPlanDeEstudios.query.filter_by(plan_estudios_id=idPlanDeEstudios).delete()
+        db.session.commit()
+
+        CarrerasPlanDeEstudios.query.filter_by(plan_estudios_id=idPlanDeEstudios).delete()
+        db.session.commit()
+
+        PlanDeEstudios.query.filter_by(id=idPlanDeEstudios).delete()
+        db.session.commit()
 
     @login_required
     def put(self):
@@ -634,6 +640,14 @@ class PlanDeEstudiosService(BaseService):
         )
         db.session.add(plan_de_estudios)
         db.session.commit()
+
+        db.session.add(CarrerasPlanDeEstudios(
+            plan_estudios_id=plan_de_estudios.id,
+            carrera_id=parametros.id_carrera
+        ))
+        db.session.commit()
+
+        parametros.id_carrera
 
         return plan_de_estudios
 

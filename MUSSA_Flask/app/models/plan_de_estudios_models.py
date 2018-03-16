@@ -18,6 +18,16 @@ class PlanDeEstudios(db.Model):
         return "Plan de Estudios {}".format(self.id)
 
 
+class CarrerasPlanDeEstudios(db.Model):
+    __tablename__ = 'carreras_plan_de_estudios'
+
+    id = db.Column(db.Integer, primary_key=True)
+
+    plan_estudios_id = db.Column(db.Integer, db.ForeignKey('plan_de_estudios.id'))
+    carrera_id = db.Column(db.Integer, db.ForeignKey('carrera.id'))
+
+
+
 class PlanDeEstudiosFinalizadoProcesar(db.Model):
     __tablename__ = 'plan_de_estudios_finalizado_de_procesar'
 

@@ -5,8 +5,8 @@ from app.DAO.MateriasDAO import *
 def filtrar_materias_alumno(filtro):
     query = MateriasAlumno.query.filter_by(alumno_id=filtro["id_alumno"])
 
-    if "id_carrera" in filtro:
-        query = query.filter_by(carrera_id=filtro["id_carrera"])
+    if "ids_carrera" in filtro:
+        query = query.filter(MateriasAlumno.carrera_id.in_(filtro["ids_carrera"]))
 
     if "estados" in filtro:
         ids_estados = []
