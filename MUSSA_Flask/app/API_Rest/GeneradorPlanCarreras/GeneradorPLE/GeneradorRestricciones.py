@@ -296,6 +296,28 @@ def generar_restriccion_creditos_minimos_electivas(arch, parametros):
     arch.write("CREDITOS_ELECTIVAS >= " + str(parametros.creditos_minimos_electivas) + ")" + ENTER + ENTER)
 
 
+def generar_restriccion_creditos_minimos_por_tematica(arch, parametros):
+    if not parametros.creditos_minimos_tematicas:
+        return
+
+    arch.write("#Se debe realizar un minimo de creditos de materias electivas"
+               "con diferentes tematicas" + ENTER + ENTER)
+    for tematica in parametros.creditos_minimos_tematicas:
+        ecuacion = "prob += ("
+        for cuatrimestre in range(1, parametros.max_cuatrimestres + 1):
+            for id_materia in parametros.materias:
+                materia = parametros.materias[id_materia]
+                if materia.tipo == OBLIGATORIA or not tematica in materia.tematicas_principales:
+                    continue
+                Y = "Y_{}_{}".format(id_materia, get_str_cuatrimestre(cuatrimestre))
+                ecuacion += Y + "*" + str(materia.creditos) + " + "
+
+        ecuacion = ecuacion[:-3]
+        arch.write(ecuacion + " >= " + str(parametros.creditos_minimos_tematicas[tematica]) + ")" + ENTER + ENTER)
+
+    arch.write(ENTER)
+
+
 def generar_restriccion_no_todos_los_cursos_se_dictan_ambos_cuatrimestres(arch, parametros):
     arch.write("# No todos los cursos se dictan ambos cuatrimestres" + ENTER + ENTER)
     for cuatrimestre in range(1, parametros.max_cuatrimestres + 1):
@@ -391,6 +413,7 @@ def generar_restriccion_las_partes_del_tp_se_deben_hacer_en_cuatrimestres_consec
         arch.write(ecuacion.format(">=") + ENTER)
         arch.write(ENTER)
     arch.write(ENTER)
+
 
 def generar_restriccion_materias_incompatibles(arch, parametros):
     arch.write("# Si una materia es incompatible con otra, solo puede "
