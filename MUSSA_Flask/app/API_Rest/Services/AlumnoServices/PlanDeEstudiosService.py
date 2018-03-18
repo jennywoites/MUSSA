@@ -169,6 +169,8 @@ class PlanDeEstudiosService(BaseService):
         self.configurar_plan_de_carrera_origen(carrera, parametros)
         self.actualizar_creditos(carrera, trabajo_final, parametros)
 
+        self.cargar_materias_incompatibles(parametros)
+
         self.actualizar_plan_con_materias_aprobadas(carrera, aprobacion_finales, parametros)
 
         # Se separan en otras categorias las materias de trabajo final y CBC que aun no estan aprobadas
@@ -182,8 +184,6 @@ class PlanDeEstudiosService(BaseService):
         cuatrimestres_de_CBC = 1 if (len(parametros.materias_CBC_pendientes) <= 3) else 2
         parametros.primer_cuatrimestre_es_impar = ((cuatrimestre_inicio + cuatrimestres_de_CBC) % 2 != 0)
 
-        self.cargar_materias_incompatibles(parametros)
-
         obligatorias_tienen_cursos, msj = self.validar_cursos_materias_obligatorias(parametros)
         if not obligatorias_tienen_cursos:
             result = {"mensaje": msj}, CLIENT_ERROR_BAD_REQUEST
@@ -191,6 +191,8 @@ class PlanDeEstudiosService(BaseService):
             return result
 
         self.eliminar_materias_sin_cursos(parametros)
+
+        self.eliminar_incompatibles_que_no_pertenezcan_al_plan(parametros)
 
         electivas_cubren_creditos_requeridos, msj = self.validar_creditos_requeridos_electivas(parametros)
         if not electivas_cubren_creditos_requeridos:
@@ -211,6 +213,12 @@ class PlanDeEstudiosService(BaseService):
         result = {"mensaje": "El algoritmo introducido no es valido"}, CLIENT_ERROR_BAD_REQUEST
         self.logg_resultado(result)
         return result
+
+    def eliminar_incompatibles_que_no_pertenezcan_al_plan(self, parametros):
+        materias = list(parametros.materias_incompatibles.keys())
+        for id_materia in materias:
+            if not id_materia in parametros.materias:
+                del (parametros.materias_incompatibles[id_materia])
 
     def crear_tarea_para_generar_plan_de_estudios(self, tarea_algoritmo, parametros):
         plan_de_estudios = self.alta_nuevo_plan_de_estudios(parametros)
@@ -242,7 +250,13 @@ class PlanDeEstudiosService(BaseService):
 
             parametros.materias_incompatibles[id_materia] = []
             for grupo_materia_incompatible in incompatibles:
-                parametros.materias_incompatibles[id_materia].append(grupo_materia_incompatible.materia_incompatible_id)
+                id_materia_incompatible = grupo_materia_incompatible.materia_incompatible_id
+
+                # No agrego materias que ya no pertenecen al plan
+                if not id_materia_incompatible in parametros.materias:
+                    continue
+
+                parametros.materias_incompatibles[id_materia].append(id_materia_incompatible)
 
     def actualizar_creditos_minimos_por_tematica(self, parametros, tematicas):
         parametros.creditos_minimos_tematicas = {}
@@ -388,21 +402,29 @@ class PlanDeEstudiosService(BaseService):
     def actualizar_plan_con_materias_aprobadas(self, carrera, aprobacion_finales, parametros):
         parametros.cuatrimestre_minimo_para_materia = {}
 
-        # Borro las materias que el alumno ya aprobo
-        alumno = self.obtener_alumno_usuario_actual()
-        estado_aprobado = EstadoMateria.query.filter_by(estado=ESTADO_MATERIA[APROBADA]).first()
-
         # Borro las materias que se van a dar por aprobadas
         for id_materia in aprobacion_finales:
             cuatrimestre = int(aprobacion_finales[id_materia])
             self.setear_cuatrimestre_minimo_correlativas(int(id_materia), cuatrimestre, parametros)
             if cuatrimestre > -1:
-                parametros.quitar_materia_por_id(id_materia, True)
+                parametros.quitar_materia_por_id(int(id_materia), True)
+            self.eliminar_materias_incompatibles_con(int(id_materia), parametros)
 
+        # Borro las materias que el alumno ya aprobo
+        alumno = self.obtener_alumno_usuario_actual()
+        estado_aprobado = EstadoMateria.query.filter_by(estado=ESTADO_MATERIA[APROBADA]).first()
         materias_aprobadas = MateriasAlumno.query.filter_by(alumno_id=alumno.id).filter_by(carrera_id=carrera). \
             filter_by(estado_id=estado_aprobado.id).all()
         for materia_alumno in materias_aprobadas:
             parametros.quitar_materia_por_id(materia_alumno.materia_id, True)
+            self.eliminar_materias_incompatibles_con(materia_alumno.materia_id, parametros)
+
+    def eliminar_materias_incompatibles_con(self, id_materia, parametros):
+        if not id_materia in parametros.materias_incompatibles:
+            return
+
+        for id_incompatible in parametros.materias_incompatibles[id_materia]:
+            parametros.quitar_materia_por_id(id_incompatible, False)
 
     def setear_cuatrimestre_minimo_correlativas(self, id_materia, cuatrimestre, parametros):
         if cuatrimestre <= 0 or not id_materia in parametros.plan:
@@ -424,7 +446,6 @@ class PlanDeEstudiosService(BaseService):
 
     def configurar_horarios_y_seleccionar_cursos_obligatorios(self, horarios_invalidos, cursos_preseleccionados,
                                                               puntaje_minimo_cursos, parametros):
-
         horarios_invalidos = self.normalizar_dias_y_franjas_invalidas(horarios_invalidos)
 
         parametros.horarios = {}

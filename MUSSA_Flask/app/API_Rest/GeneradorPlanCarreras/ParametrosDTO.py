@@ -396,6 +396,9 @@ class Parametros:
         if id_materia in self.plan:
             del (self.plan[id_materia])
 
+        if id_materia in self.horarios:
+            del (self.horarios[id_materia])
+
     def plan_esta_finalizado(self):
         electivas_completas = self.creditos_en_electivas_estan_completos()
 
@@ -420,7 +423,9 @@ class Parametros:
     def generar_lista_franjas_limpia(self):
         franjas_por_dia = {}
         for dia in self.dias:
-            franjas = [False for i in range(self.franja_minima, self.franja_maxima + 1)]
+            # Por mas que haya una franja minima se accede por el valor directo de la franja - 1
+            # asi que es necesario generar todos los espacios
+            franjas = [False for i in range(1, self.franja_maxima + 1)]
             franjas_por_dia[dia] = franjas
         return franjas_por_dia
 

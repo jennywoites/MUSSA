@@ -6,6 +6,7 @@ from app.DAO.PlanDeCarreraDAO import PLAN_INCOMPATIBLE, PLAN_FINALIZADO
 from app.API_Rest.GeneradorPlanCarreras.GeneradorPLE.GeneradorCodigoPulp import generar_archivo_pulp
 from app.API_Rest.GeneradorPlanCarreras.GeneradorPLE.OptimizadorCodigoPulp import optimizar_codigo_pulp
 import os
+import time
 
 broker_generador_ple = Celery('broker', broker='redis://localhost')
 broker_generador_ple.conf.update({
@@ -13,6 +14,20 @@ broker_generador_ple.conf.update({
     'task_acks_late': True,
 })
 broker_generador_ple.conf.broker_transport_options = {'visibility_timeout': 14400}  # 3hs
+
+
+def hacer_plan_ple(parametros_tarea):
+    parametros = Parametros()
+    parametros.actualizar_valores_desde_JSON(parametros_tarea)
+
+    generar_ruta_archivo_pulp(parametros)
+
+    generar_archivo_pulp(parametros)
+    optimizar_codigo_pulp(parametros)
+
+    ejecutar_codigo_pulp(parametros)
+    resultados = obtener_resultados_pulp(parametros)
+    armar_plan(parametros, resultados)
 
 
 @broker_generador_ple.task(acks_late=True)
@@ -60,6 +75,7 @@ def generar_ruta_archivo_pulp(parametros):
 
 def ejecutar_codigo_pulp(parametros):
     os.system('python3 ' + parametros.nombre_archivo_pulp_optimizado)
+    time.sleep(2) #Porque a veces no termina de liberar el archivo y el otro no lo encuentra
 
 
 def obtener_resultados_pulp(parametros):

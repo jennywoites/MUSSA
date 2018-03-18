@@ -562,9 +562,12 @@ class MateriaAlumnoService(BaseService):
 
         idMateria = MateriasAlumno.query.get(idMateriaAlumno).materia_id
 
-        query = MateriasAlumno.query.filter(MateriasAlumno.id.isnot(idMateriaAlumno))
-        query = query.filter_by(materia_id=idMateria).order_by(MateriasAlumno.anio_aprobacion_cursada.desc())
-        ultima_materia = query.order_by(MateriasAlumno.cuatrimestre_aprobacion_cursada.desc()).first()
+        alumno = self.obtener_alumno_usuario_actual()
+
+        ultima_materia = MateriasAlumno.query.filter(MateriasAlumno.id.isnot(idMateriaAlumno))\
+            .filter_by(alumno_id=alumno.id).filter_by(materia_id=idMateria)\
+            .order_by(MateriasAlumno.anio_aprobacion_cursada.desc())\
+            .order_by(MateriasAlumno.cuatrimestre_aprobacion_cursada.desc()).first()
 
         if not ultima_materia:
             return self.mensaje_OK(nombre_parametro)
@@ -573,7 +576,7 @@ class MateriaAlumnoService(BaseService):
                      ultima_materia.cuatrimestre_aprobacion_cursada < cuatrimestre)
 
         return (False, 'La nueva cursada de esta materia debe ser de un '
-                       'cuatrimestre posterior a la misma materia que quedó desprobada', CLIENT_ERROR_BAD_REQUEST) if \
+                       'cuatrimestre posterior a la misma materia que quedó desaprobada', CLIENT_ERROR_BAD_REQUEST) if \
             not es_valido else self.mensaje_OK(nombre_parametro)
 
     def eliminar_correspondientes_desaprobadas(self, materia):

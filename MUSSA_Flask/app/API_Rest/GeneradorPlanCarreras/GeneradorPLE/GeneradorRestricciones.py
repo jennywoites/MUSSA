@@ -55,7 +55,10 @@ def generar_restriccion_cuatrimestre_minimo_en_que_se_puede_cursar_la_materia(ar
                "en ese cuatrimestre minimo" + ENTER + ENTER)
     for id_materia in parametros.cuatrimestre_minimo_para_materia:
         variable_c_materia = "C{}".format(id_materia)
-        cuatrimestre_min = parametros.cuatrimestre_minimo_para_materia[id_materia]
+
+        # El cuatrimestre minimo es el siguiente de cuando estara aprobada la materia
+        cuatrimestre_min = parametros.cuatrimestre_minimo_para_materia[id_materia] + 1
+
         ecuacion = "prob += ({} >= {})".format(variable_c_materia, cuatrimestre_min)
         arch.write(ecuacion + ENTER + ENTER)
     arch.write(ENTER)
@@ -132,13 +135,13 @@ def generar_restriccion_maxima_cant_materias_por_cuatrimestre(arch, parametros):
 
         if not parametros.materia_trabajo_final:
             ecuacion = ecuacion[:-2]
+        else:
+            for materia in parametros.materia_trabajo_final:
+                variable = "Y_TP_FINAL_{}_{}_{}".format(materia.id_materia, materia.codigo,
+                                                        get_str_cuatrimestre(cuatrimestre))
+                ecuacion += variable + " + "
+            ecuacion = ecuacion[:-2]
 
-        for materia in parametros.materia_trabajo_final:
-            variable = "Y_TP_FINAL_{}_{}_{}".format(materia.id_materia, materia.codigo,
-                                                    get_str_cuatrimestre(cuatrimestre))
-            ecuacion += variable + " + "
-
-        ecuacion = ecuacion[:-2]
         ecuacion += " <= {})".format(parametros.max_cant_materias_por_cuatrimestre)
         arch.write(ecuacion + ENTER)
 
@@ -178,11 +181,11 @@ def generar_restriccion_calculo_creditos_obtenidos_por_cuatrimestre(arch, parame
 
         if not parametros.materia_trabajo_final:
             ecuacion = ecuacion[:-2]  # elimino el ultimo + agregado
-
-        for materia in parametros.materia_trabajo_final:
-            variable_Y = "Y_TP_FINAL_{}_{}_{}".format(materia.id_materia, materia.codigo, get_str_cuatrimestre(i))
-            ecuacion += "{}*{} + ".format(materia.creditos, variable_Y)
-        ecuacion = ecuacion[:-2]  # elimino el ultimo + agregado
+        else:
+            for materia in parametros.materia_trabajo_final:
+                variable_Y = "Y_TP_FINAL_{}_{}_{}".format(materia.id_materia, materia.codigo, get_str_cuatrimestre(i))
+                ecuacion += "{}*{} + ".format(materia.creditos, variable_Y)
+            ecuacion = ecuacion[:-2]  # elimino el ultimo + agregado
 
         if i > 1:
             ecuacion += "+ CRED{}".format(get_str_cuatrimestre(i - 1))
@@ -306,9 +309,13 @@ def generar_restriccion_creditos_minimos_electivas(arch, parametros):
             ecuacion += Y + "*" + str(materia.creditos) + " + "
 
     ecuacion = ecuacion[:-3]
-    arch.write(ecuacion + " <= CREDITOS_ELECTIVAS)" + ENTER)
-    arch.write(ecuacion + " >= CREDITOS_ELECTIVAS)" + ENTER)
-    arch.write("CREDITOS_ELECTIVAS >= " + str(parametros.creditos_minimos_electivas) + ")" + ENTER + ENTER)
+
+    #FIXME: Esto no anda por algun motivo
+    #arch.write(ecuacion + " <= CREDITOS_ELECTIVAS)" + ENTER)
+    #arch.write(ecuacion + " >= CREDITOS_ELECTIVAS)" + ENTER)
+    #arch.write("prob += (CREDITOS_ELECTIVAS >= " + str(parametros.creditos_minimos_electivas) + ")" + ENTER + ENTER)
+
+    arch.write(ecuacion + " >= " + str(parametros.creditos_minimos_electivas) + ")" + ENTER + ENTER)
 
 
 def generar_restriccion_creditos_minimos_por_tematica(arch, parametros):
@@ -438,12 +445,10 @@ def generar_restriccion_materias_incompatibles(arch, parametros):
         ecuacion = "prob += ("
         for id_incompatible in incompatibles:
             for cuatrimestre in range(1, parametros.max_cuatrimestres + 1):
-                if cuatrimestre > 1:
-                    ecuacion += " + "
-
                 variable = "Y_{}_{}".format(id_incompatible, get_str_cuatrimestre(cuatrimestre))
-                ecuacion += variable
+                ecuacion += variable + " + "
 
+        ecuacion = ecuacion[:-3]
         ecuacion += " <= 1)"
         arch.write(ecuacion + ENTER)
         arch.write(ENTER)
@@ -470,5 +475,6 @@ def generar_restricciones(arch, parametros):
     generar_restriccion_maximo_cuatrimestres_para_func_objetivo(arch, parametros)
     generar_restriccion_horarios_cursos(arch, parametros)
     generar_restriccion_creditos_minimos_electivas(arch, parametros)
-    generar_restriccion_trabajo_final(arch, parametros)
+    #generar_restriccion_trabajo_final(arch, parametros)
     generar_restriccion_materias_incompatibles(arch, parametros)
+    generar_restriccion_cuatrimestre_minimo_en_que_se_puede_cursar_la_materia(arch, parametros)

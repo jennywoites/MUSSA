@@ -70,13 +70,13 @@ def agregar_materias_plan_de_estudios(plan_de_estudios, materias_por_cuatrimestr
             if materia_alumno.estado_id != estado_desaprobada:
                 ids_a_excluir_materias_aprobadas.append(materia_alumno.id)
 
-            if materia_alumno.estado_id == estado_pendiente:
-                curso_actual = curso
-                anio, cuatrimestre = obtener_anio_y_cuatrimestre(plan_de_estudios, materia_plan)
-            else:
+            curso_actual = curso
+            if materia_alumno.estado_id != estado_pendiente:
                 curso_actual = Curso.query.get(materia_alumno.curso_id) if materia_alumno.curso_id else None
-                anio, cuatrimestre = int(materia_alumno.anio_aprobacion_cursada), \
-                                     int(materia_alumno.cuatrimestre_aprobacion_cursada)
+
+            anio, cuatrimestre = obtener_anio_y_cuatrimestre(plan_de_estudios, materia_plan) if \
+                (not materia_alumno.anio_aprobacion_cursada and not materia_alumno.cuatrimestre_aprobacion_cursada) \
+                else (int(materia_alumno.anio_aprobacion_cursada), int(materia_alumno.cuatrimestre_aprobacion_cursada))
 
             json_materia = generarJSON_materia_plan(materia, materia_alumno, curso_actual)
             materias_cuatrimestre = materias_por_cuatrimestre.get((anio, cuatrimestre), [])
