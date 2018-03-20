@@ -105,7 +105,7 @@ def guardar_variables(arch, parametros):
     guardar_variable_materia_i_en_cuatri_j(arch, parametros)
     guardar_variable_numero_cuatrimestre_materia(arch, parametros)
     guardar_total_cuatrimestres(arch)
-    #guardar_total_creditos_electivas(arch)
+    # guardar_total_creditos_electivas(arch)
     guardar_variable_cantidad_creditos_por_cuatrimestre(arch, parametros)
     guardar_variables_horarios_de_materias(arch, parametros)
     guardar_variables_trabajo_final(arch, parametros)

@@ -197,6 +197,29 @@ def generar_restriccion_calculo_creditos_obtenidos_por_cuatrimestre(arch, parame
     arch.write(ENTER)
 
 
+def generar_restriccion_maxima_cantidad_horas_extra_cursada(arch, parametros):
+    arch.write("# Maxima cantidad de horas extra cursada. El calculo es por una semana en medias"
+               "horas de cursada, pero es la misma restriccion para todo el cuatrimestre" + ENTER + ENTER)
+
+    for i in range(1, parametros.max_cuatrimestres + 1):
+        ecuacion = "prob += ("
+        for id_materia in parametros.plan:
+            materia = parametros.materias[id_materia]
+            variable_Y = "Y_{}_{}".format(id_materia, get_str_cuatrimestre(i))
+            ecuacion += "{}*{} + ".format(materia.medias_horas_extras_cursada, variable_Y)
+
+        if not parametros.materia_trabajo_final:
+            ecuacion = ecuacion[:-2]  # elimino el ultimo + agregado
+        else:
+            for materia in parametros.materia_trabajo_final:
+                variable_Y = "Y_TP_FINAL_{}_{}_{}".format(materia.id_materia, materia.codigo, get_str_cuatrimestre(i))
+                ecuacion += "{}*{} + ".format(materia.medias_horas_extras_cursada, variable_Y)
+            ecuacion = ecuacion[:-2]  # elimino el ultimo + agregado
+
+        arch.write(ecuacion + " <= {})".format(parametros.max_horas_extras) + ENTER)
+    arch.write(ENTER)
+
+
 def generar_restriccion_creditos_minimos_ya_obtenidos_para_cursar(arch, parametros):
     arch.write(
         "# Restricciones sobre aquellas materias que requieren creditos minimos para poder cursar" + ENTER + ENTER)
@@ -483,3 +506,4 @@ def generar_restricciones(arch, parametros):
     generar_restriccion_trabajo_final(arch, parametros)
     generar_restriccion_materias_incompatibles(arch, parametros)
     generar_restriccion_cuatrimestre_minimo_en_que_se_puede_cursar_la_materia(arch, parametros)
+    generar_restriccion_maxima_cantidad_horas_extra_cursada(arch, parametros)
