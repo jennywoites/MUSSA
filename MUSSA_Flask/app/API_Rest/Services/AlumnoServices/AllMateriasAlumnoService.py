@@ -116,9 +116,15 @@ def cmp_materias_result(materia1, materia2):
     if estado2 == ESTADO_MATERIA[FINAL_PENDIENTE]:
         return -1
 
-    if materia1["fecha_aprobacion"] < materia2["fecha_aprobacion"]:
+    fecha1 = materia1["fecha_aprobacion"].split("/")
+    fecha1 = "{}-{}-{}".format(fecha1[2], fecha1[1], fecha1[0])
+
+    fecha2 = materia2["fecha_aprobacion"].split("/")
+    fecha2 = "{}-{}-{}".format(fecha2[2], fecha2[1], fecha2[0])
+
+    if fecha1 < fecha2:
         return -1
-    elif materia1["fecha_aprobacion"] > materia2["fecha_aprobacion"]:
+    elif fecha1 > fecha2:
         return 1
 
     return cmp_codigo(codigo1, codigo2)
