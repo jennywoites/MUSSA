@@ -4,7 +4,7 @@ from flask import request, url_for, redirect
 from app.views.base_view import main_blueprint
 from app.ClienteAPI.ClienteAPI import ClienteAPI
 from app.utils import DIAS, generar_lista_horarios, generar_lista_anios
-from app.DAO.MateriasDAO import FINAL_PENDIENTE
+from app.DAO.MateriasDAO import FINAL_PENDIENTE, EN_CURSO
 from datetime import datetime
 from app.DAO.PlanDeCarreraDAO import PLAN_FINALIZADO
 from app.API_Rest.codes import *

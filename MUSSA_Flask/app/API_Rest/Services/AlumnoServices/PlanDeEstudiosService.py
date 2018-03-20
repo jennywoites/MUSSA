@@ -459,6 +459,10 @@ class PlanDeEstudiosService(BaseService):
 
     def configurar_horarios_y_seleccionar_cursos_obligatorios(self, horarios_invalidos, cursos_preseleccionados,
                                                               puntaje_minimo_cursos, parametros):
+        d_cursos_preseleccionados = {}
+        for str_id_materia in cursos_preseleccionados:
+            d_cursos_preseleccionados[int(str_id_materia)] = int(cursos_preseleccionados[str_id_materia])
+
         horarios_invalidos = self.normalizar_dias_y_franjas_invalidas(horarios_invalidos)
 
         parametros.horarios = {}
@@ -468,8 +472,8 @@ class PlanDeEstudiosService(BaseService):
             # Si la materia fue seleccionada, agrego solo el curso correspondiente
             # además, si es una materia electiva se la pasa a obligatoria para forzar
             # que se elija ese curso en algun momento.
-            if materia.id_materia in cursos_preseleccionados:
-                curso_db = Curso.query.get(cursos_preseleccionados[materia.id_materia])
+            if materia.id_materia in d_cursos_preseleccionados:
+                curso_db = Curso.query.get(d_cursos_preseleccionados[materia.id_materia])
                 parametros.horarios[materia.id_materia] = [self.generar_curso(curso_db)]
 
                 if materia.tipo == ELECTIVA:

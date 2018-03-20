@@ -483,6 +483,20 @@ def generar_restriccion_materias_incompatibles(arch, parametros):
     arch.write(ENTER)
 
 
+def generar_restriccion_maxima_cantidad_horas_cursada(arch, parametros):
+    arch.write("# Maxima cantidad de horas semanales de cursada (se calcula una semana"
+               " por cuatrimestre)" + ENTER + ENTER)
+    for cuatrimestre in range(1, parametros.max_cuatrimestres + 1):
+        ecuacion = "prob += ("
+        for id_materia in parametros.horarios:
+            for curso in parametros.horarios[id_materia]:
+                variable = "H_{}_{}_{}".format(id_materia, curso.id_curso, get_str_cuatrimestre(cuatrimestre))
+                ecuacion += "{}*{} + ".format(curso.medias_horas_cursada ,variable)
+        ecuacion = ecuacion[:-3]
+        arch.write("{} <= {})".format(ecuacion, parametros.max_horas_cursada) + ENTER)
+    arch.write(ENTER + ENTER)
+
+
 def generar_restriccion_trabajo_final(arch, parametros):
     if not parametros.materia_trabajo_final:
         return
@@ -507,3 +521,4 @@ def generar_restricciones(arch, parametros):
     generar_restriccion_materias_incompatibles(arch, parametros)
     generar_restriccion_cuatrimestre_minimo_en_que_se_puede_cursar_la_materia(arch, parametros)
     generar_restriccion_maxima_cantidad_horas_extra_cursada(arch, parametros)
+    generar_restriccion_maxima_cantidad_horas_cursada(arch, parametros)
