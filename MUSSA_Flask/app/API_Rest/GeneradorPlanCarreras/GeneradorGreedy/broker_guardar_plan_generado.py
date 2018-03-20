@@ -24,6 +24,11 @@ def tarea_guadar_plan_de_estudios(parametros_tarea):
     with app.app_context():
         plan_de_estudios = PlanDeEstudios.query.get(parametros_tarea["id_plan_estudios"])
 
+        if not plan_de_estudios:
+            print("FIN: El plan con id {} ya no existe. No se guardan los resultados".format(
+                parametros_tarea["id_plan_estudios"]))
+            return
+
         if parametros.estado_plan_de_estudios == PLAN_INCOMPATIBLE:
             actualizar_plan(plan_de_estudios, PLAN_INCOMPATIBLE)
             print("FIN guardado plan con id {}: (INCOMPATIBLE)".format(parametros_tarea["id_plan_estudios"]))

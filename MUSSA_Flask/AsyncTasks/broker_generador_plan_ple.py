@@ -6,12 +6,16 @@ from app.DAO.PlanDeCarreraDAO import PLAN_INCOMPATIBLE, PLAN_FINALIZADO
 from app.API_Rest.GeneradorPlanCarreras.GeneradorPLE.GeneradorCodigoPulp import generar_archivo_pulp
 from app.API_Rest.GeneradorPlanCarreras.GeneradorPLE.OptimizadorCodigoPulp import optimizar_codigo_pulp
 import os
+import time
 
 broker_generador_ple = Celery('broker', broker='redis://localhost')
 broker_generador_ple.conf.update({
     'task_reject_on_worker_lost': True,
     'task_acks_late': True,
 })
+broker_generador_ple.conf.broker_transport_options = {'visibility_timeout': 14400}  # 3hs
+
+OPTIMAL = "Optimal"
 
 
 @broker_generador_ple.task(acks_late=True)
@@ -21,15 +25,7 @@ def tarea_generar_plan_ple(parametros_tarea):
     parametros = Parametros()
     parametros.actualizar_valores_desde_JSON(parametros_tarea)
 
-    generar_archivo_pulp(parametros)
-    optimizar_codigo_pulp(parametros)
-
-    ejecutar_codigo_pulp(parametros)
-    resultados = obtener_resultados_pulp(parametros)
-    armar_plan(parametros, resultados)
-    print("Plan: {}".format(parametros.plan_generado))
-
-    parametros.estado_plan_de_estudios = PLAN_INCOMPATIBLE if not resultados else PLAN_FINALIZADO
+    generar_y_ejecutar_codigo_PULP(parametros)
 
     print("FIN generación plan PLE con id {}".format(parametros_tarea["id_plan_estudios"]))
 
@@ -37,8 +33,49 @@ def tarea_generar_plan_ple(parametros_tarea):
     tarea_guadar_plan_de_estudios.delay(parametros.generar_parametros_json())
 
 
+def generar_y_ejecutar_codigo_PULP(parametros):
+    generar_ruta_archivo_pulp(parametros)
+
+    print("Generando archivo PULP para plan con id {}".format(parametros.id_plan_estudios))
+    generar_archivo_pulp(parametros)
+
+    print("Generando archivo PULP OPTIMIZADO para plan con id {}".format(parametros.id_plan_estudios))
+    optimizar_codigo_pulp(parametros)
+
+    print("Ejecutando codigo PULP OPTIMIZADO para plan con id {}".format(parametros.id_plan_estudios))
+    ejecutar_codigo_pulp(parametros)
+
+    print("Obteniendo resultados PULP para plan con id {}".format(parametros.id_plan_estudios))
+    resultados = obtener_resultados_pulp(parametros)
+
+    parametros.estado_plan_de_estudios = PLAN_FINALIZADO if resultados["status"] == OPTIMAL else PLAN_INCOMPATIBLE
+
+    if parametros.estado_plan_de_estudios == PLAN_FINALIZADO:
+        armar_plan(parametros, resultados)
+
+
+def generar_ruta_archivo_pulp(parametros):
+    os.chdir(os.path.join(os.getcwd(), 'app'))
+
+    if not os.path.isdir('tmp'):
+        os.mkdir('tmp')
+    os.chdir(os.path.join(os.getcwd(), 'tmp'))
+
+    if not os.path.isdir(str(parametros.user_id)):
+        os.mkdir(str(parametros.user_id))
+
+    os.chdir(os.path.join(os.getcwd(), '..', '..'))
+
+    # Actualizo la ruta de los archivos a la nueva ruta creada
+    ruta_archivos = os.path.join('app', 'tmp', str(parametros.user_id))
+    parametros.nombre_archivo_pulp = os.path.join(ruta_archivos, parametros.nombre_archivo_pulp)
+    parametros.nombre_archivo_pulp_optimizado = os.path.join(ruta_archivos, parametros.nombre_archivo_pulp_optimizado)
+    parametros.nombre_archivo_resultados_pulp = os.path.join(ruta_archivos, parametros.nombre_archivo_resultados_pulp)
+
+
 def ejecutar_codigo_pulp(parametros):
     os.system('python3 ' + parametros.nombre_archivo_pulp_optimizado)
+    time.sleep(2)  # Porque a veces no termina de liberar el archivo y el otro no lo encuentra
 
 
 def obtener_resultados_pulp(parametros):
@@ -54,7 +91,10 @@ def obtener_resultados_pulp(parametros):
 
             linea = linea.rstrip("\n")
             variable, valor = linea.split(";")
-            resultados[variable] = int(valor)
+            try:
+                resultados[variable] = int(valor)
+            except:
+                resultados[variable] = valor
 
     return resultados
 
@@ -85,10 +125,19 @@ def armar_plan(parametros, resultados):
         max_cuatrimestre = max(max_cuatrimestre, cuatri)
         materias_por_cuatrimestre[cuatri] = materias_cuatri
 
+    for materia in parametros.materia_trabajo_final:
+        variable = "C_TP_FINAL_{}_{}".format(materia.id_materia, materia.codigo)
+        if variable in resultados:
+            cuatrimestre = int(resultados[variable])
+
+            materias_cuatri = materias_por_cuatrimestre.get(cuatrimestre, {})
+            materias_cuatri[materia.id_materia] = -1  # No hay cursos
+            max_cuatrimestre = max(max_cuatrimestre, cuatrimestre)
+            materias_por_cuatrimestre[cuatrimestre] = materias_cuatri
+
     parametros.plan_generado = []
     for i in range(max_cuatrimestre):
         parametros.plan_generado.append({})
 
     for cuatrimestre in materias_por_cuatrimestre:
         parametros.plan_generado[cuatrimestre - 1] = materias_por_cuatrimestre[cuatrimestre]
-

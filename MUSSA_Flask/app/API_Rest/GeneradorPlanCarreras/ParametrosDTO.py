@@ -43,8 +43,6 @@ class Parametros:
         self.max_cuatrimestres = MAX_CUATRIMESTRES_TOTALES
         self.max_cant_materias_por_cuatrimestre = MAX_CANTIDAD_MATERIAS_POR_CUATRIMESTRE
 
-        # Nuevos parametros a agregar
-
         self.materias_CBC_pendientes = []
         self.orientacion = ''
         self.id_carrera = ''
@@ -64,6 +62,11 @@ class Parametros:
         self.plan_generado = []
         self.id_plan_estudios = -1
         self.estado_plan_de_estudios = -1
+
+        self.user_id = -1
+
+        # Creditos en materias aprobadas / que se daran por aprobadas antes de la confeccion del plan de estudios
+        self.creditos_preacumulados = 0
 
     def __str__(self):
         SALTO = "\n"
@@ -136,6 +139,10 @@ class Parametros:
 
         parametros += "id_plan_estudios:" + str(self.id_plan_estudios)
         parametros += "estado_plan_de_estudios:" + str(self.estado_plan_de_estudios)
+
+        parametros += "id_usuario: " + str(self.user_id)
+
+        parametros += "creditos_preacumulados" + str(self.creditos_preacumulados)
 
         return parametros
 
@@ -217,6 +224,10 @@ class Parametros:
         self.id_plan_estudios = int(parametros_JSON["id_plan_estudios"])
         self.estado_plan_de_estudios = int(parametros_JSON["estado_plan_de_estudios"])
 
+        self.user_id = int(parametros_JSON["user_id"])
+
+        self.creditos_preacumulados = int(parametros_JSON["creditos_preacumulados"])
+
     def generar_parametros_json(self):
         parametros_JSON = {}
         parametros_JSON["primer_cuatrimestre_es_impar"] = self.primer_cuatrimestre_es_impar
@@ -277,6 +288,10 @@ class Parametros:
 
         parametros_JSON["id_plan_estudios"] = self.id_plan_estudios
         parametros_JSON["estado_plan_de_estudios"] = self.estado_plan_de_estudios
+
+        parametros_JSON["user_id"] = self.user_id
+
+        parametros_JSON["creditos_preacumulados"] = self.creditos_preacumulados
 
         return parametros_JSON
 
@@ -356,6 +371,10 @@ class Parametros:
         copia_parametros.id_plan_estudios = self.id_plan_estudios
         copia_parametros.estado_plan_de_estudios = self.estado_plan_de_estudios
 
+        copia_parametros.user_id = self.user_id
+
+        copia_parametros.creditos_preacumulados = self.creditos_preacumulados
+
         return copia_parametros
 
     def set_franjas(self, minima, maxima):
@@ -372,6 +391,9 @@ class Parametros:
             if self.creditos_minimos_electivas < 0:
                 self.creditos_minimos_electivas = 0
 
+        if actualizar_creditos:
+            self.creditos_preacumulados += materia.creditos
+
         correlativas_plan = self.plan[id_materia] if id_materia in self.plan else []
         for id_materia_que_la_tiene_de_correlativa in correlativas_plan:
             if not id_materia_que_la_tiene_de_correlativa in self.materias:
@@ -387,6 +409,9 @@ class Parametros:
 
         if id_materia in self.plan:
             del (self.plan[id_materia])
+
+        if id_materia in self.horarios:
+            del (self.horarios[id_materia])
 
     def plan_esta_finalizado(self):
         electivas_completas = self.creditos_en_electivas_estan_completos()
@@ -412,7 +437,9 @@ class Parametros:
     def generar_lista_franjas_limpia(self):
         franjas_por_dia = {}
         for dia in self.dias:
-            franjas = [False for i in range(self.franja_minima, self.franja_maxima + 1)]
+            # Por mas que haya una franja minima se accede por el valor directo de la franja - 1
+            # asi que es necesario generar todos los espacios
+            franjas = [False for i in range(1, self.franja_maxima + 1)]
             franjas_por_dia[dia] = franjas
         return franjas_por_dia
 
@@ -464,7 +491,7 @@ class Parametros:
         if not id_materia in self.cuatrimestre_minimo_para_materia:
             return True
 
-        return self.cuatrimestre_minimo_para_materia[id_materia] < len(self.plan_generado)
+        return self.cuatrimestre_minimo_para_materia[id_materia] <= len(self.plan_generado)
 
     def se_encuentra_materia_en_plan_generado(self, id_materia, materias_cuatrimestre_actual):
         for cuatrimestre in self.plan_generado:
@@ -796,3 +823,5 @@ class Parametros:
         self.plan_generado = parametros_actuales.plan_generado
         self.id_plan_estudios = parametros_actuales.id_plan_estudios
         self.estado_plan_de_estudios = parametros_actuales.estado_plan_de_estudios
+        self.user_id = parametros_actuales.user_id
+        self.creditos_preacumulados = parametros_actuales.creditos_preacumulados

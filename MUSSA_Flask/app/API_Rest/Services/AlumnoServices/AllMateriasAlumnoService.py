@@ -67,7 +67,7 @@ class AllMateriasAlumnoService(BaseService):
         filtro["estados"] = estados
 
         if id_carrera:
-            filtro["id_carrera"] = id_carrera
+            filtro["ids_carrera"] = [id_carrera]
 
         materias_alumno_result = []
         for materia_alumno in filtrar_materias_alumno(filtro):

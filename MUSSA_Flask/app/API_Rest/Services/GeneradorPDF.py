@@ -281,7 +281,7 @@ class GeneradorPDF:
     def insertar_tabla_materias(self, estados, id_carrera, alumno, texto_sin_datos):
         filtro = {}
         filtro["id_alumno"] = alumno.id
-        filtro["id_carrera"] = id_carrera
+        filtro["ids_carrera"] = [id_carrera]
         filtro["estados"] = estados
 
         materias_alumno_result = []

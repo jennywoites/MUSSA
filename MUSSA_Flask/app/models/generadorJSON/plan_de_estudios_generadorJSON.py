@@ -6,6 +6,7 @@ from app.DAO.MateriasDAO import ESTADO_MATERIA, DESAPROBADA, PENDIENTE, FINAL_PE
 from app.models.generadorJSON.alumno_generadorJSON import generar_string_curso
 from app.models.generadorJSON.horarios_generadorJSON import obtener_horarios_response
 from app.models.filtros.alumno_filter import filtrar_materias_alumno
+from app.models.plan_de_estudios_models import CarrerasPlanDeEstudios
 
 
 def generarJSON_plan_de_estudios(plan_de_estudios):
@@ -17,7 +18,23 @@ def generarJSON_plan_de_estudios(plan_de_estudios):
         'estado_id': estado.id,
         'estado_numero': estado.numero,
         'estado': estado.descripcion,
+        'carreras': obtener_carreras_plan_generado(plan_de_estudios)
     }
+
+
+def obtener_carreras_plan_generado(plan_de_estudios):
+    carreras_plan = CarrerasPlanDeEstudios.query.filter_by(plan_estudios_id=plan_de_estudios.id).all()
+    carreras = []
+    for carrera_plan in carreras_plan:
+        carrera = Carrera.query.get(carrera_plan.carrera_id)
+        carreras.append({
+            'id_carrera': carrera.id,
+            'codigo': carrera.codigo,
+            'nombre': carrera.nombre,
+            'plan': carrera.plan,
+            'descripcion': carrera.get_descripcion_carrera()
+        })
+    return carreras
 
 
 def generarJSON_materias_plan_de_estudios(plan_de_estudios):
@@ -53,13 +70,13 @@ def agregar_materias_plan_de_estudios(plan_de_estudios, materias_por_cuatrimestr
             if materia_alumno.estado_id != estado_desaprobada:
                 ids_a_excluir_materias_aprobadas.append(materia_alumno.id)
 
-            if materia_alumno.estado_id == estado_pendiente:
-                curso_actual = curso
-                anio, cuatrimestre = obtener_anio_y_cuatrimestre(plan_de_estudios, materia_plan)
-            else:
+            curso_actual = curso
+            if materia_alumno.estado_id != estado_pendiente:
                 curso_actual = Curso.query.get(materia_alumno.curso_id) if materia_alumno.curso_id else None
-                anio, cuatrimestre = int(materia_alumno.anio_aprobacion_cursada), \
-                                     int(materia_alumno.cuatrimestre_aprobacion_cursada)
+
+            anio, cuatrimestre = obtener_anio_y_cuatrimestre(plan_de_estudios, materia_plan) if \
+                (not materia_alumno.anio_aprobacion_cursada and not materia_alumno.cuatrimestre_aprobacion_cursada) \
+                else (int(materia_alumno.anio_aprobacion_cursada), int(materia_alumno.cuatrimestre_aprobacion_cursada))
 
             json_materia = generarJSON_materia_plan(materia, materia_alumno, curso_actual)
             materias_cuatrimestre = materias_por_cuatrimestre.get((anio, cuatrimestre), [])
@@ -83,6 +100,11 @@ def agregar_materias_no_pendientes_no_contempladas_en_plan(plan_de_estudios, mat
     filtro["id_alumno"] = plan_de_estudios.alumno_id
     filtro["estados"] = [APROBADA, DESAPROBADA, FINAL_PENDIENTE, EN_CURSO]
     filtro["ids_a_excluir"] = ids_a_excluir_materias_aprobadas
+
+    carreras = []
+    for carrera_plan in CarrerasPlanDeEstudios.query.filter_by(plan_estudios_id=plan_de_estudios.id).all():
+        carreras.append(carrera_plan.carrera_id)
+    filtro["ids_carrera"] = carreras
 
     for materia_alumno in filtrar_materias_alumno(filtro):
         materia = Materia.query.get(materia_alumno.materia_id)
@@ -125,7 +147,7 @@ def normalizar_materias_y_completar_cuatrimestres_vacios(materias_por_cuatrimest
 def obtener_anio_y_cuatrimestre(plan_de_estudios, materia_plan):
     anio_inicio = int(plan_de_estudios.anio_inicio_plan)
     cuatri_inicio = int(plan_de_estudios.cuatrimestre_inicio_plan)
-    orden = materia_plan.orden + 1 #Para los calculos se requiere que el orden comience en 1 en lugar de en 0
+    orden = materia_plan.orden + 1  # Para los calculos se requiere que el orden comience en 1 en lugar de en 0
 
     if orden < cuatri_inicio:
         anio = anio_inicio + (1 if orden == 2 else 0)

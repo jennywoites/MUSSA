@@ -16,7 +16,8 @@ from app.models.carreras_models import Materia, Correlativas, Creditos, TipoMate
 from app.models.generadorJSON.plan_de_estudios_generadorJSON import generarJSON_materias_plan_de_estudios
 from app.models.horarios_models import Curso, HorarioPorCurso, Horario, CarreraPorCurso
 from app.models.palabras_clave_models import TematicaPorMateria, TematicaMateria
-from app.models.plan_de_estudios_models import PlanDeEstudios, MateriaPlanDeEstudios
+from app.models.plan_de_estudios_models import PlanDeEstudios, MateriaPlanDeEstudios, CarrerasPlanDeEstudios
+from flask_user import current_user
 
 
 class PlanDeEstudiosService(BaseService):
@@ -89,15 +90,21 @@ class PlanDeEstudiosService(BaseService):
             self.logg_error(msj)
             return {'Error': msj}, codigo
 
-        MateriaPlanDeEstudios.query.filter_by(plan_estudios_id=idPlanDeEstudios).delete()
-        db.session.commit()
-
-        PlanDeEstudios.query.filter_by(id=idPlanDeEstudios).delete()
-        db.session.commit()
+        self.eliminar_plan_de_estudios(idPlanDeEstudios)
 
         result = SUCCESS_NO_CONTENT
         self.logg_resultado(result)
         return result
+
+    def eliminar_plan_de_estudios(self, idPlanDeEstudios):
+        MateriaPlanDeEstudios.query.filter_by(plan_estudios_id=idPlanDeEstudios).delete()
+        db.session.commit()
+
+        CarrerasPlanDeEstudios.query.filter_by(plan_estudios_id=idPlanDeEstudios).delete()
+        db.session.commit()
+
+        PlanDeEstudios.query.filter_by(id=idPlanDeEstudios).delete()
+        db.session.commit()
 
     @login_required
     def put(self):
@@ -157,9 +164,12 @@ class PlanDeEstudiosService(BaseService):
         parametros.max_horas_extras = max_horas_extras * 2
         parametros.cuatrimestre_inicio = cuatrimestre_inicio
         parametros.anio_inicio = anio_inicio
+        parametros.user_id = current_user.id
 
         self.configurar_plan_de_carrera_origen(carrera, parametros)
         self.actualizar_creditos(carrera, trabajo_final, parametros)
+
+        self.cargar_materias_incompatibles(parametros)
 
         self.actualizar_plan_con_materias_aprobadas(carrera, aprobacion_finales, parametros)
 
@@ -169,12 +179,15 @@ class PlanDeEstudiosService(BaseService):
         self.configurar_horarios_y_seleccionar_cursos_obligatorios(horarios_invalidos, cursos_preseleccionados,
                                                                    puntaje_minimo_cursos, parametros)
 
+        # En el caso de que se hayan hecho mas electivas que las minimas
+        if parametros.creditos_minimos_electivas <= 0:
+            parametros.creditos_minimos_electivas = 0
+            self.eliminar_todas_las_electivas_restantes(parametros)
+
         self.actualizar_creditos_minimos_por_tematica(parametros, tematicas)
 
         cuatrimestres_de_CBC = 1 if (len(parametros.materias_CBC_pendientes) <= 3) else 2
         parametros.primer_cuatrimestre_es_impar = ((cuatrimestre_inicio + cuatrimestres_de_CBC) % 2 != 0)
-
-        self.cargar_materias_incompatibles(parametros)
 
         obligatorias_tienen_cursos, msj = self.validar_cursos_materias_obligatorias(parametros)
         if not obligatorias_tienen_cursos:
@@ -183,6 +196,8 @@ class PlanDeEstudiosService(BaseService):
             return result
 
         self.eliminar_materias_sin_cursos(parametros)
+
+        self.eliminar_incompatibles_que_no_pertenezcan_al_plan(parametros)
 
         electivas_cubren_creditos_requeridos, msj = self.validar_creditos_requeridos_electivas(parametros)
         if not electivas_cubren_creditos_requeridos:
@@ -204,10 +219,27 @@ class PlanDeEstudiosService(BaseService):
         self.logg_resultado(result)
         return result
 
+    def eliminar_todas_las_electivas_restantes(self, parametros):
+        ids_materias = list(parametros.materias.keys())
+        for id_materia in ids_materias:
+            materia = parametros.materias[id_materia]
+            if materia.tipo == ELECTIVA:
+                parametros.quitar_materia_por_id(id_materia, False)
+
+    def eliminar_incompatibles_que_no_pertenezcan_al_plan(self, parametros):
+        materias = list(parametros.materias_incompatibles.keys())
+        for id_materia in materias:
+            if not id_materia in parametros.materias:
+                del (parametros.materias_incompatibles[id_materia])
+
     def crear_tarea_para_generar_plan_de_estudios(self, tarea_algoritmo, parametros):
         plan_de_estudios = self.alta_nuevo_plan_de_estudios(parametros)
 
         parametros.id_plan_estudios = plan_de_estudios.id
+        parametros.nombre_archivo_pulp = "pulp_generado_plan_{}.py".format(plan_de_estudios.id)
+        parametros.nombre_archivo_resultados_pulp = "pulp_resultados_plan_{}.py".format(plan_de_estudios.id)
+        parametros.nombre_archivo_pulp_optimizado = "pulp_optimizado_plan_{}.py".format(plan_de_estudios.id)
+
         tarea = tarea_algoritmo.delay(parametros.generar_parametros_json())
 
         if not tarea:
@@ -230,7 +262,13 @@ class PlanDeEstudiosService(BaseService):
 
             parametros.materias_incompatibles[id_materia] = []
             for grupo_materia_incompatible in incompatibles:
-                parametros.materias_incompatibles[id_materia].append(grupo_materia_incompatible.materia_incompatible_id)
+                id_materia_incompatible = grupo_materia_incompatible.materia_incompatible_id
+
+                # No agrego materias que ya no pertenecen al plan
+                if not id_materia_incompatible in parametros.materias:
+                    continue
+
+                parametros.materias_incompatibles[id_materia].append(id_materia_incompatible)
 
     def actualizar_creditos_minimos_por_tematica(self, parametros, tematicas):
         parametros.creditos_minimos_tematicas = {}
@@ -303,6 +341,7 @@ class PlanDeEstudiosService(BaseService):
             codigo_parte_1 = materia_trabajo_final_parte_1.codigo + '_PARTE_A'
 
             materia_trabajo_final_parte_1.medias_horas_extras_cursada /= 2
+            materia_trabajo_final_parte_1.creditos /= 2
 
             materia_trabajo_final_parte_2 = Modelo_Materia(
                 id_materia=materia_trabajo_final_parte_1.id_materia,
@@ -376,21 +415,29 @@ class PlanDeEstudiosService(BaseService):
     def actualizar_plan_con_materias_aprobadas(self, carrera, aprobacion_finales, parametros):
         parametros.cuatrimestre_minimo_para_materia = {}
 
-        # Borro las materias que el alumno ya aprobo
-        alumno = self.obtener_alumno_usuario_actual()
-        estado_aprobado = EstadoMateria.query.filter_by(estado=ESTADO_MATERIA[APROBADA]).first()
-
         # Borro las materias que se van a dar por aprobadas
         for id_materia in aprobacion_finales:
             cuatrimestre = int(aprobacion_finales[id_materia])
-            self.setear_cuatrimestre_minimo_correlativas(id_materia, cuatrimestre, parametros)
+            self.setear_cuatrimestre_minimo_correlativas(int(id_materia), cuatrimestre, parametros)
             if cuatrimestre > -1:
-                parametros.quitar_materia_por_id(id_materia, True)
+                parametros.quitar_materia_por_id(int(id_materia), True)
+            self.eliminar_materias_incompatibles_con(int(id_materia), parametros)
 
+        # Borro las materias que el alumno ya aprobo
+        alumno = self.obtener_alumno_usuario_actual()
+        estado_aprobado = EstadoMateria.query.filter_by(estado=ESTADO_MATERIA[APROBADA]).first()
         materias_aprobadas = MateriasAlumno.query.filter_by(alumno_id=alumno.id).filter_by(carrera_id=carrera). \
             filter_by(estado_id=estado_aprobado.id).all()
         for materia_alumno in materias_aprobadas:
             parametros.quitar_materia_por_id(materia_alumno.materia_id, True)
+            self.eliminar_materias_incompatibles_con(materia_alumno.materia_id, parametros)
+
+    def eliminar_materias_incompatibles_con(self, id_materia, parametros):
+        if not id_materia in parametros.materias_incompatibles:
+            return
+
+        for id_incompatible in parametros.materias_incompatibles[id_materia]:
+            parametros.quitar_materia_por_id(id_incompatible, False)
 
     def setear_cuatrimestre_minimo_correlativas(self, id_materia, cuatrimestre, parametros):
         if cuatrimestre <= 0 or not id_materia in parametros.plan:
@@ -412,7 +459,6 @@ class PlanDeEstudiosService(BaseService):
 
     def configurar_horarios_y_seleccionar_cursos_obligatorios(self, horarios_invalidos, cursos_preseleccionados,
                                                               puntaje_minimo_cursos, parametros):
-
         horarios_invalidos = self.normalizar_dias_y_franjas_invalidas(horarios_invalidos)
 
         parametros.horarios = {}
@@ -628,6 +674,14 @@ class PlanDeEstudiosService(BaseService):
         )
         db.session.add(plan_de_estudios)
         db.session.commit()
+
+        db.session.add(CarrerasPlanDeEstudios(
+            plan_estudios_id=plan_de_estudios.id,
+            carrera_id=parametros.id_carrera
+        ))
+        db.session.commit()
+
+        parametros.id_carrera
 
         return plan_de_estudios
 

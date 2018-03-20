@@ -5,6 +5,8 @@ from app.models.carreras_models import Carrera, Materia
 from app.models.alumno_models import AlumnosCarreras, MateriasAlumno
 from app.DAO.MateriasDAO import *
 from app.API_Rest.Services.AlumnoServices.MateriaAlumnoService import MateriaAlumnoService
+from app.API_Rest.Services.AlumnoServices.PlanDeEstudiosService import PlanDeEstudiosService
+from app.models.plan_de_estudios_models import CarrerasPlanDeEstudios
 
 
 class CarreraAlumnoService(BaseService):
@@ -87,6 +89,7 @@ class CarreraAlumnoService(BaseService):
         db.session.commit()
 
         self.eliminar_materias_carrera(alumno.id, idCarrera)
+        self.eliminar_planes_asociados_a_la_carrera(alumno.id, idCarrera)
 
         result = SUCCESS_NO_CONTENT
         self.logg_resultado(result)
@@ -115,6 +118,13 @@ class CarreraAlumnoService(BaseService):
                 carrera_id=id_carrera
             ))
 
+        db.session.commit()
+
+    def eliminar_planes_asociados_a_la_carrera(self, alumno_id, idCarrera):
+        planes_con_esta_carrera = CarrerasPlanDeEstudios.query.filter_by(carrera_id=idCarrera).all()
+        service = PlanDeEstudiosService()
+        for plan in planes_con_esta_carrera:
+            service.eliminar_plan_de_estudios(plan.plan_estudios_id)
         db.session.commit()
 
     def carrera_pertenece_al_alumno(self, nombre_parametro, id_carrera, es_obligatorio):

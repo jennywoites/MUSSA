@@ -4,6 +4,15 @@
 
     <script>
 
+        $(function() {
+            var cant_carreras = {{carreras | length}};
+            if (cant_carreras == 1) {
+                var carrera_element = document.getElementById("carrera");
+                carrera_element.selectedIndex = 1;
+                filtrar_materias_segun_carrera();
+            }
+        });
+
         function validar_guardar() {
             mostrar_error(false);
 

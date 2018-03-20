@@ -20,10 +20,11 @@ def definir_problema_minimizacion(arch):
     arch.write(ENTER + ENTER)
 
 
-def definir_funcion_objetivo(arch):
+def definir_funcion_objetivo(arch, parametros):
     arch.write("# Definicion de la funcion objetivo a minimizar." + ENTER + ENTER)
     funciones = []  # [(factor, variable)]
     funciones.append((10, "TOTAL_CUATRIMESTRES"))
+    #funciones.append((2, "(CREDITOS_ELECTIVAS - {})".format(parametros.creditos_minimos_electivas)))
 
     ecuacion = "prob += "
     for (factor, variable) in funciones:
@@ -66,7 +67,7 @@ def generar_codigo(arch, parametros):
     definir_variables(arch, parametros)
     definir_problema_minimizacion(arch)
     generar_restricciones(arch, parametros)
-    definir_funcion_objetivo(arch)
+    definir_funcion_objetivo(arch, parametros)
     resolver_problema(arch)
     guardar_variables(arch, parametros)
 

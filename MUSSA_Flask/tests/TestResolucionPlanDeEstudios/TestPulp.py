@@ -98,7 +98,10 @@ class TestPulp:
 
                 linea = linea.rstrip(ENTER)
                 variable, valor = linea.split(";")
-                resultados[variable] = int(valor)
+                try:
+                    resultados[variable] = int(valor)
+                except:
+                    resultados[variable] = valor
 
         return resultados
 

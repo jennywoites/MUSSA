@@ -11,6 +11,16 @@ def definir_variable_materia_i_en_cuatri_j(arch, parametros):
     arch.write(ENTER + ENTER)
 
 
+def definir_variable_materia_trabajo_final_en_cuatri_j(arch, parametros):
+    arch.write("#Y_TP_FINAL_i_j_k: La materia con id i y codigo j se realiza en el cuatrimestre k" + ENTER + ENTER)
+    for materia in parametros.materia_trabajo_final:
+        for cuatrimestre in range(1, parametros.max_cuatrimestres + 1):
+            variable = "Y_TP_FINAL_{}_{}_{}".format(materia.id_materia, materia.codigo,
+                                                    get_str_cuatrimestre(cuatrimestre))
+            arch.write("{} = LpVariable(name='{}', cat='Binary')".format(variable, variable) + ENTER)
+    arch.write(ENTER + ENTER)
+
+
 def definir_variable_numero_cuatrimestre_materia(arch, parametros):
     arch.write(
         "#Ci: Numero de cuatrimestre en que se hace la materia con id i. Ejemplo, si Ci=3 es que la materia i se hace el cuatrimestre numero 3" + ENTER + ENTER)
@@ -21,10 +31,29 @@ def definir_variable_numero_cuatrimestre_materia(arch, parametros):
     arch.write(ENTER + ENTER)
 
 
+def definir_variable_numero_cuatrimestre_materia_trabajo_final(arch, parametros):
+    arch.write("#C_TP_FINAL_i_j: Numero de cuatrimestre en que se hace la materia con id i"
+               "y codigo j. Ejemplo, si Ci=3 es que la materia i se hace el "
+               "cuatrimestre numero 3" + ENTER + ENTER)
+    for materia in parametros.materia_trabajo_final:
+        variable = "C_TP_FINAL_{}_{}".format(materia.id_materia, materia.codigo)
+        arch.write("{} = LpVariable(name='{}', lowBound=0, upBound={}, cat='Integer')".format(variable, variable,
+                                                                                              parametros.max_cuatrimestres) + ENTER)
+    arch.write(ENTER + ENTER)
+
+
 def definir_auxiliar_para_maximo_cuatrimestres(arch, parametros):
     arch.write(
         "#TOTAL_CUATRIMESTRES: Total de cuatrimestres a cursar. Utilizada para escribir el maximo entre Ci MAX(CA, CB..)" + ENTER + ENTER)
     variable = "TOTAL_CUATRIMESTRES"
+    arch.write("{} = LpVariable(name='{}', lowBound=0, upBound={}, cat='Integer')".format(variable, variable,
+                                                                                          parametros.max_cuatrimestres) + ENTER)
+
+
+def definir_auxiliar_para_creditos_electivas(arch, parametros):
+    arch.write(
+        "#CREDITOS_ELECTIVAS: Total de creditos en materias electivas que se cursan" + ENTER + ENTER)
+    variable = "CREDITOS_ELECTIVAS"
     arch.write("{} = LpVariable(name='{}', lowBound=0, upBound={}, cat='Integer')".format(variable, variable,
                                                                                           parametros.max_cuatrimestres) + ENTER)
 
@@ -86,9 +115,19 @@ def definir_variables_horarios_de_materias(arch, parametros):
     definir_variables_horario_de_la_materia_en_dia_y_cuatrimestre(arch, parametros)
 
 
+def definir_variables_trabajo_final(arch, parametros):
+    if not parametros.materia_trabajo_final:
+        return
+
+    definir_variable_materia_trabajo_final_en_cuatri_j(arch, parametros)
+    definir_variable_numero_cuatrimestre_materia_trabajo_final(arch, parametros)
+
+
 def definir_variables(arch, parametros):
     definir_variable_materia_i_en_cuatri_j(arch, parametros)
     definir_variable_numero_cuatrimestre_materia(arch, parametros)
     definir_auxiliar_para_maximo_cuatrimestres(arch, parametros)
     definir_variable_cantidad_creditos_por_cuatrimestre(arch, parametros)
     definir_variables_horarios_de_materias(arch, parametros)
+    definir_variables_trabajo_final(arch, parametros)
+    #definir_auxiliar_para_creditos_electivas(arch, parametros)

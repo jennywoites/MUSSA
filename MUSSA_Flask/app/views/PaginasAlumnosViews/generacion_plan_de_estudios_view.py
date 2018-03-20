@@ -60,10 +60,7 @@ def visualizar_plan_de_estudios_page(idPlanEstudios):
     if plan["estado_numero"] != PLAN_FINALIZADO:
         return redirect(url_for('main.planes_de_estudios_page'), code=REDIRECTION_FOUND)
 
-    mis_carreras = cliente.obtener_carreras_alumno(cookies)
-
     return render_template('pages/ver_plan_de_estudios_page.html',
-                           carreras=mis_carreras,
                            plan=plan)
 
 @main_blueprint.route('/planes_de_estudio/mis_planes/eliminar_plan/<int:idPlanEstudios>/<string:token>', methods=['GET'])

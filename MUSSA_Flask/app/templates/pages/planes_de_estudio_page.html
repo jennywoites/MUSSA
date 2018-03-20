@@ -34,6 +34,7 @@
         <table class='table table-hover' id="tabla_cursos_guardados">
             <tr class="header_tabla">
                 <th>Fecha de generación del plan</th>
+                <th>Carreras</th>
                 <th>Estado</th>
                 <th>Acciones</th>
             </tr>
@@ -42,6 +43,16 @@
             {% for plan in planes %}
             <tr>
                 <td>{{plan['fecha_generacion']}}</td>
+                <td>
+                    {% if plan['carreras'] | length > 0%}
+                    <ul class="list-group">
+                        {% for carrera in plan['carreras'] %}
+                            <li style="border-color: transparent; background-color: transparent;">
+                                {{carrera['descripcion']}}</li>
+                        {% endfor %}
+                    </ul>
+                    {% endif %}
+                </td>
                 <td>{{plan['estado']}}</td>
                 {% if plan['estado_numero'] == 1 %}<!-- Estado finalizado -->
                 <td>
