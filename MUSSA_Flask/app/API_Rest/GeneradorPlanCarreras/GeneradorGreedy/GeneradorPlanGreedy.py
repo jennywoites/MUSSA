@@ -110,13 +110,16 @@ def obtener_combinacion_materias_cuatrimestre(materias_disponibles, posibles_com
                 else:
                     break
 
-            franjas_curso, horas_cursada = curso.obtener_franjas_curso() if curso else ([], 0)
+            franjas_curso = []
+            medias_horas_cursada = 0
+            if curso:
+                franjas_curso, medias_horas_cursada = curso.obtener_franjas_curso(), curso.medias_horas_cursada
 
-            if not es_posible_agregar_materia_y_curso(materia, franjas_curso, horas_cursada, nueva_combinacion):
+            if not es_posible_agregar_materia_y_curso(materia, franjas_curso, medias_horas_cursada, nueva_combinacion):
                 continue
 
             agregar_materia_a_combinacion_actualizar_creditos_y_horas(nueva_combinacion, materia, curso, franjas_curso,
-                                                                      horas_cursada)
+                                                                      medias_horas_cursada)
 
             if generar_todas_las_combinaciones_posibles:
                 nuevas_posibles_combinaciones.append(nueva_combinacion)
