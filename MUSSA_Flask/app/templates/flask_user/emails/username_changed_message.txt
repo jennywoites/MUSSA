@@ -1,9 +1,9 @@
 {% extends 'flask_user/emails/base_message.txt' %}
 
 {% block message %}
-Your username has been changed.
+Tu nombre de usuaio se ha cambiado.
 
-If you did not initiate this username change, please sign in (using your email address) and change your password.
+Si no fuiste vos quien inició este cambio de usuario, por favor iniciá sesión (utilizando tu dirección de e-mail) y cambiá tu contraseña.
     {{ url_for('user.login', _external=True) }}
 {% endblock %}
 
