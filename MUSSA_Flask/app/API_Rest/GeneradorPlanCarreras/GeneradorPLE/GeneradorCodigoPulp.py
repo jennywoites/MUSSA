@@ -24,7 +24,7 @@ def definir_funcion_objetivo(arch, parametros):
     arch.write("# Definicion de la funcion objetivo a minimizar." + ENTER + ENTER)
     funciones = []  # [(factor, variable)]
     funciones.append((10, "TOTAL_CUATRIMESTRES"))
-    funciones.append((2, "(CREDITOS_ELECTIVAS - {})".format(parametros.creditos_minimos_electivas)))
+    #funciones.append((2, "(CREDITOS_ELECTIVAS - {})".format(parametros.creditos_minimos_electivas)))
 
     ecuacion = "prob += "
     for (factor, variable) in funciones:

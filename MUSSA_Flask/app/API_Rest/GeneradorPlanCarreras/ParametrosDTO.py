@@ -65,6 +65,9 @@ class Parametros:
 
         self.user_id = -1
 
+        # Creditos en materias aprobadas / que se daran por aprobadas antes de la confeccion del plan de estudios
+        self.creditos_preacumulados = 0
+
     def __str__(self):
         SALTO = "\n"
         parametros = "{" + SALTO
@@ -138,6 +141,8 @@ class Parametros:
         parametros += "estado_plan_de_estudios:" + str(self.estado_plan_de_estudios)
 
         parametros += "id_usuario: " + str(self.user_id)
+
+        parametros += "creditos_preacumulados" + str(self.creditos_preacumulados)
 
         return parametros
 
@@ -221,6 +226,8 @@ class Parametros:
 
         self.user_id = int(parametros_JSON["user_id"])
 
+        self.creditos_preacumulados = int(parametros_JSON["creditos_preacumulados"])
+
     def generar_parametros_json(self):
         parametros_JSON = {}
         parametros_JSON["primer_cuatrimestre_es_impar"] = self.primer_cuatrimestre_es_impar
@@ -283,6 +290,8 @@ class Parametros:
         parametros_JSON["estado_plan_de_estudios"] = self.estado_plan_de_estudios
 
         parametros_JSON["user_id"] = self.user_id
+
+        parametros_JSON["creditos_preacumulados"] = self.creditos_preacumulados
 
         return parametros_JSON
 
@@ -364,6 +373,8 @@ class Parametros:
 
         copia_parametros.user_id = self.user_id
 
+        copia_parametros.creditos_preacumulados = self.creditos_preacumulados
+
         return copia_parametros
 
     def set_franjas(self, minima, maxima):
@@ -379,6 +390,9 @@ class Parametros:
             self.creditos_minimos_electivas -= materia.creditos
             if self.creditos_minimos_electivas < 0:
                 self.creditos_minimos_electivas = 0
+
+        if actualizar_creditos:
+            self.creditos_preacumulados += materia.creditos
 
         correlativas_plan = self.plan[id_materia] if id_materia in self.plan else []
         for id_materia_que_la_tiene_de_correlativa in correlativas_plan:
@@ -810,3 +824,4 @@ class Parametros:
         self.id_plan_estudios = parametros_actuales.id_plan_estudios
         self.estado_plan_de_estudios = parametros_actuales.estado_plan_de_estudios
         self.user_id = parametros_actuales.user_id
+        self.creditos_preacumulados = parametros_actuales.creditos_preacumulados

@@ -179,6 +179,11 @@ class PlanDeEstudiosService(BaseService):
         self.configurar_horarios_y_seleccionar_cursos_obligatorios(horarios_invalidos, cursos_preseleccionados,
                                                                    puntaje_minimo_cursos, parametros)
 
+        # En el caso de que se hayan hecho mas electivas que las minimas
+        if parametros.creditos_minimos_electivas <= 0:
+            parametros.creditos_minimos_electivas = 0
+            self.eliminar_todas_las_electivas_restantes(parametros)
+
         self.actualizar_creditos_minimos_por_tematica(parametros, tematicas)
 
         cuatrimestres_de_CBC = 1 if (len(parametros.materias_CBC_pendientes) <= 3) else 2
@@ -213,6 +218,13 @@ class PlanDeEstudiosService(BaseService):
         result = {"mensaje": "El algoritmo introducido no es valido"}, CLIENT_ERROR_BAD_REQUEST
         self.logg_resultado(result)
         return result
+
+    def eliminar_todas_las_electivas_restantes(self, parametros):
+        ids_materias = list(parametros.materias.keys())
+        for id_materia in ids_materias:
+            materia = parametros.materias[id_materia]
+            if materia.tipo == ELECTIVA:
+                parametros.quitar_materia_por_id(id_materia, False)
 
     def eliminar_incompatibles_que_no_pertenezcan_al_plan(self, parametros):
         materias = list(parametros.materias_incompatibles.keys())
@@ -329,6 +341,7 @@ class PlanDeEstudiosService(BaseService):
             codigo_parte_1 = materia_trabajo_final_parte_1.codigo + '_PARTE_A'
 
             materia_trabajo_final_parte_1.medias_horas_extras_cursada /= 2
+            materia_trabajo_final_parte_1.creditos /= 2
 
             materia_trabajo_final_parte_2 = Modelo_Materia(
                 id_materia=materia_trabajo_final_parte_1.id_materia,

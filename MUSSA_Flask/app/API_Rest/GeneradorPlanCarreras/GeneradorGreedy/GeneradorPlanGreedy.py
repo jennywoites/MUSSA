@@ -17,7 +17,7 @@ CANT_CREDITOS_ELECTIVAS = "cant_creditos_electivas"
 
 
 def generar_plan_greedy(parametros):
-    creditos_totales = 0
+    creditos_totales = parametros.creditos_preacumulados
     while (not parametros.plan_esta_finalizado()):
         if len(parametros.plan_generado) == parametros.max_cuatrimestres:
             return PLAN_NO_GENERADO

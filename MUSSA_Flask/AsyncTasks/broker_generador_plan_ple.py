@@ -15,19 +15,7 @@ broker_generador_ple.conf.update({
 })
 broker_generador_ple.conf.broker_transport_options = {'visibility_timeout': 14400}  # 3hs
 
-
-def hacer_plan_ple(parametros_tarea):
-    parametros = Parametros()
-    parametros.actualizar_valores_desde_JSON(parametros_tarea)
-
-    generar_ruta_archivo_pulp(parametros)
-
-    generar_archivo_pulp(parametros)
-    optimizar_codigo_pulp(parametros)
-
-    ejecutar_codigo_pulp(parametros)
-    resultados = obtener_resultados_pulp(parametros)
-    armar_plan(parametros, resultados)
+OPTIMAL = "Optimal"
 
 
 @broker_generador_ple.task(acks_late=True)
@@ -37,21 +25,33 @@ def tarea_generar_plan_ple(parametros_tarea):
     parametros = Parametros()
     parametros.actualizar_valores_desde_JSON(parametros_tarea)
 
-    generar_ruta_archivo_pulp(parametros)
-
-    generar_archivo_pulp(parametros)
-    optimizar_codigo_pulp(parametros)
-
-    ejecutar_codigo_pulp(parametros)
-    resultados = obtener_resultados_pulp(parametros)
-    armar_plan(parametros, resultados)
-
-    parametros.estado_plan_de_estudios = PLAN_INCOMPATIBLE if not resultados else PLAN_FINALIZADO
+    generar_y_ejecutar_codigo_PULP(parametros)
 
     print("FIN generación plan PLE con id {}".format(parametros_tarea["id_plan_estudios"]))
 
     print("Se invoca al guardado para el plan PLE con id {}".format(parametros_tarea["id_plan_estudios"]))
     tarea_guadar_plan_de_estudios.delay(parametros.generar_parametros_json())
+
+
+def generar_y_ejecutar_codigo_PULP(parametros):
+    generar_ruta_archivo_pulp(parametros)
+
+    print("Generando archivo PULP para plan con id {}".format(parametros.id_plan_estudios))
+    generar_archivo_pulp(parametros)
+
+    print("Generando archivo PULP OPTIMIZADO para plan con id {}".format(parametros.id_plan_estudios))
+    optimizar_codigo_pulp(parametros)
+
+    print("Ejecutando codigo PULP OPTIMIZADO para plan con id {}".format(parametros.id_plan_estudios))
+    ejecutar_codigo_pulp(parametros)
+
+    print("Obteniendo resultados PULP para plan con id {}".format(parametros.id_plan_estudios))
+    resultados = obtener_resultados_pulp(parametros)
+
+    parametros.estado_plan_de_estudios = PLAN_FINALIZADO if resultados["status"] == OPTIMAL else PLAN_INCOMPATIBLE
+
+    if parametros.estado_plan_de_estudios == PLAN_FINALIZADO:
+        armar_plan(parametros, resultados)
 
 
 def generar_ruta_archivo_pulp(parametros):
@@ -75,7 +75,7 @@ def generar_ruta_archivo_pulp(parametros):
 
 def ejecutar_codigo_pulp(parametros):
     os.system('python3 ' + parametros.nombre_archivo_pulp_optimizado)
-    time.sleep(2) #Porque a veces no termina de liberar el archivo y el otro no lo encuentra
+    time.sleep(2)  # Porque a veces no termina de liberar el archivo y el otro no lo encuentra
 
 
 def obtener_resultados_pulp(parametros):
@@ -91,7 +91,10 @@ def obtener_resultados_pulp(parametros):
 
             linea = linea.rstrip("\n")
             variable, valor = linea.split(";")
-            resultados[variable] = int(valor)
+            try:
+                resultados[variable] = int(valor)
+            except:
+                resultados[variable] = valor
 
     return resultados
 
@@ -128,9 +131,9 @@ def armar_plan(parametros, resultados):
             cuatrimestre = int(resultados[variable])
 
             materias_cuatri = materias_por_cuatrimestre.get(cuatrimestre, {})
-            materias_cuatri[id_materia] = -1  # No hay cursos
+            materias_cuatri[materia.id_materia] = -1  # No hay cursos
             max_cuatrimestre = max(max_cuatrimestre, cuatrimestre)
-            materias_por_cuatrimestre[cuatri] = materias_cuatri
+            materias_por_cuatrimestre[cuatrimestre] = materias_cuatri
 
     parametros.plan_generado = []
     for i in range(max_cuatrimestre):

@@ -130,4 +130,4 @@ def definir_variables(arch, parametros):
     definir_variable_cantidad_creditos_por_cuatrimestre(arch, parametros)
     definir_variables_horarios_de_materias(arch, parametros)
     definir_variables_trabajo_final(arch, parametros)
-    definir_auxiliar_para_creditos_electivas(arch, parametros)
+    #definir_auxiliar_para_creditos_electivas(arch, parametros)

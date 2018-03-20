@@ -100,11 +100,12 @@ def guardar_variables(arch, parametros):
     arch.write("with open('{}', 'w') as arch:".format(parametros.nombre_archivo_resultados_pulp) + ENTER)
     arch.write(
         """    arch.write("{};{}".format({}) + "\\n")""".format("tiempo", '{}', "DURACION_EJECUCION_PULP") + ENTER)
-
+    arch.write(
+        """    arch.write("{};{}".format({}) + "\\n")""".format("status", '{}', "LpStatus[prob.status]") + ENTER)
     guardar_variable_materia_i_en_cuatri_j(arch, parametros)
     guardar_variable_numero_cuatrimestre_materia(arch, parametros)
     guardar_total_cuatrimestres(arch)
-    guardar_total_creditos_electivas(arch)
+    #guardar_total_creditos_electivas(arch)
     guardar_variable_cantidad_creditos_por_cuatrimestre(arch, parametros)
     guardar_variables_horarios_de_materias(arch, parametros)
-    # guardar_variables_trabajo_final(arch, parametros)
+    guardar_variables_trabajo_final(arch, parametros)
