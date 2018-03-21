@@ -1,12 +1,16 @@
+import os
 from celery import Celery
-from app.API_Rest.GeneradorPlanCarreras.GeneradorGreedy.broker_guardar_plan_generado import \
-    tarea_guadar_plan_de_estudios
-from app.API_Rest.GeneradorPlanCarreras.ParametrosDTO import Parametros
-from app.DAO.PlanDeCarreraDAO import PLAN_INCOMPATIBLE, PLAN_FINALIZADO
 from app.API_Rest.GeneradorPlanCarreras.GeneradorPLE.GeneradorCodigoPulp import generar_archivo_pulp
 from app.API_Rest.GeneradorPlanCarreras.GeneradorPLE.OptimizadorCodigoPulp import optimizar_codigo_pulp
-import os
+from app.API_Rest.GeneradorPlanCarreras.ParametrosDTO import Parametros
+from app.API_Rest.GeneradorPlanCarreras.broker_guardar_plan_generado import \
+    tarea_guadar_plan_de_estudios
+from app.DAO.PlanDeCarreraDAO import PLAN_INCOMPATIBLE, PLAN_FINALIZADO
+from app.API_Rest.GeneradorPlanCarreras.my_utils import get_str_fecha_y_hora_actual
+from time import time as tiempo
 import time
+from app.API_Rest.GeneradorPlanCarreras.EstadisticasDTO import EstadisticasDTO
+from app.API_Rest.GeneradorPlanCarreras.my_utils import convertir_tiempo
 
 broker_generador_ple = Celery('broker', broker='redis://localhost')
 broker_generador_ple.conf.update({
@@ -19,18 +23,26 @@ OPTIMAL = "Optimal"
 
 
 @broker_generador_ple.task(acks_late=True)
-def tarea_generar_plan_ple(parametros_tarea):
+def tarea_generar_plan_ple(parametros_tarea, estadisticas_tarea):
     print("INICIO generación plan PLE con id {}".format(parametros_tarea["id_plan_estudios"]))
+
+    estadisticas = EstadisticasDTO()
+    estadisticas.cargar_desde_JSON(estadisticas_tarea)
+    inicio = tiempo()
+    estadisticas.fecha_inicio_generacion = get_str_fecha_y_hora_actual()
 
     parametros = Parametros()
     parametros.actualizar_valores_desde_JSON(parametros_tarea)
 
     generar_y_ejecutar_codigo_PULP(parametros)
 
+    estadisticas.fecha_fin_generacion = get_str_fecha_y_hora_actual()
+    estadisticas.tiempo_total_generacion = convertir_tiempo(tiempo() - inicio)
+
     print("FIN generación plan PLE con id {}".format(parametros_tarea["id_plan_estudios"]))
 
     print("Se invoca al guardado para el plan PLE con id {}".format(parametros_tarea["id_plan_estudios"]))
-    tarea_guadar_plan_de_estudios.delay(parametros.generar_parametros_json())
+    tarea_guadar_plan_de_estudios.delay(parametros.generar_parametros_json(), estadisticas.get_JSON())
 
 
 def generar_y_ejecutar_codigo_PULP(parametros):

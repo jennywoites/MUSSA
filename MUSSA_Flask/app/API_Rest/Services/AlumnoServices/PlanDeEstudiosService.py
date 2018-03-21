@@ -1,4 +1,3 @@
-from datetime import datetime
 from flask_user import login_required
 from AsyncTasks.broker_generador_greedy import tarea_generar_plan_greedy
 from AsyncTasks.broker_generador_plan_ple import tarea_generar_plan_ple
@@ -18,6 +17,10 @@ from app.models.horarios_models import Curso, HorarioPorCurso, Horario, CarreraP
 from app.models.palabras_clave_models import TematicaPorMateria, TematicaMateria
 from app.models.plan_de_estudios_models import PlanDeEstudios, MateriaPlanDeEstudios, CarrerasPlanDeEstudios
 from flask_user import current_user
+from app.API_Rest.GeneradorPlanCarreras.EstadisticasDTO import EstadisticasDTO
+import json
+from datetime import datetime
+from app.API_Rest.GeneradorPlanCarreras.my_utils import get_str_fecha_y_hora_actual
 
 
 class PlanDeEstudiosService(BaseService):
@@ -117,6 +120,9 @@ class PlanDeEstudiosService(BaseService):
             self.logg_error(msj)
             return {'Error': msj}, CLIENT_ERROR_NOT_FOUND
 
+        estadisticas = EstadisticasDTO()
+        estadisticas.fecha_solicitado = get_str_fecha_y_hora_actual()
+
         carrera = self.obtener_parametro('carrera')
         max_cant_cuatrimestres = self.obtener_parametro('max_cant_cuatrimestres')
         max_cant_materias = self.obtener_parametro('max_cant_materias')
@@ -207,17 +213,39 @@ class PlanDeEstudiosService(BaseService):
 
         self.actualizar_horarios_con_franjas_minimas_y_maximas(parametros)
 
+        self.actualizar_datos_estadisticas(estadisticas, parametros, trabajo_final, algoritmo)
+
         ALGORITMOS_VALIDOS = {
             ALGORITMO_GREEDY: tarea_generar_plan_greedy,
             ALGORITMO_PROGRAMACION_LINEAL_ENTERA: tarea_generar_plan_ple
         }
 
         if algoritmo in ALGORITMOS_VALIDOS:
-            return self.crear_tarea_para_generar_plan_de_estudios(ALGORITMOS_VALIDOS[algoritmo], parametros)
+            return self.crear_tarea_para_generar_plan_de_estudios(ALGORITMOS_VALIDOS[algoritmo], parametros,
+                                                                  estadisticas)
 
         result = {"mensaje": "El algoritmo introducido no es valido"}, CLIENT_ERROR_BAD_REQUEST
         self.logg_resultado(result)
         return result
+
+    def actualizar_datos_estadisticas(self, estadisticas, parametros, trabajo_final, algoritmo):
+        estadisticas.cantidad_materias_disponibles_totales = len(parametros.materias) + len(
+            parametros.materia_trabajo_final)
+        estadisticas.cantidad_materias_CBC = len(parametros.materias_CBC_pendientes)
+
+        cantidad_cursos = 0
+        for id_materia in parametros.horarios:
+            cantidad_cursos += len(parametros.horarios[id_materia])
+        estadisticas.cantidad_cursos_disponibles_totales = cantidad_cursos
+
+        # Configuracion
+        estadisticas.cantidad_materias_por_cuatrimestre_max = parametros.max_cant_materias_por_cuatrimestre
+        estadisticas.cantidad_horas_cursada_max = parametros.max_horas_cursada // 2 #Xq estan en medias horas
+        estadisticas.cantidad_horas_extras_max = parametros.max_horas_extras // 2 #Xq estan en medias horas
+        estadisticas.orientacion = parametros.orientacion
+        estadisticas.id_carrera = parametros.id_carrera
+        estadisticas.trabajo_final = trabajo_final
+        estadisticas.algoritmo = DESCRIPCION_ALGORITMOS[algoritmo]
 
     def eliminar_todas_las_electivas_restantes(self, parametros):
         ids_materias = list(parametros.materias.keys())
@@ -232,7 +260,7 @@ class PlanDeEstudiosService(BaseService):
             if not id_materia in parametros.materias:
                 del (parametros.materias_incompatibles[id_materia])
 
-    def crear_tarea_para_generar_plan_de_estudios(self, tarea_algoritmo, parametros):
+    def crear_tarea_para_generar_plan_de_estudios(self, tarea_algoritmo, parametros, estadisticas):
         plan_de_estudios = self.alta_nuevo_plan_de_estudios(parametros)
 
         parametros.id_plan_estudios = plan_de_estudios.id
@@ -240,7 +268,12 @@ class PlanDeEstudiosService(BaseService):
         parametros.nombre_archivo_resultados_pulp = "pulp_resultados_plan_{}.py".format(plan_de_estudios.id)
         parametros.nombre_archivo_pulp_optimizado = "pulp_optimizado_plan_{}.py".format(plan_de_estudios.id)
 
-        tarea = tarea_algoritmo.delay(parametros.generar_parametros_json())
+        ################################################################
+        ######### Descomentar para guardar los datos de prueba #########
+        self.guardar_datos_archivo_de_pruebas(parametros, estadisticas)
+        ################################################################
+
+        tarea = tarea_algoritmo.delay(parametros.generar_parametros_json(), estadisticas.get_JSON())
 
         if not tarea:
             result = {"mensaje": "No se pudo enviar a generar el plan."
@@ -251,6 +284,13 @@ class PlanDeEstudiosService(BaseService):
         result = SUCCESS_NO_CONTENT
         self.logg_resultado(result)
         return result
+
+    def guardar_datos_archivo_de_pruebas(self, parametros, estadisticas):
+        with open('prueba_datos_JSON.txt', 'w') as file:
+            file.write(json.dumps(parametros.generar_parametros_json()))
+
+        with open('estadisticas_prueba_JSON.txt', 'w') as file:
+            file.write(json.dumps(estadisticas.get_JSON()))
 
     def cargar_materias_incompatibles(self, parametros):
         parametros.materias_incompatibles = {}
