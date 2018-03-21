@@ -113,6 +113,9 @@ MUSSA_Flask/tests/TestResolucionPlanDeEstudios/resultados_tests/
 #Archivos temporales
 MUSSA_Flask/app/tmp/
 
+#Estadisticas de algoritmos
+MUSSA_Flask/estadisticas_algoritmos.csv
+
 #Base de datos
 app.sqlite
 
