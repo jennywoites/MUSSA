@@ -556,7 +556,7 @@ class ClienteAPI:
 
     def obtener_plan_de_estudios_alumno(self, cookie, idPlanDeEstudios):
         url_servicio = self.get_url_get_plan_de_estudio_alumno(idPlanDeEstudios)
-        return self.invocar_get(url_servicio, cookie)["plan_de_estudio"]
+        return self.invocar_get(url_servicio, cookie)
 
     def eliminar_plan_de_estudios_alumno(self, cookie, csrf_token, idPlanDeEstudios):
         url_servicio = self.get_url_get_plan_de_estudio_alumno(idPlanDeEstudios)
