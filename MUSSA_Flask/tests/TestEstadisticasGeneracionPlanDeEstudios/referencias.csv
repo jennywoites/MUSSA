@@ -1,61 +1,133 @@
-Numero,Carrera,Plan,Orientación,Trabajo Final,Maxima Cantidad de Cuatrimestres (sin CBC),Max Materias x Cuatrimestre,Max Horas cursada,Max Horas Extras,Cantidad Materias Obligatorias Aprobadas,Descripción
-001,Licenciatura en Análisis de Sistemas,1986,-,-,12,5,28,28,0,Plan completo a generar
-002,Licenciatura en Análisis de Sistemas,1986,-,-,12,4,28,28,0,Plan completo a generar
-003,Licenciatura en Análisis de Sistemas,1986,-,-,12,3,28,28,0,Plan completo a generar
-004,Licenciatura en Análisis de Sistemas,1986,-,-,15,2,28,28,0,Plan completo a generar
-005,Licenciatura en Análisis de Sistemas,1986,-,-,12,5,18,18,0,Plan completo a generar
-006,Licenciatura en Análisis de Sistemas,1986,-,-,12,4,18,18,0,Plan completo a generar
-007,Licenciatura en Análisis de Sistemas,1986,-,-,12,3,18,18,0,Plan completo a generar
-008,Licenciatura en Análisis de Sistemas,1986,-,-,15,2,18,18,0,Plan completo a generar
-009,Licenciatura en Análisis de Sistemas,1986,-,-,15,5,12,12,0,Plan completo a generar
-010,Licenciatura en Análisis de Sistemas,1986,-,-,15,4,12,12,0,Plan completo a generar
-011,Licenciatura en Análisis de Sistemas,1986,-,-,15,3,12,12,0,Plan completo a generar
-012,Licenciatura en Análisis de Sistemas,1986,-,-,15,2,12,12,0,Plan completo a generar
-013,Licenciatura en Análisis de Sistemas,1986,-,-,12,5,28,28,2,2 Materias del CBC aprobadas
-014,Licenciatura en Análisis de Sistemas,1986,-,-,12,4,28,28,2,2 Materias del CBC aprobadas
-015,Licenciatura en Análisis de Sistemas,1986,-,-,12,3,28,28,2,2 Materias del CBC aprobadas
-016,Licenciatura en Análisis de Sistemas,1986,-,-,15,2,28,28,2,2 Materias del CBC aprobadas
-017,Licenciatura en Análisis de Sistemas,1986,-,-,12,5,18,18,2,2 Materias del CBC aprobadas
-018,Licenciatura en Análisis de Sistemas,1986,-,-,12,4,18,18,2,2 Materias del CBC aprobadas
-019,Licenciatura en Análisis de Sistemas,1986,-,-,12,3,18,18,2,2 Materias del CBC aprobadas
-020,Licenciatura en Análisis de Sistemas,1986,-,-,15,2,18,18,2,2 Materias del CBC aprobadas
-021,Licenciatura en Análisis de Sistemas,1986,-,-,15,5,12,12,2,2 Materias del CBC aprobadas
-022,Licenciatura en Análisis de Sistemas,1986,-,-,15,4,12,12,2,2 Materias del CBC aprobadas
-023,Licenciatura en Análisis de Sistemas,1986,-,-,15,3,12,12,2,2 Materias del CBC aprobadas
-024,Licenciatura en Análisis de Sistemas,1986,-,-,15,2,12,12,2,2 Materias del CBC aprobadas
-025,Licenciatura en Análisis de Sistemas,1986,-,-,12,5,28,28,3,3 Materias del CBC aprobadas
-026,Licenciatura en Análisis de Sistemas,1986,-,-,12,4,28,28,3,3 Materias del CBC aprobadas
-027,Licenciatura en Análisis de Sistemas,1986,-,-,12,3,28,28,3,3 Materias del CBC aprobadas
-028,Licenciatura en Análisis de Sistemas,1986,-,-,15,2,28,28,3,3 Materias del CBC aprobadas
-029,Licenciatura en Análisis de Sistemas,1986,-,-,12,5,18,18,3,3 Materias del CBC aprobadas
-030,Licenciatura en Análisis de Sistemas,1986,-,-,12,4,18,18,3,3 Materias del CBC aprobadas
-031,Licenciatura en Análisis de Sistemas,1986,-,-,12,3,18,18,3,3 Materias del CBC aprobadas
-032,Licenciatura en Análisis de Sistemas,1986,-,-,15,2,18,18,3,3 Materias del CBC aprobadas
-033,Licenciatura en Análisis de Sistemas,1986,-,-,15,5,12,12,3,3 Materias del CBC aprobadas
-034,Licenciatura en Análisis de Sistemas,1986,-,-,15,4,12,12,3,3 Materias del CBC aprobadas
-035,Licenciatura en Análisis de Sistemas,1986,-,-,15,3,12,12,3,3 Materias del CBC aprobadas
-036,Licenciatura en Análisis de Sistemas,1986,-,-,15,2,12,12,3,3 Materias del CBC aprobadas
-037,Licenciatura en Análisis de Sistemas,1986,-,-,12,5,28,28,5,5 Materias del CBC aprobadas
-038,Licenciatura en Análisis de Sistemas,1986,-,-,12,4,28,28,5,5 Materias del CBC aprobadas
-039,Licenciatura en Análisis de Sistemas,1986,-,-,12,3,28,28,5,5 Materias del CBC aprobadas
-040,Licenciatura en Análisis de Sistemas,1986,-,-,15,2,28,28,5,5 Materias del CBC aprobadas
-041,Licenciatura en Análisis de Sistemas,1986,-,-,12,5,18,18,5,5 Materias del CBC aprobadas
-042,Licenciatura en Análisis de Sistemas,1986,-,-,12,4,18,18,5,5 Materias del CBC aprobadas
-043,Licenciatura en Análisis de Sistemas,1986,-,-,12,3,18,18,5,5 Materias del CBC aprobadas
-044,Licenciatura en Análisis de Sistemas,1986,-,-,15,2,18,18,5,5 Materias del CBC aprobadas
-045,Licenciatura en Análisis de Sistemas,1986,-,-,15,5,12,12,5,5 Materias del CBC aprobadas
-046,Licenciatura en Análisis de Sistemas,1986,-,-,15,4,12,12,5,5 Materias del CBC aprobadas
-047,Licenciatura en Análisis de Sistemas,1986,-,-,15,3,12,12,5,5 Materias del CBC aprobadas
-048,Licenciatura en Análisis de Sistemas,1986,-,-,15,2,12,12,5,5 Materias del CBC aprobadas
-049,Licenciatura en Análisis de Sistemas,1986,-,-,12,5,28,28,6,CBC completo aprobado
-050,Licenciatura en Análisis de Sistemas,1986,-,-,12,4,28,28,6,CBC completo aprobado
-051,Licenciatura en Análisis de Sistemas,1986,-,-,12,3,28,28,6,CBC completo aprobado
-052,Licenciatura en Análisis de Sistemas,1986,-,-,15,2,28,28,6,CBC completo aprobado
-053,Licenciatura en Análisis de Sistemas,1986,-,-,12,5,18,18,6,CBC completo aprobado
-054,Licenciatura en Análisis de Sistemas,1986,-,-,12,4,18,18,6,CBC completo aprobado
-055,Licenciatura en Análisis de Sistemas,1986,-,-,12,3,18,18,6,CBC completo aprobado
-056,Licenciatura en Análisis de Sistemas,1986,-,-,15,2,18,18,6,CBC completo aprobado
-057,Licenciatura en Análisis de Sistemas,1986,-,-,15,5,12,12,6,CBC completo aprobado
-058,Licenciatura en Análisis de Sistemas,1986,-,-,15,4,12,12,6,CBC completo aprobado
-059,Licenciatura en Análisis de Sistemas,1986,-,-,15,3,12,12,6,CBC completo aprobado
-060,Licenciatura en Análisis de Sistemas,1986,-,-,15,2,12,12,6,CBC completo aprobado
+Numero,Carrera,Plan,Orientación,Trabajo Final,Max Materias x Cuatrimestre,Maxima Cantidad de Cuatrimestres (sin CBC),Max Horas cursada,Max Horas Extras,Cantidad Materias Obligatorias Aprobadas,Descripción
+001,Licenciatura en Análisis de Sistemas,1986,-,-,5,12,28,28,0,Plan completo a generar
+002,Licenciatura en Análisis de Sistemas,1986,-,-,4,12,28,28,0,Plan completo a generar
+003,Licenciatura en Análisis de Sistemas,1986,-,-,3,12,28,28,0,Plan completo a generar
+004,Licenciatura en Análisis de Sistemas,1986,-,-,2,15,28,28,0,Plan completo a generar
+005,Licenciatura en Análisis de Sistemas,1986,-,-,5,12,18,18,0,Plan completo a generar
+006,Licenciatura en Análisis de Sistemas,1986,-,-,4,12,18,18,0,Plan completo a generar
+007,Licenciatura en Análisis de Sistemas,1986,-,-,3,12,18,18,0,Plan completo a generar
+008,Licenciatura en Análisis de Sistemas,1986,-,-,2,15,18,18,0,Plan completo a generar
+009,Licenciatura en Análisis de Sistemas,1986,-,-,5,15,12,12,0,Plan completo a generar
+010,Licenciatura en Análisis de Sistemas,1986,-,-,4,15,12,12,0,Plan completo a generar
+011,Licenciatura en Análisis de Sistemas,1986,-,-,3,15,12,12,0,Plan completo a generar
+012,Licenciatura en Análisis de Sistemas,1986,-,-,2,15,12,12,0,Plan completo a generar
+013,Licenciatura en Análisis de Sistemas,1986,-,-,5,12,28,28,2,2 Materias del CBC aprobadas
+014,Licenciatura en Análisis de Sistemas,1986,-,-,4,12,28,28,2,2 Materias del CBC aprobadas
+015,Licenciatura en Análisis de Sistemas,1986,-,-,3,12,28,28,2,2 Materias del CBC aprobadas
+016,Licenciatura en Análisis de Sistemas,1986,-,-,2,15,28,28,2,2 Materias del CBC aprobadas
+017,Licenciatura en Análisis de Sistemas,1986,-,-,5,12,18,18,2,2 Materias del CBC aprobadas
+018,Licenciatura en Análisis de Sistemas,1986,-,-,4,12,18,18,2,2 Materias del CBC aprobadas
+019,Licenciatura en Análisis de Sistemas,1986,-,-,3,12,18,18,2,2 Materias del CBC aprobadas
+020,Licenciatura en Análisis de Sistemas,1986,-,-,2,15,18,18,2,2 Materias del CBC aprobadas
+021,Licenciatura en Análisis de Sistemas,1986,-,-,5,15,12,12,2,2 Materias del CBC aprobadas
+022,Licenciatura en Análisis de Sistemas,1986,-,-,4,15,12,12,2,2 Materias del CBC aprobadas
+023,Licenciatura en Análisis de Sistemas,1986,-,-,3,15,12,12,2,2 Materias del CBC aprobadas
+024,Licenciatura en Análisis de Sistemas,1986,-,-,2,15,12,12,2,2 Materias del CBC aprobadas
+025,Licenciatura en Análisis de Sistemas,1986,-,-,5,12,28,28,3,3 Materias del CBC aprobadas
+026,Licenciatura en Análisis de Sistemas,1986,-,-,4,12,28,28,3,3 Materias del CBC aprobadas
+027,Licenciatura en Análisis de Sistemas,1986,-,-,3,12,28,28,3,3 Materias del CBC aprobadas
+028,Licenciatura en Análisis de Sistemas,1986,-,-,2,15,28,28,3,3 Materias del CBC aprobadas
+029,Licenciatura en Análisis de Sistemas,1986,-,-,5,12,18,18,3,3 Materias del CBC aprobadas
+030,Licenciatura en Análisis de Sistemas,1986,-,-,4,12,18,18,3,3 Materias del CBC aprobadas
+031,Licenciatura en Análisis de Sistemas,1986,-,-,3,12,18,18,3,3 Materias del CBC aprobadas
+032,Licenciatura en Análisis de Sistemas,1986,-,-,2,15,18,18,3,3 Materias del CBC aprobadas
+033,Licenciatura en Análisis de Sistemas,1986,-,-,5,15,12,12,3,3 Materias del CBC aprobadas
+034,Licenciatura en Análisis de Sistemas,1986,-,-,4,15,12,12,3,3 Materias del CBC aprobadas
+035,Licenciatura en Análisis de Sistemas,1986,-,-,3,15,12,12,3,3 Materias del CBC aprobadas
+036,Licenciatura en Análisis de Sistemas,1986,-,-,2,15,12,12,3,3 Materias del CBC aprobadas
+037,Licenciatura en Análisis de Sistemas,1986,-,-,5,12,28,28,5,5 Materias del CBC aprobadas
+038,Licenciatura en Análisis de Sistemas,1986,-,-,4,12,28,28,5,5 Materias del CBC aprobadas
+039,Licenciatura en Análisis de Sistemas,1986,-,-,3,12,28,28,5,5 Materias del CBC aprobadas
+040,Licenciatura en Análisis de Sistemas,1986,-,-,2,15,28,28,5,5 Materias del CBC aprobadas
+041,Licenciatura en Análisis de Sistemas,1986,-,-,5,12,18,18,5,5 Materias del CBC aprobadas
+042,Licenciatura en Análisis de Sistemas,1986,-,-,4,12,18,18,5,5 Materias del CBC aprobadas
+043,Licenciatura en Análisis de Sistemas,1986,-,-,3,12,18,18,5,5 Materias del CBC aprobadas
+044,Licenciatura en Análisis de Sistemas,1986,-,-,2,15,18,18,5,5 Materias del CBC aprobadas
+045,Licenciatura en Análisis de Sistemas,1986,-,-,5,15,12,12,5,5 Materias del CBC aprobadas
+046,Licenciatura en Análisis de Sistemas,1986,-,-,4,15,12,12,5,5 Materias del CBC aprobadas
+047,Licenciatura en Análisis de Sistemas,1986,-,-,3,15,12,12,5,5 Materias del CBC aprobadas
+048,Licenciatura en Análisis de Sistemas,1986,-,-,2,15,12,12,5,5 Materias del CBC aprobadas
+049,Licenciatura en Análisis de Sistemas,1986,-,-,5,12,28,28,6,CBC completo aprobado
+050,Licenciatura en Análisis de Sistemas,1986,-,-,4,12,28,28,6,CBC completo aprobado
+051,Licenciatura en Análisis de Sistemas,1986,-,-,3,12,28,28,6,CBC completo aprobado
+052,Licenciatura en Análisis de Sistemas,1986,-,-,2,15,28,28,6,CBC completo aprobado
+053,Licenciatura en Análisis de Sistemas,1986,-,-,5,12,18,18,6,CBC completo aprobado
+054,Licenciatura en Análisis de Sistemas,1986,-,-,4,12,18,18,6,CBC completo aprobado
+055,Licenciatura en Análisis de Sistemas,1986,-,-,3,12,18,18,6,CBC completo aprobado
+056,Licenciatura en Análisis de Sistemas,1986,-,-,2,15,18,18,6,CBC completo aprobado
+057,Licenciatura en Análisis de Sistemas,1986,-,-,5,15,12,12,6,CBC completo aprobado
+058,Licenciatura en Análisis de Sistemas,1986,-,-,4,15,12,12,6,CBC completo aprobado
+059,Licenciatura en Análisis de Sistemas,1986,-,-,3,15,12,12,6,CBC completo aprobado
+060,Licenciatura en Análisis de Sistemas,1986,-,-,2,15,12,12,6,CBC completo aprobado
+061,Licenciatura en Análisis de Sistemas,1986,-,-,5,12,28,28,9,Tercer cuatrimestre de la carrera completo
+062,Licenciatura en Análisis de Sistemas,1986,-,-,4,12,28,28,9,Tercer cuatrimestre de la carrera completo
+063,Licenciatura en Análisis de Sistemas,1986,-,-,3,12,28,28,9,Tercer cuatrimestre de la carrera completo
+064,Licenciatura en Análisis de Sistemas,1986,-,-,2,15,28,28,9,Tercer cuatrimestre de la carrera completo
+065,Licenciatura en Análisis de Sistemas,1986,-,-,5,12,18,18,9,Tercer cuatrimestre de la carrera completo
+066,Licenciatura en Análisis de Sistemas,1986,-,-,4,12,18,18,9,Tercer cuatrimestre de la carrera completo
+067,Licenciatura en Análisis de Sistemas,1986,-,-,3,12,18,18,9,Tercer cuatrimestre de la carrera completo
+068,Licenciatura en Análisis de Sistemas,1986,-,-,2,15,18,18,9,Tercer cuatrimestre de la carrera completo
+069,Licenciatura en Análisis de Sistemas,1986,-,-,5,15,12,12,9,Tercer cuatrimestre de la carrera completo
+070,Licenciatura en Análisis de Sistemas,1986,-,-,4,15,12,12,9,Tercer cuatrimestre de la carrera completo
+071,Licenciatura en Análisis de Sistemas,1986,-,-,3,15,12,12,9,Tercer cuatrimestre de la carrera completo
+072,Licenciatura en Análisis de Sistemas,1986,-,-,2,15,12,12,9,Tercer cuatrimestre de la carrera completo
+073,Licenciatura en Análisis de Sistemas,1986,-,-,5,12,28,28,12,Cuarto cuatrimestre de la carrera completo
+074,Licenciatura en Análisis de Sistemas,1986,-,-,4,12,28,28,12,Cuarto cuatrimestre de la carrera completo
+075,Licenciatura en Análisis de Sistemas,1986,-,-,3,12,28,28,12,Cuarto cuatrimestre de la carrera completo
+076,Licenciatura en Análisis de Sistemas,1986,-,-,2,15,28,28,12,Cuarto cuatrimestre de la carrera completo
+077,Licenciatura en Análisis de Sistemas,1986,-,-,5,12,18,18,12,Cuarto cuatrimestre de la carrera completo
+078,Licenciatura en Análisis de Sistemas,1986,-,-,4,12,18,18,12,Cuarto cuatrimestre de la carrera completo
+079,Licenciatura en Análisis de Sistemas,1986,-,-,3,12,18,18,12,Cuarto cuatrimestre de la carrera completo
+080,Licenciatura en Análisis de Sistemas,1986,-,-,2,15,18,18,12,Cuarto cuatrimestre de la carrera completo
+081,Licenciatura en Análisis de Sistemas,1986,-,-,5,15,12,12,12,Cuarto cuatrimestre de la carrera completo
+082,Licenciatura en Análisis de Sistemas,1986,-,-,4,15,12,12,12,Cuarto cuatrimestre de la carrera completo
+083,Licenciatura en Análisis de Sistemas,1986,-,-,3,15,12,12,12,Cuarto cuatrimestre de la carrera completo
+084,Licenciatura en Análisis de Sistemas,1986,-,-,2,15,12,12,12,Cuarto cuatrimestre de la carrera completo
+085,Licenciatura en Análisis de Sistemas,1986,-,-,5,12,28,28,16,Quinto cuatrimestre de la carrera completo
+086,Licenciatura en Análisis de Sistemas,1986,-,-,4,12,28,28,16,Quinto cuatrimestre de la carrera completo
+087,Licenciatura en Análisis de Sistemas,1986,-,-,3,12,28,28,16,Quinto cuatrimestre de la carrera completo
+088,Licenciatura en Análisis de Sistemas,1986,-,-,2,15,28,28,16,Quinto cuatrimestre de la carrera completo
+089,Licenciatura en Análisis de Sistemas,1986,-,-,5,12,18,18,16,Quinto cuatrimestre de la carrera completo
+090,Licenciatura en Análisis de Sistemas,1986,-,-,4,12,18,18,16,Quinto cuatrimestre de la carrera completo
+091,Licenciatura en Análisis de Sistemas,1986,-,-,3,12,18,18,16,Quinto cuatrimestre de la carrera completo
+092,Licenciatura en Análisis de Sistemas,1986,-,-,2,15,18,18,16,Quinto cuatrimestre de la carrera completo
+093,Licenciatura en Análisis de Sistemas,1986,-,-,5,15,12,12,16,Quinto cuatrimestre de la carrera completo
+094,Licenciatura en Análisis de Sistemas,1986,-,-,4,15,12,12,16,Quinto cuatrimestre de la carrera completo
+095,Licenciatura en Análisis de Sistemas,1986,-,-,3,15,12,12,16,Quinto cuatrimestre de la carrera completo
+096,Licenciatura en Análisis de Sistemas,1986,-,-,2,15,12,12,16,Quinto cuatrimestre de la carrera completo
+097,Licenciatura en Análisis de Sistemas,1986,-,-,5,12,28,28,21,Sexto cuatrimestre de la carrera completo
+098,Licenciatura en Análisis de Sistemas,1986,-,-,4,12,28,28,21,Sexto cuatrimestre de la carrera completo
+099,Licenciatura en Análisis de Sistemas,1986,-,-,3,12,28,28,21,Sexto cuatrimestre de la carrera completo
+100,Licenciatura en Análisis de Sistemas,1986,-,-,2,15,28,28,21,Sexto cuatrimestre de la carrera completo
+101,Licenciatura en Análisis de Sistemas,1986,-,-,5,12,18,18,21,Sexto cuatrimestre de la carrera completo
+102,Licenciatura en Análisis de Sistemas,1986,-,-,4,12,18,18,21,Sexto cuatrimestre de la carrera completo
+103,Licenciatura en Análisis de Sistemas,1986,-,-,3,12,18,18,21,Sexto cuatrimestre de la carrera completo
+104,Licenciatura en Análisis de Sistemas,1986,-,-,2,15,18,18,21,Sexto cuatrimestre de la carrera completo
+105,Licenciatura en Análisis de Sistemas,1986,-,-,5,15,12,12,21,Sexto cuatrimestre de la carrera completo
+106,Licenciatura en Análisis de Sistemas,1986,-,-,4,15,12,12,21,Sexto cuatrimestre de la carrera completo
+107,Licenciatura en Análisis de Sistemas,1986,-,-,3,15,12,12,21,Sexto cuatrimestre de la carrera completo
+108,Licenciatura en Análisis de Sistemas,1986,-,-,2,15,12,12,21,Sexto cuatrimestre de la carrera completo
+109,Licenciatura en Análisis de Sistemas,1986,-,-,5,12,28,28,26,Septimo cuatrimestre de la carrera completo
+110,Licenciatura en Análisis de Sistemas,1986,-,-,4,12,28,28,26,Septimo cuatrimestre de la carrera completo
+111,Licenciatura en Análisis de Sistemas,1986,-,-,3,12,28,28,26,Septimo cuatrimestre de la carrera completo
+112,Licenciatura en Análisis de Sistemas,1986,-,-,2,15,28,28,26,Septimo cuatrimestre de la carrera completo
+113,Licenciatura en Análisis de Sistemas,1986,-,-,5,12,18,18,26,Septimo cuatrimestre de la carrera completo
+114,Licenciatura en Análisis de Sistemas,1986,-,-,4,12,18,18,26,Septimo cuatrimestre de la carrera completo
+115,Licenciatura en Análisis de Sistemas,1986,-,-,3,12,18,18,26,Septimo cuatrimestre de la carrera completo
+116,Licenciatura en Análisis de Sistemas,1986,-,-,2,15,18,18,26,Septimo cuatrimestre de la carrera completo
+117,Licenciatura en Análisis de Sistemas,1986,-,-,5,15,12,12,26,Septimo cuatrimestre de la carrera completo
+118,Licenciatura en Análisis de Sistemas,1986,-,-,4,15,12,12,26,Septimo cuatrimestre de la carrera completo
+119,Licenciatura en Análisis de Sistemas,1986,-,-,3,15,12,12,26,Septimo cuatrimestre de la carrera completo
+120,Licenciatura en Análisis de Sistemas,1986,-,-,2,15,12,12,26,Septimo cuatrimestre de la carrera completo
+121,Licenciatura en Análisis de Sistemas,1986,-,-,5,12,28,28,31,Octavo cuatrimestre de la carrera completo
+122,Licenciatura en Análisis de Sistemas,1986,-,-,4,12,28,28,31,Octavo cuatrimestre de la carrera completo
+123,Licenciatura en Análisis de Sistemas,1986,-,-,3,12,28,28,31,Octavo cuatrimestre de la carrera completo
+124,Licenciatura en Análisis de Sistemas,1986,-,-,2,15,28,28,31,Octavo cuatrimestre de la carrera completo
+125,Licenciatura en Análisis de Sistemas,1986,-,-,5,12,18,18,31,Octavo cuatrimestre de la carrera completo
+126,Licenciatura en Análisis de Sistemas,1986,-,-,4,12,18,18,31,Octavo cuatrimestre de la carrera completo
+127,Licenciatura en Análisis de Sistemas,1986,-,-,3,12,18,18,31,Octavo cuatrimestre de la carrera completo
+128,Licenciatura en Análisis de Sistemas,1986,-,-,2,15,18,18,31,Octavo cuatrimestre de la carrera completo
+129,Licenciatura en Análisis de Sistemas,1986,-,-,5,15,12,12,31,Octavo cuatrimestre de la carrera completo
+130,Licenciatura en Análisis de Sistemas,1986,-,-,4,15,12,12,31,Octavo cuatrimestre de la carrera completo
+131,Licenciatura en Análisis de Sistemas,1986,-,-,3,15,12,12,31,Octavo cuatrimestre de la carrera completo
+132,Licenciatura en Análisis de Sistemas,1986,-,-,2,15,12,12,31,Octavo cuatrimestre de la carrera completo

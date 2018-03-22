@@ -3,34 +3,20 @@ if __name__ == '__main__':
 
     sys.path.append("../..")
 
-from tests.TestAPIServicios.TestBase import TestBase
 import os
 import json
-from app import db
-from app.models.alumno_models import Alumno
-from app.models.plan_de_estudios_models import EstadoPlanDeEstudios, PlanDeEstudios
-from datetime import datetime
-from app.DAO.PlanDeCarreraDAO import PLAN_EN_CURSO
 from app.API_Rest.GeneradorPlanCarreras.my_utils import get_str_fecha_y_hora_actual
 from AsyncTasks.broker_generador_greedy import tarea_generar_plan_greedy
 
 
-class TestEstadisticasGeneracionPlanDeEstudios(TestBase):
-    ##########################################################
-    ##                   Configuracion                      ##
-    ##########################################################
+class TestEstadisticasGeneracionPlanDeEstudios():
+    def __init__(self):
+        self.ID_USUARIO = 150
+        self.id_plan = 0
 
-    def get_test_name(self):
-        return "test_estadisticas_generacion_plan_de_estudios"
-
-    def crear_datos_bd(self):
-        alumno = Alumno(user_id=self.get_usuario().id)
-        db.session.add(alumno)
-        db.session.commit()
-
-    ##########################################################
-    ##                      Tests                           ##
-    ##########################################################
+    def get_next_plan_id(self):
+        self.id_plan += 1
+        return self.id_plan
 
     def test_ejecutar_diferentes_pedidos_de_generacion_de_planes_de_estudios(self):
         archivos_parametros, archivos_estadisticas = self.obtener_rutas_de_archivos()
@@ -38,8 +24,6 @@ class TestEstadisticasGeneracionPlanDeEstudios(TestBase):
             if not numero_prueba in archivos_estadisticas:
                 continue
 
-            parametros = None
-            estadisticas = None
             with open(archivos_parametros[numero_prueba], 'r') as file:
                 parametros = json.loads(file.read())
 
@@ -49,39 +33,32 @@ class TestEstadisticasGeneracionPlanDeEstudios(TestBase):
             self.invocar_servicios_generacion_plan(parametros, estadisticas)
 
     def invocar_servicios_generacion_plan(self, parametros, estadisticas):
-        self.generar_plan_de_estudios(parametros)
-
+        parametros["user_id"] = self.ID_USUARIO
         estadisticas["tipo_solicitud"] = "Testing"
-        estadisticas["fecha_solicitado"] = get_str_fecha_y_hora_actual()
 
         self.invocar_servicio_generacion_plan_greedy(parametros, estadisticas)
         self.invocar_servicio_generacion_plan_ple(parametros, estadisticas)
 
     def invocar_servicio_generacion_plan_greedy(self, parametros, estadisticas):
+        parametros["id_plan_estudios"] = self.get_next_plan_id()
+
         estadisticas["algoritmo"] = "GREEDY"
+        estadisticas["fecha_solicitado"] = get_str_fecha_y_hora_actual()
+
         tarea = tarea_generar_plan_greedy.delay(parametros, estadisticas)
         assert (tarea is not None)
 
     def invocar_servicio_generacion_plan_ple(self, parametros, estadisticas):
+        id_plan = self.get_next_plan_id()
+        parametros["id_plan_estudios"] = id_plan
+        parametros["nombre_archivo_pulp"] = "pulp_generado_plan_{}.py".format(id_plan)
+        parametros["nombre_archivo_resultados_pulp"] = "pulp_resultados_plan_{}.py".format(id_plan)
+        parametros["nombre_archivo_pulp_optimizado"] = "pulp_optimizado_plan_{}.py".format(id_plan)
+
         estadisticas["algoritmo"] = "PLE"
+        estadisticas["fecha_solicitado"] = get_str_fecha_y_hora_actual()
+
         # FIXME: Hacer la invocacion del servicio
-
-    def generar_plan_de_estudios(self, parametros):
-        estado_en_curso = EstadoPlanDeEstudios.query.filter_by(numero=PLAN_EN_CURSO).first()
-
-        plan_de_estudios = PlanDeEstudios(
-            alumno_id=Alumno.query.filter_by(user_id=self.get_usuario().id).first().id,
-            fecha_generacion=datetime.today(),
-            fecha_ultima_actualizacion=datetime.today(),
-            estado_id=estado_en_curso.id,
-            cuatrimestre_inicio_plan=parametros["cuatrimestre_inicio"],
-            anio_inicio_plan=parametros["anio_inicio"]
-        )
-        db.session.add(plan_de_estudios)
-        db.session.commit()
-
-        parametros["user_id"] = self.get_usuario().id
-        parametros["id_plan_estudios"] = plan_de_estudios.id
 
     def obtener_rutas_de_archivos(self):
         ruta_archivo = os.path.join(os.getcwd(), 'DatosEstadisticas')
@@ -97,6 +74,5 @@ class TestEstadisticasGeneracionPlanDeEstudios(TestBase):
 
 
 if __name__ == '__main__':
-    import unittest
-
-    unittest.main()
+    tests = TestEstadisticasGeneracionPlanDeEstudios()
+    tests.test_ejecutar_diferentes_pedidos_de_generacion_de_planes_de_estudios()

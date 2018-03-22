@@ -49,7 +49,8 @@ class PlanDeEstudiosService(BaseService):
                 self.FUNCIONES_VALIDACION: [
                     (self.id_es_valido, []),
                     (self.existe_id, [PlanDeEstudios]),
-                    (self.plan_pertenece_al_alumno, [])
+                    (self.plan_pertenece_al_alumno, []),
+                    (self.plan_esta_finalizado, [])
                 ]
             })
         ]))
@@ -273,7 +274,6 @@ class PlanDeEstudiosService(BaseService):
         self.guardar_datos_archivo_de_pruebas(parametros, estadisticas)
         ################################################################
 
-        return
         tarea = tarea_algoritmo.delay(parametros.generar_parametros_json(), estadisticas.get_JSON())
 
         if not tarea:
@@ -287,10 +287,11 @@ class PlanDeEstudiosService(BaseService):
         return result
 
     def guardar_datos_archivo_de_pruebas(self, parametros, estadisticas):
-        with open('001_parametros', 'w') as file:
+        numero = "123"
+        with open(numero + '_parametros', 'w') as file:
             file.write(json.dumps(parametros.generar_parametros_json()))
 
-        with open('001_estadisticas', 'w') as file:
+        with open(numero + '_estadisticas', 'w') as file:
             file.write(json.dumps(estadisticas.get_JSON()))
 
     def cargar_materias_incompatibles(self, parametros):
@@ -735,6 +736,14 @@ class PlanDeEstudiosService(BaseService):
         plan = PlanDeEstudios.query.filter_by(id=valor).filter_by(alumno_id=alumno.id).first()
         if not plan:
             return False, 'El plan indicado no existe o no pertenece al alumno', CLIENT_ERROR_NOT_FOUND
+        return self.mensaje_OK(nombre_parametro)
+
+    def plan_esta_finalizado(self, nombre_parametro, valor, es_obligatorio):
+        alumno = self.obtener_alumno_usuario_actual()
+        plan = PlanDeEstudios.query.filter_by(id=valor).filter_by(alumno_id=alumno.id).first()
+        estado = EstadoPlanDeEstudios.query.filter_by(numero=PLAN_FINALIZADO).first().id
+        if not plan.estado_id == estado:
+            return False, 'El plan indicado aún no esta finalizado', CLIENT_ERROR_NOT_FOUND
         return self.mensaje_OK(nombre_parametro)
 
     def plan_no_se_encuentra_en_curso(self, nombre_parametro, valor, es_obligatorio):

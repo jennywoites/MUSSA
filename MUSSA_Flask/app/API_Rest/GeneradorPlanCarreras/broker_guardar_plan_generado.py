@@ -22,7 +22,6 @@ broker_guadar_plan_de_estudios.conf.update({
 @broker_guadar_plan_de_estudios.task(acks_late=True)
 def tarea_guadar_plan_de_estudios(parametros_tarea, estadisticas_tarea):
     print("INICIO guardado plan con id {}".format(parametros_tarea["id_plan_estudios"]))
-    app = create_app()
 
     estadisticas = EstadisticasDTO()
     estadisticas.cargar_desde_JSON(estadisticas_tarea)
@@ -32,6 +31,11 @@ def tarea_guadar_plan_de_estudios(parametros_tarea, estadisticas_tarea):
     parametros = Parametros()
     parametros.actualizar_valores_desde_JSON(parametros_tarea)
 
+    if estadisticas.tipo_solicitud == "Testing":
+        guardado_en_testing(parametros, estadisticas, inicio)
+        return
+
+    app = create_app()
     with app.app_context():
         plan_de_estudios = PlanDeEstudios.query.get(parametros_tarea["id_plan_estudios"])
 
@@ -51,6 +55,16 @@ def tarea_guadar_plan_de_estudios(parametros_tarea, estadisticas_tarea):
         print("FIN guardado plan con id {} (COMPATIBLE)".format(parametros_tarea["id_plan_estudios"]))
         guardar_estadisticas(parametros, estadisticas, inicio)
 
+def guardado_en_testing(parametros, estadisticas, tiempo_inicial):
+    if parametros.estado_plan_de_estudios == PLAN_INCOMPATIBLE:
+        guardar_estadisticas(parametros, estadisticas, tiempo_inicial)
+        print("FIN guardado TESTING plan con id {}: (INCOMPATIBLE)".format(parametros.id_plan_estudios))
+        return
+
+    agregar_materias_CBC_al_plan_generado(parametros)
+    print(parametros.plan_generado)
+    print("FIN guardado TESTING plan con id {} (COMPATIBLE)".format(parametros.id_plan_estudios))
+    guardar_estadisticas(parametros, estadisticas, tiempo_inicial)
 
 def guardar_estadisticas(parametros, estadisticas, tiempo_inicial):
     estadisticas.estado_plan = ESTADOS_PLAN[parametros.estado_plan_de_estudios]

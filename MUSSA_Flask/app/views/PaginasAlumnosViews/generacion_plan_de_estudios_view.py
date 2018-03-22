@@ -1,10 +1,10 @@
 from flask import render_template
 from flask_user import login_required
-from flask import request, url_for, redirect
+from flask import request, url_for, redirect, flash
 from app.views.base_view import main_blueprint
 from app.ClienteAPI.ClienteAPI import ClienteAPI
 from app.utils import DIAS, generar_lista_horarios, generar_lista_anios
-from app.DAO.MateriasDAO import FINAL_PENDIENTE, EN_CURSO
+from app.DAO.MateriasDAO import FINAL_PENDIENTE
 from datetime import datetime
 from app.DAO.PlanDeCarreraDAO import PLAN_FINALIZADO
 from app.API_Rest.codes import *
@@ -55,7 +55,13 @@ def visualizar_plan_de_estudios_page(idPlanEstudios):
     cookies = request.cookies
     cliente = ClienteAPI()
 
-    plan = cliente.obtener_plan_de_estudios_alumno(cookies, idPlanEstudios)
+    response = cliente.obtener_plan_de_estudios_alumno(cookies, idPlanEstudios)
+
+    if "Error" in response:
+        flash(response["Error"], 'error')
+        return redirect(url_for('main.planes_de_estudios_page'), code=REDIRECTION_FOUND)
+
+    plan = response["plan_de_estudio"]
 
     if plan["estado_numero"] != PLAN_FINALIZADO:
         return redirect(url_for('main.planes_de_estudios_page'), code=REDIRECTION_FOUND)
