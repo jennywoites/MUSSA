@@ -1,11 +1,16 @@
+import json
+from datetime import datetime
+
+from flask_user import current_user
 from flask_user import login_required
-from AsyncTasks.broker_generador_greedy import tarea_generar_plan_greedy
-from AsyncTasks.broker_generador_plan_ple import tarea_generar_plan_ple
+
 from app.API_Rest.GeneradorPlanCarreras.Constantes import OBLIGATORIA, ELECTIVA, TRABAJO_FINAL
+from app.API_Rest.GeneradorPlanCarreras.EstadisticasDTO import EstadisticasDTO
 from app.API_Rest.GeneradorPlanCarreras.ParametrosDTO import Parametros
 from app.API_Rest.GeneradorPlanCarreras.modelos.Curso import Curso as Modelo_Curso
 from app.API_Rest.GeneradorPlanCarreras.modelos.Horario import Horario as Modelo_Horario
 from app.API_Rest.GeneradorPlanCarreras.modelos.Materia import Materia as Modelo_Materia
+from app.API_Rest.GeneradorPlanCarreras.my_utils import get_str_fecha_y_hora_actual
 from app.API_Rest.Services.BaseService import BaseService
 from app.API_Rest.codes import *
 from app.DAO.MateriasDAO import *
@@ -16,11 +21,6 @@ from app.models.generadorJSON.plan_de_estudios_generadorJSON import generarJSON_
 from app.models.horarios_models import Curso, HorarioPorCurso, Horario, CarreraPorCurso
 from app.models.palabras_clave_models import TematicaPorMateria, TematicaMateria
 from app.models.plan_de_estudios_models import PlanDeEstudios, MateriaPlanDeEstudios, CarrerasPlanDeEstudios
-from flask_user import current_user
-from app.API_Rest.GeneradorPlanCarreras.EstadisticasDTO import EstadisticasDTO
-import json
-from datetime import datetime
-from app.API_Rest.GeneradorPlanCarreras.my_utils import get_str_fecha_y_hora_actual
 
 
 class PlanDeEstudiosService(BaseService):
@@ -216,6 +216,8 @@ class PlanDeEstudiosService(BaseService):
 
         self.actualizar_datos_estadisticas(estadisticas, parametros, trabajo_final, algoritmo)
 
+        from AsyncTasks.AsyncTaskGreedy.broker_generador_greedy import tarea_generar_plan_greedy
+        from AsyncTasks.AsyncTaskPLE.broker_generador_plan_ple import tarea_generar_plan_ple
         ALGORITMOS_VALIDOS = {
             ALGORITMO_GREEDY: tarea_generar_plan_greedy,
             ALGORITMO_PROGRAMACION_LINEAL_ENTERA: tarea_generar_plan_ple

@@ -3,16 +3,15 @@ from celery import Celery
 from app.API_Rest.GeneradorPlanCarreras.EstadisticasDTO import EstadisticasDTO
 from app.API_Rest.GeneradorPlanCarreras.GeneradorGreedy.GeneradorPlanGreedy import generar_plan_greedy
 from app.API_Rest.GeneradorPlanCarreras.ParametrosDTO import Parametros
-from app.API_Rest.GeneradorPlanCarreras.broker_guardar_plan_generado import \
-    tarea_guadar_plan_de_estudios
 from app.API_Rest.GeneradorPlanCarreras.my_utils import convertir_tiempo
 from app.DAO.PlanDeCarreraDAO import PLAN_INCOMPATIBLE, PLAN_FINALIZADO
 from app.API_Rest.GeneradorPlanCarreras.my_utils import get_str_fecha_y_hora_actual
 
-broker_generador_greedy = Celery('broker', broker='redis://localhost')
+broker_generador_greedy = Celery('broker2', broker='redis://localhost/2')
 broker_generador_greedy.conf.update({
     'task_reject_on_worker_lost': True,
     'task_acks_late': True,
+    'create_missing_queues': True
 })
 
 
@@ -38,4 +37,6 @@ def tarea_generar_plan_greedy(parametros_tarea, estadisticas_tarea):
     estadisticas.tiempo_total_generacion = convertir_tiempo(time() - inicio)
 
     print("Se invoca al guardado para el plan Greedy con id {}".format(parametros_tarea["id_plan_estudios"]))
+
+    from app.API_Rest.GeneradorPlanCarreras.broker_guardar_plan_generado import tarea_guadar_plan_de_estudios
     tarea_guadar_plan_de_estudios.delay(parametros.generar_parametros_json(), estadisticas.get_JSON())

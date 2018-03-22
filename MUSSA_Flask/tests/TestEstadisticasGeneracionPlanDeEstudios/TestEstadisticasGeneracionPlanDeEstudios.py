@@ -3,10 +3,11 @@ if __name__ == '__main__':
 
     sys.path.append("../..")
 
-import os
 import json
+import os
+
+from AsyncTasks.AsyncTaskGreedy.broker_generador_greedy import tarea_generar_plan_greedy
 from app.API_Rest.GeneradorPlanCarreras.my_utils import get_str_fecha_y_hora_actual
-from AsyncTasks.broker_generador_greedy import tarea_generar_plan_greedy
 
 
 class TestEstadisticasGeneracionPlanDeEstudios():

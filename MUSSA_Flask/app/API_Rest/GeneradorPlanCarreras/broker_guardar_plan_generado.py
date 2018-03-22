@@ -12,10 +12,11 @@ from app.API_Rest.GeneradorPlanCarreras.my_utils import get_str_fecha_y_hora_act
 import os
 import csv
 
-broker_guadar_plan_de_estudios = Celery('broker', broker='redis://localhost')
+broker_guadar_plan_de_estudios = Celery('broker3', broker='redis://localhost/5')
 broker_guadar_plan_de_estudios.conf.update({
     'task_reject_on_worker_lost': True,
     'task_acks_late': True,
+    'create_missing_queues': True,
 })
 
 

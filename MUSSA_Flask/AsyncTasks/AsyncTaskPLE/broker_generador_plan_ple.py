@@ -12,10 +12,11 @@ import time
 from app.API_Rest.GeneradorPlanCarreras.EstadisticasDTO import EstadisticasDTO
 from app.API_Rest.GeneradorPlanCarreras.my_utils import convertir_tiempo
 
-broker_generador_ple = Celery('broker', broker='redis://localhost')
+broker_generador_ple = Celery('broker1', broker='redis://localhost/1')
 broker_generador_ple.conf.update({
     'task_reject_on_worker_lost': True,
     'task_acks_late': True,
+    'create_missing_queues': True,
 })
 broker_generador_ple.conf.broker_transport_options = {'visibility_timeout': 14400}  # 3hs
 
