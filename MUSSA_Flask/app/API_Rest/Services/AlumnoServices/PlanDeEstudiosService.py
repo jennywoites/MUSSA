@@ -11,7 +11,7 @@ from app.API_Rest.codes import *
 from app.DAO.MateriasDAO import *
 from app.DAO.PlanDeCarreraDAO import *
 from app.models.alumno_models import MateriasAlumno
-from app.models.carreras_models import Materia, Correlativas, Creditos, TipoMateria, MateriasIncompatibles
+from app.models.carreras_models import Materia, Correlativas, Creditos, TipoMateria, MateriasIncompatibles, Carrera
 from app.models.generadorJSON.plan_de_estudios_generadorJSON import generarJSON_materias_plan_de_estudios
 from app.models.horarios_models import Curso, HorarioPorCurso, Horario, CarreraPorCurso
 from app.models.palabras_clave_models import TematicaPorMateria, TematicaMateria
@@ -240,10 +240,10 @@ class PlanDeEstudiosService(BaseService):
 
         # Configuracion
         estadisticas.cantidad_materias_por_cuatrimestre_max = parametros.max_cant_materias_por_cuatrimestre
-        estadisticas.cantidad_horas_cursada_max = parametros.max_horas_cursada // 2 #Xq estan en medias horas
-        estadisticas.cantidad_horas_extras_max = parametros.max_horas_extras // 2 #Xq estan en medias horas
+        estadisticas.cantidad_horas_cursada_max = parametros.max_horas_cursada // 2  # Xq estan en medias horas
+        estadisticas.cantidad_horas_extras_max = parametros.max_horas_extras // 2  # Xq estan en medias horas
         estadisticas.orientacion = parametros.orientacion
-        estadisticas.id_carrera = parametros.id_carrera
+        estadisticas.carrera = Carrera.query.get(parametros.id_carrera).get_descripcion_carrera()
         estadisticas.trabajo_final = trabajo_final
         estadisticas.algoritmo = DESCRIPCION_ALGORITMOS[algoritmo]
 
@@ -273,6 +273,7 @@ class PlanDeEstudiosService(BaseService):
         self.guardar_datos_archivo_de_pruebas(parametros, estadisticas)
         ################################################################
 
+        return
         tarea = tarea_algoritmo.delay(parametros.generar_parametros_json(), estadisticas.get_JSON())
 
         if not tarea:
@@ -286,10 +287,10 @@ class PlanDeEstudiosService(BaseService):
         return result
 
     def guardar_datos_archivo_de_pruebas(self, parametros, estadisticas):
-        with open('prueba_datos_JSON.txt', 'w') as file:
+        with open('001_parametros', 'w') as file:
             file.write(json.dumps(parametros.generar_parametros_json()))
 
-        with open('estadisticas_prueba_JSON.txt', 'w') as file:
+        with open('001_estadisticas', 'w') as file:
             file.write(json.dumps(estadisticas.get_JSON()))
 
     def cargar_materias_incompatibles(self, parametros):
