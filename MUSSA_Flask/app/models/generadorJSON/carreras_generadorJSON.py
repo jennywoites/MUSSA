@@ -14,7 +14,7 @@ def generarJSON_carrera(carrera):
 
 
 def generarJSON_trabajo_final_carrera(carrera):
-    creditos = Creditos.query.get(carrera.id)
+    creditos = Creditos.query.filter_by(carrera_id=carrera.id).first()
     trabajos = []
 
     if creditos.creditos_tesis > 0:
