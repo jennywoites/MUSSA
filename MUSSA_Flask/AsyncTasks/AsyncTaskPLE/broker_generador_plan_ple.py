@@ -18,7 +18,7 @@ broker_generador_ple.conf.update({
     'task_acks_late': True,
     'create_missing_queues': True,
 })
-broker_generador_ple.conf.broker_transport_options = {'visibility_timeout': 14400}  # 3hs
+broker_generador_ple.conf.broker_transport_options = {'visibility_timeout': 36000}  # 10hs-->36000  4hs --> 14400
 
 OPTIMAL = "Optimal"
 
@@ -93,6 +93,9 @@ def ejecutar_codigo_pulp(parametros):
 
 def obtener_resultados_pulp(parametros):
     resultados = {}
+    if not os.path.isfile(parametros.nombre_archivo_resultados_pulp):
+        resultados["status"] == "No se encontro el archivo de resultados"
+        return resultados
 
     with open(parametros.nombre_archivo_resultados_pulp, 'r') as arch:
         primera = True

@@ -273,7 +273,7 @@ class PlanDeEstudiosService(BaseService):
 
         ################################################################
         ######### Descomentar para guardar los datos de prueba #########
-        self.guardar_datos_archivo_de_pruebas(parametros, estadisticas)
+        #self.guardar_datos_archivo_de_pruebas(parametros, estadisticas)
         ################################################################
 
         tarea = tarea_algoritmo.delay(parametros.generar_parametros_json(), estadisticas.get_JSON())
@@ -289,7 +289,7 @@ class PlanDeEstudiosService(BaseService):
         return result
 
     def guardar_datos_archivo_de_pruebas(self, parametros, estadisticas):
-        numero = "123"
+        numero = "136"
         with open(numero + '_parametros', 'w') as file:
             file.write(json.dumps(parametros.generar_parametros_json()))
 
