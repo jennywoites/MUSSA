@@ -5,8 +5,6 @@ if __name__ == '__main__':
 
 import json
 import os
-
-from AsyncTasks.AsyncTaskGreedy.broker_generador_greedy import tarea_generar_plan_greedy
 from app.API_Rest.GeneradorPlanCarreras.my_utils import get_str_fecha_y_hora_actual
 
 
@@ -46,6 +44,7 @@ class TestEstadisticasGeneracionPlanDeEstudios():
         estadisticas["algoritmo"] = "GREEDY"
         estadisticas["fecha_solicitado"] = get_str_fecha_y_hora_actual()
 
+        from AsyncTasks.AsyncTaskGreedy.broker_generador_greedy import tarea_generar_plan_greedy
         tarea = tarea_generar_plan_greedy.delay(parametros, estadisticas)
         assert (tarea is not None)
 
@@ -59,7 +58,9 @@ class TestEstadisticasGeneracionPlanDeEstudios():
         estadisticas["algoritmo"] = "PLE"
         estadisticas["fecha_solicitado"] = get_str_fecha_y_hora_actual()
 
-        # FIXME: Hacer la invocacion del servicio
+        from AsyncTasks.AsyncTaskPLE.broker_generador_plan_ple import tarea_generar_plan_ple
+        tarea = tarea_generar_plan_ple.delay(parametros, estadisticas)
+        assert (tarea is not None)
 
     def obtener_rutas_de_archivos(self):
         ruta_archivo = os.path.join(os.getcwd(), 'DatosEstadisticas')
