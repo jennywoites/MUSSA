@@ -64,7 +64,7 @@ class EstadoMateria(db.Model):
     __tablename__ = 'estado_materia'
 
     id = db.Column(db.Integer(), primary_key=True)
-    estado = db.Column(db.String(35), nullable=False, server_default='')
+    estado = db.Column(db.String(70), nullable=False, server_default='')
 
 
 class FormaAprobacionMateria(db.Model):

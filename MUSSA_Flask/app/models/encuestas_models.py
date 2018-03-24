@@ -6,7 +6,7 @@ class TipoEncuesta(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
 
-    tipo = db.Column(db.Integer(), nullable=False, server_default='')
+    tipo = db.Column(db.Integer(), nullable=False, server_default='0')
     descripcion = db.Column(db.String(25), nullable=False, server_default='')
 
     def __str__(self):
@@ -69,8 +69,8 @@ class PreguntaEncuestaNumero(db.Model):
     id = db.Column(db.Integer, primary_key=True)
 
     encuesta_id = db.Column(db.Integer(), db.ForeignKey('pregunta_encuesta.id'), nullable=False)
-    numero_min = db.Column(db.Integer(), nullable=False, server_default='')
-    numero_max = db.Column(db.Integer(), nullable=False, server_default='')
+    numero_min = db.Column(db.Integer(), nullable=False, server_default='0')
+    numero_max = db.Column(db.Integer(), nullable=False, server_default='0')
 
     def __str__(self):
         return "{} - Min: {} - Max: {}".format(self.encuesta_id, self.numero_min, self.numero_max)
@@ -95,7 +95,7 @@ class GrupoEncuesta(db.Model):
     __tablename__ = 'grupo_encuesta'
 
     id = db.Column(db.Integer, primary_key=True)
-    numero_grupo = db.Column(db.Integer(), nullable=False, server_default='')
+    numero_grupo = db.Column(db.Integer(), nullable=False, server_default='0')
     grupo = db.Column(db.String(35), nullable=False, server_default='')
 
     def __str__(self):

@@ -564,7 +564,7 @@ class MateriaAlumnoService(BaseService):
 
         alumno = self.obtener_alumno_usuario_actual()
 
-        ultima_materia = MateriasAlumno.query.filter(MateriasAlumno.id.isnot(idMateriaAlumno))\
+        ultima_materia = MateriasAlumno.query.filter(MateriasAlumno.id != idMateriaAlumno)\
             .filter_by(alumno_id=alumno.id).filter_by(materia_id=idMateria)\
             .order_by(MateriasAlumno.anio_aprobacion_cursada.desc())\
             .order_by(MateriasAlumno.cuatrimestre_aprobacion_cursada.desc()).first()
@@ -586,7 +586,7 @@ class MateriaAlumnoService(BaseService):
 
         query = MateriasAlumno.query.filter_by(alumno_id=materia.alumno_id)
         query = query.filter_by(materia_id=materia.materia_id)
-        otras_materias = query.filter(MateriasAlumno.id.isnot(materia.id)).all()
+        otras_materias = query.filter(MateriasAlumno.id != materia.id).all()
 
         a_eliminar = []
         for otra in otras_materias:
