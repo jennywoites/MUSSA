@@ -75,8 +75,8 @@
                 return cargarRespuestaPuntaje1a5(pregunta, respuesta);
             case "Numero":
                 return cargarRespuestaNumero(pregunta, respuesta);
-            //case "Horario":
-            //    return cargarRespuestaHorario(pregunta, respuesta);
+            case "Horario":
+                return cargarRespuestaHorario(pregunta, respuesta);
             case "Docente":
                 return cargarRespuestaDocentes(pregunta, respuesta);
             case "Correlativa":
@@ -96,6 +96,65 @@
                 console.log(respuesta)
                 return;
         }
+    }
+
+    function cargarRespuestaHorario(pregunta, respuesta) {
+        var html = "<div class='table-responsive'>";
+        html += "<table class='table'>";
+        html += "<tr>";
+        html += "<th></th>";
+        for(var num in respuesta["nombres_franjas_horarios"]) {
+            html += "<th style='text-align: center;'>" + respuesta["nombres_franjas_horarios"][num] + "</th>";
+        }
+        html += "</tr>";
+        html += "</thead>";
+
+        html += "<tbody>";
+
+        var DIAS = ["LUNES", "MARTES", "MIERCOLES", "JUEVES", "VIERNES", "SABADO"]
+        for (var i=0; i<DIAS.length; i++) {
+            var datos_dia = respuesta["horarios"][DIAS[i]];
+
+            html += "<tr>";
+            html += "<td>" + DIAS[i] + "</td>";
+            for(var j=0;j<datos_dia.length; j++) {
+                var peso = datos_dia[j];
+                html += "<td style='background-color:" + get_color_fondo(peso, respuesta["total_encuestas"]) + ";";
+                html += "text-align: center;";
+                html += "color:" + get_color_fuente(peso, respuesta["total_encuestas"]) + ";'>";
+                html += peso;
+                html += "</td>";
+            }
+            html += "</tr>";
+        }
+
+        html += "</tbody>";
+        html += "</table>";
+        html += "</div>";
+
+        actualizar_HTML_respuesta(pregunta, html);
+    }
+
+    function get_color_fondo(numero, total) {
+        var acumulacion = total / 5;
+        if (numero == 0)
+            return "#FFFFFF"
+        if (numero < acumulacion)
+            return "#decee8"
+        if (numero < acumulacion*2)
+            return "#c4a5d8"
+        if (numero < acumulacion*3)
+            return "#ac83c7"
+        if (numero < acumulacion*4)
+            return "#7b37a9"
+        return "#4F1675"
+    }
+
+    function get_color_fuente(numero, total) {
+        var acumulacion = total / 5;
+        if (numero < (acumulacion *2))
+            return "#000000";
+        return "#FFFFFF";
     }
 
     function cargarRespuestaCorrelativas(pregunta, respuesta){
