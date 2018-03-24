@@ -3,10 +3,7 @@
 {% block content %}
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.2/Chart.bundle.min.js"></script>
-
-<script type='text/javascript' src="/js/d3/d3.js"></script>
-<script type='text/javascript' src="/js/d3/d3.layout.cloud.js"></script>
-<script type='text/javascript' src="/js/d3/d3.wordcloud.js"></script>
+<script src="https://pulipulichen.github.io/blogger/posts/2016/11/r-text-mining/wordcloud2.js"></script>
 
 <script>
 
@@ -82,8 +79,8 @@
             //    return cargarRespuestaHorario(pregunta, respuesta);
             case "Docente":
                 return cargarRespuestaDocentes(pregunta, respuesta);
-            //case "Correlativa":
-            //    return cargarRespuestaCorrelativas(pregunta, respuesta);
+            case "Correlativa":
+                return cargarRespuestaCorrelativas(pregunta, respuesta);
             case "Estrellas":
                 return cargarRespuestaEstrellas(pregunta, respuesta);
             case "Temática de la Materia":
@@ -101,40 +98,48 @@
         }
     }
 
-    function cargarRespuestaTematicas(pregunta, respuesta) {
-        var id_cloud = 'word-cloud-' + pregunta["pregunta_id"];
+    function cargarRespuestaCorrelativas(pregunta, respuesta){
+        var id_cloud = 'correlativas-' + pregunta["pregunta_id"];
         var html =  '<div id="' + id_cloud + '">';
         html += '</div>'
         actualizar_HTML_respuesta(pregunta, html);
+    }
+
+    function generar_HTML_canvas_word_cloud(id_cloud) {
+        var html =  '<div class="row">';
+        html +=         '<div class="col-md-6">';
+        html +=             '<canvas id="' + id_cloud + '" width="400" height="150"></canvas>';
+        html +=         '</div>';
+        html +=     '</div>';
+        return html
+    }
+
+    function cargarRespuestaTematicas(pregunta, respuesta) {
+        var id_cloud = 'word_cloud_' + pregunta["id_pregunta"];
+        actualizar_HTML_respuesta(pregunta, generar_HTML_canvas_word_cloud(id_cloud));
 
         var tematicas = [];
         for (var id_tematica in respuesta["tematicas"]) {
             var tematica = respuesta["tematicas"][id_tematica];
-            tematicas.push({
-                text: tematica.tematica,
-                size: obtener_tamanio(tematica.total_encuestas)
-            })
+            tematicas.push([tematica.tematica, tematica.total_encuestas * 15]);
         }
 
-        d3.wordcloud().size([500, 150]).selector('#' + id_cloud).words(tematicas).spiral(["rectangular"]).start();
+        WordCloud.minFontSize = "15px"
+        WordCloud(document.getElementById(id_cloud), { list: tematicas, backgroundColor: 'transparent'} );
     }
 
     function cargarRespuestaPalabrasClave(pregunta, respuesta) {
-        var id_cloud = 'word-cloud-' + pregunta["pregunta_id"];
-        var html =  '<div id="' + id_cloud + '">';
-        html += '</div>'
-        actualizar_HTML_respuesta(pregunta, html);
+        var id_cloud = 'word_cloud_' + pregunta["id_pregunta"];
+        actualizar_HTML_respuesta(pregunta, generar_HTML_canvas_word_cloud(id_cloud));
 
         var palabras_clave = [];
         for (var id_palabra in respuesta["palabras_clave"]) {
             var palabra = respuesta["palabras_clave"][id_palabra];
-            palabras_clave.push({
-                text: palabra.palabra_clave,
-                size: obtener_tamanio(palabra.total_encuestas)
-            })
+            palabras_clave.push([palabra.palabra_clave, palabra.total_encuestas * 25]);
         }
 
-        d3.wordcloud().size([500, 150]).selector('#' + id_cloud).words(palabras_clave).spiral(["rectangular"]).start();
+        WordCloud.minFontSize = "15px"
+        WordCloud(document.getElementById(id_cloud), { list: palabras_clave, backgroundColor: 'transparent'} );
     }
 
    function obtener_tamanio(cant_rtas) {
