@@ -4,6 +4,10 @@
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.2/Chart.bundle.min.js"></script>
 
+<script type='text/javascript' src="/js/d3/d3.js"></script>
+<script type='text/javascript' src="/js/d3/d3.layout.cloud.js"></script>
+<script type='text/javascript' src="/js/d3/d3.wordcloud.js"></script>
+
 <script>
 
     $( function () {
@@ -42,8 +46,6 @@
                 if (tipo_pregunta == "Si o No") {
                     agregarSubpreguntasSiNo(preguntas, pregunta);
                 }
-            } else {
-                mostrarLabelSinResultados(tipo_pregunta, idPregunta);
             }
         }
     }
@@ -84,10 +86,10 @@
             //    return cargarRespuestaCorrelativas(pregunta, respuesta);
             case "Estrellas":
                 return cargarRespuestaEstrellas(pregunta, respuesta);
-            //case "Temática de la Materia":
-            //    return cargarRespuestaTematicas(pregunta, respuesta);
-            //case "Tags / Palabras Clave":
-            //    return cargarRespuestaPalabrasClave(pregunta, respuesta);
+            case "Temática de la Materia":
+                return cargarRespuestaTematicas(pregunta, respuesta);
+            case "Tags / Palabras Clave":
+                return cargarRespuestaPalabrasClave(pregunta, respuesta);
             case "Si o No":
                 return cargarRespuestaSioNo(pregunta, respuesta);
             case "Texto Subpregunta":
@@ -97,6 +99,58 @@
                 console.log(respuesta)
                 return;
         }
+    }
+
+    function cargarRespuestaTematicas(pregunta, respuesta) {
+        var id_cloud = 'word-cloud-' + pregunta["pregunta_id"];
+        var html =  '<div id="' + id_cloud + '">';
+        html += '</div>'
+        actualizar_HTML_respuesta(pregunta, html);
+
+        var tematicas = [];
+        for (var id_tematica in respuesta["tematicas"]) {
+            var tematica = respuesta["tematicas"][id_tematica];
+            tematicas.push({
+                text: tematica.tematica,
+                size: obtener_tamanio(tematica.total_encuestas)
+            })
+        }
+
+        d3.wordcloud().size([500, 150]).selector('#' + id_cloud).words(tematicas).spiral(["rectangular"]).start();
+    }
+
+    function cargarRespuestaPalabrasClave(pregunta, respuesta) {
+        var id_cloud = 'word-cloud-' + pregunta["pregunta_id"];
+        var html =  '<div id="' + id_cloud + '">';
+        html += '</div>'
+        actualizar_HTML_respuesta(pregunta, html);
+
+        var palabras_clave = [];
+        for (var id_palabra in respuesta["palabras_clave"]) {
+            var palabra = respuesta["palabras_clave"][id_palabra];
+            palabras_clave.push({
+                text: palabra.palabra_clave,
+                size: obtener_tamanio(palabra.total_encuestas)
+            })
+        }
+
+        d3.wordcloud().size([500, 150]).selector('#' + id_cloud).words(palabras_clave).spiral(["rectangular"]).start();
+    }
+
+   function obtener_tamanio(cant_rtas) {
+        if (cant_rtas < 2)
+            return 8;
+        if (cant_rtas < 10)
+            return 10;
+        if (cant_rtas < 20)
+            return 12;
+        if (cant_rtas < 50)
+            return 14;
+        if (cant_rtas < 250)
+            return 16;
+        if (cant_rtas < 1000)
+            return 18;
+        return 20;
     }
 
     function cargarRespuestaSioNo(pregunta, respuesta) {
