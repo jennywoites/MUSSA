@@ -3,8 +3,6 @@ from celery import Celery
 from app.API_Rest.GeneradorPlanCarreras.GeneradorPLE.GeneradorCodigoPulp import generar_archivo_pulp
 from app.API_Rest.GeneradorPlanCarreras.GeneradorPLE.OptimizadorCodigoPulp import optimizar_codigo_pulp
 from app.API_Rest.GeneradorPlanCarreras.ParametrosDTO import Parametros
-from app.API_Rest.GeneradorPlanCarreras.broker_guardar_plan_generado import \
-    tarea_guadar_plan_de_estudios
 from app.DAO.PlanDeCarreraDAO import PLAN_INCOMPATIBLE, PLAN_FINALIZADO
 from app.API_Rest.GeneradorPlanCarreras.my_utils import get_str_fecha_y_hora_actual
 from time import time as tiempo
@@ -43,6 +41,7 @@ def tarea_generar_plan_ple(parametros_tarea, estadisticas_tarea):
     print("FIN generación plan PLE con id {}".format(parametros_tarea["id_plan_estudios"]))
 
     print("Se invoca al guardado para el plan PLE con id {}".format(parametros_tarea["id_plan_estudios"]))
+    from app.API_Rest.GeneradorPlanCarreras.broker_guardar_plan_generado import tarea_guadar_plan_de_estudios
     tarea_guadar_plan_de_estudios.delay(parametros.generar_parametros_json(), estadisticas.get_JSON())
 
 
@@ -94,7 +93,7 @@ def ejecutar_codigo_pulp(parametros):
 def obtener_resultados_pulp(parametros):
     resultados = {}
     if not os.path.isfile(parametros.nombre_archivo_resultados_pulp):
-        resultados["status"] == "No se encontro el archivo de resultados"
+        resultados["status"] = "No se encontro el archivo de resultados"
         return resultados
 
     with open(parametros.nombre_archivo_resultados_pulp, 'r') as arch:

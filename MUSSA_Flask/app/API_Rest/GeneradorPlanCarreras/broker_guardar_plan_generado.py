@@ -63,7 +63,6 @@ def guardado_en_testing(parametros, estadisticas, tiempo_inicial):
         return
 
     agregar_materias_CBC_al_plan_generado(parametros)
-    print(parametros.plan_generado)
     print("FIN guardado TESTING plan con id {} (COMPATIBLE)".format(parametros.id_plan_estudios))
     guardar_estadisticas(parametros, estadisticas, tiempo_inicial)
 
