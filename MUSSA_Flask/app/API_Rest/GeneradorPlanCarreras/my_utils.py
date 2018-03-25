@@ -1,5 +1,17 @@
 import datetime
 
+def convertir_hora_desde_horario_float(horario):
+    l_horario = str(horario).split(".")
+    hora = l_horario[0]
+
+    if (0 <= int(hora) < 10):
+        hora = "0" + hora
+
+    if len(l_horario) == 1:
+        return hora + ":00"
+
+    return hora + (":30" if int(l_horario[-1]) > 0 else ":00")
+
 def get_str_cuatrimestre(cuatrimestre):
     cuatrimestre = int(str(cuatrimestre))
     if cuatrimestre < 10:
