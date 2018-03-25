@@ -1,4 +1,5 @@
 from app import db
+from app.API_Rest.GeneradorPlanCarreras.my_utils import convertir_hora_desde_horario_float
 
 
 # FIXME: Eliminar cuando se encuentre una mejor manera de trabajar con los cursos de modelos I con teoricas de horario opcional
@@ -58,16 +59,29 @@ class Horario(db.Model):
         return "Horario: {} de {} a {}".format(self.dia, self.hora_desde, self.hora_hasta)
 
     def convertir_hora(self, horario):
-        l_horario = str(horario).split(".")
-        hora = l_horario[0]
+        return convertir_hora_desde_horario_float(horario)
 
-        if (0 <= int(hora) < 10):
-            hora = "0" + hora
+    def convertir_a_franja(self, hora):
+        hora = float(hora)
+        base = 1
+        hora_origen = 7
+        if (round(hora) != hora):
+            base += 1
+            hora = int(hora - 0.5)
+        return int((hora - hora_origen) * 2 + base)
 
-        if len(l_horario) == 1:
-            return hora + ":00"
-        return hora + ":30"
-
+    def get_franjas_utilizadas(self):
+        """
+        Las franjas horarias van cada media hora desde las 7am hasta las 23:30
+        07:00 a 07:30 --> 1
+        07:30 a 08:00 --> 2
+        08:00 a 08:30 --> 3
+        ...
+        Devuelve una lista con los numeros de las franjas horarias desde hora_desde hasta hora_hasta
+        """
+        franja_inicio = self.convertir_a_franja(self.hora_desde)
+        franja_final = self.convertir_a_franja(self.hora_hasta)
+        return [x for x in range(franja_inicio, franja_final)]
 
 class HorarioPorCurso(db.Model):
     __tablename__ = 'horario_por_curso'

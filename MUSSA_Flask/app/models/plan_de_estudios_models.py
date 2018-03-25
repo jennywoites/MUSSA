@@ -129,7 +129,7 @@ class TematicaPreferenciasGeneracionPlanDeEstudios(db.Model):
 
 
 class AprobacionFinalesPreferenciasGeneracionPlanDeEstudios(db.Model):
-    __tablename__ = 'aprobacion_finales_preferencias_generacion_plan_de_estudios'
+    __tablename__ = 'aprobacion_finales_pref_plan'
     id = db.Column(db.Integer, primary_key=True)
 
     preferencias_id = db.Column(db.Integer, db.ForeignKey('preferencias_generacion_plan_de_estudios.id'))

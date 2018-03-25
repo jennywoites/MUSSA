@@ -3,6 +3,8 @@ from app.models.horarios_models import Horario
 from app.models.palabras_clave_models import PalabraClave, TematicaMateria
 from app.models.docentes_models import Docente
 from app.models.respuestas_encuesta_models import *
+from app.utils import DIAS, frange
+from app.API_Rest.GeneradorPlanCarreras.my_utils import convertir_hora_desde_horario_float
 
 
 def generar_estructura_respuesta_por_tipo(tipo_id):
@@ -106,9 +108,22 @@ def actualizar_respuesta_si_no(rta_encuesta, estructura_respuesta):
 
 
 ####################################################################################################
+MAX_FRANJA = 33
+HORA_ORIGEN = 7
+
 def generar_respuesta_horario():
+    lista_horarios = {}
+    for dia in DIAS:
+        lista_horarios[dia] = ([0]*MAX_FRANJA)
+
+    nombres_franjas_horarios = []
+    for i in range(MAX_FRANJA):
+        hora = convertir_hora_desde_horario_float(i*0.5 + HORA_ORIGEN)
+        nombres_franjas_horarios.append(hora)
+
     return {
-        "horarios": {},
+        "horarios": lista_horarios,
+        "nombres_franjas_horarios": nombres_franjas_horarios,
         "total_encuestas": 0
     }
 
@@ -118,23 +133,25 @@ def actualizar_respuesta_horario(rta_encuesta, estructura_respuesta):
     if not rtas:
         return
 
+    min_franja = MAX_FRANJA
+    max_franja = 0
     for rta in rtas:
         horario = Horario.query.get(rta.horario_id)
-        clave = horario.dia + "_" + str(horario.hora_desde) + "_" + str(horario.hora_hasta)
-
-        rtas_horario_actual = estructura_respuesta["horarios"].get(clave, {
-            'dia': horario.dia,
-            'hora_desde': horario.convertir_hora(horario.hora_desde),
-            'hora_hasta': horario.convertir_hora(horario.hora_hasta),
-            'total_encuestas': 0
-        })
-
+        for i in horario.get_franjas_utilizadas():
+            estructura_respuesta["horarios"][horario.dia][i-1] += 1
+            min_franja = min(min_franja, i-1)
+            max_franja = max(max_franja, i-1)
         estructura_respuesta["total_encuestas"] += 1
-        rtas_horario_actual["total_encuestas"] += 1
-        estructura_respuesta["horarios"][clave] = rtas_horario_actual
 
+    min_franja = min_franja if min_franja == 0 else min_franja -1
+    max_franja = max_franja if max_franja == MAX_FRANJA else max_franja + 1
 
-####################################################################################################
+    for dia in estructura_respuesta["horarios"]:
+        estructura_respuesta["horarios"][dia] = estructura_respuesta["horarios"][dia][min_franja:max_franja+1]
+
+    estructura_respuesta["nombres_franjas_horarios"] = estructura_respuesta["nombres_franjas_horarios"][min_franja:max_franja+1]
+
+    ####################################################################################################
 def generar_respuesta_docente():
     return {"docentes": {}}
 

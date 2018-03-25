@@ -53,7 +53,7 @@ class Materia(db.Model):
     id = db.Column(db.Integer, primary_key=True)
 
     codigo = db.Column(db.String(4), nullable=False, server_default='')
-    nombre = db.Column(db.String(50), nullable=False, server_default='')
+    nombre = db.Column(db.String(80), nullable=False, server_default='')
     objetivos = db.Column(db.String(250), nullable=True, server_default='')
     creditos_minimos_para_cursarla = db.Column(db.Integer, nullable=False)
     creditos = db.Column(db.Integer, nullable=False)
