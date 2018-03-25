@@ -1,3 +1,8 @@
+import fcntl
+import os
+import csv
+
+
 class EstadisticasDTO:
     def __init__(self):
         self.cantidad_cuatrimestres_plan = 0  # Cuentan los del CBC
@@ -26,6 +31,36 @@ class EstadisticasDTO:
         self.trabajo_final = ""
         self.algoritmo = -1
         self.tipo_solicitud = "Normal"
+
+    def guardar_en_archivo(self):
+        RUTA = "estadisticas_algoritmos.csv"
+        if not os.path.isfile(RUTA):
+            self._guardar_en_archivo('w', RUTA, self._guardar_estadisticas_y_titulo)
+        else:
+            self._guardar_en_archivo('a', RUTA, self._guardar_estadisticas)
+
+    def _guardar_en_archivo(self, modo, ruta, f_escritura):
+        try:
+            handle = open(ruta, modo)
+
+            # Solicita el Lock del archivo
+            fcntl.flock(handle, fcntl.LOCK_EX)
+
+            writer = csv.writer(handle)
+            f_escritura(writer)
+
+            # Libera el Lock del archivo
+            fcntl.flock(handle, fcntl.LOCK_UN)
+            handle.close()
+        except:
+            handle.close()
+
+    def _guardar_estadisticas_y_titulo(self, writer):
+        writer.writerow(self.get_titulos_CSV())
+        writer.writerow(self.get_linea_CSV())
+
+    def _guardar_estadisticas(self, writer):
+        writer.writerow(self.get_titulos_CSV())
 
     def get_titulos_CSV(self):
         return [

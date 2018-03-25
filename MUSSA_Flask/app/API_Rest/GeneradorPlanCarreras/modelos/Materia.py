@@ -1,4 +1,5 @@
 from app.API_Rest.GeneradorPlanCarreras.Constantes import *
+import hashlib
 
 
 class Materia:
@@ -49,6 +50,21 @@ class Materia:
         materia += "medias_horas_extras_cursada:" + str(self.medias_horas_extras_cursada) + SALTO
         materia += "}" + SALTO
         return materia
+
+    def obtener_hash_materia(self):
+        SEPARADOR = "||"
+        materia = "Materia : {"
+        materia += "id_materia: {}".format(self.id_materia) + SEPARADOR
+        materia += "codigo: {}".format(self.codigo) + SEPARADOR
+        materia += "nombre: {}".format(self.nombre) + SEPARADOR
+        materia += "creditos: {}".format(self.creditos) + SEPARADOR
+        materia += "tipo: {}".format(self.tipo) + SEPARADOR
+        materia += "creditos_minimos_aprobados: {}".format(self.creditos_minimos_aprobados) + SEPARADOR
+        materia += "correlativas: {}".format(sorted(self.correlativas)) + SEPARADOR
+        materia += "tematicas_principales: {}".format(self.tematicas_principales) + SEPARADOR
+        materia += "medias_horas_extras_cursada: {}".format(self.medias_horas_extras_cursada) + SEPARADOR
+        materia += "}"
+        return hashlib.sha1(materia.encode('utf-8'))
 
     def generar_JSON(self):
         return {
