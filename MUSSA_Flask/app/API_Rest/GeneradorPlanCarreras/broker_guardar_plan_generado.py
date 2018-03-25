@@ -1,16 +1,14 @@
 from app import db, create_app
-from app.models.plan_de_estudios_models import EstadoPlanDeEstudios, MateriaPlanDeEstudios
 from celery import Celery
 from app.API_Rest.GeneradorPlanCarreras.ParametrosDTO import Parametros
-from app.models.plan_de_estudios_models import PlanDeEstudios, PlanDeEstudiosFinalizadoProcesar
+from app.models.plan_de_estudios_models import PlanDeEstudios, PlanDeEstudiosFinalizadoProcesar, PlanDeEstudiosCache, \
+    MateriaPlanDeEstudiosCache, EstadoPlanDeEstudios, MateriaPlanDeEstudios
 from app.DAO.PlanDeCarreraDAO import PLAN_INCOMPATIBLE, PLAN_FINALIZADO, ESTADOS_PLAN
 from time import time
 from datetime import datetime
 from app.API_Rest.GeneradorPlanCarreras.EstadisticasDTO import EstadisticasDTO
 from app.API_Rest.GeneradorPlanCarreras.my_utils import convertir_tiempo
 from app.API_Rest.GeneradorPlanCarreras.my_utils import get_str_fecha_y_hora_actual
-import os
-import csv
 
 broker_guadar_plan_de_estudios = Celery('broker3', broker='redis://localhost/5')
 broker_guadar_plan_de_estudios.conf.update({
@@ -46,15 +44,20 @@ def tarea_guadar_plan_de_estudios(parametros_tarea, estadisticas_tarea):
             return
 
         if parametros.estado_plan_de_estudios == PLAN_INCOMPATIBLE:
-            guardar_estadisticas(parametros, estadisticas, inicio)
-            actualizar_plan(plan_de_estudios, PLAN_INCOMPATIBLE)
+            guardar_y_actualizar_datos_plan(plan_de_estudios, parametros, estadisticas, PLAN_INCOMPATIBLE, inicio)
             print("FIN guardado plan con id {}: (INCOMPATIBLE)".format(parametros_tarea["id_plan_estudios"]))
             return
 
         agregar_materias_generadas_al_plan(parametros, plan_de_estudios)
-        actualizar_plan(plan_de_estudios, PLAN_FINALIZADO)
+        guardar_y_actualizar_datos_plan(plan_de_estudios, parametros, estadisticas, PLAN_FINALIZADO, inicio)
         print("FIN guardado plan con id {} (COMPATIBLE)".format(parametros_tarea["id_plan_estudios"]))
-        guardar_estadisticas(parametros, estadisticas, inicio)
+
+
+def guardar_y_actualizar_datos_plan(plan_de_estudios, parametros, estadisticas, estado, tiempo_inicial):
+    actualizar_plan(plan_de_estudios, estado)
+    generar_plan_cache(plan_de_estudios, parametros)
+    guardar_estadisticas(parametros, estadisticas, tiempo_inicial)
+
 
 def guardado_en_testing(parametros, estadisticas, tiempo_inicial):
     if parametros.estado_plan_de_estudios == PLAN_INCOMPATIBLE:
@@ -66,22 +69,32 @@ def guardado_en_testing(parametros, estadisticas, tiempo_inicial):
     print("FIN guardado TESTING plan con id {} (COMPATIBLE)".format(parametros.id_plan_estudios))
     guardar_estadisticas(parametros, estadisticas, tiempo_inicial)
 
+
 def guardar_estadisticas(parametros, estadisticas, tiempo_inicial):
     estadisticas.estado_plan = ESTADOS_PLAN[parametros.estado_plan_de_estudios]
     estadisticas.cantidad_cuatrimestres_plan = len(parametros.plan_generado)
     estadisticas.fecha_fin_guardado = get_str_fecha_y_hora_actual()
     estadisticas.tiempo_total_guardado = convertir_tiempo(time() - tiempo_inicial)
+    estadisticas.guardar_en_archivo()
 
-    RUTA = "estadisticas_algoritmos.csv"
-    if not os.path.isfile(RUTA):
-        with open(RUTA, 'w') as f:
-            writer = csv.writer(f)
-            writer.writerow(estadisticas.get_titulos_CSV())
-            writer.writerow(estadisticas.get_linea_CSV())
-    else:
-        with open(RUTA, 'a') as f:
-            writer = csv.writer(f)
-            writer.writerow(estadisticas.get_linea_CSV())
+
+def generar_plan_cache(plan_de_estudios, parametros):
+    plan_cacheado = PlanDeEstudiosCache(
+        hash_parametros=parametros.hash_precalculado,
+        estado_id=plan_de_estudios.estado_id
+    )
+    db.session.add(plan_cacheado)
+    db.session.commit()
+
+    materias_a_copiar = MateriaPlanDeEstudios.query.filter_by(plan_estudios_id=plan_de_estudios.id).all()
+    for materia_plan in materias_a_copiar:
+        db.session.add(MateriaPlanDeEstudiosCache(
+            plan_estudios_cache_id=plan_cacheado.id,
+            materia_id=materia_plan.materia_id,
+            curso_id=materia_plan.curso_id,
+            orden=materia_plan.orden
+        ))
+    db.session.commit()
 
 
 def actualizar_plan(plan_de_estudios, nuevo_estado):

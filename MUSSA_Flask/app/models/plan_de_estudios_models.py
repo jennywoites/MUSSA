@@ -18,6 +18,31 @@ class PlanDeEstudios(db.Model):
         return "Plan de Estudios {}".format(self.id)
 
 
+class PlanDeEstudiosCache(db.Model):
+    __tablename__ = 'plan_de_estudios_cache'
+
+    id = db.Column(db.Integer, primary_key=True)
+    hash_parametros = db.Column(db.String(50), nullable=False, server_default='')
+    estado_id = db.Column(db.Integer, db.ForeignKey('estado_plan_de_estudios.id'))
+
+    def __str__(self):
+        return "Plan de Estudios Cache {}".format(self.id)
+
+
+class MateriaPlanDeEstudiosCache(db.Model):
+    __tablename__ = 'materia_plan_de_estudios_cache'
+    id = db.Column(db.Integer, primary_key=True)
+
+    plan_estudios_cache_id = db.Column(db.Integer, db.ForeignKey('plan_de_estudios_cache.id'))
+    materia_id = db.Column(db.Integer, db.ForeignKey('materia.id'))
+    curso_id = db.Column(db.Integer, db.ForeignKey('curso.id'))
+
+    # El orden representa el cuatrimestre en la que se va a cursar la materia. Por ejemplo,
+    # la materia A con orden 1 se cursa en el primer cuatrimestre y la materia B de orden 2,
+    # se cursa en el cuatrimestre siguiente a la materia A.
+    orden = db.Column(db.Integer, nullable=False, server_default='0')
+
+
 class CarrerasPlanDeEstudios(db.Model):
     __tablename__ = 'carreras_plan_de_estudios'
 

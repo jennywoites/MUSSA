@@ -1,3 +1,6 @@
+import hashlib
+
+
 class Horario:
     def inicializar_con_JSON(self, datos_json):
         self.dia = datos_json["dia"]
@@ -15,6 +18,18 @@ class Horario:
         self.hora_inicio = hora_inicio
         self.hora_fin = hora_fin
 
+    def __lt__(self, otro):
+        if self.dia == otro.dia:
+            if self.hora_inicio == otro.hora_inicio:
+                return self.hora_fin < otro.hora_fin
+            return self.hora_inicio < otro.hora_inicio
+        return self.dia < otro.dia
+
+    def __eq__(self, otro):
+        return (self.dia == otro.dia and
+                self.hora_inicio == otro.hora_inicio and
+                self.hora_fin == self.hora_fin)
+
     def __str__(self):
         SALTO = "\n"
         horario = "{" + SALTO
@@ -23,6 +38,10 @@ class Horario:
         horario += "hora_fin: " + str(self.hora_fin) + SALTO
         horario += "}" + SALTO
         return horario
+
+    def obtener_hash_horario(self):
+        horario = str(self)
+        return hashlib.sha1(horario.encode('utf-8'))
 
     def generar_JSON(self):
         return {
