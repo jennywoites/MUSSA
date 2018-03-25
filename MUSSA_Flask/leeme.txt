@@ -10,6 +10,18 @@ source bin/activate
 cd ..
 pip3 install -r requirements.txt
 
+#Instalar / Configurar base de datos MySQL
+sudo apt-get install mysql-server-5.7 #Elegir el password PASSWORD_DB
+
+mysqladmin -uroot -p create mussa #Nos va a solicitar el password PASSWORD_DB
+mysql -uroot -p #Nos va a solicitar el password PASSWORD_DB
+mysql> use mussa;
+mysql> grant all on * to 'mussa'@'localhost' identified by PASSWORD_ADMIN; #Se crea la password para el admin
+Ctrl-D
+
+--> Cambiar en local settings la SQLALCHEMY_DATABASE_URI
+SQLALCHEMY_DATABASE_URI = "mysql://mussa:PASSWORD_ADMIN@localhost/mussa"
+
 #Inicializar la base de datos
 python3 manage.py init_db
 
