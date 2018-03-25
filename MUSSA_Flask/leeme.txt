@@ -22,6 +22,13 @@ Ctrl-D
 --> Cambiar en local settings la SQLALCHEMY_DATABASE_URI
 SQLALCHEMY_DATABASE_URI = "mysql://mussa:PASSWORD_ADMIN@localhost/mussa"
 
+sudo apt-get install libmysqlclient-dev
+
+sudo apt-get install python-dev python3-dev
+sudo apt-get install libmysqlclient-dev
+pip3 install pymysql
+pip3 install mysqlclient
+
 #Inicializar la base de datos
 python3 manage.py init_db
 
