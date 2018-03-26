@@ -40,6 +40,7 @@ class ProgresoCarrerasService(BaseService):
                     datos_creditos = self.inicializar_creditos_requeridos(creditos)
                     self.actualizar_creditos_materias_aprobadas(carrera_id, id_orientacion, trabajo, datos_creditos)
                     self.guardar_porcentajes_aprobacion(datos_creditos)
+                    self.guardar_avance_total(datos_creditos)
 
                     progreso_result[carrera_id][id_orientacion][trabajo] = datos_creditos
 
@@ -92,6 +93,23 @@ class ProgresoCarrerasService(BaseService):
 
     def calcular_porcentaje(self, datos_creditos, campo, requerido, obtenido):
         datos_creditos[campo] = int((obtenido / requerido) * 100) if requerido > 0 else 0
+
+    def guardar_avance_total(self, datos_creditos):
+        requerido = datos_creditos["cantidad_materias_CBC_requeridas"]
+        requerido += datos_creditos["creditos_requeridos_obligatorias"]
+        requerido += datos_creditos["creditos_requeridos_electivas"]
+        requerido += datos_creditos["creditos_requeridos_orientacion"]
+        requerido += datos_creditos["creditos_requeridos_trabajo_final"]
+
+        obtenido = datos_creditos["cantidad_materias_CBC_aprobadas"]
+        obtenido += datos_creditos["creditos_obtenidos_obligatorias"]
+        obtenido += datos_creditos["creditos_obtenidos_electivas"] if \
+            (datos_creditos["creditos_obtenidos_electivas"] <= datos_creditos["creditos_requeridos_electivas"]) \
+            else datos_creditos["creditos_requeridos_electivas"]
+        obtenido += datos_creditos["creditos_obtenidos_orientacion"]
+        obtenido += datos_creditos["creditos_obtenidos_trabajo_final"]
+
+        self.calcular_porcentaje(datos_creditos, "porcentaje_avance_total", requerido, obtenido)
 
     def actualizar_creditos_materias_aprobadas(self, carrera_id, id_orientacion, trabajo, datos_creditos):
         servicio = AllMateriasAlumnoService()

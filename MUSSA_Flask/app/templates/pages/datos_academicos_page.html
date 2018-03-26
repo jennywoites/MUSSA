@@ -8,7 +8,79 @@
             var boton = document.getElementById("agregar_materia_button");
             var cant_carreras = {{mis_carreras | length}};
             boton.disabled = (cant_carreras == 0);
+
+            if (cant_carreras == 1) {
+                debuuger;
+                actualizar_progreso_carrera_seleccionada({{mis_carreras | safe}}[0]["carrera_id"]);
+            }
+
+            if (cant_carreras > 1) {
+                var selector_carrera = document.getElementById("carrera_mostrar_materias");
+                selector_carrera.selectedIndex = 1;
+                filtrar_materias_por_carrera();
+            }
+
         });
+
+        function actualizar_progreso_carrera_seleccionada(id_carrera) {
+            actualizar_progreso_completo(id_carrera, "", "");
+        }
+
+        function actualizar_progreso_completo(id_carrera, orientacion, trabajo_final) {
+            var datos_completos_progreso = {{progreso | safe }}[id_carrera];
+            var div_progreso = document.getElementById("progreso_carrera_seleccionada");
+
+            var datos_carrera = obtener_datos_carrera(id_carrera);
+            var orientaciones = datos_carrera["orientaciones"];
+            var trabajos_finales = datos_carrera["trabajos_finales_carrera"];
+
+            if (!orientacion)
+                orientacion = (orientaciones.length == 0) ? '-1' : orientaciones[0]
+            if (!trabajo_final)
+                trabajo_final = (trabajos_finales.length == 0) ? 'GRAL' : trabajos_finales[0]
+
+            var datos_progreso = datos_completos_progreso[orientacion][trabajo_final];
+
+            var html = "";
+            html += generar_HTML_avance_general(datos_progreso);
+
+            div_progreso.innerHTML = html;
+        }
+
+        function obtener_datos_carrera(id_carrera) {
+            var carreras = {{mis_carreras | safe}};
+            for (var i=0; i<carreras.length; i++) {
+                if (carreras[i]["id_carrera"] == id_carrera)
+                    return carreras[i];
+            }
+        }
+
+        function generar_tabla_detalles_avance(datos_progreso) {
+            debugger;
+
+        }
+
+        function generar_HTML_avance_general(datos_progreso) {
+            var html =  '<div class="row">';
+            html +=         '<div class="col-md-1">';
+            html +=             'Avance:';
+            html +=         '</div>';
+            html +=         '<div class="col-md-11">';
+            html +=             generar_html_barra_progreso(datos_progreso["porcentaje_avance_total"]);;
+            html +=         '</div>';
+            html +=     '</div>';
+            return html;
+        }
+
+        function generar_html_barra_progreso(porcentaje) {
+            var html = '<div class="progress">';
+            html += '<div class="progress-bar progress_bar_mussa" role="progressbar" aria-valuenow="' + porcentaje + '"';
+            html += 'aria-valuemin="0" aria-valuemax="100" style="width: ' + porcentaje + '%;">';
+            html += + porcentaje + '%';
+            html += '</div>';
+            html += '</div>';
+            return html;
+        }
 
         function confirmar_eliminar_carrera(carrera, url) {
             msj = "Al eliminar la carrera, se borrarán todas las materias, encuestas y planes de estudios asociados.";
@@ -100,6 +172,8 @@
 
             var tabla_vacia_label = document.getElementById("tabla_vacia");
             tabla_vacia_label.hidden = !no_hay_datos;
+
+            actualizar_progreso_carrera_seleccionada(carrera_elegida[carrera_elegida.selectedIndex].value);
         }
 
     </script>
@@ -209,13 +283,15 @@
                     <select class="form-control" id="carrera_mostrar_materias" name="carrera_mostrar_materias" onchange="filtrar_materias_por_carrera()">
                         <option id="todas_mis_carreras">Todas mis carreras</option>
                         {% for carrera in mis_carreras %}
-                            <option id="carrera_{{carrera['id_carrera']}}">{{carrera["codigo"]}} - {{carrera["nombre"]}} ({{carrera["plan"]}})</option>
+                            <option id="carrera_{{carrera['id_carrera']}}" value="{{carrera['id_carrera']}}">{{carrera["codigo"]}} - {{carrera["nombre"]}} ({{carrera["plan"]}})</option>
                         {% endfor %}
                     </select>
                 </div>
 
                 <br>
             {% endif %}
+
+            <div id="progreso_carrera_seleccionada"></div>
 
             <div class='table-responsive'>
                 <p id="tabla_vacia" hidden="true">No hay resultados para mostrar</p>

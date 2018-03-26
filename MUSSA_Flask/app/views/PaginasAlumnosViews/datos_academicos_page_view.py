@@ -33,7 +33,7 @@ def datos_academicos_page():
 
     mis_materias = cliente.obtener_materias_alumno(cookie)
 
-    progreso = "" #Obtener progreso del alumno
+    progreso = cliente.obtener_progreso_carreras_alumno(cookie)
 
     return render_template('pages/datos_academicos_page.html',
                            padron=padron,
