@@ -2,6 +2,9 @@ from app.API_Rest.codes import *
 from flask_user import login_required
 from app.API_Rest.Services.BaseService import BaseService
 from app.models.alumno_models import AlumnosCarreras
+from app.models.carreras_models import Orientacion, Creditos, Materia, TipoMateria
+from app.DAO.MateriasDAO import APROBADA
+from app.API_Rest.Services.AlumnoServices.AllMateriasAlumnoService import AllMateriasAlumnoService
 
 
 class ProgresoCarrerasService(BaseService):
@@ -33,34 +36,95 @@ class ProgresoCarrerasService(BaseService):
                 separacion_por_trabajos = self.generar_separacion_por_trabajo_final(creditos)
                 progreso_result[carrera_id][id_orientacion] = separacion_por_trabajos
 
-                separacion_por_trabajos["creditos_requeridos_obligatorias"] = creditos.creditos_obligatorias
-                separacion_por_trabajos["creditos_obtenidos_obligatorias"] = 0
-                separacion_por_trabajos["porcentaje_obligatorias"] = 0
+                for trabajo in separacion_por_trabajos:
+                    datos_creditos = self.inicializar_creditos_requeridos(creditos)
+                    self.actualizar_creditos_materias_aprobadas(carrera_id, id_orientacion, trabajo, datos_creditos)
+                    self.guardar_porcentajes_aprobacion(datos_creditos)
 
-                separacion_por_trabajos["creditos_requeridos_electivas"] = 0
-                separacion_por_trabajos["creditos_obtenidos_electivas"] = 0
-                separacion_por_trabajos["porcentaje_electivas"] = 0
-
-                separacion_por_trabajos["creditos_requeridos_orientacion"] = creditos.creditos_orientacion
-                separacion_por_trabajos["creditos_obtenidos_orientacion"] = 0
-                separacion_por_trabajos["porcentaje_orientacion"] = 0
-
-                separacion_por_trabajos["creditos_requeridos_trabajo_final"] = 0
-                separacion_por_trabajos["creditos_obtenidos_trabajo_final"] = 0
-                separacion_por_trabajos["porcentaje_trabajo_final"] = 0
-
-        return {
-            "electivas_general": creditos.creditos_electivas_general,
-            "electivas_con_tp": creditos.creditos_electivas_con_tp,
-            "electivas_con_tesis": creditos.creditos_electivas_con_tesis,
-            "tesis": creditos.creditos_tesis,
-            "tp_profesional": creditos.creditos_tp_profesional
-        }
+                    progreso_result[carrera_id][id_orientacion][trabajo] = datos_creditos
 
         result = ({'progreso': progreso_result}, SUCCESS_OK)
         self.logg_resultado(result)
 
         return result
+
+    def inicializar_creditos_requeridos(self, creditos):
+        datos_creditos = {}
+
+        datos_creditos["cantidad_materias_CBC_requeridas"] = 6
+        datos_creditos["cantidad_materias_CBC_aprobadas"] = 0
+
+        datos_creditos["creditos_requeridos_obligatorias"] = creditos.creditos_obligatorias
+        datos_creditos["creditos_obtenidos_obligatorias"] = 0
+
+        datos_creditos["creditos_requeridos_electivas"] = 0
+        datos_creditos["creditos_obtenidos_electivas"] = 0
+
+        datos_creditos["creditos_requeridos_orientacion"] = creditos.creditos_orientacion
+        datos_creditos["creditos_obtenidos_orientacion"] = 0
+
+        datos_creditos["creditos_requeridos_trabajo_final"] = 0
+        datos_creditos["creditos_obtenidos_trabajo_final"] = 0
+
+        return datos_creditos
+
+    def guardar_porcentajes_aprobacion(self, datos_creditos):
+
+        requerido = datos_creditos["cantidad_materias_CBC_requeridas"]
+        obtenido = datos_creditos["cantidad_materias_CBC_aprobadas"]
+        self.calcular_porcentaje(datos_creditos, "porcentaje_CBC", requerido, obtenido)
+
+        requerido = datos_creditos["creditos_requeridos_obligatorias"]
+        obtenido = datos_creditos["creditos_obtenidos_obligatorias"]
+        self.calcular_porcentaje(datos_creditos, "porcentaje_obligatorias", requerido, obtenido)
+
+        requerido = datos_creditos["creditos_requeridos_electivas"]
+        obtenido = datos_creditos["creditos_obtenidos_electivas"]
+        self.calcular_porcentaje(datos_creditos, "porcentaje_electivas", requerido, obtenido)
+
+        requerido = datos_creditos["creditos_requeridos_orientacion"]
+        obtenido = datos_creditos["creditos_obtenidos_orientacion"]
+        self.calcular_porcentaje(datos_creditos, "porcentaje_orientacion", requerido, obtenido)
+
+        requerido = datos_creditos["creditos_requeridos_trabajo_final"]
+        obtenido = datos_creditos["creditos_obtenidos_trabajo_final"]
+        self.calcular_porcentaje(datos_creditos, "porcentaje_trabajo_final", requerido, obtenido)
+
+    def calcular_porcentaje(self, datos_creditos, campo, requerido, obtenido):
+        datos_creditos[campo] = int((obtenido / requerido) * 100) if requerido > 0 else 0
+
+    def actualizar_creditos_materias_aprobadas(self, carrera_id, id_orientacion, trabajo, datos_creditos):
+        servicio = AllMateriasAlumnoService()
+        materias = servicio.obtener_materias_alumno_por_categorias([APROBADA], [], carrera_id)[0]["materias_alumno"]
+
+        nombre_orientacion = ""
+        if id_orientacion > 0:
+            nombre_orientacion = Orientacion.query.get(id_orientacion).clave_reducida
+
+        for materia_alumno in materias:
+            materia = Materia.query.get(materia_alumno["id_materia"])
+            tipo_materia = TipoMateria.query.get(materia.tipo_materia_id)
+
+            if tipo_materia.descripcion == "CBC":
+                datos_creditos["cantidad_materias_CBC_aprobadas"] += 1
+
+            elif tipo_materia.descripcion == "OBLIGATORIA":
+                datos_creditos["creditos_obtenidos_obligatorias"] = materia.creditos
+
+            elif tipo_materia.descripcion == nombre_orientacion:
+                datos_creditos["creditos_obtenidos_orientacion"] = materia.creditos
+
+            elif tipo_materia.descripcion == "TP_PROFESIONAL":
+                if trabajo == "TP_PROFESIONAL":
+                    datos_creditos["creditos_obtenidos_trabajo_final"] = materia.creditos
+
+            elif tipo_materia.descripcion == "TESIS":
+                if trabajo == "TESIS":
+                    datos_creditos["creditos_obtenidos_trabajo_final"] = materia.creditos
+
+            #Electivas y orientacion no elegida (la obligatoria de orientacion es electiva para las demas orientaciones)
+            else:
+                datos_creditos["creditos_obtenidos_electivas"] = materia.creditos
 
     def obtener_ids_orientaciones(self, carrera_id):
         orientaciones = Orientacion.query.filter_by(carrera_id=carrera_id).all()
