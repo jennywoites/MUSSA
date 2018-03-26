@@ -39,3 +39,8 @@ python3 manage.py runserver
 pybabel update -d translations -D flask_user -i translations/flask_user.pot
 pybabel compile -d translations -D flask_user -f
 
+#Iniciar los brokers
+celery -A AsyncTasks.AsyncTaskGreedy.broker_generador_greedy worker --loglevel=debug
+celery -A AsyncTasks.AsyncTaskPLE.broker_generador_plan_ple worker --loglevel=debug
+celery -A app.API_Rest.GeneradorPlanCarreras.broker_guardar_plan_generado worker --loglevel=debug
+
