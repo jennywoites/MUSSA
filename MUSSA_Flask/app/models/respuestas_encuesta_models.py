@@ -12,7 +12,7 @@ class EncuestaAlumno(db.Model):
     cuatrimestre_aprobacion_cursada = db.Column(db.String(1), nullable=False, server_default='')
     anio_aprobacion_cursada = db.Column(db.String(4), nullable=False, server_default='')
 
-    finalizada = db.Column(db.Boolean(), nullable=False, server_default='')
+    finalizada = db.Column(db.Boolean(), nullable=False, server_default='0')
 
     def __str__(self):
         return "Alumno: {} - Materia: {} - Finalizada: {}".format(self.alumno_id, self.materia, self.finalizada)
@@ -56,11 +56,11 @@ class EstadoPasosEncuestaAlumno(db.Model):
     # ATENCION: Si todos los pasos estan en finalizado podria implicar que el alumno haya indicado ademas
     # finalizar la encuesta. No modificar estos valores manualmente en la base de datos.
 
-    estadoPaso1 = db.Column(db.Integer(), nullable=False, server_default='')
-    estadoPaso2 = db.Column(db.Integer(), nullable=False, server_default='')
-    estadoPaso3 = db.Column(db.Integer(), nullable=False, server_default='')
-    estadoPaso4 = db.Column(db.Integer(), nullable=False, server_default='')
-    estadoPaso5 = db.Column(db.Integer(), nullable=False, server_default='')
+    estadoPaso1 = db.Column(db.Integer(), nullable=False, server_default='0')
+    estadoPaso2 = db.Column(db.Integer(), nullable=False, server_default='0')
+    estadoPaso3 = db.Column(db.Integer(), nullable=False, server_default='0')
+    estadoPaso4 = db.Column(db.Integer(), nullable=False, server_default='0')
+    estadoPaso5 = db.Column(db.Integer(), nullable=False, server_default='0')
 
     def inicializar_pasos(self):
         self.estadoPaso1 = PASO_ENCUESTA_NO_INICIADO
@@ -101,7 +101,7 @@ class RespuestaEncuestaPuntaje(db.Model):
     id = db.Column(db.Integer, primary_key=True)
 
     rta_encuesta_alumno_id = db.Column(db.Integer(), db.ForeignKey('respuesta_encuesta_alumno.id'), nullable=False)
-    puntaje = db.Column(db.Integer(), nullable=False, server_default='')
+    puntaje = db.Column(db.Integer(), nullable=False, server_default='0')
 
 
 class RespuestaEncuestaTexto(db.Model):
@@ -156,7 +156,7 @@ class RespuestaEncuestaEstrellas(db.Model):
     id = db.Column(db.Integer, primary_key=True)
 
     rta_encuesta_alumno_id = db.Column(db.Integer(), db.ForeignKey('respuesta_encuesta_alumno.id'), nullable=False)
-    estrellas = db.Column(db.Integer(), nullable=False, server_default='')
+    estrellas = db.Column(db.Integer(), nullable=False, server_default='0')
 
 
 class RespuestaEncuestaNumero(db.Model):
@@ -165,7 +165,7 @@ class RespuestaEncuestaNumero(db.Model):
     id = db.Column(db.Integer, primary_key=True)
 
     rta_encuesta_alumno_id = db.Column(db.Integer(), db.ForeignKey('respuesta_encuesta_alumno.id'), nullable=False)
-    numero = db.Column(db.Integer(), nullable=False, server_default='')
+    numero = db.Column(db.Integer(), nullable=False, server_default='0')
 
 
 class RespuestaEncuestaTags(db.Model):

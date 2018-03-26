@@ -215,7 +215,7 @@ class BaseService(Resource):
             return False, msj_invalido, CLIENT_ERROR_BAD_REQUEST
 
         msj_invalido = 'El padron {} ya existe'.format(padron)
-        es_valido = (len(Alumno.query.filter_by(padron=padron).filter(Alumno.id.isnot(id_alumno)).all()) == 0)
+        es_valido = (len(Alumno.query.filter_by(padron=padron).filter(Alumno.id != id_alumno).all()) == 0)
         return (True, msj_valido, -1) if es_valido else (False, msj_invalido, CLIENT_ERROR_BAD_REQUEST)
 
     def id_es_valido(self, nombre_parametro, id_a_validar, es_obligatorio):

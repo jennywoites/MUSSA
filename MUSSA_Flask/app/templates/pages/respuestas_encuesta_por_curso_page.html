@@ -3,6 +3,7 @@
 {% block content %}
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.2/Chart.bundle.min.js"></script>
+<script src="https://pulipulichen.github.io/blogger/posts/2016/11/r-text-mining/wordcloud2.js"></script>
 
 <script>
 
@@ -42,8 +43,6 @@
                 if (tipo_pregunta == "Si o No") {
                     agregarSubpreguntasSiNo(preguntas, pregunta);
                 }
-            } else {
-                mostrarLabelSinResultados(tipo_pregunta, idPregunta);
             }
         }
     }
@@ -76,18 +75,18 @@
                 return cargarRespuestaPuntaje1a5(pregunta, respuesta);
             case "Numero":
                 return cargarRespuestaNumero(pregunta, respuesta);
-            //case "Horario":
-            //    return cargarRespuestaHorario(pregunta, respuesta);
+            case "Horario":
+                return cargarRespuestaHorario(pregunta, respuesta);
             case "Docente":
                 return cargarRespuestaDocentes(pregunta, respuesta);
-            //case "Correlativa":
-            //    return cargarRespuestaCorrelativas(pregunta, respuesta);
+            case "Correlativa":
+                return cargarRespuestaCorrelativas(pregunta, respuesta);
             case "Estrellas":
                 return cargarRespuestaEstrellas(pregunta, respuesta);
-            //case "Temática de la Materia":
-            //    return cargarRespuestaTematicas(pregunta, respuesta);
-            //case "Tags / Palabras Clave":
-            //    return cargarRespuestaPalabrasClave(pregunta, respuesta);
+            case "Temática de la Materia":
+                return cargarRespuestaTematicas(pregunta, respuesta);
+            case "Tags / Palabras Clave":
+                return cargarRespuestaPalabrasClave(pregunta, respuesta);
             case "Si o No":
                 return cargarRespuestaSioNo(pregunta, respuesta);
             case "Texto Subpregunta":
@@ -97,6 +96,185 @@
                 console.log(respuesta)
                 return;
         }
+    }
+
+    function cargarRespuestaHorario(pregunta, respuesta) {
+        var html = "<div class='table-responsive'>";
+        html += "<table class='table'>";
+        html += "<tr>";
+        html += "<th></th>";
+        for(var num in respuesta["nombres_franjas_horarios"]) {
+            html += "<th style='text-align: center;'>" + respuesta["nombres_franjas_horarios"][num] + "</th>";
+        }
+        html += "</tr>";
+        html += "</thead>";
+
+        html += "<tbody>";
+
+        var DIAS = ["LUNES", "MARTES", "MIERCOLES", "JUEVES", "VIERNES", "SABADO"]
+        for (var i=0; i<DIAS.length; i++) {
+            var datos_dia = respuesta["horarios"][DIAS[i]];
+
+            html += "<tr>";
+            html += "<td>" + DIAS[i] + "</td>";
+            for(var j=0;j<datos_dia.length; j++) {
+                var peso = datos_dia[j];
+                html += "<td style='background-color:" + get_color_fondo(peso, respuesta["total_encuestas"]) + ";";
+                html += "text-align: center;";
+                html += "color:" + get_color_fuente(peso, respuesta["total_encuestas"]) + ";'>";
+                html += peso;
+                html += "</td>";
+            }
+            html += "</tr>";
+        }
+
+        html += "</tbody>";
+        html += "</table>";
+        html += "</div>";
+
+        actualizar_HTML_respuesta(pregunta, html);
+    }
+
+    function get_color_fondo(numero, total) {
+        var acumulacion = total / 5;
+        if (numero == 0)
+            return "#FFFFFF"
+        if (numero < acumulacion)
+            return "#decee8"
+        if (numero < acumulacion*2)
+            return "#c4a5d8"
+        if (numero < acumulacion*3)
+            return "#ac83c7"
+        if (numero < acumulacion*4)
+            return "#7b37a9"
+        return "#4F1675"
+    }
+
+    function get_color_fuente(numero, total) {
+        var acumulacion = total / 5;
+        if (numero < (acumulacion *2))
+            return "#000000";
+        return "#FFFFFF";
+    }
+
+    function cargarRespuestaCorrelativas(pregunta, respuesta){
+        var html = "<br>";
+        var materias = respuesta["materias_correlativas"];
+
+        if ($.isEmptyObject(materias)) {
+            html +=  '<p>No hay materias correlativas sugeridas</p>';
+        } else {
+            html += generar_tabla_de_resultados(materias);
+        }
+
+        actualizar_HTML_respuesta(pregunta, html);
+    }
+
+    function generar_tabla_de_resultados(materias) {
+        html = "";
+        html += "<div class='table-responsive'>";
+        html += "<table class='table'>";
+        html += "<tr class='header_tabla'>";
+        html += "<th>Código</th>";
+        html += "<th>Materia</th>";
+        html += "<th>Cantidad de Respuestas</th>";
+        html += "</tr>";
+        html += "</thead>";
+
+        html += "<tbody>";
+
+        var datos_materias = [];
+        for (var id_materia in materias) {
+            datos_materias.push([
+                materias[id_materia]["total_encuestas"],
+                materias[id_materia]["codigo"],
+                materias[id_materia]
+            ]);
+        }
+        datos_materias.sort(function(a, b) {
+            var total_a = a[0];
+            var total_b = b[0];
+            if (total_a == total_b) {
+                var LONG_CODIGO = 4;
+                var cod_a = a[1];
+                while(cod_a.length<LONG_CODIGO){cod_a='0'+cod_a;}
+
+                var cod_b = b[1];
+                while(cod_b.length<LONG_CODIGO){cod_b='0'+cod_b;}
+
+                return a[1] < b[1] ? -1 : (a[1] > b[1] ? 1 : 0);
+            }
+            return total_a < total_b ? -1 : 1;
+        });
+
+        for (var i=0; i<datos_materias.length; i++) {
+            var materia = datos_materias[i][2];
+
+            html += "<tr>";
+            html += "<td>" + materia["codigo"] + "</td>";
+            html += "<td>" + materia["nombre"] + "</td>";
+            html += "<td>" + materia["total_encuestas"] + "</td>";
+            html += "</tr>";
+        }
+
+        html += "</tbody>";
+        html += "</table>";
+        html += "</div>";
+
+        return html;
+    }
+
+    function generar_HTML_canvas_word_cloud(id_cloud) {
+        var html =  '<div class="row">';
+        html +=         '<div class="col-md-6">';
+        html +=             '<canvas id="' + id_cloud + '" width="400" height="150"></canvas>';
+        html +=         '</div>';
+        html +=     '</div>';
+        return html
+    }
+
+    function cargarRespuestaTematicas(pregunta, respuesta) {
+        var id_cloud = 'word_cloud_' + pregunta["id_pregunta"];
+        actualizar_HTML_respuesta(pregunta, generar_HTML_canvas_word_cloud(id_cloud));
+
+        var tematicas = [];
+        for (var id_tematica in respuesta["tematicas"]) {
+            var tematica = respuesta["tematicas"][id_tematica];
+            tematicas.push([tematica.tematica, tematica.total_encuestas * 15]);
+        }
+
+        WordCloud.minFontSize = "15px"
+        WordCloud(document.getElementById(id_cloud), { list: tematicas, backgroundColor: 'transparent'} );
+    }
+
+    function cargarRespuestaPalabrasClave(pregunta, respuesta) {
+        var id_cloud = 'word_cloud_' + pregunta["id_pregunta"];
+        actualizar_HTML_respuesta(pregunta, generar_HTML_canvas_word_cloud(id_cloud));
+
+        var palabras_clave = [];
+        for (var id_palabra in respuesta["palabras_clave"]) {
+            var palabra = respuesta["palabras_clave"][id_palabra];
+            palabras_clave.push([palabra.palabra_clave, palabra.total_encuestas * 25]);
+        }
+
+        WordCloud.minFontSize = "15px"
+        WordCloud(document.getElementById(id_cloud), { list: palabras_clave, backgroundColor: 'transparent'} );
+    }
+
+   function obtener_tamanio(cant_rtas) {
+        if (cant_rtas < 2)
+            return 8;
+        if (cant_rtas < 10)
+            return 10;
+        if (cant_rtas < 20)
+            return 12;
+        if (cant_rtas < 50)
+            return 14;
+        if (cant_rtas < 250)
+            return 16;
+        if (cant_rtas < 1000)
+            return 18;
+        return 20;
     }
 
     function cargarRespuestaSioNo(pregunta, respuesta) {

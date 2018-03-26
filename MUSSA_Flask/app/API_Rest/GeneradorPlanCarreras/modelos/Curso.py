@@ -1,4 +1,5 @@
 from app.API_Rest.GeneradorPlanCarreras.modelos.Horario import Horario
+import hashlib
 
 
 class Curso:
@@ -56,6 +57,26 @@ class Curso:
         curso += "medias_horas_cursada:" + str(self.medias_horas_cursada) + SALTO
         curso += "}:" + SALTO
         return curso
+
+    def obtener_hash_curso(self):
+        SEPARADOR = "||"
+        curso = "Curso: {"
+        curso += "id_curso:" + str(self.id_curso) + SEPARADOR
+        curso += "cod:" + str(self.cod) + SEPARADOR
+        curso += "nombre:" + str(self.nombre) + SEPARADOR
+
+        curso += "horarios: ["
+        for horario in sorted(self.horarios):
+            curso += "{}; ".format(horario.obtener_hash_horario().hexdigest())
+        curso += "]" + SEPARADOR
+
+        curso += "se_dicta_primer_cuatrimestre:" + str(self.se_dicta_primer_cuatrimestre) + SEPARADOR
+        curso += "se_dicta_segundo_cuatrimestre:" + str(self.se_dicta_segundo_cuatrimestre) + SEPARADOR
+        curso += "puntaje:" + str(self.puntaje) + SEPARADOR
+        curso += "medias_horas_cursada:" + str(self.medias_horas_cursada) + SEPARADOR
+        curso += "}"
+
+        return hashlib.sha1(curso.encode('utf-8'))
 
     def generar_JSON(self):
         horarios = []

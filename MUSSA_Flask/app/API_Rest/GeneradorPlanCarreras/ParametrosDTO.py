@@ -2,6 +2,7 @@ from app.API_Rest.GeneradorPlanCarreras.Constantes import *
 from app.utils import cmp_to_key
 from app.API_Rest.GeneradorPlanCarreras.modelos.Materia import Materia
 from app.API_Rest.GeneradorPlanCarreras.modelos.Curso import Curso
+import hashlib
 
 CREDITOS_MINIMOS_ELECTIVAS = 5
 NUM_EJEMPLO_MATERIAS = 4
@@ -67,6 +68,9 @@ class Parametros:
 
         # Creditos en materias aprobadas / que se daran por aprobadas antes de la confeccion del plan de estudios
         self.creditos_preacumulados = 0
+
+        self.hash_precalculado = ""
+        self.algoritmo = -1
 
     def __str__(self):
         SALTO = "\n"
@@ -142,9 +146,70 @@ class Parametros:
 
         parametros += "id_usuario: " + str(self.user_id)
 
-        parametros += "creditos_preacumulados" + str(self.creditos_preacumulados)
+        parametros += "creditos_preacumulados:" + str(self.creditos_preacumulados)
+        parametros += "hash_precalculado:" + self.hash_precalculado
+        parametros += "algoritmo:" + str(self.algoritmo)
 
         return parametros
+
+    def obtener_hash_parametros_relevantes(self):
+        ids_materias = sorted(list(self.plan.keys()))
+
+        SEPARADOR = "|||"
+        parametros = "primer_cuatrimestre_es_impar: " + str(self.primer_cuatrimestre_es_impar) + SEPARADOR
+
+        parametros += "Plan: {"
+        for id_materia in ids_materias:
+            parametros += "{}: {};".format(id_materia, sorted(self.plan[id_materia]))
+        parametros += "}" + SEPARADOR
+
+        parametros += "Materias: {"
+        for id_materia in ids_materias:
+            parametros += "{}: {};".format(id_materia, self.materias[id_materia].obtener_hash_materia().hexdigest())
+        parametros += "}" + SEPARADOR
+
+        parametros += "Horarios: {"
+        for id_materia in ids_materias:
+            parametros += str(id_materia) + ": ["
+            for curso in sorted(self.horarios[id_materia], key=lambda curso: curso.id_curso):
+                parametros += curso.obtener_hash_curso().hexdigest()
+            parametros += "]"
+        parametros += "}" + SEPARADOR
+
+        parametros += "creditos_minimos_electivas: " + str(self.creditos_minimos_electivas) + SEPARADOR
+        parametros += "max_cant_materias_por_cuatrimestre: " + str(self.max_cant_materias_por_cuatrimestre) + SEPARADOR
+        parametros += "materias_CBC_pendientes: " + str(self.materias_CBC_pendientes) + SEPARADOR
+
+        parametros += "orientacion: " + str(self.orientacion) + SEPARADOR
+        parametros += "id_carrera: " + str(self.id_carrera) + SEPARADOR
+
+        parametros += "cuatrimestre_minimo_para_materia: {"
+        for id_materia in sorted(list(self.cuatrimestre_minimo_para_materia.keys())):
+            parametros += "{}: {};".format(id_materia, self.cuatrimestre_minimo_para_materia[id_materia])
+        parametros += "}" + SEPARADOR
+
+        parametros += "creditos_minimos_tematicas: {"
+        for id_tematica in sorted(list(self.creditos_minimos_tematicas.keys())):
+            parametros += "{}: {};".format(id_tematica, self.creditos_minimos_tematicas[id_tematica])
+        parametros += "}" + SEPARADOR
+
+        parametros += "materias_incompatibles: {"
+        for id_materia in sorted(list(self.materias_incompatibles.keys())):
+            parametros += "{}: {};".format(id_materia, sorted(self.materias_incompatibles[id_materia]))
+        parametros += "}" + SEPARADOR
+
+        parametros += "max_horas_cursada: " + str(self.max_horas_cursada) + SEPARADOR
+        parametros += "max_horas_extras: " + str(self.max_horas_extras) + SEPARADOR
+
+        parametros += "materia_trabajo_final: ["
+        for materia in sorted(self.materia_trabajo_final, key=lambda materia: materia.codigo):
+            parametros += materia.obtener_hash_materia().hexdigest() + "; "
+        parametros += "]" + SEPARADOR
+
+        parametros += "creditos_preacumulados:" + str(self.creditos_preacumulados)
+        parametros += "algoritmo:" + str(self.algoritmo)
+
+        return hashlib.sha1(parametros.encode('utf-8'))
 
     def actualizar_valores_desde_JSON(self, parametros_JSON):
         self.primer_cuatrimestre_es_impar = parametros_JSON["primer_cuatrimestre_es_impar"]
@@ -227,6 +292,8 @@ class Parametros:
         self.user_id = int(parametros_JSON["user_id"])
 
         self.creditos_preacumulados = int(parametros_JSON["creditos_preacumulados"])
+        self.hash_precalculado = parametros_JSON["hash_precalculado"]
+        self.algoritmo = int(parametros_JSON["algoritmo"])
 
     def generar_parametros_json(self):
         parametros_JSON = {}
@@ -292,6 +359,8 @@ class Parametros:
         parametros_JSON["user_id"] = self.user_id
 
         parametros_JSON["creditos_preacumulados"] = self.creditos_preacumulados
+        parametros_JSON["hash_precalculado"] = self.hash_precalculado
+        parametros_JSON["algoritmo"] = self.algoritmo
 
         return parametros_JSON
 
@@ -374,6 +443,8 @@ class Parametros:
         copia_parametros.user_id = self.user_id
 
         copia_parametros.creditos_preacumulados = self.creditos_preacumulados
+        copia_parametros.hash_precalculado = self.hash_precalculado
+        copia_parametros.algoritmo = self.algoritmo
 
         return copia_parametros
 
@@ -825,3 +896,5 @@ class Parametros:
         self.estado_plan_de_estudios = parametros_actuales.estado_plan_de_estudios
         self.user_id = parametros_actuales.user_id
         self.creditos_preacumulados = parametros_actuales.creditos_preacumulados
+        self.hash_precalculado = parametros_actuales.hash_precalculado
+        self.algoritmo = parametros_actuales.algoritmo

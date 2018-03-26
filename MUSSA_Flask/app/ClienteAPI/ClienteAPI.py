@@ -191,6 +191,10 @@ class ClienteAPI:
         """URL: '/api/alumno/planDeEstudios/<int:idPlanDeEstudios>'"""
         return self.BASE_URL + '/alumno/planDeEstudios/' + str(idPlanDeEstudios)
 
+    def get_url_put_plan_de_estudio_alumno(self):
+        """URL: '/api/alumno/planDeEstudios'"""
+        return self.BASE_URL + '/alumno/planDeEstudios'
+
     ################################################
     ##              Servicios DOCENTE             ##
     ################################################
@@ -556,8 +560,55 @@ class ClienteAPI:
 
     def obtener_plan_de_estudios_alumno(self, cookie, idPlanDeEstudios):
         url_servicio = self.get_url_get_plan_de_estudio_alumno(idPlanDeEstudios)
-        return self.invocar_get(url_servicio, cookie)["plan_de_estudio"]
+        return self.invocar_get(url_servicio, cookie)
 
     def eliminar_plan_de_estudios_alumno(self, cookie, csrf_token, idPlanDeEstudios):
         url_servicio = self.get_url_get_plan_de_estudio_alumno(idPlanDeEstudios)
         return self.invocar_delete(url_servicio, cookie, csrf_token)
+
+    ##############################################################################################
+    ## SOLO PARA GENERAR DATOS DE TESTING --> Cuidado que modifica la base de datos real!!
+    def _generar_planes_test(self, cookie, csrf_token, numero_inicial):
+        url_servicio = self.get_url_put_plan_de_estudio_alumno()
+
+        parametros = {}
+        parametros["algoritmo"] = 0
+        parametros["puntaje_minimo_cursos"] = 0
+        parametros["cuatrimestre_inicio"] = 1
+        parametros["anio_inicio"] = "2018"
+        parametros["horarios_invalidos"] = []
+        parametros["tematicas"] = {}
+        parametros["aprobacion_finales"] = {}
+        parametros["cursos_preseleccionados"] = {}
+        parametros["max_cant_cuatrimestres"] = 30
+
+        INGENIERIA = 1
+        LICENCIATURA = 2
+
+        DATOS_CARRERAS = []
+        DATOS_CARRERAS.append({"carrera": LICENCIATURA, "orientacion": "", "trabajo_final": ""})
+
+        TRABAJOS_FINALES = ["TESIS", "TP_PROFESIONAL"]
+        ORIENTACIONES = ["GESTION", "DISTRIBUIDOS", "PRODUCCION"]
+        for trabajo_final in TRABAJOS_FINALES:
+            for orientacion in ORIENTACIONES:
+                DATOS_CARRERAS.append({"carrera": INGENIERIA, "orientacion": orientacion, "trabajo_final": trabajo_final})
+
+
+        MAX_CARRERAS_POR_CUATRIMESTRE = 5
+
+        numero_test = numero_inicial
+        for datos_carrera in DATOS_CARRERAS:
+            parametros["carrera"] = datos_carrera["carrera"]
+            parametros["orientacion"] = datos_carrera["orientacion"]
+            parametros["trabajo_final"] = datos_carrera["trabajo_final"]
+
+            for cantidad_materias in range(1, MAX_CARRERAS_POR_CUATRIMESTRE+1):
+                parametros["max_cant_materias"] = cantidad_materias
+
+                for horas in [28,18,12]:
+                    parametros["max_horas_cursada"] = horas
+                    parametros["max_horas_extras"] = horas
+                    parametros["numero_test"] = '0'*(4-len(str(numero_test))) + str(numero_test)
+                    response = self.invocar_put(url_servicio, cookie, csrf_token, parametros)
+                    numero_test += 1
