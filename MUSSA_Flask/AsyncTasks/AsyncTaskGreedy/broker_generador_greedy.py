@@ -14,6 +14,7 @@ broker_generador_greedy.conf.update({
     'create_missing_queues': True
 })
 
+
 @broker_generador_greedy.task(acks_late=True)
 def tarea_generar_plan_greedy(parametros_tarea, estadisticas_tarea):
     print("INICIO generación plan Greedy con id {}".format(parametros_tarea["id_plan_estudios"]))

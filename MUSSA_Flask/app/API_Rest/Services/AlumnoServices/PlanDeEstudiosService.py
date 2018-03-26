@@ -21,6 +21,7 @@ from app.models.horarios_models import Curso, HorarioPorCurso, Horario, CarreraP
 from app.models.palabras_clave_models import TematicaPorMateria, TematicaMateria
 from app.models.plan_de_estudios_models import PlanDeEstudios, MateriaPlanDeEstudios, CarrerasPlanDeEstudios, \
     PlanDeEstudiosCache, MateriaPlanDeEstudiosCache, PlanDeEstudiosFinalizadoProcesar
+import os
 
 
 class PlanDeEstudiosService(BaseService):
@@ -274,7 +275,8 @@ class PlanDeEstudiosService(BaseService):
 
         ################################################################
         ######### Descomentar para guardar los datos de prueba #########
-        # self.guardar_datos_archivo_de_pruebas(parametros, estadisticas)
+        #self.guardar_datos_archivo_de_pruebas(parametros, estadisticas)
+        #return
         ################################################################
 
         if not self.copiar_plan_de_estudios_cache_o_enviar_a_generar(parametros, estadisticas, tarea_algoritmo,
@@ -336,11 +338,15 @@ class PlanDeEstudiosService(BaseService):
         return True
 
     def guardar_datos_archivo_de_pruebas(self, parametros, estadisticas):
-        numero = "136"
-        with open(numero + '_parametros', 'w') as file:
+        numero_test = self.obtener_parametro('numero_test')
+        if not numero_test:
+            numero_test = "001"
+
+        carpeta = os.path.join("tests", "TestEstadisticasGeneracionPlanDeEstudios", "DatosEstadisticas")
+        with open(os.path.join(carpeta, numero_test + '_parametros'), 'w') as file:
             file.write(json.dumps(parametros.generar_parametros_json()))
 
-        with open(numero + '_estadisticas', 'w') as file:
+        with open(os.path.join(carpeta, numero_test + '_estadisticas'), 'w') as file:
             file.write(json.dumps(estadisticas.get_JSON()))
 
     def cargar_materias_incompatibles(self, parametros):

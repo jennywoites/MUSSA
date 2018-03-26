@@ -60,7 +60,7 @@ class EstadisticasDTO:
         writer.writerow(self.get_linea_CSV())
 
     def _guardar_estadisticas(self, writer):
-        writer.writerow(self.get_titulos_CSV())
+        writer.writerow(self.get_linea_CSV())
 
     def get_titulos_CSV(self):
         return [
