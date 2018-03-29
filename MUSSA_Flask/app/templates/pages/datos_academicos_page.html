@@ -8,18 +8,6 @@
             var boton = document.getElementById("agregar_materia_button");
             var cant_carreras = {{mis_carreras | length}};
             boton.disabled = (cant_carreras == 0);
-
-            if (cant_carreras == 1) {
-                debuuger;
-                actualizar_progreso_carrera_seleccionada({{mis_carreras | safe}}[0]["carrera_id"]);
-            }
-
-            if (cant_carreras > 1) {
-                var selector_carrera = document.getElementById("carrera_mostrar_materias");
-                selector_carrera.selectedIndex = 1;
-                filtrar_materias_por_carrera();
-            }
-
         });
 
         function actualizar_progreso_carrera_seleccionada(id_carrera) {
@@ -35,14 +23,15 @@
             var trabajos_finales = datos_carrera["trabajos_finales_carrera"];
 
             if (!orientacion)
-                orientacion = (orientaciones.length == 0) ? '-1' : orientaciones[0]
+                orientacion = (orientaciones.length == 0) ? 'GRAL' : orientaciones[0]["clave_reducida"]
             if (!trabajo_final)
-                trabajo_final = (trabajos_finales.length == 0) ? 'GRAL' : trabajos_finales[0]
+                trabajo_final = (trabajos_finales.length == 0) ? 'GRAL' : trabajos_finales[0]["codigo"]
 
             var datos_progreso = datos_completos_progreso[orientacion][trabajo_final];
 
             var html = "";
-            html += generar_HTML_avance_general(datos_progreso);
+            html += generar_HTML_avance("Avance:", datos_progreso["porcentaje_avance_total"], datos_progreso["promedio"]);
+            html += generar_tabla_detalles_avance(datos_progreso, orientaciones, trabajos_finales);
 
             div_progreso.innerHTML = html;
         }
@@ -55,18 +44,158 @@
             }
         }
 
-        function generar_tabla_detalles_avance(datos_progreso) {
-            debugger;
+        function generar_tabla_detalles_avance(datos_progreso, orientaciones, trabajos_finales) {
+            var datos_a_completar = [];
+            datos_a_completar.push({
+                "texto": "Materias CBC:",
+                "totales": datos_progreso["cantidad_materias_CBC_aprobadas"] + ((datos_progreso["cantidad_materias_CBC_aprobadas"] == 1) ? " materia" : " materias") + " / " + datos_progreso["cantidad_materias_CBC_requeridas"] + " materias",
+                "porcentaje": datos_progreso["porcentaje_CBC"]
+            });
 
+            datos_a_completar.push({
+                "texto": "Materias Obligatorias:",
+                "totales": datos_progreso["creditos_obtenidos_obligatorias"] + ((datos_progreso["creditos_obtenidos_obligatorias"] == 1) ? " cŕedito" : " créditos") + " / " + datos_progreso["creditos_requeridos_obligatorias"] + " créditos",
+                "porcentaje": datos_progreso["porcentaje_obligatorias"]
+            });
+
+            datos_a_completar.push({
+                "texto": "Materias Electivas:",
+                "totales": datos_progreso["creditos_obtenidos_electivas"] + ((datos_progreso["creditos_obtenidos_electivas"] == 1) ? " cŕedito" : " créditos") + " / " + datos_progreso["creditos_requeridos_electivas"] + " créditos",
+                "porcentaje": datos_progreso["porcentaje_electivas"]
+            });
+
+            if (datos_progreso["creditos_requeridos_orientacion"] > 0) {
+                datos_a_completar.push(obtener_datos_orientaciones(datos_progreso, orientaciones));
+            }
+
+            if (datos_progreso["creditos_requeridos_trabajo_final"] > 0) {
+                datos_a_completar.push(obtener_datos_trabajo_final(datos_progreso, trabajos_finales));
+            }
+
+            var html = "<div>";
+            for (var i=0; i<datos_a_completar.length; i++) {
+                var datos = datos_a_completar[i];
+                html += generar_HTML_avance_con_totales(datos["texto"], datos["totales"], datos["porcentaje"]);
+            }
+            html += "</div>";
+            return html;
         }
 
-        function generar_HTML_avance_general(datos_progreso) {
+        function obtener_datos_orientaciones(datos_progreso, orientaciones) {
+            var opciones = []
+            for(var i=0; i<orientaciones.length; i++) {
+                opciones.push({
+                    "id_opcion": orientaciones[i]["clave_reducida"],
+                    "texto": orientaciones[i]["descripcion"]
+                });
+            }
+
             var html =  '<div class="row">';
-            html +=         '<div class="col-md-1">';
-            html +=             'Avance:';
+            html +=         '<div class="col-md-5">';
+            html +=             "Materias de Orientación:";
+            html +=         '</div>';
+            html +=         '<div class="col-md-7">';
+            html +=             generar_selector("orientacion_elegida", opciones);
+            html +=         '</div>';
+            html +=     '</div>';
+
+            return {
+                "texto": html,
+                "totales": datos_progreso["creditos_obtenidos_orientacion"] + ((datos_progreso["creditos_obtenidos_orientacion"] == 1) ? " cŕedito" : " créditos") + " / " + datos_progreso["creditos_requeridos_orientacion"] + " créditos",
+                "porcentaje": datos_progreso["porcentaje_orientacion"]
+            }
+        }
+
+        function obtener_datos_trabajo_final(datos_progreso, trabajos_finales) {
+            var opciones = []
+            for(var i=0; i<trabajos_finales.length; i++) {
+                opciones.push({
+                    "id_opcion": trabajos_finales[i]["codigo"],
+                    "texto": trabajos_finales[i]["descripcion"]
+                });
+            }
+
+            var html =  '<div class="row">';
+            html +=         '<div class="col-md-5">';
+            html +=             "Trabajo Final:";
+            html +=         '</div>';
+            html +=         '<div class="col-md-7">';
+            html +=             generar_selector("trabajo_elegido", opciones);
+            html +=         '</div>';
+            html +=     '</div>';
+
+            return {
+                    "texto": html,
+                    "totales": datos_progreso["creditos_obtenidos_trabajo_final"] + ((datos_progreso["creditos_obtenidos_trabajo_final"] == 1) ? " cŕedito" : " créditos") + " / " + datos_progreso["creditos_requeridos_trabajo_final"] + " créditos",
+                    "porcentaje": datos_progreso["porcentaje_trabajo_final"]
+            };
+        }
+
+        function actualizar_creditos_mostrados() {
+            var id_carrera = get_valor_selector("carrera_mostrar_materias");
+            var orientacion = get_valor_selector("orientacion_elegida");
+            var trabajo_elegido = get_valor_selector("trabajo_elegido");
+
+            actualizar_progreso_completo(id_carrera, orientacion, trabajo_elegido);
+
+            actualizar_valor_selector("carrera_mostrar_materias", id_carrera);
+            actualizar_valor_selector("orientacion_elegida", orientacion);
+            actualizar_valor_selector("trabajo_elegido", trabajo_elegido);
+        }
+
+        function actualizar_valor_selector(id_selector, valor_elegido) {
+            var div_selector = document.getElementById(id_selector);
+            for(var i=0; i<div_selector.options.length;i++) {
+                if (div_selector.options[i].value == valor_elegido) {
+                    div_selector.selectedIndex = i;
+                    return;
+                }
+            }
+        }
+
+        function get_valor_selector(id_selector) {
+            var div_selector = document.getElementById(id_selector);
+            if (div_selector !== null)
+                return div_selector[div_selector.selectedIndex].value;
+            return "";
+        }
+
+        function generar_selector(id_selector, opciones) {
+            var html = '<select class="form-control" id="' + id_selector + '" onchange="actualizar_creditos_mostrados()">';
+            for(var i=0; i<opciones.length; i++) {
+                html += '<option value="' + opciones[i]["id_opcion"] + '">' + opciones[i]["texto"] + '</option>';
+            }
+            html += '</select>';
+            return html
+        }
+
+        function generar_HTML_avance_con_totales(texto, texto_totales, porcentaje) {
+            var html =  '<div class="row">';
+            html +=         '<div class="col-md-5">';
+            html +=             texto;
+            html +=         '</div>';
+            html +=         '<div class="col-md-2">';
+            html +=             texto_totales;
+            html +=         '</div>';
+            html +=         '<div class="col-md-5">';
+            html +=             generar_html_barra_progreso(porcentaje);;
+            html +=         '</div>';
+            html +=     '</div>';
+            return html;
+        }
+
+        function generar_HTML_avance(texto, porcentaje, promedio) {
+            var html = "";
+            html +=  '<div style="font-weight: bold;">';
+            html +=     "Promedio: " + promedio;
+            html +=  '</div>';
+            html +=  '<br>'
+            html +=  '<div class="row">';
+            html +=         '<div class="col-md-1" style="font-weight: bold;">';
+            html +=             texto;
             html +=         '</div>';
             html +=         '<div class="col-md-11">';
-            html +=             generar_html_barra_progreso(datos_progreso["porcentaje_avance_total"]);;
+            html +=             generar_html_barra_progreso(porcentaje);;
             html +=         '</div>';
             html +=     '</div>';
             return html;
@@ -173,7 +302,13 @@
             var tabla_vacia_label = document.getElementById("tabla_vacia");
             tabla_vacia_label.hidden = !no_hay_datos;
 
-            actualizar_progreso_carrera_seleccionada(carrera_elegida[carrera_elegida.selectedIndex].value);
+            var div_progreso = document.getElementById("progreso_carrera_seleccionada");
+            if(carrera_elegida[carrera_elegida.selectedIndex].id == "todas_mis_carreras") {
+                div_progreso.hidden = true;
+            } else {
+                actualizar_progreso_carrera_seleccionada(carrera_elegida[carrera_elegida.selectedIndex].value);
+                div_progreso.hidden = false;
+            }
         }
 
     </script>
@@ -292,6 +427,8 @@
             {% endif %}
 
             <div id="progreso_carrera_seleccionada"></div>
+
+            <br>
 
             <div class='table-responsive'>
                 <p id="tabla_vacia" hidden="true">No hay resultados para mostrar</p>
