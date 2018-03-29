@@ -160,6 +160,10 @@ class ClienteAPI:
         """URL: '/api/alumno/carrera/all'"""
         return self.BASE_URL + '/alumno/carrera/all'
 
+    def get_url_get_progreso_carreras_alumno(self):
+        """URL: '/api/alumno/progreso'"""
+        return self.BASE_URL + '/alumno/progreso'
+
     def get_url_get_encuesta_alumno(self, idEncuestaAlumno):
         """URL: '/api/alumno/encuesta/<int:idEncuestaAlumno>'"""
         return self.BASE_URL + '/alumno/encuesta/' + str(idEncuestaAlumno)
@@ -492,6 +496,10 @@ class ClienteAPI:
     def obtener_carreras_alumno(self, cookie):
         url_servicio = self.get_url_get_carreras_alumno()
         return self.invocar_get(url_servicio, cookie)["carreras"]
+
+    def obtener_progreso_carreras_alumno(self, cookie):
+        url_servicio = self.get_url_get_progreso_carreras_alumno()
+        return self.invocar_get(url_servicio, cookie)["progreso"]
 
     def obtener_encuesta_alumno(self, cookie, idEncuestaAlumno):
         url_servicio = self.get_url_get_encuesta_alumno(idEncuestaAlumno)

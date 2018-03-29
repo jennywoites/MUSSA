@@ -33,12 +33,14 @@ def datos_academicos_page():
 
     mis_materias = cliente.obtener_materias_alumno(cookie)
 
+    progreso = cliente.obtener_progreso_carreras_alumno(cookie)
+
     return render_template('pages/datos_academicos_page.html',
                            padron=padron,
                            carreras=carreras_nuevas,
                            mis_carreras=mis_carreras,
-                           mis_materias=mis_materias)
-
+                           mis_materias=mis_materias,
+                           progreso=progreso)
 
 def filtrar_carreras_no_cursadas(carreras, mis_carreras):
     carreras_no_cursadas = []

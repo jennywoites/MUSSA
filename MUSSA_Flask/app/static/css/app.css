@@ -12,6 +12,11 @@ hr { border-color: #cccccc; margin: 0px; }
 
 .col-centered { float: none; margin: 0 auto; }
 
+/************* Progress Bar *******************/
+
+.progress {background: rgba(245, 245, 245, 1); border: 0px solid rgba(245, 245, 245, 1); border-radius: 4px; height: 20px;}
+.progress_bar_mussa {background: rgba(79, 22, 117, 1); background: -webkit-linear-gradient(top, rgba(165, 76, 212, 1) 0%, rgba(79, 22, 117, 1) 100%); background: linear-gradient(to bottom, rgba(165, 76, 212, 1) 0%, rgba(79, 22, 117, 1) 100%);}
+
 /***************** Varios *******************/
 
 canvas {
