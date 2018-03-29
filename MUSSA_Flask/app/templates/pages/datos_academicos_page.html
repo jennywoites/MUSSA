@@ -8,6 +8,11 @@
             var boton = document.getElementById("agregar_materia_button");
             var cant_carreras = {{mis_carreras | length}};
             boton.disabled = (cant_carreras == 0);
+
+            if ({{mis_carreras | length }} == 1 && {{mis_materias | length}} > 0) {
+                var id_carrera = {{mis_carreras | safe }}[0]["id_carrera"];
+                actualizar_progreso_carrera_seleccionada(id_carrera);
+            }
         });
 
         function actualizar_progreso_carrera_seleccionada(id_carrera) {
@@ -303,7 +308,7 @@
             tabla_vacia_label.hidden = !no_hay_datos;
 
             var div_progreso = document.getElementById("progreso_carrera_seleccionada");
-            if(carrera_elegida[carrera_elegida.selectedIndex].id == "todas_mis_carreras") {
+            if (carrera_elegida[carrera_elegida.selectedIndex].id == "todas_mis_carreras") {
                 div_progreso.hidden = true;
             } else {
                 actualizar_progreso_carrera_seleccionada(carrera_elegida[carrera_elegida.selectedIndex].value);
