@@ -588,7 +588,7 @@ class ClienteAPI:
         parametros["tematicas"] = {}
         parametros["aprobacion_finales"] = {}
         parametros["cursos_preseleccionados"] = {}
-        parametros["max_cant_cuatrimestres"] = 30
+        parametros["max_cant_cuatrimestres"] = 24
 
         INGENIERIA = 1
         LICENCIATURA = 2
@@ -596,14 +596,13 @@ class ClienteAPI:
         DATOS_CARRERAS = []
         DATOS_CARRERAS.append({"carrera": LICENCIATURA, "orientacion": "", "trabajo_final": ""})
 
-        TRABAJOS_FINALES = ["TESIS", "TP_PROFESIONAL"]
-        ORIENTACIONES = ["GESTION", "DISTRIBUIDOS", "PRODUCCION"]
-        for trabajo_final in TRABAJOS_FINALES:
-            for orientacion in ORIENTACIONES:
-                DATOS_CARRERAS.append({"carrera": INGENIERIA, "orientacion": orientacion, "trabajo_final": trabajo_final})
+        # TRABAJOS_FINALES = ["TESIS", "TP_PROFESIONAL"]
+        # ORIENTACIONES = ["GESTION", "DISTRIBUIDOS", "PRODUCCION"]
+        # for trabajo_final in TRABAJOS_FINALES:
+        #     for orientacion in ORIENTACIONES:
+        #         DATOS_CARRERAS.append({"carrera": INGENIERIA, "orientacion": orientacion, "trabajo_final": trabajo_final})
 
-
-        MAX_CARRERAS_POR_CUATRIMESTRE = 5
+        MAX_MATERIAS_POR_CUATRIMESTRE = 5
 
         numero_test = numero_inicial
         for datos_carrera in DATOS_CARRERAS:
@@ -611,12 +610,13 @@ class ClienteAPI:
             parametros["orientacion"] = datos_carrera["orientacion"]
             parametros["trabajo_final"] = datos_carrera["trabajo_final"]
 
-            for cantidad_materias in range(1, MAX_CARRERAS_POR_CUATRIMESTRE+1):
+            for cantidad_materias in range(2, MAX_MATERIAS_POR_CUATRIMESTRE+1):
                 parametros["max_cant_materias"] = cantidad_materias
 
-                for horas in [28,18,12]:
+                for horas in [28]:
                     parametros["max_horas_cursada"] = horas
                     parametros["max_horas_extras"] = horas
                     parametros["numero_test"] = '0'*(4-len(str(numero_test))) + str(numero_test)
                     response = self.invocar_put(url_servicio, cookie, csrf_token, parametros)
+
                     numero_test += 1
