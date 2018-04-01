@@ -9,7 +9,19 @@ def get_tematicas_por_defecto():
         "GESTION",
         "ADMINISTRACION",
         "ECONOMIA",
-        "ROBOTICA"
+        "ROBOTICA",
+        "INTELIGENCIA ARTIFICIAL",
+        "REDES",
+        "SEGURIDAD",
+        "CRIPTOGRAFIA",
+        "SISTEMAS DISTRIBUIDOS",
+        "IDIOMA",
+        "INGLES",
+        "ITALIANO",
+        "GRAFOS",
+        "ALGORITMIA",
+        "ALGORITMOS",
+        "OPTIMIZACION"
     ]
 
 

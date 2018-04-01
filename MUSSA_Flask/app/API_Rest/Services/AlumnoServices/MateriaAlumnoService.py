@@ -415,8 +415,6 @@ class MateriaAlumnoService(BaseService):
         if not incompatibles:
             return
 
-        alumno = self.obtener_alumno_usuario_actual()
-
         estado_desaprobada = EstadoMateria.query.filter_by(estado=ESTADO_MATERIA[DESAPROBADA]).first().id
         estado_incompatible = EstadoMateria.query.filter_by(
             estado=ESTADO_MATERIA[ELIMINADA_POR_INCOMPATIBLE]).first().id
@@ -424,7 +422,7 @@ class MateriaAlumnoService(BaseService):
 
         for materia_incompatible in incompatibles:
             materias_alumno = MateriasAlumno.query.filter_by(materia_id=materia_incompatible.materia_incompatible_id). \
-                filter_by(alumno_id=alumno.id).all()
+                filter_by(alumno_id=materia.alumno_id).all()
             if not materias_alumno:
                 continue
 

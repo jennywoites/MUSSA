@@ -56,9 +56,10 @@ def sustituir_todos_los_acentos(linea):
     }
     nueva_linea = linea
     for vocal in ACENTOS:
-        while(vocal in nueva_linea):
+        while (vocal in nueva_linea):
             nueva_linea = nueva_linea.replace(vocal, ACENTOS[vocal])
     return nueva_linea
+
 
 def generar_lista_anios():
     MAX_TIEMPO = 5
