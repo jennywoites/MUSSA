@@ -184,11 +184,11 @@
         html += "<tbody>";
 
         var datos_materias = [];
-        for (var id_materia in materias) {
+        for (var cod_materia in materias) {
             datos_materias.push([
-                materias[id_materia]["total_encuestas"],
-                materias[id_materia]["codigo"],
-                materias[id_materia]
+                materias[cod_materia]["total_encuestas"],
+                materias[cod_materia]["codigo"],
+                materias[cod_materia]
             ]);
         }
         datos_materias.sort(function(a, b) {

@@ -306,26 +306,6 @@ function descargar_lista_de_materias_service(token, carreras, tipos_de_materias,
     do_request_y_abrir_PDF('PUT', url_servicio, token, parametros, 'Materias', onFinished);
 }
 
-function generar_plan_de_estudios_greedy_service(token, carrera, max_cant_cuatrimestres, max_cant_materias, max_horas_cursada,
-    max_horas_extras, puntaje_minimo_cursos, cuatrimestre_inicio, anio_inicio, horarios_invalidos, tematicas,
-    aprobacion_finales, cursos_preseleccioandos, trabajo_final, orientacion, onSuccess, onError) {
-
-    var algoritmo = 0;
-    generar_plan_de_estudios_service(token, carrera, max_cant_cuatrimestres, max_cant_materias, max_horas_cursada,
-            max_horas_extras, puntaje_minimo_cursos, cuatrimestre_inicio, anio_inicio, horarios_invalidos, tematicas,
-            aprobacion_finales, cursos_preseleccioandos, trabajo_final, orientacion, algoritmo, onSuccess, onError);
-}
-
-function generar_plan_de_estudios_PLE_service(token, carrera, max_cant_cuatrimestres, max_cant_materias, max_horas_cursada,
-    max_horas_extras, puntaje_minimo_cursos, cuatrimestre_inicio, anio_inicio, horarios_invalidos, tematicas,
-    aprobacion_finales, cursos_preseleccioandos, trabajo_final, orientacion, onSuccess, onError) {
-
-    var algoritmo = 1;
-    generar_plan_de_estudios_service(token, carrera, max_cant_cuatrimestres, max_cant_materias, max_horas_cursada,
-        max_horas_extras, puntaje_minimo_cursos, cuatrimestre_inicio, anio_inicio, horarios_invalidos, tematicas,
-        aprobacion_finales, cursos_preseleccioandos, trabajo_final, orientacion, algoritmo, onSuccess, onError);
-}
-
 function generar_plan_de_estudios_service(token, carrera, max_cant_cuatrimestres, max_cant_materias, max_horas_cursada,
     max_horas_extras, puntaje_minimo_cursos, cuatrimestre_inicio, anio_inicio, horarios_invalidos, tematicas,
     aprobacion_finales, cursos_preseleccionados, trabajo_final, orientacion, algoritmo, onSuccess, onError) {

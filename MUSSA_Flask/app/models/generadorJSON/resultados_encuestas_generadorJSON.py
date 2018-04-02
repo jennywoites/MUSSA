@@ -111,14 +111,15 @@ def actualizar_respuesta_si_no(rta_encuesta, estructura_respuesta):
 MAX_FRANJA = 33
 HORA_ORIGEN = 7
 
+
 def generar_respuesta_horario():
     lista_horarios = {}
     for dia in DIAS:
-        lista_horarios[dia] = ([0]*MAX_FRANJA)
+        lista_horarios[dia] = ([0] * MAX_FRANJA)
 
     nombres_franjas_horarios = []
     for i in range(MAX_FRANJA):
-        hora = convertir_hora_desde_horario_float(i*0.5 + HORA_ORIGEN)
+        hora = convertir_hora_desde_horario_float(i * 0.5 + HORA_ORIGEN)
         nombres_franjas_horarios.append(hora)
 
     return {
@@ -133,25 +134,36 @@ def actualizar_respuesta_horario(rta_encuesta, estructura_respuesta):
     if not rtas:
         return
 
-    min_franja = MAX_FRANJA
-    max_franja = 0
     for rta in rtas:
         horario = Horario.query.get(rta.horario_id)
         for i in horario.get_franjas_utilizadas():
-            estructura_respuesta["horarios"][horario.dia][i-1] += 1
-            min_franja = min(min_franja, i-1)
-            max_franja = max(max_franja, i-1)
+            estructura_respuesta["horarios"][horario.dia][i - 1] += 1
         estructura_respuesta["total_encuestas"] += 1
 
-    min_franja = min_franja if min_franja == 0 else min_franja -1
+
+def ajustar_franjas_respuestas_horarios(estructura_respuesta):
+    if not "horarios" in estructura_respuesta:
+        return
+
+    min_franja = MAX_FRANJA
+    max_franja = 0
+    for dia in estructura_respuesta["horarios"]:
+        for i in range(len(estructura_respuesta["horarios"][dia])):
+            esta_ocupada = estructura_respuesta["horarios"][dia][i]
+            min_franja = min(min_franja, i) if esta_ocupada else min_franja
+            max_franja = max(max_franja, i) if esta_ocupada else max_franja
+
+    min_franja = min_franja if min_franja == 0 else min_franja - 1
     max_franja = max_franja if max_franja == MAX_FRANJA else max_franja + 1
 
     for dia in estructura_respuesta["horarios"]:
-        estructura_respuesta["horarios"][dia] = estructura_respuesta["horarios"][dia][min_franja:max_franja+1]
+        estructura_respuesta["horarios"][dia] = estructura_respuesta["horarios"][dia][min_franja:max_franja + 1]
 
-    estructura_respuesta["nombres_franjas_horarios"] = estructura_respuesta["nombres_franjas_horarios"][min_franja:max_franja+1]
+    estructura_respuesta["nombres_franjas_horarios"] = estructura_respuesta["nombres_franjas_horarios"][
+                                                       min_franja:max_franja + 1]
 
-    ####################################################################################################
+
+####################################################################################################
 def generar_respuesta_docente():
     return {"docentes": {}}
 
@@ -194,16 +206,15 @@ def actualizar_respuesta_correlativas(rta_encuesta, estructura_respuesta):
     for rta in rtas:
         materia = Materia.query.get(rta.materia_correlativa_id)
 
-        if not materia.id in estructura_respuesta["materias_correlativas"]:
-            estructura_respuesta["materias_correlativas"][materia.id] = {
-                "id_materia": materia.id,
+        if not materia.codigo in estructura_respuesta["materias_correlativas"]:
+            estructura_respuesta["materias_correlativas"][materia.codigo] = {
                 "codigo": materia.codigo,
                 "nombre": materia.nombre,
                 "total_encuestas": 0
             }
 
         estructura_respuesta["total_encuestas"] += 1
-        estructura_respuesta["materias_correlativas"][materia.id]["total_encuestas"] += 1
+        estructura_respuesta["materias_correlativas"][materia.codigo]["total_encuestas"] += 1
 
 
 ####################################################################################################
