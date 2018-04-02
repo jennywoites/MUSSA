@@ -56,7 +56,7 @@ def crear_datos_de_ejemplo():
 
 def crear_usuarios_ejemplo():
     usuarios_ejemplo = []
-    MAX_USUARIOS = 2000
+    MAX_USUARIOS = 50
     for i in range(MAX_USUARIOS):
         nombre = random.choice(NOMBRES)
         apellido = random.choice(APELLIDOS)
