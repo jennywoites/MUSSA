@@ -25,11 +25,11 @@ class AllPlanesDeEstudiosService(BaseService):
             self.logg_error(msj)
             return {'Error': msj}, CLIENT_ERROR_NOT_FOUND
 
-        query = PlanDeEstudios.query.filter_by(alumno_id=alumno.id)
-        query = query.order_by(PlanDeEstudios.fecha_generacion.desc())
+        planes = PlanDeEstudios.query.filter_by(alumno_id=alumno.id)\
+            .order_by(PlanDeEstudios.fecha_generacion.desc()).all()
 
         result_planes = []
-        for encuesta in query.all():
+        for encuesta in planes:
             result_planes.append(generarJSON_plan_de_estudios(encuesta))
 
         self.actualizar_notificaciones_planes_visualizados(alumno)

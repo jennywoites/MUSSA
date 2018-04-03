@@ -43,7 +43,7 @@ class Curso(db.Model):
     def calcular_puntaje(self):
         if self.cantidad_encuestas_completas == 0:
             return 0
-        return (self.puntaje_total_encuestas / self.cantidad_encuestas_completas)
+        return "{0:.2f}".format(self.puntaje_total_encuestas / self.cantidad_encuestas_completas)
 
 
 class Horario(db.Model):

@@ -395,8 +395,7 @@ class TestBuscarCursos(TestBase):
         puntaje = curso["puntaje_total_encuestas"]
         total_encuestas = curso["cantidad_encuestas_completas"]
         if total_encuestas > 0:
-            return puntaje / total_encuestas
-
+            return "{0:.2f}".format(puntaje / total_encuestas)
         return 0
 
     ##########################################################
@@ -629,7 +628,8 @@ class TestBuscarCursos(TestBase):
 
     def test_buscar_con_carrera_invalida_compuesta_por_carreras_validas(self):
         parametros = {}
-        parametros["id_carrera"] = str(LICENCIATURA_EN_SISTEMAS_1986["id"]) + ";" + str(INGENIERIA_EN_INFORMATICA_1986["id"])
+        parametros["id_carrera"] = str(LICENCIATURA_EN_SISTEMAS_1986["id"]) + ";" + str(
+            INGENIERIA_EN_INFORMATICA_1986["id"])
 
         client = self.app.test_client()
         response = client.get(self.get_url_all_cursos(), query_string=parametros)

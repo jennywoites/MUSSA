@@ -21,7 +21,6 @@ def materia_page(idMateria):
 
     hay_curso_asterisco = False
     for curso in cursos:
-        curso["puntaje"] = "{0:.2f}".format(curso["puntaje"]) if curso["puntaje"] > 0 else 0
         if curso["es_nuevo_curso"] == str(True):
             curso["codigo_curso"] = "* " + curso["codigo_curso"]
             hay_curso_asterisco = True
