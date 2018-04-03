@@ -268,6 +268,9 @@ class MateriaAlumnoService(BaseService):
         servicio_respuesta_encuesta.eliminar_respuestas(respuestas_encuestas)
         db.session.commit()
 
+        RespuestaEncuestaAlumno.query.filter_by(encuesta_alumno_id=encuesta.id).delete()
+        db.session.commit()
+
         EstadoPasosEncuestaAlumno.query.filter_by(encuesta_alumno_id=encuesta.id).delete()
         db.session.commit()
 
