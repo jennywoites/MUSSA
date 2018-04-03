@@ -107,6 +107,13 @@ propuesta.out
 propuesta.toc
 propuesta.synctex.gz
 
+# Archivos informe Latex
+informe.aux
+informe.log
+informe.out
+informe.toc
+informe.synctex.gz
+
 #Resultados de tests
 MUSSA_Flask/tests/TestResolucionPlanDeEstudios/resultados_tests/
 
