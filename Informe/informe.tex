@@ -8,7 +8,7 @@
 \usepackage{amsmath} %Ecuaciones sin numero al costado
 \usepackage{graphicx} %Imagenes
 \usepackage{fancyhdr} %Para encabezado y pie de pagina
-
+\usepackage{float} %Para forzar la posicion de la imagen
 \usepackage[hidelinks]{hyperref} %Para url y links
 \hypersetup{colorlinks=false}
 
@@ -140,37 +140,40 @@ Para poder realizar los planes de forma asincónica, se utilizó Celery\footnote
 
 Para la generación del plan con el algoritmo de programación lineal entera, se utilizó PuLP\footnote{\url{https://pythonhosted.org/PuLP/}}. PuLP es una librería Open Source escrita en Python. Es usada para describir problemas de optimización como modelos matemáticos. PuLP puede llamar a numerosos solvers de programación lineal, tales como CBC, GLPK, CPLEX, Gurobi, etc, para resolver el modelo y luego utilizar comandos de Python para manipular y mostrar el resultado de la solución. Durante el desarrollo del algoritmo se probaron diferentes solvers, pero finalmente fue elegido CBC ya que fue el que mejor repsondía en tiempos para el algoritmo ejecutado además de ofrecer multi-threading para la resolución del problema.
 
+\newpage
 \section{Página Web MUSSA: Acceso Público}
 
 \subsection{Carreras y materias de la facultad}
 
 Las diferentes carreras de la facultad están compuestas por una serie de materias obligatorias, posibilidad de un idioma obligatorio, posibilidad de rendir un examen de suficiencia de idioma, materias electivas, trabajo profesional, tesis, etc.
 
-Para esta primer implementación se cargaron y modelaron los planes de estudios de Ingeniería en Informática y Licenciatura en Análisis de Sistemas (1986, plan `viejo'). Posteriormente en futuras implementaciones, se añadirán las carreras restantes.
+Para esta primer implementación se cargaron y modelaron los planes de estudios de Ingeniería en Informática y Licenciatura en Análisis de Sistemas (1986, plan `viejo'). Posteriormente en futuras implementaciones, se añadirán las carreras restantes.\newline
 
 Cada materia tiene como datos su código, el nombre, los diferentes cursos disponibles con sus docentes y horarios, la cantidad de créditos y sus correlatividades.
 
 Los horarios de los cursos de las materias mantienen un histórico, y se agrega una nota visual en caso de que sea un curso nuevo (en cuyo caso se repiten los horarios del cuatrimestre actual para el cuatrimestre faltante). Para cada curso de la materia, se indica si se dicta el 1º cuatrimestre, el 2º o ambos. Los cursos que no se dicten ningun cuatrimestre ya no serán mostrados en la oferta horaria, pero quedarán disponibles para que el administrador los pueda volver a habilitar.
 
-Se decidió que cada materia de las diferentes carreras sea tratada como un objeto diferente por más que compartan el código, ya que lo más usual es que las correlativas sean diferentes y a veces que no todos los cursos estén disponibles para ambas.
+Se decidió que cada materia de las diferentes carreras sea tratada como un objeto diferente por más que compartan el código, ya que lo más usual es que las correlativas sean diferentes, que una sea obligatoria de una carrera y de la otra sea electiva y a veces que no todos los cursos estén disponibles para ambas.
+
 Los cursos en cambio, se modelarán como uno solo para el mismo código y se indicará las carreras para las que se encuentra habilitado. En el caso de los cursos que dictan diferentes códigos de materias en el mismo horario, serán tratados como cursos independientes.
-Los docentes podrán estar vinculados a uno o más cursos.
 
-Desde el acceso público, se podrán hacer búsquedas de materias, búsquedas de docentes, ver algunos links útiles e información de las comisiones por carrera y los datos de contacto del proyecto en caso de que quieran hacer aportes al proyecto.
+Los docentes podrán estar vinculados a uno o más cursos.\newline
 
-\begin{figure}[h]
+Desde el acceso público, se podrán hacer búsquedas de materias, búsquedas de docentes, ver algunos links útiles e información de las comisiones por carrera y los datos de contacto del proyecto en caso de que quieran hacer aportes al proyecto.\newline
+
+\begin{figure}[H]
 \centering
 \includegraphics[scale=0.25]{Imagenes/pagina_inicio.png}\par
 \caption{Página Inicio de MUSSA}
 \end{figure}
 
-\begin{figure}[h]
+\begin{figure}[H]
 \centering
 \includegraphics[scale=0.3]{Imagenes/links_utiles.png}\par
 \caption{Links Útiles}
 \end{figure}
 
-\begin{figure}[h]
+\begin{figure}[H]
 \centering
 \includegraphics[scale=0.3]{Imagenes/comisiones.png}\par
 \caption{Comisiones por carrera}
@@ -182,7 +185,7 @@ La búsqueda de docentes se realiza buscando por parte del apellido o parte del 
 
 Como resultado se listarán todos los docentes que cumplan con el criterio de búsqueda. Para ellos, se podrá visualizar el nombre (si lo tienen) y el apellido, además de las materias que dicta. Luego, desde allí se puede acceder a las encuestas asociadas a éste docente.
 
-\begin{figure}[h]
+\begin{figure}[H]
 \centering
 \includegraphics[scale=0.3]{Imagenes/buscar_docentes.png}\par
 \caption{Búsqueda de docentes}
@@ -194,18 +197,99 @@ Para un docente dado, se puede acceder a las encuestas del mismo. Allí, se most
 
 Ya sea en la visualización por cuatrimestre o en la vista completa, los comentarios realizados al docente se agruparán por curso en que dicta.
 
-\begin{figure}[h]
+\begin{figure}[H]
 \centering
-\includegraphics[scale=0.3]{Imagenes/resultados_encuesta_docente.png}\par
+\includegraphics[scale=0.35]{Imagenes/resultados_encuesta_docente.png}\par
 \caption{Lista de resultados de encuestas para un docente dado}
 \end{figure}
 
-\begin{figure}[h]
+\begin{figure}[H]
 \centering
-\includegraphics[scale=0.3]{Imagenes/resultados_encuesta_cuatrimestre_docente.png}\par
+\includegraphics[scale=0.35]{Imagenes/resultados_encuesta_cuatrimestre_docente.png}\par
 \caption{Resultados de encuestas docente para un cuatrimestre específico}
 \end{figure}
 
+\subsection{Búsqueda de Materias}
+
+La búsqueda de materias se podrá realizar filtrando por los siguientes datos:
+
+\begin{itemize}
+	\item Carrera
+	\item Código de materia
+	\item Nombre (o parte del nombre) de la materia
+	\item Palabras clave
+\end{itemize}
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.35]{Imagenes/buscar_materias.png}\par
+\caption{Búsqueda de Materias}
+\end{figure}
+
+Para cada materia se podrán acceder a los datos generales de la misma, en los que se indicará la carrera, la cantidad de créditos, el link a la materia equivalente para otra carrera, las correlativas y el listado de cursos.
+En el listado de cursos es posible visualizar el puntaje del mismo (están ordenados por este criterio), y desde allí se puede acceder a los resultados de las encuestas del curso.
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.35]{Imagenes/ver_materia_datos_generales.png}\par
+\caption{Visualización de una materia}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.35]{Imagenes/ver_materia_cursos.png}\par
+\caption{Cursos de una materia}
+\end{figure}
+
+\subsection{Resultados de Encuestas de un curso}
+
+En los resultados de las encuestas de un curso, se pueden visualizar las mismas por cada cuatrimestre para el que haya encuestas finalizadas o como un compilado de todas las respuestas.
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.35]{Imagenes/listado_resultados_encuesta_curso.png}\par
+\caption{Cursos de una materia}
+\end{figure}
+
+Los resultados de las encuestas por curso están divididos en 5 secciones: General, Contenido, Clases, Exámenes y Docentes. Algunas de las respuestas se visualizan como textos, otras como nubes de palabras, otras con gráficos de torta y/o de barras, otras con tablas y otras con mapas de calor. La forma de visualizar los datos dependerá del tipo de pregunta.
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.3]{Imagenes/secciones_resultados_encuesta.png}\par
+\caption{Secciones de los resultados de la encuesta}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.35]{Imagenes/resultados_texto.png}\par
+\caption{Ejemplo visualización de resultados de textos}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.35]{Imagenes/resultados_grafico_torta_y_barras.png}\par
+\caption{Ejemplo visualización de resultados con gráfico de torat y de barras}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.35]{Imagenes/resultados_con_tabla.png}\par
+\caption{Ejemplo visualización de resultados con tabla}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.35]{Imagenes/resultados_nubes_de_palabras.png}\par
+\caption{Ejemplo visualización de resultados con nubes de palabras}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.35]{Imagenes/resultados_con_mapa_de_calor.png}\par
+\caption{Ejemplo visualización de resultados con mapa de calor}
+\end{figure}
+
+\newpage
 \section{Página Web MUSSA: Usuarios}
 
 \subsection{Login / Sign In / Cambio de contraseñas}
@@ -214,24 +298,24 @@ Tal como se indicó en la sección de herramientas y tecnologías para el dearro
 
 Para registrarse es necesario ingresar un e-mail, el nombre, apellido y una contraseña. Esto enviará un email a la diracción indicada para que confirme la registración. Una vez confirmada ya podrá ingresar normalmente al sistema utilizando solamente el e-mail y la contraseña. El padrón no es solicitado en la registración pero se podrá guardar desde los datos académicos, de esta forma los alumnos del CBC podrán hacer uso del sistema incluso antes de tener un padrón asignado.
 
-\begin{figure}[h]
+\begin{figure}[H]
 \centering
-\includegraphics[scale=0.5]{Imagenes/registracion.png}\par
+\includegraphics[scale=0.4]{Imagenes/registracion.png}\par
 \caption{Registración de usuario}
 \end{figure}
 
-\begin{figure}[h]
+\begin{figure}[H]
 \centering
-\includegraphics[scale=0.5]{Imagenes/iniciar_sesion.png}\par
+\includegraphics[scale=0.4]{Imagenes/iniciar_sesion.png}\par
 \caption{Inicio de sesión}
 \end{figure}
 
 En el caso de que el usuario haya olvidado su contraseña podrá ingresar a la sección correspondiente e ingresando el e-mail solicitar el cambio. Solo se le enviará el link de recupero de contraseña al e-mail que esté registrado. En ese e-mail recibirá el link para realizar el cambio de contraseña.
 Es posible también cambiar la contraseña una vez ingresado al sistema en caso de que el usuario no la haya olvidado y simplemente desee modificarla desde el perfil del usuario.
 
-\begin{figure}[h]
+\begin{figure}[H]
 \centering
-\includegraphics[scale=0.5]{Imagenes/olvido_clave.png}\par
+\includegraphics[scale=0.4]{Imagenes/olvido_clave.png}\par
 \caption{Recuperar contraseña}
 \end{figure}
 
@@ -242,7 +326,7 @@ El usuario registrado podrá modificar su nombre y/o apellido desde su perfil. S
 Desde el registro académico el usuario podrá ingresar un padrón (no obligatorio). Si ingresa el padrón, éste debe ser único, es decir que no debe haber otro usuario que ya posea ese padrón.
 El alumno podrá registrar la/s carrera/s en la/s que se encuentra inscripto.\newline 
 
-\begin{figure}[h]
+\begin{figure}[H]
 \centering
 \includegraphics[scale=0.3]{Imagenes/padron_y_carreras.png}\par
 \caption{Padrón del alumno y carreras en las que está inscripto}
@@ -251,7 +335,7 @@ El alumno podrá registrar la/s carrera/s en la/s que se encuentra inscripto.\ne
 Al inscribirse en una carrera, se le habilitarán las materias de la misma para que pueda agregarlas como ''En curso'', ''Con Final Pendiente'', ''Desaprobada'' o ''Aprobada''.Si una materia se desaprueba, entonces se vuelve a habilitar la materia para ser agregada, pero ésta debe tener la cursada en un cuatrimestre posterior (ya que si fue aprobada no se puede volver a cursar).
 Al agregar una materia no se hace la verificación de correlativas ya que no se desea restringir la carga, especialmente porque esta versión del proyecto aún no incluye las excepciones de correlatividades.\newline
 
-\begin{figure}[h]
+\begin{figure}[H]
 \centering
 \includegraphics[scale=0.4]{Imagenes/agregar_materia.png}\par
 \caption{Agregar Materia Alumno}
@@ -261,7 +345,7 @@ Cuando se carga una materia es posible elegir el curso en el que está siendo cu
 
 La visualización de las materias se puede realizar con las materias de todas las carreras al mismo tiempo, o filtrándolas por carrera. En caso de que se seleccione una carrera en paricular (o solo se esté isncripto a una carrera), se mostrará además el progreso.\newline
 
-\begin{figure}[h]
+\begin{figure}[H]
 \centering
 \includegraphics[scale=0.35]{Imagenes/mis_materias_todas.png}\par
 \caption{Listado de materias de todas las carreras en las que el alumno está inscripto}
@@ -269,13 +353,13 @@ La visualización de las materias se puede realizar con las materias de todas la
 
 El progreso indica el porcentaje de avance total de la carrera, el promedio obtenido y el porcentaje de avance en cada uno de los requerimientos de la carrera (cantidad de materias del CBC, créditos en electivas, créditos en materias obligatorias, créditos en materias de orientación (si corresponde), créditos en trabajo final de la carrera (tesis o trabajo profesional si corresponden)).\newline
 
-\begin{figure}[h]
+\begin{figure}[H]
 \centering
 \includegraphics[scale=0.35]{Imagenes/progreso_licenciatura.png}\par
 \caption{Progreso y materias filtradas Licenciatura en Análisis de Sistemas}
 \end{figure}
 
-\begin{figure}[h]
+\begin{figure}[H]
 \centering
 \includegraphics[scale=0.35]{Imagenes/progreso_informatica.png}\par
 \caption{Progreso y materias filtradas Ingeniería en Informática}
@@ -285,7 +369,7 @@ El progreso indica el porcentaje de avance total de la carrera, el promedio obte
 
 En base a las materias que el alumno tiene ''Aprobadas'' (no incluye las de final pendiente), se mostrará el listado de materias habilitadas para cursar. Como las correlatividades no son transitivas puede suceder que el alumno haya agregado que aprobó Análisis Matemático II pero aún no haya aprobado las materias del CBC, en ese caso se le mostrarán como habilitadas las materias del CBC ya que no poseen ninguna correlativa y todas aquellas materias que sólo hayan tenido a Análisis Matemático II como única correlativa. Posteriormente cuando en futuros desarrollos se agreguen las excepciones de correlatividades, en este punto se mostrarán también aquellas materias que pueden ser cursadas con pedido de excepción ya que se puede decir que estarían ''habilitadas''.
 
-\begin{figure}[h]
+\begin{figure}[H]
 \centering
 \includegraphics[scale=0.35]{Imagenes/que_puedo_cursar.png}\par
 \caption{Listado de materias habilitadas para cursar separados por carrera inscripta}
@@ -295,15 +379,15 @@ En base a las materias que el alumno tiene ''Aprobadas'' (no incluye las de fina
 
 El alumno puede generar formularios PDF. Los formularios disponibles para esta versión son la nota al decano (formulario más genérico que es solicitado para la mayoría de los trámites) y el listado de materias.
 
-\begin{figure}[h]
+\begin{figure}[H]
 \centering
-\includegraphics[scale=0.35]{Imagenes/listado_formularios.png}\par
+\includegraphics[scale=0.4]{Imagenes/listado_formularios.png}\par
 \caption{Formularios disponibles}
 \end{figure}
 
 Para el caso del listado de materias se pueden seleccionar las carreras (de las que está inscripto) que desea incluir. Además se debe seleccionar si se desean incluir sólo las materias aprobadas y desaprobadas, las de final pendiente, las que están en curso o más de una de ellas.
 
-\begin{figure}[h]
+\begin{figure}[H]
 \centering
 \includegraphics[scale=0.5]{Imagenes/formulario_listado_materias.png}\par
 \caption{Configuración formulario listado de materias}
@@ -312,40 +396,72 @@ Para el caso del listado de materias se pueden seleccionar las carreras (de las 
 Para la nota dirigida al decano, se debe establecer el objeto y motivo de la nota. Además se deben indicar los datos personales y de contacto que son solicitados por este modelo. Opcionalmente, se puede ingresar una nota extendiendo los motivos de la solicitud.
 Tal como lo solicita el template publicado por la facultad, además de estos datos añadirá el listado de materias aprobadas, desaprobadas, con final pendiente y en curso según corresponda.
 
-\begin{figure}[h]
+\begin{figure}[H]
 \centering
 \includegraphics[scale=0.4]{Imagenes/formulario_nota_al_decano.png}\par
 \caption{Formulario: Nota dirigida al decano}
 \end{figure}
 
-
-
 \subsection{Encuestas}
 
-Se deberá contar con una sección de encuestas a las que pueda puntuar a cada materia con el horario real de cursada que tuvo la materia, la cantidad de horas extras además de la cursada que requiere la materia por semana, un puntaje del curso, la dificultad de los temas, la dificultad de los TPs y exámenes, preguntas acerca de la materia, de los profesores y comentarios personales.
+Cuando se agrega una materia con final pendiente, aprobada o desaprobada con un curso específico, se crea una entrada para completar la encuesta correspondiente. Cada alumno tendrá su listado de encuestas realizadas y podrá contestar una sola vez la combinación [curso + cuatrimestre + año] que corresponde a la materia que ha agregado a su historial.
 
-Además, se añadirá una sección de Tema Principal para las materias de carácter de `electiva', con el que se podrá clasificar la materia para determinar si está relacionada con el Data Mining, Robótica, Gestión, etc de forma que pueda ser utilizado como preferencia para priorizar una materia electiva por sobre otra en el armado del plan. Respecto de esto, se busca que la cantidad de materias electivas que se seleccionen automáticamente en el plan correspondan a porcentajes de `afinidad' que establezca el alumno con cada uno de estos temas.
+Mientras que haya encuestas pendientes, se mostrará un ícono en el menú correspondiente. Cuando las encuestas pendientes son finalizadas el ícono desaparecerá.
 
-Adicionalmente, se podrán indicar hasta 3 palabras claves (tags) con las que el alumno podría identificar la materia. Las 3 palabras más elegidas, serán las utilizadas para la agilización de búsquedas de materias puntuales.
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.4]{Imagenes/notificacion_encuestas.png}\par
+\caption{Notificación de encuestas pendietes}
+\end{figure}
 
-Cada alumno tendrá su listado de encuestas realizadas y podrá contestar una sola vez la combinación [curso + cuatrimestre + año].
+En la sección de encuestas se pueden encontrar las encuestas pendientes para ser completadas y visulizar las encuestas que ya fueron finalizadas por el alumno.
 
-Los resultados de las encuestas serán públicos sin mostrar quién fue el usuario que respondió la encuesta, de forma tal que los docentes puedan hacer uso de la página para poder evaluar sus propios cursos.
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.3]{Imagenes/historial_de_encuestas.png}\par
+\caption{Historial de encuestas / Encuestas pendientes}
+\end{figure}
 
-Los valores numéricos de las encuestas serán tomados en promedio para evaluar la calidad del curso y la dificultad, parámetros que podrán ser utilizados luego como parte de las preferencias de armado del plan.
+Cada encuesta a completar cuenta con preguntas en 5 secciones: General, Contenido, Clases, Exámenes y Docentes. Cada una de las secciones es guardada de forma parcial de forma que se pueda comenzar con la encuesta en un momento y continuarla más adelante. Una vez que la encuesta se finaliza (y se la guarda como tal) ya no podrá ser editada.
 
-\subsection{Búsqueda de Materias}
+Las preguntas de las encuestas incluyen el puntaje del curso, horario real de cursada, dificultad de los temas, régimen de aprobación, comentarios de los docentes, etc.
 
-Desde la vista pública, se podrá acceder al buscador de materias. En él se podrá buscar por lo siguiente:
+Se incluye también una pregunta para indicar la temática de la materia (que será utilizada para clasificar las materias electivas en la generación del plan de carrera) y palabras clave (que son utilizadas en la búsqueda de materias).
 
-\begin{itemize}
-	\item Carrera
-	\item Código de materia
-	\item Nombre (o parte del nombre) de la materia
-	\item Palabras clave (tags más frecuentes de cada materia)
-\end{itemize}
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.3]{Imagenes/completar_encuesta.png}\par
+\caption{Encuesta para completar}
+\end{figure}
 
-Para cada materia se podrán acceder a los datos generales de la misma y al historial de encuestas por cada cuatrimestre.
+La encuesta ha sido modelada como un set de preguntas, donde cada pregunta puede ser de un tipo diferente y conforme a ello será la manera en que será renderizada en la web. Entre los tipos de preguntas se encuentran las de texto, horarios, correlativas, números, estrellas, puntaje, entre otras.\newline
+
+Los resultados de las encuestas que se pueden ver también desde el modo público, solo incluyen las encuestas que ya han sido finalizadas.
+
+\subsection{Generación del Plan de Carrera}
+
+---------------------- HACER -------------------------
+
+\subsection{Visualización del Plan de Carrera}
+
+---------------------- HACER -------------------------
+
+\newpage
+\section{Página Web MUSSA: Acceso Administrador}
+
+---------------------- HACER -------------------------
+
+\newpage
+\section{Algoritmos para la generación del Plan de Estudios personalizado}
+
+
+---------------------- HACER -------------------------
+
+
+
+
+
+
 
 \subsection{Algoritmos para la generación del plan de estudios personalizado}
 
@@ -379,319 +495,20 @@ Para ello clasificaremos las preferencias en fuertes [F] (la restricción debe c
 
 Una vez confeccionado el plan, éste debe poder visualizarse tanto en una grilla como en forma gráfica en la que se muestren las correlatividades entre las materias que se van a cursar.
 
-\section{Plan de Trabajo}
+\newpage
+\section{Mejoras futuras}
 
-\subsection{Equipo de Trabajo}
-
-El equipo de trabajo está compuesto por:
-
-\begin{itemize}
-	\item Tutor: Lic. Rosa Graciela Wachenchauzer
-	\item Co-tutor: Ing. Diego Essaya
-	\item Estudiante: Jennifer Andrea Woites
-\end{itemize}
-
-\subsection{Metodología}
-
-Para el desarrollo de este trabajo se seguirá con una metodología mixta con Kanban y Scrum.
-
-Por un lado, se tendrá un tablero con las tareas principales como `Pendientes', `En curso', `Desarrollo Terminado', `En Testing', `Finalizadas', y se las hará mover a través del tablero según corresponda; para poder tener una visión global del proyecto.
-
-Cada una de estas tareas pincipales será explotada en varias subtareas o tareas secundarias. Cuando todas las tareas secundarias de una tarea hayan finalizado, se podrá mover la tarea principal a `Desarrollo Terminado' de forma que después pueda ser tomada para un testing integrado y completo de las misma.
-
-Cada una de las tareas secundarias se corresponderá con un issue en gitHub para facilitar el trackeo de los commits con respecto a la funcionalidad que se estaba desarrollando.
-
-Por otro lado, se establecerá un período de tiempo (como un sprint) en el que se establecerán las tareas secundarias deseadas a desarrollar durante ese lapso. Al finalizar el sprint se realizará la entrega del avance que haya sido completado. Los sprints durarán un tiempo no mayor a dos semanas. En caso que durante el sprint se detecte que se debe modificar alguna tarea, se realizará el ajuste correspondiente y se intercambiará por otras menos prioritarias de la misma duración que las nuevas que se incorporan.
-
-A medida que se vayan avanzando en los sprints se realizarán los ajustes que se consideren necesarios en base a lo que se establezca con el tutor y el cotutor en las correspondientes reuniones.
-
-\subsection{Estimaciones}
-
-Se realizó una primera estimación con todas las tareas en conjunto. Todas las estimaciones se encuentran en horas reloj.
-
-Los tiempos estimados para pruebas y administración y control del proyecto se han calculado como un porcentaje del subtotal de las horas estimadas para el proyecto, tomando el 20\% y el 5\% respectivamente para cada uno de ellos.
-
-\begin{longtable}{| c | l | c |}
-
-%Encabezado en primera hoja
-\hline
-\textbf{Código}		& 	\textbf{Descripción}											& 	\textbf{Horas estimadas} \\
-\hline \hline
-\endfirsthead
-
-%Encabezado en el resto de las hojas
-\hline
-\textbf{Código}		& 	\textbf{Descripción}											& 	\textbf{Horas estimadas} \\
-\hline \hline
-\endhead
-
-%Fondo de las hojas, excepto la ultima
-%\multicolumn{2}{c}{Sigue en la página siguiente.}
-\endfoot
-
-%Fondo de la ultima hoja
-\endlastfoot
-
-%Cuerpo de la tabla
-
-1					&	Propuesta + Investigación 										&	45\\
-\hline
-2					&	Configuración del Entorno 										&	10\\
-\hline
-3					&	LogIn / Sign In			 										&	30\\
-\hline
-3.1					&	LogIn					 										&	10\\
-\hline		
-3.2					&	Sign In					 										&	8\\
-\hline
-3.3					&	Recupero de Contraseña											&	6\\
-\hline
-3.4					&	Cambio de contraseña											&	6\\
-\hline	
-4					&	Perfil del Usuario												&	37\\
-\hline
-4.1					&	Datos personales												&	8\\
-\hline
-4.2					&	Carreras Inscripto												&	3\\
-\hline
-4.3					&	Materias Aprobadas / Desaprobadas								&	16\\
-\hline
-4.4					&	Materias en Curso												&	5\\
-\hline
-4.5					&	Materias con Final Pendiente									&	5\\
-\hline
-5					&	Carreras de la Facultad											&	18\\
-\hline
-5.1					&	Modelización de las Carreras									&	10\\
-\hline
-5.2					&	Carga de datos inicial de los planes de estudio				&	8\\
-\hline
-6					&	Excepciones de Correlatividad									&	38\\
-\hline
-6.1					&	Ingreso de pedidos de excepción								&	8\\
-\hline
-6.2					&	Historial de Excepciones										&	8\\
-\hline
-6.3					&	Impresión de solicitud de excepción de correlatividad			&	6\\
-\hline
-6.4					&	Modificación de correlatividad fuerte / débil					&	10\\
-\hline
-6.5					&	Carga de datos de prueba										&	6\\
-\hline
-7					&	Simultaneidades de Carrera										&	40\\
-\hline
-7.1					&	Generación de planes combinados								&	16\\
-\hline
-7.2					&	Equivalencias automáticas										&	8\\
-\hline
-7.3					&	Equivalencias de materia por resolución						&	8\\
-\hline
-7.4					&	Créditos otorgados por resolución								&	4\\
-\hline
-7.5					&	Carga de datos de prueba										&	4\\
-\hline
-8					&	Encuestas de cursos / Materias									&	80\\
-\hline
-8.1					&	Generación de encuestas											&	16\\
-\hline
-8.2					&	Visualización de las encuestas (con y sin login)				&	24\\
-\hline
-8.3					&	Llenado de encuestas											&	16\\
-\hline
-8.4					&	Historial de encuestas completadas								&	8\\
-\hline
-8.5					&	Búsqueda de materias											&	16\\
-\hline
-9					&	Horarios de los cursos											&	32\\
-\hline
-9.1					&	Sincronización													&	16\\
-\hline
-9.2					&	Historial														&	8\\
-\hline
-9.3					&	Detección de nuevos cursos										&	3\\
-\hline
-9.4					&	Cursos dictados en un único cuatrimestre						&	5\\
-\hline
-10					&	Confección del plan de Carrera Personalizado					&	116\\
-\hline
-10.1				&	Selección de Preferencias										&	12\\
-\hline
-10.2				&	Notificacion													&	24\\
-\hline
-10.3				&	Algoritmo de confección del plan								&	80\\
-\hline
-11					&	Visualización del plan de Carrera								&	40\\
-\hline
-11.1				&	Visualización Gráfica del Grafo del Plan de carrera			&	30\\
-\hline
-11.2				&	Visualización del Plan de Carrera en formato de Tabla			&	10\\
-\hline
-12					&	Documentación													&	24\\
-\hline
-13					&	Reuniones														&	25\\
-\hline
-					&	\textbf{SUBTOTAL}												&	\textbf{535}\\
-\hline
-14					&	Testing															&	107\\
-\hline
-15					&	Administración y Control del Proyecto							&	27\\
-\hline
-					&	\textbf{TOTAL}													&	\textbf{669}\\
-\hline
-\caption{Estimaciones con alcance completo}
-\end{longtable}
-
-
-Luego de la primer estimación, se decidió reducir el alcance para la primer implementación, la cual consistirá en el alcance del trabajo profesional, sin embargo es de interés poder luego de finalizado el mismo, coordinar con los alumnos del LUGFI para poder continuar con el desarrollo de las funcionalidades que han quedado fuera del alcance y de esta forma, realizar un desarrollo continuo en el tiempo junto a otros estudiantes de la Universidad.
-
-\begin{longtable}{| c | l | c |}
-
-%Encabezado en primera hoja
-\hline
-\textbf{Código}		& 	\textbf{Descripción}											& 	\textbf{Horas estimadas} \\
-\hline \hline
-\endfirsthead
-
-%Encabezado en el resto de las hojas
-\hline
-\textbf{Código}		& 	\textbf{Descripción}											& 	\textbf{Horas estimadas} \\
-\hline \hline
-\endhead
-
-%Fondo de las hojas, excepto la ultima
-%\multicolumn{2}{c}{Sigue en la página siguiente.}
-\endfoot
-
-%Fondo de la ultima hoja
-\endlastfoot
-
-%Cuerpo de la tabla
-
-1					&	Propuesta + Investigación 										&	45\\
-\hline
-2					&	Configuración del Entorno 										&	10\\
-\hline
-3					&	LogIn / Sign In			 										&	30\\
-\hline
-3.1					&	LogIn					 										&	10\\
-\hline		
-3.2					&	Sign In					 										&	8\\
-\hline
-4					&	Perfil del Usuario												&	37\\
-\hline
-4.1					&	Datos personales												&	8\\
-\hline
-4.3					&	Materias Aprobadas / Desaprobadas								&	16\\
-\hline
-5					&	Carreras de la Facultad											&	18\\
-\hline
-5.1					&	Modelización de las Carreras									&	10\\
-\hline
-5.2					&	Carga de datos inicial de los planes de estudio				&	8\\
-\hline
-8					&	Encuestas de cursos / Materias									&	80\\
-\hline
-8.1					&	Generación de encuestas											&	16\\
-\hline
-8.2					&	Visualización de las encuestas (con y sin login)				&	24\\
-\hline
-8.3					&	Llenado de encuestas											&	16\\
-\hline
-8.4					&	Historial de encuestas completadas								&	8\\
-\hline
-8.5					&	Búsqueda de materias											&	16\\
-\hline
-9					&	Horarios de los cursos											&	32\\
-\hline
-9.1					&	Sincronización													&	16\\
-\hline
-9.4					&	Cursos dictados en un único cuatrimestre						&	5\\
-\hline
-10					&	Confección del plan de Carrera Personalizado					&	116\\
-\hline
-10.1				&	Selección de Preferencias										&	12\\
-\hline
-10.3				&	Algoritmo de confección del plan								&	80\\
-\hline
-11					&	Visualización del plan de Carrera								&	40\\
-\hline
-11.2				&	Visualización del Plan de Carrera en formato de Tabla			&	10\\
-\hline
-12					&	Documentación													&	24\\
-\hline
-13					&	Reuniones														&	25\\
-\hline
-					&	\textbf{SUBTOTAL}												&	\textbf{367}\\
-\hline
-14					&	Testing															&	74\\
-\hline
-15					&	Administración y Control del Proyecto							&	19\\
-\hline
-					&	\textbf{TOTAL}													&	\textbf{460}\\
-\hline
-\caption{Estimaciones con alcance reducido}
-\end{longtable}
+---------------------- HACER -------------------------
 
 \newpage
+\section{Conclusiones}
 
-\subsection{Cronograma}
+---------------------- HACER -------------------------
 
-A continuación se hace un cronograma de entregables tentativo al finalizar cada una de las iteraciones. Las mismas pueden ser modificadas en caso de verse necesario, por el tutor, el cotutor o el desarrollador. La fecha de cada una será determinada en conjunto con el tutor y el cotutor.
+\newpage
+\section{Agradecimientos}
 
-\begin{table}[htbp]
-\begin{center}
-\begin{tabular}{|c|l|}
-\hline
-\textbf{Iteración}	 & 		\textbf{Entregables}\\
-
-\hline
-1 	& $\bullet$ Página web con estructura básica.\\
-  	& $\bullet$ Sección de búsqueda de materias con filtros.\\
-  	& $\bullet$ Visualización de datos de las materias\\
-  	& (sin cursos ni encuestas asociadas).\\
-\hline
-2 	& $\bullet$ Visualización de datos de las materias con\\
-	& horarios por curso.\\
-  	& $\bullet$ Módulo de sincronización de horarios obtenidos\\
-  	& desde PDF para la base de datos.\\
-\hline
-3 	& $\bullet$ Módulo de generación del plan de carreras simple\\
-	& sin restricciones\\
-	& por parte del usuario con generación sin la interfaz web.\\
-\hline
-4 	& $\bullet$ Login del usuario.\\
-  	& $\bullet$ Registración de usuarios.\\
-\hline
-5 	& $\bullet$ Página para datos del perfil del usuario.\\
-  	& $\bullet$ Administración de materias en curso, con final\\
-  	& pendiente y aprobadas.\\
-\hline
-6 	& $\bullet$ Algoritmo de generación de plan de carrera con\\
-	& filtro por cuatrimestre de inicio, máxima\\
-  	& cantidad de cuatrimestres utilizando las materias aprobadas\\
-  	& y las materias en curso (las materias con final pendiente\\
-  	& se las considera aprobadas).\\
-\hline
-7 	& $\bullet$ Algoritmo de generación de plan de carrera\\
-	& contemplando fecha de examen prevista\\
-	& para las materias con final pendiente.\\
-\hline
-8 	& $\bullet$ Módulo de Encuestas por curso.\\
-\hline
-9 	& $\bullet$ Historial de Encuestas por curso por alumno.\\
-	& $\bullet$ Visualización de resultados de encuestas.\\
-\hline
-10 	& $\bullet$ Algoritmo de generación de plan de carrera\\
-	& contemplando puntaje mínimo de cursos\\
-	& según lo indicado por el usuario.\\
-\hline
-11 	& $\bullet$ Visualización del plan de carrera en formato tabla.\\
-	& $\bullet$ Integración del algoritmo de generación del plan\\
-	& a la página web.\\
-\hline
-\end{tabular}
-\end{center}
-\end{table}
+---------------------- HACER -------------------------
 
 \newpage
 \section{Referencias y Material consultado}
