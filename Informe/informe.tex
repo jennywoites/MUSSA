@@ -131,7 +131,7 @@ El frontend fue desarrollado con HTML5, JavaScript, CSS y Bootstrap para que sea
 Para la base de datos se eligió MySQL\footnote{https://www.mysql.com/}. Además fue utilizado SQLAlchemy\footnote{Python SQL toolkit and Object Relational Mapper - \url{https://www.sqlalchemy.org/}} como ORM\footnote{ORM: Object Relational Mapper. Un ORM simplifica el acceso a una base de datos por parte del programador convirtiendo toda sentencia sql a operaciones con objetos.}.\newline
 
 La máquina con la que fueron realizadas las pruebas tiene las siguientes características:
-XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 por lo que los tiempos de los algoritmos de generación del plan podrían mejorar si se tuviese una máquina con mejores características.\newline
 
 Para el comienzo del proyecto se utilizó Flask-User\footnote{\url{https://github.com/lingthio/Flask-User}}. Este proyecto ofrece una estructura inicial con las acciones básicas de login/signin y manejo de contraseñas. Fue dicifil de configurar al principio ya que no se tenía experiencia con Flask en general, pero una vez configurado solo hizo falta realizar las customizaciones correspondientes. El problema principal que se tuvo al utilizar Flask-User en lugar de haber realizado los servicios manualmente es que cuando se quiso desarrollar la API no se la pudo independizar completamente del proyecto ya que sino, requería solucionar el cross domain o realizar una autenticación en ambos puntos. Como punto a favor es que simplificó mucho el desarrollo de esa sección y que proveyó de una estructura básica al proyecto en general.\newline
@@ -438,62 +438,93 @@ La encuesta ha sido modelada como un set de preguntas, donde cada pregunta puede
 
 Los resultados de las encuestas que se pueden ver también desde el modo público, solo incluyen las encuestas que ya han sido finalizadas.
 
-\subsection{Generación del Plan de Carrera}
+\subsection{Generación y Visualización del Plan de Carrera}
 
----------------------- HACER -------------------------
+Para permitir el armado del plan, se deberán poder establecer las preferencias del alumno. Las preferencias básicas que pueden elegirse son:
 
-\subsection{Visualización del Plan de Carrera}
+\begin{itemize}
+	\item Carrera (Orientación y Trabajo Final de Carrera si corresponde)
+	\item Máxima cantidad de materias por cuatrimestre
+	\item Horarios en los que el alumno no puede cursar
+	\item Cursos específicos en los que el alumno quiera cursar (puede elegir uno, niguno o varios cursos). Se elige el curso pero no en qué cuatrimestre éste será cursado.
+\end{itemize}
 
----------------------- HACER -------------------------
+Además, en caso de tener materias con final pendiente, se deberá indicar cuándo se puede considerar la materia como aprobada, de forma tal que se restrinja el cuatrimestre mínimo de las materias que la tienen como correlativa.
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.35]{Imagenes/preferencias_generacion_plan.png}\par
+\caption{Preferencias para generación del plan de estudios}
+\end{figure}
+
+Adicionalmente, se podrán establecer las siguientes opciones avanzadas:
+
+\begin{itemize}
+	\item Algoritmo de generación del plan: PLE (Programación Lineal Entera) o Greedy
+	\item Máxima cantidad de cuatrimestres de duración del plan (el algoritmo siempre tratará de minimizarlos)
+	\item Puntaje mínimo requerido para los cursos: Los cursos no puntuados tienen un puntaje de 0. La restricción de puntaje no es tenida en cuenta en el caso de los cursos que se seleccionan manualmente. Las materias que se elijan no tendrán un puntaje menor al seleccionado a menos que sean obligatorias con un único curso disponible. En estos casos siempre se seleccionará en orden la de mayor puntaje con mayor cantidad de encuestas completas.
+	\item Máxima cantidad de horas de cursada, por semana
+	\item Máxima cantidad de horas de trabajo extra además de la cursada, por semana
+	\item Cuatrimestre y Año de inicio del plan (se selecciona el cuatrimestre y año actual por defecto). Este dato es importante no solo para la visualización sino también porque hay algunas materias que solo se dictan el 1º o 2º cuatrimestre.
+	\item Preferencias de temáticas de las materias electivas: El porcentaje indicado será el porcentaje mínimo de cada temática respecto del total de créditos en electivas restantes que debe realizarse. Si una materia tiene más de una temática elegida, sus créditos serán contandos para ambos porcentajes.
+\end{itemize}
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.35]{Imagenes/preferencias_avanzadas_generacion_plan.png}\par
+\caption{Preferencias Avanzadas para generación del plan de estudios}
+\end{figure}
+
+Cuando el plan esté generado, se mostrará una notificación en el menú.
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.35]{Imagenes/notificacion_plan_generado.png}\par
+\caption{Notificación Plan Generado no visualizado}
+\end{figure}
+
+Es posible visualizar el listado de los planes de estudio que se han solicitado. Cada uno de ellos tendrá el estado 'En curso' (aún se está generando o está en la cola de espera), 'Incompatible' (no hay una solución óptima que cumpla con los parámetros indicados) o 'Finalizado' (plan compatible finalizado de generar).
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.3]{Imagenes/historial_planes_generados.png}\par
+\caption{Historial Planes Generados}
+\end{figure}
+
+Los planes que se encuentren en estado 'Finalizado' o 'Incompatible' se los podrá eliminar.
+
+Los planes que se encuentren en estado 'Finalizado' pueden ser visualizados.
+
+La visualización del plan de estudios consiste en el listado de los cuatrimestres con las materias para cada uno de ellos. En el caso de que se hayan cargado materias que no hayan sido contempladas en el momento de la generación del plan, éstas serán agregadas en el cuatrimestre correspondiente y eliminadas del asignado originalmente (si corresponde).
+
+Las materias con estados diferentes se mostrarán con otros colores para facilitar la diferenciación entre ellas.
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.35]{Imagenes/vista_plan_generado.png}\par
+\caption{Visualización Plan Generado}
+\end{figure}
 
 \newpage
 \section{Página Web MUSSA: Acceso Administrador}
 
+\subsection{Administrar Horarios}
 ---------------------- HACER -------------------------
+
+
+\subsection{Administrar Cursos}
+---------------------- HACER -------------------------
+
+
+\subsection{Administrar Docentes}
+---------------------- HACER -------------------------
+
 
 \newpage
 \section{Algoritmos para la generación del Plan de Estudios personalizado}
 
-
 ---------------------- HACER -------------------------
 
-
-
-
-
-
-
-\subsection{Algoritmos para la generación del plan de estudios personalizado}
-
-Se evaluarán las distintas posibilidades que hay para realizar el algoritmo de confección del plan cuatrimestral para el alumno y se desarrollará aquella que sea considerada como mejor (en cuanto a tiempo que demore respecto de qué tan buena sea la solución respecto de los parámetros preestablecidos). La solución podrá estar hecha por un único algoritmo o por una combinación de ellos, dependiendo del análisis obtenido.
-
-Entre los algoritmos a evaluar se encuentran:
-
-\begin{itemize}
-	\item Fuerza Bruta
-	\item Greeedy
-	\item Programación Lineal Entera
-	\item Algoritmos de Planificación basados en Preferencias
-\end{itemize}
-
-De los últimos tipos de algoritmos citados, en base a la investigación realizada se han encontrado algunos trabajos que tienen alguna similitud con el problema que buscamos resolver y que han logrado soluciones factibles en tiempos aceptables (si bien no es posible aplicar el algoritmo tal como fue concebido en esos trabajos, es posible utilizarlos como base teórica para confeccionar algoritmos propios con alguna similitud con ellos).\cite{PLE_HORARIOS_UNIV, MODELOS_PLE, PAPER_ROSITA_PLANNING_WITH_PREFERENCES_1, PAPER_ROSITA_PLANNING_WITH_PREFERENCES_2, PAPER_ROSITA_PLANNING_WITH_PREFERENCES_3, PAPER_ROSITA_PLANNING_WITH_PREFERENCES_4}
-
-\subsection{Armado y Visualización del Plan de Carrera}
-
-Para permitir el armado del plan, se deberán poder establecer las preferencias del alumno. Estas preferencias serán guardas y precargadas cada vez que el alumno desee volver a diseñar el plan por algún motivo (por ejemplo, no completó las materias que se proponía cursar y requiere ajustar las materias que realmente puede cursar el cuatrimestre siguiente, o que comenzó a trabajar y por ende, tiene menos disponibilidad horaria, etc).
-
-Para ello clasificaremos las preferencias en fuertes [F] (la restricción debe cumplirse) o deseables [D] (si no se cumplen, se pondera negativamente):
-
-\begin{itemize}
-	\item Cantidad de cuatrimestres máximos de duración del plan [F]
-	\item Máxima cantidad de horas de cursada por semana [F]
-	\item Máxima cantidad de horas de trabajo extra además de la cursada, por semana [F]
-	\item Días y horarios que el alumno tiene disponibles para cursar [F]
-	\item Preferencias de topics de las materias electivas [D]: Seleccionar los porcentajes deseados para cada Topic.
-	\item Puntuación del curso mayor a un determinado valor [D]	
-\end{itemize}
-
-Una vez confeccionado el plan, éste debe poder visualizarse tanto en una grilla como en forma gráfica en la que se muestren las correlatividades entre las materias que se van a cursar.
 
 \newpage
 \section{Mejoras futuras}
