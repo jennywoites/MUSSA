@@ -508,21 +508,84 @@ Las materias con estados diferentes se mostrarán con otros colores para facilit
 \newpage
 \section{Página Web MUSSA: Acceso Administrador}
 
-\subsection{Administrar Horarios}
----------------------- HACER -------------------------
+El usuario con rol de administrador tiene habilitado un menú de Administración para los horarios, los cursos y los docentes.
 
+\subsection{Administrar Horarios}
+
+Los horarios y los cursos son cargados al sistema a través del PDF que es publicado por la Facultad todos los cuatrimestres. Esta es la única fuente de datos disponible desde la facultad para obtener los datos de los horarios completos, ya que la otra opción implica parsear una página web desde el sistema SIU Guaraní.
+
+Cuando se carga el PDF se verifica que los horarios que se están cargando no se hayan cargado antes y que el cuatrimestre y año sea superior al último que se cargó (para que no se carguen horarios viejos modificando los datos actuales).
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.35]{Imagenes/administrar_horarios.png}\par
+\caption{Carga de Horarios PDF}
+\end{figure}
+
+Al principio se consultó con la facultad para poder tener un servicio y obtener estos datos (entre otros) y se tuvo una respuesta negativa.
+
+El problema con este mecanismo es que el PDF la facultad lo publica y suele contener muchos errores que son corregidos conforme pasan las semanas en el SIU Guaraní, pero no se vuelve a publicar el archivo, por lo que los horarios erróneos deben modificarse manualmente con la administración de cursos. En versiones futuras, se desea agregar a los alumnos la opción de reportar cursos con datos incorrectos de forma de que se simplifique la tarea del administrador.
+
+Debido a estos errores, lo ideal es utilizar el PDF actual como carga inicial y luego facilitar un administrador con un nuevo rol habilitado para cada departamento, de forma que cada departamento pueda hacer los cambios de los cursos que se han cambiado solo ese cuatrimestre y no de todos. Es ideal que los departamentos luego quieran utilizar el sistema, ya que podrían hacer uso de las encuestas para monitorizar los cursos correspondientes y poder hablar con los docentes ya sea para felicitarlos o para solicitarles que realicen ajustes en sus materias.
+
+Otro problema que se tiene con el PDF es que los docentes que figuran en los cursos no son todos los que el curso realmente tiene, por lo que habría que agregar el resto del equipo docente manualmente si se quiere poder tener encuestas de ellos. Además, la única referencia al docente es su apellido, por lo que no es posible saber si el docente con apellido X que da la materia M1 es el mismo (o no) que el docente con apellido X que dicta la materia M2. Este link de docentes debe realizarse manualmente desde la administración de docentes.
 
 \subsection{Administrar Cursos}
----------------------- HACER -------------------------
 
+En la administración de cursos es posible visualizar y buscar los cursos por código de materia; ver los docentes que lo dictan, las carreras para las cuales está habilitado y en qué cuatrimestre se dicta.
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.3]{Imagenes/administrar_cursos.png}\par
+\caption{Administración de Cursos}
+\end{figure}
+
+Cuando se cargan los horarios PDF de un cuatrimestre, se dan de alta todos aquellos cursos nuevos (un curso es nuevo si el código/número de curso no existe para ese código de materia) y se marca como que se dicta ambos cuatrimestres, pero que es curso nuevo, registrando el cuatrimestre que fue actualizado (el 1º o el 2º). El curso seguirá siendo nuevo hasta que esté registrado en ambos cuatrimestres. Que esté registrado no quiere decir que se dicte en ambos, sino que se cargaron horarios tanto del 1º cuatrimestre como del 2º desde que el curso se dio de alta.
+
+Si el curso ya existía, entonces se actualiza la lista de docentes y los horarios en los que es dictada la materia.
+
+Al editar un curso, es posible modificar las carreras para las cuales está habilitado, agregar o quitar docentes del curso y modificar los horarios del mismo.
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.35]{Imagenes/modificar_curso.png}\par
+\caption{Edición de un curso}
+\end{figure}
 
 \subsection{Administrar Docentes}
----------------------- HACER -------------------------
 
+En la administración de docentes, es posible agrupar los docentes que se seleccionen. El agrupamiento sólo se permite si todos los docentes a agrupar tienen mismo apellido y nombre (o no tienen nombre). De esta forma, es posible solucionar el problema del docente con apellido X que dicta la materia M1 y otro docente con apellido X que dicta la materia M2, siempre que el administrador posea este conocimeinto.
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.3]{Imagenes/administrar_docentes.png}\par
+\caption{Administración de Docentes}
+\end{figure}
+
+Al editar un docente, es posible cambiar su nombre, apellido, y cursos que dicta. Se debe tener especial cuidado en que la modificación de estos, como el nombre y el apellido, ya que las encuestas que estén vinculadas a este id docente seguirán estando vinculadas pero mostrarán un nombre diferente del que mostraban originalmente (mostrarán el nombre actualizado). Estos cambios deben realizarse sólo en caso de errores de escritura o de falta de datos y no para modificar un docente por otro.
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.3]{Imagenes/editar_docente.png}\par
+\caption{Edición de un Docente}
+\end{figure}
 
 \newpage
 \section{Algoritmos para la generación del Plan de Estudios personalizado}
 
+\subsection{Arquitectura y Flujo General}
+---------------------- HACER -------------------------
+
+\subsection{Configuración de Parámetros}
+---------------------- HACER -------------------------
+
+\subsection{Algoritmo Programación Lineal Entera (PLE)}
+---------------------- HACER -------------------------
+
+\subsection{Algoritmo Greddy}
+---------------------- HACER -------------------------
+
+\subsection{Pruebas}
 ---------------------- HACER -------------------------
 
 
@@ -539,7 +602,22 @@ Las materias con estados diferentes se mostrarán con otros colores para facilit
 \newpage
 \section{Agradecimientos}
 
----------------------- HACER -------------------------
+A mi familia, que estuvo presente desde la distancia cuando comencé la carrera. A mi hermana Lorena que me trajo a Buenos Aires cuando comencé a estudiar en la universidad manejando ambas por la ruta durante esos 2000 kilómetros. A mi hermana Verónica que muchas veces vino a Buenos Aires a visitarme a pesar de que estábamos tan lejos.
+
+A mi nueva familia adquirida, que me han acompañado durante este último tramo, en especial a Nico que nos hizo mil y un favores relacionados a la facultad desde que nos mudamos a Irlanda.
+
+A mis amigos y compañeros de facultad, con los que siempre compartí muy buenas experiencias y muchas veces tuvimos que dejar cosas de lado porque 'había que estudiar'. En especial a Nicolás, Martín, Ezequiel, Flor y Javier con los que compartí la mayor parte de mi carrera y nos ayudamos mutuamente a avanzar, sé muy bien que sin ellos la carrera no hubiese sido igual.
+
+A todos mis grupos de trabajo profesional antes de este, que se armaron y desarmaron por uno u otro motivo, pero que han sido pasos necesarios para poder finalmente llegar a este punto.
+
+A mis tutores, Rosita y Diego que me acompañaron durante este trabajo. En especial a Diego que siendo su primer tutoría me acompañó y me alentó mucho con sus comentarios y recomendaciones.
+
+A todos los Wachencholdiers los que están y los que estuvieron. Con ustedes compartí miles de experiencias y locuras. Aprendí mucho, me divertí mucho. Me sentí muy acompañada y todos los días los extraño un poco. Estoy orgullosa de haber podido ser parte de este gran equipo, y aún me considero parte aunque ya no pueda estar tan cerca...
+
+A mis alumnos, que me enseñaron a enseñar, a tener paciencia, a tener mejor predisposición y a encontrar mil y un maneras de decir lo mismo. Muchas veces siento que las cosas las aprendí realmente al tener que explicarlas a ustedes.
+
+Y de manera especial, agradezco a mi marido, Ariel Wainer, que ha estado conmigo todo este tiempo, sosteniendome en mis tristezas y compartiendo conmigo mis alegrías. Gracias por haberme mostrado tantas herramientas nuevas y por retarme cuando hacía las cosas mal para que las mejorara, sé que no soy fácil pero me encanta que me enseñes y expliques lo que vos sabes. Esto no hubiese sido posible sin vos.
+
 
 \newpage
 \section{Referencias y Material consultado}
