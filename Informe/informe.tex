@@ -574,16 +574,41 @@ Al editar un docente, es posible cambiar su nombre, apellido, y cursos que dicta
 \section{Algoritmos para la generación del Plan de Estudios personalizado}
 
 \subsection{Arquitectura y Flujo General}
----------------------- HACER -------------------------
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.4]{Imagenes/arquitectura.png}\par
+\caption{Arquitectura MUSSA}
+\end{figure}
+
+En la arquitectura elegida, se desacoplan las cuatro acciones necesarias para la generación del plan: la solicitud, el procesamiento, la persistencia y la notificación. Esto se logra transformando estas acciones en tareas asíncronas utilizando Celery como manejador de tareas y Redis como cola de trabajo.
+
+Cada tarea, dispondrá de un cluster de servidores (workers)  para el procesamiento de manera que se puede controlar la velocidad (throughput) mediante la configuración de threads en paralelo y cantidad de workers.\newline
+
+Cuando se solicita la generación del plan de estudios desde el browser, se invoca a la API (es posible tener varias instancias levantadas en el servidor). Ésta, realiza la configuración de parámetros, filtrando las materias en base a las aprobadas, horarios incompatibles, etc.
+
+Luego se genera el hash con los parámetros relevantes y se verifica si fue generado anteriormente un plan de estudios con esas mismas características. Si fue generado, se crea el plan copiando los datos de la base de datos de los ids de las materias para el nuevo plan. Sino, se envía la tarea al broker correspondiente donde es encolada. El broker dependerá del algoritmo elegido ya que ambos funcionan independientemente de forma tal que sea posible configurar en el servidor los recursos asignados según el uso y los tiempos que se vayan registrando a medida que se utilice el sistema.
+
+Cuando el worker correspondiente esté disponible, tomará la tarea y generará el plan. Una vez generado, se crea la tarea de guardado que se encola en el broker de guardado del plan, que es el único que accede a la base de datos por pertenecer a la API.
+
+Cuando el worker está disponible, se guarda el hash con los datos de las materias (además del plan solicitado) para poder ser utilizado la siguiente vez. De esta forma, aunque el algoritmo tarde varios minutos, la siguiente vez que se genere ya no será necesario todo este tiempo.
+
+Una vez que el plan queda en estado finalizado, se notifica al usuario.\newline
+
+Por otra parte, se considera la posibilidad de escalar la capacidad del frontend y la API anteponiendo un balanceador de carga HTTP (por ejemplo haproxy\footnote{\url{https://www.haproxy.org/}} o AWS ELB\footnote{Amazon Web Services Elastic Load Balancer - \url{aws.amazon.com/elasticloadbalancing}}) y la cantidad necesaria de servidores detrás. Esto permite agregar capacidad dinámicamente para soportar los picos de carga que se producen en períodos de inscripciones sin tener esa capacidad ociosa durante el resto del tiempo. 
+
 
 \subsection{Configuración de Parámetros}
 ---------------------- HACER -------------------------
 
+
 \subsection{Algoritmo Programación Lineal Entera (PLE)}
 ---------------------- HACER -------------------------
 
+
 \subsection{Algoritmo Greddy}
 ---------------------- HACER -------------------------
+
 
 \subsection{Pruebas}
 ---------------------- HACER -------------------------
@@ -602,7 +627,7 @@ Al editar un docente, es posible cambiar su nombre, apellido, y cursos que dicta
 \newpage
 \section{Agradecimientos}
 
-A mi familia, que estuvo presente desde la distancia cuando comencé la carrera. A mi hermana Lorena que me trajo a Buenos Aires cuando comencé a estudiar en la universidad manejando ambas por la ruta durante esos 2000 kilómetros. A mi hermana Verónica que muchas veces vino a Buenos Aires a visitarme a pesar de que estábamos tan lejos.
+A mi familia, que estuvo presente desde la distancia cuando comencé la carrera. En espcial, a mi hermana Lorena que me trajo a Buenos Aires cuando comencé a estudiar en la universidad manejando ambas por la ruta durante esos 2000 kilómetros. A mi hermana Verónica que muchas veces vino a Buenos Aires a visitarme a pesar de que estábamos tan lejos; y a mi hermana Mariel que me dió casa cada vez que podía viajar yo y se levantaba a las 3 de la mañana para buscarme en el aeropuerto.
 
 A mi nueva familia adquirida, que me han acompañado durante este último tramo, en especial a Nico que nos hizo mil y un favores relacionados a la facultad desde que nos mudamos a Irlanda.
 
