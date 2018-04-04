@@ -599,7 +599,33 @@ Por otra parte, se considera la posibilidad de escalar la capacidad del frontend
 
 
 \subsection{Configuración de Parámetros}
----------------------- HACER -------------------------
+Cuando se solicita la generación del plan de estudios, y antes de realizar el hash para verificar si el plan fue generado anteriormente o se requiere generar, se realiza un filtrado de las materias.
+
+Se parte del plan completo para la carrera elegida y se actualizan los créditos requeridos en materias electivas, obligatorias de orientación etc. dependiendo de la orientación y trabajo final de carrera elegidos (si corresponde). Se cargan las materias incompatibles que determinarán aquellas materias que no pueden cursarse si se aprobó otra de ellas (por ejemplo, como sucede con las materias de idiomas que sólo es posible cursar una de ellas).
+
+Se eliminan del listado de materias aquellas que el alumno ya aprobó y las que aún se encuentran con final pendiente pero se darán por aprobadas. En el caso de que la materia no se de por aprobada desde el momento de la generación del plan sino en cuatrimestres posteriores, se actualiza con estas últimas el cuatrimestre mínimo que requieren aquellas materias que tienen a la que se dará por aprobada como correlativa.
+
+Se separan las materias del CBC (que siempre serán agregadas en grupos de tres al principio del plan generado) y se configuran como materias obligatorias aquellas de la orientación elegida y como electivas aquellas de las otras orientaciones (si corresponde). Además, se copia el trabajo profesional para dividirlo en dos 'submaterias' ya que debe realizarse en dos cuatrimestres consecutivos.
+
+Se elijen los cursos específicos definidos por el usuario. Si la materia era electiva se la transforma en obligatoria con ese único curso disponible y se actualizan los créditos requeridos en materias electivas. Se verifica que los horarios de los cursos que se van a agregar como disponibles cumplan con la restricción de los horarios en los que el alumno no puede cursar. Si no la cumplen, esos cursos son eliminados.
+
+Se verifica además el puntaje del curso antes de agregarlo. Si el curso es de una materia electiva y no cumple con el puntaje mínimo, es decartado. Si la materia es obligatoria y no hay ningún curso que cumpla con el puntaje mínimo, se agregarán aquellos cursos con mayor puntaje (de forma que sea el más alto poisble aunque no cumpla con la restricción).
+
+Se actualizan los cŕeditos en electivas, actualizando el valor a 0 si se hicieron más electivas que las requeridas. Y en el caso de haber completado los créditos en electivas, se eliminan del listado todas las materias electivas ya que no es necesario cursar ninguna más de ese tipo.
+
+Se actualizan los créditos mínimos por temática. Estos valores se calcularán como la cantidad de créditos mínimos necesarios para cada tipo de temática aplicando el porcentaje a la cantidad de créditos mínimos en materias electivas general. Una materia puede tener más de una temática, en cuyo caso sus créditos contarán para todas las temáticas requeridas (que la materia también poseea) de igual manera.
+
+Se determina si el primer cuatrimestre será par o impar (debido a que no todas las materias se dictan en el 1º y 2º cuatrimestre), utilizando como datos de entrada el cuatrimestre de inicio del plan determinado por el usuario y la cantidad de cuatrimestres que ocuparán las materias del CBC (considerando que se distribuyen de hasta 3 materias por cuatrimestre independientemente de la configuración del usuario para el resto de la generación del plan).
+
+Se verifica que todas las materias obligatorias tengan cursos disponibles (ya que pueden haber sido eliminadas por incompatibilidad de horarios con el usuario). En ese caso, se le muestra el error al usuario y se le indica el listado de materias obligatorias que requieren que elija el curso manualmente si desea mantener las restricciones actuales (ya que éstas no son aplicadas a los cursos elegidos manualmente) o para que modifique las restricciones.
+
+Se eliminan del listado aquellas materias que hayan quedado sin cursos disponibles y se eliminan las incompatibles que ya no pertenezcan al plan (porque se las haya eliminado o aprobado en pasos anteriores).
+
+Se verifica que los créditos en materias electivas (con las materias que han quedado disponibles) sean suficentes para cumplir con los créditos mínimos (tanto de forma general como por temática elegida). Si no son suficientes, entonces le muestra un mensaje al usuario indicando que no es posible generar el plan con esos parámetros (esto puede deberse a que la restricción de horarios es muy fuerte y por eso se eliminaron muchas materias electivas, porque no cumplen con el puntaje mínimo, etc.).
+
+A continuación, se actualizan los horarios con las franjas mínimas y máximas y los días de las semana no utilizados. Al modificar los horarios para que el horario de finalización sea en una franja menor, reduce las comparaciones en el caso del algoritmo Greedy, y en el caso del algoritmo de PLE reduce significativamente las ecuaciones.
+
+Finalmente se genera el hash con los parámetros. Si este hash existe, el plan es copiado automáticamente y ya queda disponible para el usuario. En caso de que no exista, se envía la tarea a la cola Greedy o a la cola PLE según corresponda para que sea tratada cuando el worker esté disponible. En ambos casos, se le muestra al usuario el mensaje de que el plan fue enviado a generar y que se le notificará cuando esté finalizado. En el primer caso, esta notificación es inmediata.
 
 
 \subsection{Algoritmo Programación Lineal Entera (PLE)}
@@ -615,8 +641,23 @@ Por otra parte, se considera la posibilidad de escalar la capacidad del frontend
 
 
 \newpage
-\section{Mejoras futuras}
+\section{Mejoras y Nuevas Funcionalidades Futuras}
 
+quienes siguen el proyecto
+
+- simultaneidad de carreras
+- excepcion de correlatividades
+- calendario con parciales y otras fechas importantes
+- chequeo de superposiciones horarias
+- agregar contacto entre alumnos que cursan la misma materia en el mismo curso el cuatrimestre actual + interaccion -entre usuarios en general
+- usuario docente
+- usuarios deptos
+- informar fechas de examenes y con tres personas que den el ok (o el docente si esta desarrollado) agregar la notificaicon
+- notificaciones de fechas importantes (elecciones, inscripciones, etc)
+- permitir agregar notas de trabajos practicos y parciales a las materias
+- permitir que el usuario agregue la prioridad que tiene actualmente y usarla para las inscripciones de las materias e informar este dato --> ojo xq no hay info real mas que la que puedan pasar los usuarios
+- Sincronizar los datos con el SIU parseando la web solicitando usuario y password en el momento para hacer los requests. Esto se puede usar para darle alertas de las diferencias entre las materias que el tiene registardo y las del SIU o para sincronizar sus materias en lugar de que requiera cargarlas manualmente
+ 
 ---------------------- HACER -------------------------
 
 \newpage
