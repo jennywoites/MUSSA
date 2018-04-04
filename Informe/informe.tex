@@ -124,21 +124,21 @@ Para la administración del proyecto se utilizó GDocs y Trello.\newline
 
 Para la generación de documentación, tanto de la propuesta como del presente informe se utilizó Latex.\newline
 
-Se eligió como lenguaje Python junto a Flask\footnote{http://flask.pocoo.org/} para el backend. Flask fue elegido a pesar de no tener experiencia por estar escrito en Python y ser un framework minimalista con una curva de aprendizaje relativamente rápida.\newline
+Se eligió como lenguaje Python junto a Flask\cite{FLASK_OFICIAL} para el backend. Flask fue elegido a pesar de no tener experiencia por estar escrito en Python y ser un framework minimalista con una curva de aprendizaje relativamente rápida.\newline
 
-El frontend fue desarrollado con HTML5, JavaScript, CSS y Bootstrap para que sea responsive.\newline
+El frontend fue desarrollado con HTML5, JavaScript, CSS y Bootstrap\cite{BOOTSTRAP} para que sea responsive.\newline
 
-Para la base de datos se eligió MySQL\footnote{https://www.mysql.com/}. Además fue utilizado SQLAlchemy\footnote{Python SQL toolkit and Object Relational Mapper - \url{https://www.sqlalchemy.org/}} como ORM\footnote{ORM: Object Relational Mapper. Un ORM simplifica el acceso a una base de datos por parte del programador convirtiendo toda sentencia sql a operaciones con objetos.}.\newline
+Para la base de datos se eligió MySQL\cite{MYSQL}. Además fue utilizado SQLAlchemy\cite{SQLALCHEMY_OFICIAL} como ORM\footnote{ORM: Object Relational Mapper. Un ORM simplifica el acceso a una base de datos por parte del programador convirtiendo toda sentencia sql a operaciones con objetos.}.\newline
 
 La máquina con la que fueron realizadas las pruebas tiene las siguientes características:
-XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 por lo que los tiempos de los algoritmos de generación del plan podrían mejorar si se tuviese una máquina con mejores características.\newline
 
-Para el comienzo del proyecto se utilizó Flask-User\footnote{\url{https://github.com/lingthio/Flask-User}}. Este proyecto ofrece una estructura inicial con las acciones básicas de login/signin y manejo de contraseñas. Fue dicifil de configurar al principio ya que no se tenía experiencia con Flask en general, pero una vez configurado solo hizo falta realizar las customizaciones correspondientes. El problema principal que se tuvo al utilizar Flask-User en lugar de haber realizado los servicios manualmente es que cuando se quiso desarrollar la API no se la pudo independizar completamente del proyecto ya que sino, requería solucionar el cross domain o realizar una autenticación en ambos puntos. Como punto a favor es que simplificó mucho el desarrollo de esa sección y que proveyó de una estructura básica al proyecto en general.\newline
+Para el comienzo del proyecto se utilizó Flask-User\cite{FLASK_USER}. Este proyecto ofrece una estructura inicial con las acciones básicas de login/signin y manejo de contraseñas. Fue dicifil de configurar al principio ya que no se tenía experiencia con Flask en general, pero una vez configurado solo hizo falta realizar las customizaciones correspondientes. El problema principal que se tuvo al utilizar Flask-User en lugar de haber realizado los servicios manualmente es que cuando se quiso desarrollar la API no se la pudo independizar completamente del proyecto ya que sino, requería solucionar el cross domain o realizar una autenticación en ambos puntos. Como punto a favor es que simplificó mucho el desarrollo de esa sección y que proveyó de una estructura básica al proyecto en general.\newline
 
-Para poder realizar los planes de forma asincónica, se utilizó Celery\footnote{Celery es una cola de tareas asincónica open source basada en el pasaje de mensajes distribuido - \url{http://www.celeryproject.org/}} para la cola de tareas asincónica junto a Redis\footnote{Redis es un almacén de estructura de datos de valores de clave en memoria rápido y de código abierto - \url{https://redis.io/}} como estructura para los datos de las tareas.\newline
+Para poder realizar los planes de forma asincónica, se utilizó Celery\footnote{Celery es una cola de tareas asincónica open source basada en el pasaje de mensajes distribuido}\cite{CELERY} para la cola de tareas asincónica junto a Redis\footnote{Redis es un almacén de estructura de datos de valores de clave en memoria rápido y de código abierto}\cite{REDIS} como estructura para los datos de las tareas.\newline
 
-Para la generación del plan con el algoritmo de programación lineal entera, se utilizó PuLP\footnote{\url{https://pythonhosted.org/PuLP/}}. PuLP es una librería Open Source escrita en Python. Es usada para describir problemas de optimización como modelos matemáticos. PuLP puede llamar a numerosos solvers de programación lineal, tales como CBC, GLPK, CPLEX, Gurobi, etc, para resolver el modelo y luego utilizar comandos de Python para manipular y mostrar el resultado de la solución. Durante el desarrollo del algoritmo se probaron diferentes solvers, pero finalmente fue elegido CBC ya que fue el que mejor repsondía en tiempos para el algoritmo ejecutado además de ofrecer multi-threading para la resolución del problema.
+Para la generación del plan con el algoritmo de programación lineal entera, se utilizó PuLP\cite{PULP_PYTHON}. PuLP es una librería Open Source escrita en Python. Es usada para describir problemas de optimización como modelos matemáticos. PuLP puede llamar a numerosos solvers de programación lineal, tales como CBC, GLPK, CPLEX, Gurobi, etc, para resolver el modelo y luego utilizar comandos de Python para manipular y mostrar el resultado de la solución. Durante el desarrollo del algoritmo se probaron diferentes solvers, pero finalmente fue elegido CBC ya que fue el que mejor repsondía en tiempos para el algoritmo ejecutado además de ofrecer multi-threading para la resolución del problema.
 
 \newpage
 \section{Página Web MUSSA: Acceso Público}
@@ -332,7 +332,7 @@ El alumno podrá registrar la/s carrera/s en la/s que se encuentra inscripto.\ne
 \caption{Padrón del alumno y carreras en las que está inscripto}
 \end{figure}
 
-Al inscribirse en una carrera, se le habilitarán las materias de la misma para que pueda agregarlas como ''En curso'', ''Con Final Pendiente'', ''Desaprobada'' o ''Aprobada''.Si una materia se desaprueba, entonces se vuelve a habilitar la materia para ser agregada, pero ésta debe tener la cursada en un cuatrimestre posterior (ya que si fue aprobada no se puede volver a cursar).
+Al inscribirse en una carrera, se le habilitarán las materias de la misma para que pueda agregarlas como `En curso', `Con Final Pendiente', `Desaprobada' o `Aprobada'.Si una materia se desaprueba, entonces se vuelve a habilitar la materia para ser agregada, pero ésta debe tener la cursada en un cuatrimestre posterior (ya que si fue aprobada no se puede volver a cursar).
 Al agregar una materia no se hace la verificación de correlativas ya que no se desea restringir la carga, especialmente porque esta versión del proyecto aún no incluye las excepciones de correlatividades.\newline
 
 \begin{figure}[H]
@@ -367,7 +367,7 @@ El progreso indica el porcentaje de avance total de la carrera, el promedio obte
 
 \subsection{Materias habilitadas para cursar}
 
-En base a las materias que el alumno tiene ''Aprobadas'' (no incluye las de final pendiente), se mostrará el listado de materias habilitadas para cursar. Como las correlatividades no son transitivas puede suceder que el alumno haya agregado que aprobó Análisis Matemático II pero aún no haya aprobado las materias del CBC, en ese caso se le mostrarán como habilitadas las materias del CBC ya que no poseen ninguna correlativa y todas aquellas materias que sólo hayan tenido a Análisis Matemático II como única correlativa. Posteriormente cuando en futuros desarrollos se agreguen las excepciones de correlatividades, en este punto se mostrarán también aquellas materias que pueden ser cursadas con pedido de excepción ya que se puede decir que estarían ''habilitadas''.
+En base a las materias que el alumno tiene `Aprobadas' (no incluye las de final pendiente), se mostrará el listado de materias habilitadas para cursar. Como las correlatividades no son transitivas puede suceder que el alumno haya agregado que aprobó Análisis Matemático II pero aún no haya aprobado las materias del CBC, en ese caso se le mostrarán como habilitadas las materias del CBC ya que no poseen ninguna correlativa y todas aquellas materias que sólo hayan tenido a Análisis Matemático II como única correlativa. Posteriormente cuando en futuros desarrollos se agreguen las excepciones de correlatividades, en este punto se mostrarán también aquellas materias que pueden ser cursadas con pedido de excepción ya que se puede decir que estarían `habilitadas'.
 
 \begin{figure}[H]
 \centering
@@ -483,7 +483,7 @@ Cuando el plan esté generado, se mostrará una notificación en el menú.
 \caption{Notificación Plan Generado no visualizado}
 \end{figure}
 
-Es posible visualizar el listado de los planes de estudio que se han solicitado. Cada uno de ellos tendrá el estado 'En curso' (aún se está generando o está en la cola de espera), 'Incompatible' (no hay una solución óptima que cumpla con los parámetros indicados) o 'Finalizado' (plan compatible finalizado de generar).
+Es posible visualizar el listado de los planes de estudio que se han solicitado. Cada uno de ellos tendrá el estado `En curso' (aún se está generando o está en la cola de espera), `Incompatible' (no hay una solución óptima que cumpla con los parámetros indicados) o `Finalizado' (plan compatible finalizado de generar).
 
 \begin{figure}[H]
 \centering
@@ -491,9 +491,9 @@ Es posible visualizar el listado de los planes de estudio que se han solicitado.
 \caption{Historial Planes Generados}
 \end{figure}
 
-Los planes que se encuentren en estado 'Finalizado' o 'Incompatible' se los podrá eliminar.
+Los planes que se encuentren en estado `Finalizado' o `Incompatible' se los podrá eliminar.
 
-Los planes que se encuentren en estado 'Finalizado' pueden ser visualizados.
+Los planes que se encuentren en estado `Finalizado' pueden ser visualizados.
 
 La visualización del plan de estudios consiste en el listado de los cuatrimestres con las materias para cada uno de ellos. En el caso de que se hayan cargado materias que no hayan sido contempladas en el momento de la generación del plan, éstas serán agregadas en el cuatrimestre correspondiente y eliminadas del asignado originalmente (si corresponde).
 
@@ -573,6 +573,10 @@ Al editar un docente, es posible cambiar su nombre, apellido, y cursos que dicta
 \newpage
 \section{Algoritmos para la generación del Plan de Estudios personalizado}
 
+Se analizaron varios algoritmos y se decidió utilizar un algoritmo que combina Greedy con un algoritmo de Fuerza Bruta; y por otro lado un algoritmo de Porgramación Lineal Entera. Éste último fue inspirado en un paper\cite{PLE_HORARIOS_UNIV} en el cuál utilizaban este tipo de algoritmos para la asignación de horarios en base a la disponiblidad de aulas y docentes.
+
+Se analizaron los papers\cite{PLE_HORARIOS_UNIV, MODELOS_PLE, PAPER_ROSITA_PLANNING_WITH_PREFERENCES_1, PAPER_ROSITA_PLANNING_WITH_PREFERENCES_2, PAPER_ROSITA_PLANNING_WITH_PREFERENCES_3, PAPER_ROSITA_PLANNING_WITH_PREFERENCES_4} sobre algoritmos de programación basados en preferencias, pero se decidió descartarlos ya que la similaridad con el algoritmo a desarrollar no era tan próxima. Estos algoritmos se basan en tomar decisiones basados en una preferencia del usuario a partir de otra decisión tomada; por ejemplo: si elegí ir en avión con la compañía C1 a la ciudad X, entonces prefiero pagar (si aún es posible) con la tarjeta T1 sobre la tarjeta T2 y sobre efectivo, ya que T1 aplica mejores descuentos para ir en avión con C1. En el caso del algoritmo del plan de estudios las preferencias no son condicionadas a otras decisiones sino que afectan al todo.
+
 \subsection{Arquitectura y Flujo General}
 
 \begin{figure}[H]
@@ -605,7 +609,7 @@ Se parte del plan completo para la carrera elegida y se actualizan los créditos
 
 Se eliminan del listado de materias aquellas que el alumno ya aprobó y las que aún se encuentran con final pendiente pero se darán por aprobadas. En el caso de que la materia no se de por aprobada desde el momento de la generación del plan sino en cuatrimestres posteriores, se actualiza con estas últimas el cuatrimestre mínimo que requieren aquellas materias que tienen a la que se dará por aprobada como correlativa.
 
-Se separan las materias del CBC (que siempre serán agregadas en grupos de tres al principio del plan generado) y se configuran como materias obligatorias aquellas de la orientación elegida y como electivas aquellas de las otras orientaciones (si corresponde). Además, se copia el trabajo profesional para dividirlo en dos 'submaterias' ya que debe realizarse en dos cuatrimestres consecutivos.
+Se separan las materias del CBC (que siempre serán agregadas en grupos de tres al principio del plan generado) y se configuran como materias obligatorias aquellas de la orientación elegida y como electivas aquellas de las otras orientaciones (si corresponde). Además, se copia el trabajo profesional para dividirlo en dos `submaterias' ya que debe realizarse en dos cuatrimestres consecutivos.
 
 Se elijen los cursos específicos definidos por el usuario. Si la materia era electiva se la transforma en obligatoria con ese único curso disponible y se actualizan los créditos requeridos en materias electivas. Se verifica que los horarios de los cursos que se van a agregar como disponibles cumplan con la restricción de los horarios en los que el alumno no puede cursar. Si no la cumplen, esos cursos son eliminados.
 
@@ -629,6 +633,56 @@ Finalmente se genera el hash con los parámetros. Si este hash existe, el plan e
 
 
 \subsection{Algoritmo Programación Lineal Entera (PLE)}
+
+\subsubsection{Programación Lineal Entera: Qué es y cómo funciona}
+
+La programación lineal es una técnica matemática utilizada en la investigación de operaciones, que permite la optimización de una función objetivo a través de la aplicación de diversas restricciones a sus variables.
+
+Un modelo de Programación Entera es aquel cuya solución óptima tiene sentido solamente si una parte o todas las variables de decisión toman valores restringidos a números enteros, permitiendo incorporar en el modelamiento matemático algunos aspectos que quedan fuera del alcance de los modelos de Programación Lineal.
+
+En este sentido los algoritmos de resolución de los modelos de Programación Entera difieren a los utilizados en los modelos de Programación Lineal, destacándose entre ellos el Algoritmo de Ramificación y Acotamiento (o Branch \& Bound), Branch \& Cut, Planos Cortantes, Relajación Lagrangeana, entre otros.
+
+Los modelos de Programación Entera se pueden clasificar en 2 grandes áreas: Programación Entera Mixta (PEM / MIP) y Programación Entera Pura (PEP / ILP). En el caso del algoritmo que se utilizará en este proyecto, es un algoritmo de Programación Entera Pura.\newline
+
+El primer paso para la resolución de un problema de programación lineal consiste en la identificación de los elementos básicos de un modelo matemático.
+
+\begin{itemize}
+	\item Definir el objetivo
+	\item Identificar las variables de decisión
+	\item Identificar los datos del problema
+	\item Identificar la función objetivo
+	\item Identificar las restricciones
+\end{itemize}
+
+En principio, puede parecer que los problemas lineales enteros son más fáciles de resolver que los continuos, dado que el número de soluciones factibles a analizar, cuando el conjunto de oportunidades está acotado, es finito, éste número suele ser lo suficientemente grande como para que resulte imposible su comparación.\newline
+
+La mayoría de los métodos de resolución comienzan su ejecución con la resolución del problema lineal asociado (PLA) consistente en eliminar las condiciones de integridad, obteniéndose en consecuencia un problema de programación lineal que puede ser resuelto mediante el algoritmo del simplex.
+
+La resolución del PLA en primer lugar, tiene como ventaja que si la solución a dicho problema verifica las condiciones de integridad de las variables, ésa será la solución al problema entero.
+
+Si la solución al PLA no verifica las condiciones de integridad, entonces se requiere utilizar otro método que permita resolver el problema entero.
+
+El solver utilizado es CBC (COIN\footnote{El acrónimo completo es `COIN-OR' (Compuational Infrastructure for Operations Research) Por simplicidad utilizan solamente `COIN'.} Branch and Cut solver). Este solver es open-source desarrollado en C++ para la resolución de problemas de programación entera mixta.
+
+\subsubsection{Branch \& Cut}
+
+---------------------- HACER -------------------------
+
+\textbf{Algoritmo de Ramificación y Acotamiento (Branch \& Bound)}
+
+\textbf{Planos Cortantes}
+
+
+\subsubsection{Algoritmo Desarrollado}
+
+Para el desarrollo del algoritmo, se genera un archivo escrito en Python que hace uso de la librería PuLP para la resolución del problema; en este archivo se agregan las definiciones de las variables, de la función objetivo y de las restricciones que se deben cumplir.
+
+Luego, estos datos son verificados, se identifican las variables igualadas a 0 y se las reemplaza en las ecuaciones, de forma de eliminar todas aquellas variables para las cuales ya se conoce el valor. Luego, todas aquellas restricciones que sean de una variable mayor o igual a cero o una variable menor igual a infinito, son eliminadas ya que son restricciones que se cumplen por la misma naturaleza de la variable.
+
+Una vez que el código está limpio, es ejecutado con el solver CBC. El algoritmo puede determinar tanto que fue compatible (y tener una solución) o ser incompatible.\newline
+
+\textbf{Desarrollo}\newline
+
 ---------------------- HACER -------------------------
 
 
@@ -643,22 +697,39 @@ Finalmente se genera el hash con los parámetros. Si este hash existe, el plan e
 \newpage
 \section{Mejoras y Nuevas Funcionalidades Futuras}
 
-quienes siguen el proyecto
+Al ser un proyecto con miras a que los alumnos puedan hacer uso de él y que sea de desarrollo continuo, se tienen varias mejoras y funcionalidades futuras que se desean desarrollar.
 
-- simultaneidad de carreras
-- excepcion de correlatividades
-- calendario con parciales y otras fechas importantes
-- chequeo de superposiciones horarias
-- agregar contacto entre alumnos que cursan la misma materia en el mismo curso el cuatrimestre actual + interaccion -entre usuarios en general
-- usuario docente
-- usuarios deptos
-- informar fechas de examenes y con tres personas que den el ok (o el docente si esta desarrollado) agregar la notificaicon
-- notificaciones de fechas importantes (elecciones, inscripciones, etc)
-- permitir agregar notas de trabajos practicos y parciales a las materias
-- permitir que el usuario agregue la prioridad que tiene actualmente y usarla para las inscripciones de las materias e informar este dato --> ojo xq no hay info real mas que la que puedan pasar los usuarios
-- Sincronizar los datos con el SIU parseando la web solicitando usuario y password en el momento para hacer los requests. Esto se puede usar para darle alertas de las diferencias entre las materias que el tiene registardo y las del SIU o para sincronizar sus materias en lugar de que requiera cargarlas manualmente
- 
----------------------- HACER -------------------------
+Asociado a esto, se ha tenido contacto con algunos alumnos en particular que se han mostrado interesados en poder desarrollar alguna de las funcionalidades un poco más adelante.
+
+Algunas de las funcionalidades y mejoras a futuro son:
+
+\begin{itemize}
+	\item Carga de otras carreras de la facultad: En principio se debe evaluar y establecer si requieren ajustes los modelos de datos ya que no todas las carreras mantienen la misma estructura (por ejemplo, algunas carreras deben cumplir con X créditos en materias de otra facultad). Luego, se deberán generar los datos de entrada para poder dar de alta en la base de datos los planes de estudios asociados a ellas.
+	
+	\item Simultaneidades de carreras: Muchos alumnos obtienen simultaneidades de carreras. En el plan viejo de licenciatura y el plan de ingeniería en informática es algo muy común ya que comparten muchas materias. Se desea poder agregar las tablas de equivalencias para que al aprobar una de por aprobada la equivalente. Se debe tener en cuenta también este dato para las materias habilitadas para cursar y para la generación del plan con dos o más carreras en simultáneo.
+	
+	\item Excepción de Correlatividades: Poder solicitar las excepciones (generar la nota automática). Llevar registro de las excepciones solicitadas, negadas y/u otorgadas, de manera que las correlatividades tornen en flexibles para aquellas correlativas a las que se haya dado la excepción en la mayoría de los casos.
+	
+	\item Incorporar un calendario con parciales y otras fechas importantes: El calendario deberá tener fechas importantes como elecciones, inscripciones, etc que sean agregadas por un adminisrador. Por otro lado, también se deberá permitir a los alumnos/docentes subir las fechas de parciales, trabajos prácticos, etc de un curso. En el caso de que sean los alumnos quienes lo agreguen, se realizará una validación por los otros alumnos del curso. Si obtiene un porcentaje suficiente de validaciones, la fecha será agregada. Las fechas importantes deberán ser notificadas al usuario permitiendo configurar el tiempo y el mecanismo utilizado para la comunicación.
+	
+	\item Superposiciones Horarias: Permitir la verificación de forma sencilla sobre la superposición horaria acorde al plan de estudios diseñado por la facultad, emitiendo el listado de las materias que se superponen en cada cuatrimestre e indicando una solución que sea compatible con los cuatrimestres de oras carreras donde se dicte la materia.
+	
+	\item Contacto y Mensajería: Permitir la mensajería a través de la plataforma entre los diferentes usuarios. Permitir contactar a los alumnos que se encuentren cursando en el mismo curso que el alumno está isncripto para el cuatrimestre actual, de forma que puedan compartirse notas o hacerse preguntas.
+	
+	\item Incorporar un rol para usuarios docentes de forma que puedan modificar sus datos personales y agregar contenido/links relacionados a las materias que dictan.
+
+	\item Incorporar un rol administrador de departamento para que cada departamento pueda modificar los horarios que le corresponden a sus cursos asociados y hacer actualziaciones de docentes de manera más efectiva.
+	
+	\item Permitir agregar calificaciones de trabajos prácticos y parciales a las materias del alumno.
+	
+	\item Permitir agregar materias no contempladas en el plan (por ejemplo, cuando cursan una materia en otra facultad) y la asignación de créditos (por ejemplo, por materias de intercambio) junto a la resolución correspondiente.
+	
+	\item Permitir que el usuario agregue su prioridad actual y en base a los cursos que finalmente se ha inscripto, estimar la máxima prioridad con la que alguien se inscribió al curso (estos datos no serán completamente fieles a menos que todos los alumnos con prioridad alta utilicen la aplicación).
+	
+	\item Hacer un parser de los datos del SIU Guaraní (solicitando usuario y password del mismo cada vez que el usuario quiera hacer uso de esta funcionalidad) para poder sincronizar las materias que ya tiene cargadas en el sistema (y no tener que cargarlas manualmente) y/o para informar en el caso de que hayan materias aprobadas / desaprobadas cargadas en MUSSA y que aún no aparezcan en el SIU.
+
+\end{itemize}
+
 
 \newpage
 \section{Conclusiones}
@@ -672,7 +743,7 @@ A mi familia, que estuvo presente desde la distancia cuando comencé la carrera.
 
 A mi nueva familia adquirida, que me han acompañado durante este último tramo, en especial a Nico que nos hizo mil y un favores relacionados a la facultad desde que nos mudamos a Irlanda.
 
-A mis amigos y compañeros de facultad, con los que siempre compartí muy buenas experiencias y muchas veces tuvimos que dejar cosas de lado porque 'había que estudiar'. En especial a Nicolás, Martín, Ezequiel, Flor y Javier con los que compartí la mayor parte de mi carrera y nos ayudamos mutuamente a avanzar, sé muy bien que sin ellos la carrera no hubiese sido igual.
+A mis amigos y compañeros de facultad, con los que siempre compartí muy buenas experiencias y muchas veces tuvimos que dejar cosas de lado porque `había que estudiar'. En especial a Nicolás, Martín, Ezequiel, Flor y Javier con los que compartí la mayor parte de mi carrera y nos ayudamos mutuamente a avanzar, sé muy bien que sin ellos la carrera no hubiese sido igual.
 
 A todos mis grupos de trabajo profesional antes de este, que se armaron y desarmaron por uno u otro motivo, pero que han sido pasos necesarios para poder finalmente llegar a este punto.
 
@@ -761,6 +832,20 @@ Recuperado de: \url{https://arxiv.org/pdf/1006.0274.pdf}
 
 
 % BEGIN Referencia
+\bibitem{CLASE_PLE_VALENCIA} Ramón Sala - Garrido (2005). Programación Lineal Entera. \textit{Clase 14}, páginas 1-16.
+Recuperado de: \url{https://www.uv.es/~sala/Clase14.pdf}
+% END Referencia
+
+
+
+% BEGIN Referencia
+\bibitem{INFO_PLE} \textit{Qué es la programación Lineal Entera}
+
+\url{https://www.gestiondeoperaciones.net/programacion-entera/que-es-la-programacion-entera/}
+% END Referencia
+
+
+% BEGIN Referencia
 \bibitem{PULP_PYTHON} \textit{<<Linear Programming with Python and PuLP>>}
 
 \textsc{Ben Alex Keen}
@@ -779,11 +864,62 @@ Recuperado de: \url{https://arxiv.org/pdf/1006.0274.pdf}
 
 
 % BEGIN Referencia
+\bibitem{FLASK_OFICIAL} \textit{<<Flask>>}
+
+\textsc{Armin Ronacher}
+
+\url{http://flask.pocoo.org/}
+% END Referencia
+
+
+% BEGIN Referencia
 \bibitem{FLASK_TUTORIAL} \textit{<<The Flask Mega-Tutorial>>}
 
 \textsc{Miguel Grinberg}
 
 \url{https://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-i-hello-world}
+% END Referencia
+
+% BEGIN Referencia
+\bibitem{SQLALCHEMY_OFICIAL} \textit{<<SQLAlchemy>> Python SQL toolkit and Object Relational Mapper}
+
+\url{https://www.sqlalchemy.org/}
+% END Referencia
+
+% BEGIN Referencia
+\bibitem{FLASK_USER} \textit{<<Flask-User>>}
+
+\textsc{Ling Thio}
+
+\url{https://github.com/lingthio/Flask-User}
+% END Referencia
+
+
+% BEGIN Referencia
+\bibitem{BOOTSTRAP} \textit{<<Bootstrap>> Framework desarrollado y liberado por Twitter que tiene como objetivo facilitar el diseño web, permitiendo crear de forma sencilla webs de diseño adaptable.}
+
+\url{https://getbootstrap.com/}
+% END Referencia
+
+
+% BEGIN Referencia
+\bibitem{MYSQL} \textit{<<MySQL>> Sistema de gestión de bases de datos relacional}
+
+\url{https://www.mysql.com/}
+% END Referencia
+
+
+% BEGIN Referencia
+\bibitem{CELERY} \textit{<<CELERY>> Cola de tareas asincónica open source basada en el pasaje de mensajes distribuido}
+
+\url{http://www.celeryproject.org/}
+% END Referencia
+
+
+% BEGIN Referencia
+\bibitem{REDIS} \textit{<<REDIS>> Almacén de estructura de datos de valores de clave en memoria rápido y de código abierto}
+
+\url{https://redis.io/}
 % END Referencia
 
 
