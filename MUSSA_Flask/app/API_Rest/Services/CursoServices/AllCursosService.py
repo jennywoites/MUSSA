@@ -67,7 +67,7 @@ class AllCursosService(BaseService):
                 docentes_response
             ))
 
-        cursos_result.sort(key=lambda curso : curso["puntaje"], reverse=True)
+        cursos_result.sort(key=lambda curso : float(curso["puntaje"]), reverse=True)
 
         result = ({'cursos': cursos_result}, SUCCESS_OK)
         self.logg_resultado(result)

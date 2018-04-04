@@ -233,6 +233,8 @@ class MateriaAlumnoService(BaseService):
         for respuesta in respuestas:
             entrada = PalabrasClaveParaMateria.query.filter_by(materia_id=id_materia) \
                 .filter_by(palabra_clave_id=respuesta.palabra_clave_id).first()
+            if not entrada:
+                continue
             entrada.cantidad_encuestas_asociadas -= 1
             db.session.commit()
             self.logg_info("Se disminuyó la cantidad de encuestas asociadas con la palabra clave de"
