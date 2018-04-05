@@ -514,7 +514,9 @@ class Parametros:
             franjas_por_dia[dia] = franjas
         return franjas_por_dia
 
-    def obtener_materias_disponibles(self, creditos_actuales):
+    def obtener_materias_disponibles(self, creditos_actuales, ultimo_cuatrimestre_generado):
+        cuatrimestre_actual = ultimo_cuatrimestre_generado + 1
+
         disponibles_obligatorias = []
         disponibles_electivas_prioritarias = []
         disponibles_electivas_secundarias = []
@@ -524,6 +526,9 @@ class Parametros:
 
             if self.la_materia_esta_habilitada(materia, creditos_actuales):
                 for curso in self.horarios[id_materia]:
+                    if not self.curso_esta_habilitado_en_el_cuatrimestre(curso, cuatrimestre_actual):
+                        continue
+
                     self.agregar_materia_al_listado_correspondiente(materia, curso, disponibles_obligatorias,
                                                                     disponibles_electivas_prioritarias,
                                                                     disponibles_electivas_secundarias)
@@ -552,6 +557,13 @@ class Parametros:
             disponibles.append(materia_electiva)
 
         return disponibles
+
+    def curso_esta_habilitado_en_el_cuatrimestre(self, curso, cuatrimestre_actual):
+        es_par = (cuatrimestre_actual % 2 == 0)
+        return (curso.se_dicta_segundo_cuatrimestre
+                if self.primer_cuatrimestre_es_impar else curso.se_dicta_primer_cuatrimestre) if es_par \
+            else (curso.se_dicta_primer_cuatrimestre if self.primer_cuatrimestre_es_impar else
+                  curso.se_dicta_segundo_cuatrimestre)
 
     def la_materia_esta_habilitada(self, materia, creditos_actuales):
         return (not materia.correlativas and

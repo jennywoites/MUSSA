@@ -19,10 +19,13 @@ CANT_CREDITOS_ELECTIVAS = "cant_creditos_electivas"
 def generar_plan_greedy(parametros):
     creditos_totales = parametros.creditos_preacumulados
     while (not parametros.plan_esta_finalizado()):
-        if len(parametros.plan_generado) == parametros.max_cuatrimestres:
+        ultimo_cuatrimestre_generado = len(parametros.plan_generado)
+        if ultimo_cuatrimestre_generado == parametros.max_cuatrimestres:
             return PLAN_NO_GENERADO
 
-        materias_cuatrimestre_actual, creditos_totales = generar_cuatrimestre_actual(parametros, creditos_totales)
+        materias_cuatrimestre_actual, creditos_totales = generar_cuatrimestre_actual(
+            parametros, creditos_totales, ultimo_cuatrimestre_generado
+        )
 
         if not materias_cuatrimestre_actual:
             return PLAN_NO_GENERADO
@@ -32,8 +35,8 @@ def generar_plan_greedy(parametros):
     return PLAN_GENERADO_CORRECTAMENTE
 
 
-def generar_cuatrimestre_actual(parametros, creditos_totales):
-    materias_disponibles = parametros.obtener_materias_disponibles(creditos_totales)
+def generar_cuatrimestre_actual(parametros, creditos_totales, ultimo_cuatrimestre_generado):
+    materias_disponibles = parametros.obtener_materias_disponibles(creditos_totales, ultimo_cuatrimestre_generado)
 
     combinaciones = len(materias_disponibles)
     for i in range(1, parametros.max_cant_materias_por_cuatrimestre):

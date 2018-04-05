@@ -385,8 +385,10 @@ def generar_restriccion_no_todos_los_cursos_se_dictan_ambos_cuatrimestres(arch, 
 def generar_restriccion_horarios_cursos(arch, parametros):
     generar_restriccion_si_se_elige_un_curso_se_cursa_su_horario_completo(arch, parametros)
     generar_restriccion_solo_puede_cursarse_en_un_lugar_al_mismo_tiempo(arch, parametros)
-    generar_restriccion_si_la_materia_no_se_cursa_en_ese_cuatrimestre_no_se_cursa_ninguno_de_sus_cursos(arch,
-                                                                                                        parametros)
+    generar_restriccion_si_la_materia_no_se_cursa_en_ese_cuatrimestre_no_se_cursa_ninguno_de_sus_cursos(
+        arch,
+        parametros
+    )
     generar_restriccion_la_materia_no_puede_cursarse_en_mas_de_un_curso(arch, parametros)
     generar_restriccion_no_todos_los_cursos_se_dictan_ambos_cuatrimestres(arch, parametros)
 
@@ -491,7 +493,7 @@ def generar_restriccion_maxima_cantidad_horas_cursada(arch, parametros):
         for id_materia in parametros.horarios:
             for curso in parametros.horarios[id_materia]:
                 variable = "H_{}_{}_{}".format(id_materia, curso.id_curso, get_str_cuatrimestre(cuatrimestre))
-                ecuacion += "{}*{} + ".format(curso.medias_horas_cursada ,variable)
+                ecuacion += "{}*{} + ".format(curso.medias_horas_cursada, variable)
         ecuacion = ecuacion[:-3]
         arch.write("{} <= {})".format(ecuacion, parametros.max_horas_cursada) + ENTER)
     arch.write(ENTER + ENTER)
@@ -514,11 +516,11 @@ def generar_restricciones(arch, parametros):
     generar_restriccion_calculo_creditos_obtenidos_por_cuatrimestre(arch, parametros)
     generar_restriccion_creditos_minimos_ya_obtenidos_para_cursar(arch, parametros)
     generar_restriccion_maxima_cant_materias_por_cuatrimestre(arch, parametros)
+    generar_restriccion_maxima_cantidad_horas_extra_cursada(arch, parametros)
+    generar_restriccion_maxima_cantidad_horas_cursada(arch, parametros)
     generar_restriccion_maximo_cuatrimestres_para_func_objetivo(arch, parametros)
     generar_restriccion_horarios_cursos(arch, parametros)
     generar_restriccion_creditos_minimos_electivas(arch, parametros)
-    generar_restriccion_trabajo_final(arch, parametros)
     generar_restriccion_materias_incompatibles(arch, parametros)
     generar_restriccion_cuatrimestre_minimo_en_que_se_puede_cursar_la_materia(arch, parametros)
-    generar_restriccion_maxima_cantidad_horas_extra_cursada(arch, parametros)
-    generar_restriccion_maxima_cantidad_horas_cursada(arch, parametros)
+    generar_restriccion_trabajo_final(arch, parametros)
