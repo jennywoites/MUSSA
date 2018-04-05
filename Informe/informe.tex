@@ -989,9 +989,15 @@ C\_TP\_FINAL_{i\_PARTE\_1} + 1 = C\_TP\_FINAL_{i\_PARTE\_2}
 
 
 \subsection{Algoritmo Greddy}
+
 Para este algoritmo se utiliza una combinación de Greedy y Fuerza Fruta. Para el Greedy, se ordenan las materias por un determinado criterio y se las selecciona en orden si éstas encajan con las anteriores. En el caso de que las combinaciones de cursos disponibles sean relativamente pocas, se busca la mejor combinación posible a través de la fuerza bruta con poda. De esta forma se elige la mejor combinación que además permita tener mayores opciones en el cuatrimestre siguiente.\newline
 
-La selección Greedy genera un cuatrimestre válido con las materias disponibles mientras que no se haya finalizado el plan o superado la cantidad máxima de cuatrimestres. Las materias disponibles son una combinación entre las materias obligatorias, las materias electivas y las electivas secundarias. 
+La selección Greedy genera un cuatrimestre válido con las materias disponibles mientras que no se haya finalizado el plan o superado la cantidad máxima de cuatrimestres. Las materias disponibles son una combinación entre las materias obligatorias, las materias electivas primarias y las electivas secundarias.
+
+Las materias electivas primarias son aquellas que suman créditos para las temáticas solicitadas. Las materias electivas secundarias son aquellas que no suman créditos para las materias de las temáticas elegidas. Si no hay temáticas elegidas, o los créditos por temática han sido cumplidos, todas las materias electivas son primarias.
+
+
+
 ---------------------- HACER -------------------------
 
 
