@@ -714,13 +714,28 @@ Si la solución encontrada para un subproblema es factible para el problema orig
 
 Como consecuencia, solo se continúa con los subproblemas cuyo límite superior local es mayor o igual al límite global inferior.
 
-El algoritmo Branch \& Bound es un algoritmo de división y conquista que se aproxima a  resolver el problema  dividiéndolo en problemas más pequeños.
+El algoritmo Branch \& Cut es un algoritmo de división y conquista que se aproxima a  resolver el problema  dividiéndolo en problemas más pequeños.
 
 \begin{figure}[H]
 \centering
 \includegraphics[scale=0.4]{Imagenes/diagrama_branch_and_bound.png}\par
 \caption{Esquema general del funcionamiento del algoritmo de Branch \& Bound}
 \end{figure}
+
+\textbf{Ventajas y Desventajas del Algoritmo}
+
+\begin{itemize}
+	\item Por utilizar las restricciones presentes en el PL desde límites inferiores anteriormente generados, se ahorra una gran cantidad de tiempo y de asignaciones de memoria ya que las restricciones no necesitan ser guardadas ni el tableau PL regenerada.
+	
+	\item Cualquier plano cortante válido presente en el PL de límites inferiores previamente generados, puede ser usado para inicializar el set de restricciones cuando se genera el límite inferior actual. Esto significa que el proceso de enumeración no necesita comenzar desde cero cada vez. Así mismo, cuando se resuelve un nodo, la descripción de la solución del politopo es mejorada por todos los nodos de la búsuqeda del árbol al mismo tiempo.
+	
+	\item Dado que las restricciones son removidas del tableau PL, pueden necesitar ser regeradas luego en la búsqueda del árbol. También, las resricciones pueden ser removidas demasiado temprano, en cuyo caso el límite inferior puede no ser tan alto como podría haber sido. La ventaja de remover las restricciones es que el tamaño del problema PL es reducido, y con ello, el tiempo para hallar una solución y los requerimientos de memoria son reducidos drasticamente.
+	
+	\item Cuando un nodo hijo es removido de la lista y el límite inferior es generado, no hay garantía de que el límite inferior generado vaya a ser al menos igual al límite inferior guardado cuando el nodo hijo estaba situado en la lista. Esto sucede porque las restricciones en el problema PL son probablemente diferentes de cuando el nodo estaba guardado. Sin embargo, esto no será el caso usual, ya que las restricciones adicionales de un nodo hijo, comparadas con las del nodo padre, por lo general son más restrictivas.
+	
+	\item Para problemas grandes, el número de variables en el problema PL pueden se lo suficientemente grandes para hacer el tiempo de solución prohibitivo y con ello, se reduce la efectividad del procedimiento de Branch \& Cut. Consecuentemente, reducir el número de variables 0-1 a través de un preprocesamiento suele ser requerido. 
+
+\end{itemize}
 
 \subsubsection{Algoritmo Desarrollado}
 
@@ -1129,6 +1144,17 @@ Recuperado de: \url{https://www.uv.es/~sala/Clase14.pdf}
 % END Referencia
 
 
+% BEGIN Referencia
+\bibitem{DIAPOSITIVAS_BRANCH_AND_BOUND} Gunnar Klaus (2008).  \textit{Solving the ILP using branch-and-cut.}
+Recuperado de: \url{http://www.mi.fu-berlin.de/wiki/pub/Main/GunnarKlauP1winter0708/discMath_klau_ILP_I.pdf}
+% END Referencia
+
+
+% BEGIN Referencia
+\bibitem{BRANCH_AND_BOUND_PAPER} L. Caccetta - S. P. Hill (1999). Branch and Cut Methods for Network Optimization  \textit{PERGAMON. Mathematical and Computer Modelling}, páginas 517-530.
+Recuperado de: \url{https://www.sciencedirect.com/science/article/pii/S0895717700002582}
+% END Referencia
+ 
 
 % BEGIN Referencia
 \bibitem{INFO_PLE} \textit{Qué es la programación Lineal Entera}
