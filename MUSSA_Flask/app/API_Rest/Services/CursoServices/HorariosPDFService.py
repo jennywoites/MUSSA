@@ -66,6 +66,8 @@ class HorariosPDFService(BaseService):
         horarios_pdf = parsear_pdf(ruta)
 
         fecha_actualizacion = datetime.datetime.now()
+        fecha_actualizacion = fecha_actualizacion.replace(microsecond=0)
+
         self.guardar_horarios_pdf(horarios_pdf, cuatrimestre, fecha_actualizacion)
         self.guardar_ultima_actualizacion_horarios(cuatrimestre, anio, fecha_actualizacion)
 
@@ -138,6 +140,7 @@ class HorariosPDFService(BaseService):
 
         curso.fecha_actualizacion = fecha_actualizacion
         self.agregar_carreras_al_curso(curso, carreras)
+        db.session.commit()
 
     def agregar_carreras_al_curso(self, curso, carreras):
         for codigo in carreras:
@@ -256,12 +259,13 @@ class HorariosPDFService(BaseService):
         # corresponda
         cursos = Curso.query.filter(Curso.fecha_actualizacion < fecha_actualizacion).all()
         for curso in cursos:
-            if cuatrimestre == 1 or cuatrimestre == '1':
-                curso.se_dicta_primer_cuatrimestre = False
+            if (cuatrimestre == 1 or cuatrimestre == '1') and curso.segundo_cuatrimestre_actualizado:
                 curso.primer_cuatrimestre_actualizado = True
-            else:
-                curso.se_dicta_segundo_cuatrimestre = False
+                curso.se_dicta_primer_cuatrimestre = False
+
+            elif (cuatrimestre == 2 or cuatrimestre == '2') and curso.primer_cuatrimestre_actualizado:
                 curso.segundo_cuatrimestre_actualizado = True
+                curso.se_dicta_segundo_cuatrimestre = False
 
         db.session.commit()
 
