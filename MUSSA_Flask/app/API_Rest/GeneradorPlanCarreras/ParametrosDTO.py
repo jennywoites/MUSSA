@@ -755,10 +755,10 @@ class Parametros:
         if franjas_a < franjas_b:
             return self.CMP_SEGUNDO_ES_MENOR
 
-        if curso_a.puntaje > curso_b.puntaje:
+        if float(curso_a.puntaje) > float(curso_b.puntaje):
             return self.CMP_PRIMERO_ES_MENOR
 
-        if curso_a.puntaje < curso_b.puntaje:
+        if float(curso_a.puntaje) < float(curso_b.puntaje):
             return self.CMP_SEGUNDO_ES_MENOR
 
         if materia_a.creditos > materia_b.creditos:
@@ -830,10 +830,10 @@ class Parametros:
         if correlativas_liberadas_a < correlativas_liberadas_b:
             return self.CMP_SEGUNDO_ES_MENOR
 
-        if curso_a.puntaje > curso_b.puntaje:
+        if float(curso_a.puntaje) > float(curso_b.puntaje):
             return self.CMP_PRIMERO_ES_MENOR
 
-        if curso_a.puntaje < curso_b.puntaje:
+        if float(curso_a.puntaje) < float(curso_b.puntaje):
             return self.CMP_SEGUNDO_ES_MENOR
 
         codigo_a = materia_a.codigo

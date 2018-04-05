@@ -118,7 +118,7 @@ def agregar_materia_al_plan(plan_de_estudios, id_materia, id_curso, cuatrimestre
         orden=cuatrimestre
     )
 
-    if id_curso:
+    if id_curso and id_curso > 0:
         materia_plan.curso_id = id_curso
 
     db.session.add(materia_plan)
