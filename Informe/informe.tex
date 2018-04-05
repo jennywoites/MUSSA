@@ -131,7 +131,10 @@ El frontend fue desarrollado con HTML5, JavaScript, CSS y Bootstrap\cite{BOOTSTR
 Para la base de datos se eligió MySQL\cite{MYSQL}. Además fue utilizado SQLAlchemy\cite{SQLALCHEMY_OFICIAL} como ORM\footnote{ORM: Object Relational Mapper. Un ORM simplifica el acceso a una base de datos por parte del programador convirtiendo toda sentencia sql a operaciones con objetos.}.\newline
 
 La máquina con la que fueron realizadas las pruebas tiene las siguientes características:
-XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+\begin{itemize}
+	\item CPU: Procesador Intel Core i3-2330M
+	\item RAM: 10 GB
+\end{itemize}
 por lo que los tiempos de los algoritmos de generación del plan podrían mejorar si se tuviese una máquina con mejores características.\newline
 
 Para el comienzo del proyecto se utilizó Flask-User\cite{FLASK_USER}. Este proyecto ofrece una estructura inicial con las acciones básicas de login/signin y manejo de contraseñas. Fue dicifil de configurar al principio ya que no se tenía experiencia con Flask en general, pero una vez configurado solo hizo falta realizar las customizaciones correspondientes. El problema principal que se tuvo al utilizar Flask-User en lugar de haber realizado los servicios manualmente es que cuando se quiso desarrollar la API no se la pudo independizar completamente del proyecto ya que sino, requería solucionar el cross domain o realizar una autenticación en ambos puntos. Como punto a favor es que simplificó mucho el desarrollo de esa sección y que proveyó de una estructura básica al proyecto en general.\newline
@@ -682,6 +685,154 @@ Luego, estos datos son verificados, se identifican las variables igualadas a 0 y
 Una vez que el código está limpio, es ejecutado con el solver CBC. El algoritmo puede determinar tanto que fue compatible (y tener una solución) o ser incompatible.\newline
 
 \textbf{Desarrollo}\newline
+
+Se definen las variables que van a ser utilizadas. Los valores que podrán tomar, dependerán de los parámetros de entrada.\newline
+
+Los cuatrimestres pueden tomar valores entre 1 y MAX\_CUATRIMESTRES.
+
+Los ids de las materias y los cursos, serán los ids de las materias y cursos disponibles para realizar el plan.\newline
+
+Los días disponibles son LUNES, MARTES, MIERCOLES, JUEVES, VIERNES y SABADO. Se pueden haber eliminado algunos días dependiendo de los parámetros de entrada.\newline
+
+Las franjas de horarios van entre FRANJA\_MINIMA y FRANJA\_MAXIMA, que fueron modificadas en base a los horarios de los cursos disponibles. El valor default para ellos son 1 y 33 respectivamente.
+
+\begin{itemize}
+	\item Y$_{ij}$ (Y\_\{id materia\}\_\{cuatrimestre\}): La materia con id i se realiza en el cuatrimestre j.
+
+	$Y_{ij}$ $\epsilon$ \{1,0\}
+
+
+	\item Y\_TP\_FINAL$_{ijk}$ (Y\_TP\_FINAL\_\{id materia\}\_\{codigo materia\}\_\{cuatrimestre\}): La materia de trabajo final con id i y código j se realiza en el cuatrimestre k. Es necesario identificar el código de la materia ya que fue doblada en parte A y B y ambas tienen igual id. 
+
+	Y\_TP\_FINAL$_{ijk}$ $\epsilon$ \{1,0\}
+
+
+	\item C$_{i}$ (C\_\{id materia\}): Número de cuatrimestre en que se realiza la materia con id i. Si la materia no se realiza vale 0.
+
+	C$_{i}$ $\epsilon$ Z
+
+
+	\item C\_TP\_FINAL$_{ij}$ (C\_TP\_FINAL\_\{id materia\}\_\{codigo materia\}): Número de cuatrimestre en que se realiza la materia de trabajo final con id i y codigo j.
+
+	 C\_TP\_FINAL$_{ij}$ $\epsilon$ Z
+	 
+	 
+	\item TOTAL\_CUATRIMESTRES: Total del cuatrimestres requeridos para completar el plan.
+
+	TOTAL\_CUATRIMESTRES $\epsilon$ Z
+
+
+	\item CRED$_{i}$ (CRED\_\{numero de cuatrimestre\}): Cantidad de créditos obtenidos al final del cuatrimestre i.
+
+	CRED$_{i}$ $\epsilon$ Z
+
+
+	\item H$_{ijk}$ (H\_\{id materia\}\_\{id curso\}\_\{cuatrimestre\}): La materia con id i se cursa en el curso con id j en el cuatrimestre k.
+
+	H$_{ijk}$ $\epsilon$ \{1,0\}
+	
+	
+	\item dia$_{ij}$ (\{dia\}\_\{franja\}\_\{cuatrimestre\}): El día  (LUNES, MARTES, MIERCOLES, JUEVES, VIERNES, SABADO) en la franja horaria i, en el cuatrimestre j se está cursando (en algún curso, no importa cuál).
+
+	dia$_{ij}$ $\epsilon$ \{1,0\}
+
+
+	\item R$_{mcdfk}$ (R\_\{id materia\}\_\{id curso\}\_\{dia\}\_\{franja\}\_\{cuatrimestre\}): El horario para la materia con id m y el curso con id c, para ese día y esa franja horaria está habilitado (Solo valen 1 aquellos horarios en los que se dicta el curso y sólo en el caso de que se dicte en el cuatrimestre indicado).
+
+	R$_{mcdfk}$ $\epsilon$ \{1,0\}
+
+\end{itemize}
+
+Luego, se define la función objetivo a minimizar. Por el momento, sólo se busca minimizar el total de cuatrimestres, que se encuentra representado con la variable entera: TOTAL\_CUATRIMESTRES.
+
+La primer restricción que tenemos es que la materia se debe cursar en un único cuatrimestre. Además, si la materia es OBLIGATORIA, debe cursarse sí o sí. Por lo que se desprenden dos ecuaciones, una para los ids de materias obligatorias (\ref{eq:suma_obligatorias}) y otra para los ids de materias electivas (\ref{eq:suma_electivas}):
+
+\begin{equation}\label{eq:suma_obligatorias}
+\sum_{i} \sum_{j} Y_{ij} = 1 ; \forall i \epsilon \{id\_materia\_obligatoria\}, \forall j \epsilon \{cuatrimestres\}
+\end{equation}
+
+\begin{equation}\label{eq:suma_electivas}
+\sum_{i} \sum_{j} Y_{ij} \leq 1 ; \forall i \epsilon \{id\_materia\_electiva\}, \forall j \epsilon \{cuatrimestres\}
+\end{equation}
+
+Se debe establecer el número de cuatrimestre en que será cursada la materia, por lo que se requiere que para cada cuatrimestre j $\epsilon$ $[1, MAX_CUATRIMESTRES]$ (\ref{eq:numero_cuatrimestre_materias}):
+
+\begin{equation}\label{eq:numero_cuatrimestre_materias}
+\sum_{i} j * Y_{ij} = C_{j} ; \forall i \epsilon \{id\_materia\}
+\end{equation}
+
+Cuando la materia se cursa, los cuatrimestres de las correlativas deben ser menores. Como no todas las materias se cursan, es necesario agregar un ajuste para cancelar la ecuación cuando la materia no será cursada.
+
+Para toda materia con id i disponible y toda materia m que tiene como correlativa a la materia i:
+
+- Si la materia i es obligatoria y la materia m que la tiene de correlativa es obligatoria (\ref{eq:i_obligatoria_m_obligatoria}):
+
+\begin{equation}\label{eq:i_obligatoria_m_obligatoria}
+C_m \geq C_i + 1
+\end{equation}
+
+- Si la materia i es obligatoria y la materia m que la tiene de correlativa es electiva (\ref{eq:i_obligatoria_m_electiva}):
+
+\begin{equation}
+ajuste\_electiva\_no\_cursada = INFINITO * (1 - \sum_{\forall j} Y_{mj})
+\end{equation}
+
+\begin{equation}
+j \epsilon [1, MAX\_CUATRIMESTRES]
+\end{equation}
+
+\begin{equation}\label{eq:i_obligatoria_m_obligatoria}
+C_m + ajuste\_electiva\_no\_cursada \geq C_i + 1
+\end{equation}
+
+- Si la materia i es electiva (\ref{eq:i_electiva}):
+
+\begin{equation}
+ajuste\_electiva\_no\_cursada = INFINITO * (1 - \sum_{\forall j} Y_{mj})
+\end{equation}
+
+\begin{equation}
+j \epsilon [1, MAX\_CUATRIMESTRES]
+\end{equation}
+
+\begin{equation}\label{eq:i_electiva}
+C_m + ajuste\_electiva\_no\_cursada \geq C_i + \sum_{\forall j} Y_{ij}
+\end{equation}
+
+\begin{equation}
+j \epsilon [1, MAX\_CUATRIMESTRES]
+\end{equation}
+
+
+Para calcular los créditos acumulados, se deben considerar los cŕeditos de las materias obligatorias, electivas y las del trabajo profesional (si corresponde).
+
+El valor de CRED0 será el valor de los créditos acumulados con las materias aprobadas antes de invocar al algoritmo.\newline
+
+Para cada cuatrimestre j $\epsilon$ [1, MAX\_CUATRIMESTRES], con i $\epsilon$ \{id de materia\} y k código de materia de trabajo profesional asociada a i (La sumatoria de las materias del trabajo final solo es agregada si existen materias de este tipo) (\ref{eq:creditos_acumulados}):
+
+\begin{equation}\label{eq:creditos_acumulados}
+\sum_{\forall i} Y_{ij} * creditos_i + \sum_{\forall (i,k)} Y\_TP\_FINAL_{ikj} * creditos_{ik} + CRED_{(j-1)} = CRED_j
+\end{equation}
+
+Para todas las materias que requieren una cantidad de créditos mínimos para poder ser cursadas, se pide que los creditos acumulados en el cuatrimestre anterior al que se hace la materia sean mayores que los requeridos por la misma.
+
+Así, $\forall$ materia con id i que requiera créditos mínimos para ser cursada, $\forall$ j $\epsilon$ [1, MAX\_CUATRIMESTRES] (\ref{eq:creditos_minimos_cursar}):
+
+\begin{equation}\label{eq:creditos_minimos_cursar}
+creditos\_minimos\_aprobados_i * Y_{ij} <= CRED_{(j-1)}
+\end{equation}
+
+Se posee una restricción para la cantidad máxima de materias que se pueden realizar por cuatrimestre. Para cada cuatrimestre j $\epsilon$ [1, MAX\_CUATRIMESTRES], con i $\epsilon$ \{id de materia\} y k código de materia de trabajo profesional asociada a i (La sumatoria de las materias del trabajo final solo es agregada si existen materias de este tipo) (\ref{eq:max_cantidad_materias_por_cuatrimestre}):
+
+\begin{equation}\label{eq:max_cantidad_materias_por_cuatrimestre}
+\sum_{\forall i} Y_{ij} + \sum_{\forall (i,k)} Y\_TP\_FINAL_{ikj} \leq MAX\_CANT\_MATERIAS\_CUATRIM
+\end{equation}
+
+Para el cálculo del total de cuatrimestres, que es la función a minimizar se calcula como el máximo de todos los números de cuatrimestres de las diferentes materias (\ref{eq:total_cuatrimestres}). Con i $\epsilon$ \{id de materia\} y k código de materia de trabajo profesional asociada a i (La sumatoria de las materias del trabajo final solo es agregada si existen materias de este tipo):
+
+\begin{equation}\label{eq:total_cuatrimestres}
+TOTAL\_CUATRIMESTRES = max(C_1, C_2, ..., C_i, C\_TP\_FINAL_{ik})
+\end{equation}
 
 ---------------------- HACER -------------------------
 
