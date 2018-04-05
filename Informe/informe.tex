@@ -669,12 +669,58 @@ El solver utilizado es CBC (COIN\footnote{El acrónimo completo es `COIN-OR' (Co
 
 \subsubsection{Branch \& Cut}
 
----------------------- HACER -------------------------
+El método de Branch \& Cut utiliza dos técnicas:
 
-\textbf{Algoritmo de Ramificación y Acotamiento (Branch \& Bound)}
+\begin{itemize}
+	\item Cutting Planes (Planos cortantes): Para resolver un problema de progranación lineal entera (PLE), primero se consideran las relajaciones del problema (por lo general una relajación de programación lineal) y repetidamente se `cortan' partes del politopo\footnote{Objeto geométrico con lados planos. Generalización a cualquier dimensión de un polígono bidimensional o un poliedro tridimensional} (agregando nuevas restricciones) con la esperanza de obtener  un solución entera. Para encontrar los planos cortantes se debe resolver la separación del problema (separation problem) que implica encontrar una desigualdad válida del problema de PLE que haya sido violada.
+	
+	\item Branch \& Bound (Ramificación y Acotamiento): Un árbol enumerado de todas las posibles configuraciones de variables es parcialmente atravesado, computando los límites locales y globales superiores e inferiores, los cuales son usados para evitar partes del árbol que no pueden producir el valor óptimo.
 
-\textbf{Planos Cortantes}
+\end{itemize}
 
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.4]{Imagenes/ejemplo_planos_cortantes.png}\par
+\caption{Ejemplo visual de planos cortantes}
+\end{figure}
+
+El casco convexo de todos los vectores de incidencia posibles (los puntos verdes en la imagen anterior) forman el problema del politopo P (área en blanco). Si se consideran las desigualdades del problema de PLE, generalmente describen un politopo más grande (área en amarillo), auqnue este politopo no contine un punto entero no factible (puntos rojos).
+
+Si la solución $\bar{x}$ de la relajación PL es integral, corresponde a un vector incidencia factible que representa una solución óptima.
+
+De otra forma, se busca por una inecuación válida $f_x$ $\leq$ $f_0$ que `corta' la solución $\bar{x}$. Por ejemplo,
+
+\begin{equation}
+f_y \leq f_0 \forall y \epsilon P
+\end{equation}
+
+\begin{equation}
+f_{bar{x}} > f_0
+\end{equation}
+
+El set \{x $\mid$ $f_x$ = $f_0$\} es llamado plano cortante.
+
+La búsqueda por un plano cortante es llamada la separación del problema. Cualquier plano cortante que es encontrado se agrega al programa lineal y éste es resuelto otra vez.
+
+Hay un tipo especial de planos cortantes en los que se tiene interés, son los nombrados facetas del problema del politopo. Las facetas de un problema de un politopo d-dimensional son facetas de la dimensión (d-1). Éstos son en un sentido los `mejores' planos cortantes  dado que están directamente ligados al problema del poliedro. Por ello, es importante identificar las desigualdades que definen facetas.\newline
+
+Se repite el paso de corte hasta que una solución entera que cumple todas las restricciones es encontrada (la cual resuelve el porblema original de optimización), o hasta que  no es posible encontrar una desigualdad que haya sido violada dentro de las clases de desigualdades válidas.
+
+En este caso de utiliza el branch (ramificación). Esto es, se elige una variable $x_i$ y se resuelven las dos subclases: el caso $x_i$ = 0 y el caso $x_i$ = 1. Esta aplicación repetida produce un árbol enumerado de posibles casos.
+
+Se llama local al límite superior para el problema de PLE, si es obtenido desde un subproblema del árbol.
+
+Si la solución encontrada para un subproblema es factible para el problema original  y tiene el mejor puntaje que cualquier otra solución obtenida hasta el momento, entonces se guarda su valor para ser el nuevo límite global inferior para la función objetivo original.
+
+Como consecuencia, solo se continúa con los subproblemas cuyo límite superior local es mayor o igual al límite global inferior.
+
+El algoritmo Branch \& Bound es un algoritmo de división y conquista que se aproxima a  resolver el problema  dividiéndolo en problemas más pequeños.
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.4]{Imagenes/diagrama_branch_and_bound.png}\par
+\caption{Esquema general del funcionamiento del algoritmo de Branch \& Bound}
+\end{figure}
 
 \subsubsection{Algoritmo Desarrollado}
 
@@ -928,6 +974,9 @@ C\_TP\_FINAL_{i\_PARTE\_1} + 1 = C\_TP\_FINAL_{i\_PARTE\_2}
 
 
 \subsection{Algoritmo Greddy}
+Para este algoritmo se utiliza una combinación de Greedy y Fuerza Fruta. Para el Greedy, se ordenan las materias por un determinado criterio y se las selecciona en orden si éstas encajan con las anteriores. En el caso de que las combinaciones de cursos disponibles sean relativamente pocas, se busca la mejor combinación posible a través de la fuerza bruta con poda. De esta forma se elige la mejor combinación que además permita tener mayores opciones en el cuatrimestre siguiente.\newline
+
+La selección Greedy genera un cuatrimestre válido con las materias disponibles mientras que no se haya finalizado el plan o superado la cantidad máxima de cuatrimestres. Las materias disponibles son una combinación entre las materias obligatorias, las materias electivas y las electivas secundarias. 
 ---------------------- HACER -------------------------
 
 
@@ -968,6 +1017,8 @@ Algunas de las funcionalidades y mejoras a futuro son:
 	\item Permitir que el usuario agregue su prioridad actual y en base a los cursos que finalmente se ha inscripto, estimar la máxima prioridad con la que alguien se inscribió al curso (estos datos no serán completamente fieles a menos que todos los alumnos con prioridad alta utilicen la aplicación).
 	
 	\item Hacer un parser de los datos del SIU Guaraní (solicitando usuario y password del mismo cada vez que el usuario quiera hacer uso de esta funcionalidad) para poder sincronizar las materias que ya tiene cargadas en el sistema (y no tener que cargarlas manualmente) y/o para informar en el caso de que hayan materias aprobadas / desaprobadas cargadas en MUSSA y que aún no aparezcan en el SIU.
+	
+	\item Agregar incompatibilidades conocidas de materias que no se suelen cursar juntas en un mismo cuatrimestre debido a su exigencia y/o dificultad (por ejemplo Organización de Datos y Taller de Programación no suelen ser elegidas para cursarse juntas). Colocar como un parámetro opcional la selección de dichas incompatibilidades.
 
 \end{itemize}
 
