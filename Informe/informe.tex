@@ -828,13 +828,103 @@ Se posee una restricción para la cantidad máxima de materias que se pueden rea
 \sum_{\forall i} Y_{ij} + \sum_{\forall (i,k)} Y\_TP\_FINAL_{ikj} \leq MAX\_CANT\_MATERIAS\_CUATRIM
 \end{equation}
 
+Se restringe además, la máxima cantidad de horas de extra de cursada (\ref{eq:max_horas_extras_cursada}) de la misma manera:
+
+\begin{equation}\label{eq:max_horas_extras_cursada}
+\sum_{\forall i} Y_{ij} * horas\_extras_i + \sum_{\forall (i,k)} Y\_TP\_FINAL_{ikj} * horas\_extras_{ik} \leq MAX\_HORAS\_EXTRA
+\end{equation}
+
+Para restringir la máxima cantidad de horas de cursada (\ref{eq:max_horas_cursada}) se restringe en base a la variable H que muestra si se está cursando el curso o no. Para cada cuatrimestre j $\epsilon$ [1, MAX\_CUATRIMESTRES]. Con i $\epsilon$ \{id de materia\} y k id de los cursos asociados a la materia i:
+
+\begin{equation}\label{eq:max_horas_cursada}
+\sum_{\forall i} \sum_{\forall k} H_{ikj} * horas\_cursada_{ik} \leq MAX\_HORAS\_CURSADA
+\end{equation}
+
 Para el cálculo del total de cuatrimestres, que es la función a minimizar se calcula como el máximo de todos los números de cuatrimestres de las diferentes materias (\ref{eq:total_cuatrimestres}). Con i $\epsilon$ \{id de materia\} y k código de materia de trabajo profesional asociada a i (La sumatoria de las materias del trabajo final solo es agregada si existen materias de este tipo):
 
 \begin{equation}\label{eq:total_cuatrimestres}
 TOTAL\_CUATRIMESTRES = max(C_1, C_2, ..., C_i, C\_TP\_FINAL_{ik})
 \end{equation}
 
----------------------- HACER -------------------------
+Relacionados a los cursos seleccionados para las materias, se desprenden varias ecuaciones.
+
+Si se elige un curso de una materia, se debe elegir su horario completo (esto es, todas sus franjas horarias) (\ref{eq:si_se_elige_un_curso_es_completo}). Para cada cuatrimestre j; para cada i id de materia; para cada k id de curso que es dictado en el cuatrimestre (algunas cursos de las materias solo se dictan en cuatrimestres pares, otras solo en impares y otras en ambos); para cada día d; para cada franja horaria f entre FRANJA\_MIN y FRANJA\_MAX:
+
+\begin{equation}\label{eq:si_se_elige_un_curso_es_completo}
+H_{ikj} = R_{ikdfj}
+\end{equation}
+
+No se puede cursar en más de un lugar a la vez (\ref{eq:no_hay_giratiempos}). Para ello, se toma la variable que indica si se está cursando en el día en determinada franja y se lo iguala a la sumatoria de las variables que indican si el curso se está tomando en dicha franja horaria ese día. Como la primera solo puede valer 0 o 1, solo un curso podrá ser cursado en dicha franja. Para cada cuatrimestre j; para cada día d; para cada franja horaria f entre FRANJA\_MIN y FRANJA\_MAX. Con i $\epsilon$ \{id materia\}, y k $\epsilon$ \{id curso para la materia i\}:
+
+\begin{equation}\label{eq:no_hay_giratiempos}
+\sum_{\forall i} \sum_{\forall k} R_{ikdfj} = d_{fj}
+\end{equation}
+
+Si la materia no se cursa en ese cuatrimestre, entonces no debe cursarse en ninguno de sus cursos para ese cuatrimestre (\ref{eq:si_no_se_cursa_tampoco_sus_cursos}). Para cada cuatrimestre j; para cada i $\epsilon$ \{id materia\}, y k $\epsilon$ \{id curso para la materia i\}:
+
+\begin{equation}\label{eq:si_no_se_cursa_tampoco_sus_cursos}
+Y_{ij} \geq H_{ikj}
+\end{equation}
+
+La materia deberá ser cursada en un único curso (\ref{eq:materia_se_cursa_en_solo_un_curso}). Para cada cuatrimestre j; para cada i $\epsilon$ \{id materia\}. Con k $\epsilon$ \{id curso para la materia i\}:
+
+\begin{equation}\label{eq:materia_se_cursa_en_solo_un_curso}
+\sum_{\forall k} H_{ikj} = Y_{ij}
+\end{equation}
+
+No todas las materias se dictan ambos cuatrimestres (\ref{eq:no_toda_materia_se_dicta_siempre}). Por ello, si la materia no es dictada en el cuatrimestre indicado, se iguala a 0 la variable para que no pueda ser elegida. Para cada cuatrimestre j; para cada i $\epsilon$ \{id materia\}; para k $\epsilon$ \{id curso para la materia i\}, cuando la combinación no sea válida ese cuatrimestre:
+
+\begin{equation}\label{eq:no_toda_materia_se_dicta_siempre}
+H_{ikj} = 0
+\end{equation}
+
+Se deben cumplir una cantidad de créditos mínimos en materias electivas (\ref{eq:minimos_creditos_electivas}). Además, se restringirán las mismas para que no se hagan materias extras (\ref{eq:minimos_creditos_electivas_no_hacer_extras}). Para ello, se limitarán a un máximo de 6 créditos extras (una materia en términos generales) debido a que se pueden elegir algunas materias electivas de 8 créditos o combinaciones similares que sean mejores debido a sus horarios. Solo se agregarán materias si es requerido y no aumenta la cantidad de cuatrimestres, ya que el total de cuatrimestres es el valor que se está minimizando en la función objetivo. Con j cuatrimestre entre 1 y MAX\_CUATRIMESTRES; con i $\epsilon$ \{id materia\}:
+
+\begin{equation}\label{eq:no_toda_materia_se_dicta_siempre}
+\sum_{\forall j} \sum_{\forall i} Y_{ij} * creditos_i \geq CREDITOS\_MINIMOS\_ELECTIVAS
+\end{equation}
+
+\begin{equation}\label{eq:minimos_creditos_electivas_no_hacer_extras}
+\sum_{\forall j} \sum_{\forall i} Y_{ij} * creditos_i \leq CREDITOS\_MINIMOS\_ELECTIVAS + 6
+\end{equation}
+
+No todas las materias son comptaibles (\ref{eq:materias_incompatibles}), por ejemplo como sucede con el caso de las materias de idiomas. En este caso, si se elige una materia i que es incompatible con otras materias m, todas las materias m no deben ser cursadas. Para cada materia con id i que tiene materias incompatibles. Con j cuatrimestre entre 1 y MAX\_CUATRIMESTRES; Con m id materia incompatible con i:
+
+\begin{equation}\label{eq:materias_incompatibles}
+\sum_{\forall j} (Y_{ij} + \sum_{\forall m} Y_{mj}) \leq 1
+\end{equation}
+
+En el caso de que el alumno tenga materias con final pendiente, establecerá en los parámetros en qué cuatrimestre puede ser considerada como aprobada. Con ello, se restringirán a todas las materias con id i que la hayan tenido como correlativa a que su cuatrimestre sea mayor o igual al cuatrimestre posterior a que la correlativa fue aprobada (\ref{eq:cuatrimestre_minimo_materia}) (cuatrimestre mínimo de la materia i).
+
+\begin{equation}\label{eq:cuatrimestre_minimo_materia}
+C_i \geq cuatrimestre\_minimo_i
+\end{equation}
+
+En el caso de que exista un trabajo final para la carrera, se añaden las restricciones para el mismo.
+
+Cada parte del trabajo final debe cursarse en un único cuatrimestre (\ref{eq:unico_cuatrimestre_tp_final}). Para cada combinación de id i del trabajo final y el código k asociado a éste. Con j cuatrimestre entre 1 y MAX\_CUATRIMESTRES:
+
+\begin{equation}\label{eq:unico_cuatrimestre_tp_final}
+\sum_{\forall j} Y\_TP\_FINAL_{ikj} = 1
+\end{equation}
+
+El número de cuatrimestre en el que es cursada cada parte del trabajo final se calcula de la siguiente manera (\ref{eq:numero_cuatrimestre_tp_final}). Para cada combinación de id i del trabajo final y el código k asociado a éste. Con j cuatrimestre entre 1 y MAX\_CUATRIMESTRES:
+
+\begin{equation}\label{eq:numero_cuatrimestre_tp_final}
+\sum_{\forall j} Y\_TP\_FINAL_{ikj} * j = C\_TP\_FINAL_{ik}
+\end{equation}
+
+Para poder cursar las partes del trabajo final, se requieren un mínimo de créditos (\ref{eq:min_creditos_tp_final}). Para cada combinación de id i del trabajo final y el código k asociado a éste; para todo j cuatrimestre entre 1 y MAX\_CUATRIMESTRES:
+
+\begin{equation}\label{eq:min_creditos_tp_final}
+creditos\_minimos\_aprobados_{ik} * Y\_TP\_FINAL_{ikj} \leq CRED_{(j-1)}
+\end{equation}
+
+Por último, la parte 1 y 2 de la materia del trabajo final i deben realizarse en cuatrimestres consecutivos (\ref{eq:tp_final_cuatrimestres_consecutivos}):
+
+\begin{equation}\label{eq:tp_final_cuatrimestres_consecutivos}
+C\_TP\_FINAL_{i\_PARTE\_1} + 1 = C\_TP\_FINAL_{i\_PARTE\_2}
+\end{equation}
 
 
 \subsection{Algoritmo Greddy}
