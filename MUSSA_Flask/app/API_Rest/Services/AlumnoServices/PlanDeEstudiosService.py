@@ -613,7 +613,7 @@ class PlanDeEstudiosService(BaseService):
 
         PUNTAJE_POS = 0
         CURSO_POS = 1
-        posibles_cursos_materia = sorted(posibles_cursos_materia, key=lambda tupla_curso: tupla_curso[PUNTAJE_POS])
+        posibles_cursos_materia = sorted(posibles_cursos_materia, key=lambda tupla_curso: float(tupla_curso[PUNTAJE_POS]))
 
         if not posibles_cursos_materia:
             return
@@ -621,12 +621,12 @@ class PlanDeEstudiosService(BaseService):
         # Si la materia es obligatoria nos aseguramos de que se agregue el curso de mayor puntaje
         # si no existen cursos que cumplan con la restricción de puntaje minimo
         if materia.tipo == OBLIGATORIA:
-            puntaje_mayor_actual = posibles_cursos_materia[-1][PUNTAJE_POS]
+            puntaje_mayor_actual = float(posibles_cursos_materia[-1][PUNTAJE_POS])
             if puntaje_mayor_actual < puntaje_minimo_cursos:
                 puntaje_minimo_cursos = puntaje_mayor_actual
 
         cursos_materia = []
-        while posibles_cursos_materia and posibles_cursos_materia[-1][PUNTAJE_POS] >= puntaje_minimo_cursos:
+        while posibles_cursos_materia and float(posibles_cursos_materia[-1][PUNTAJE_POS]) >= puntaje_minimo_cursos:
             cursos_materia.append(posibles_cursos_materia.pop()[CURSO_POS])
 
         if cursos_materia:
