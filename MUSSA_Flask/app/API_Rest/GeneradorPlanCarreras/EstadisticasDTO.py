@@ -12,6 +12,7 @@ class EstadisticasDTO:
         self.fecha_solicitado = ""
         self.fecha_inicio_generacion = ""
         self.fecha_fin_generacion = ""
+        self.segundos_total_generacion = 0
         self.tiempo_total_generacion = ""
         self.fecha_inicio_guardado = ""
         self.fecha_fin_guardado = ""
@@ -69,6 +70,7 @@ class EstadisticasDTO:
             "Fecha solicitud",
             "Fecha inicio de generación del plan",
             "Fecha finalización de generación del plan",
+            "Segundos tiempo de generación",
             "Total tiempo de generación",
             "Fecha inicio de guardado del plan",
             "Fecha finalización de guardado del plan",
@@ -95,6 +97,7 @@ class EstadisticasDTO:
             self.fecha_solicitado,
             self.fecha_inicio_generacion,
             self.fecha_fin_generacion,
+            self.segundos_total_generacion,
             self.tiempo_total_generacion,
             self.fecha_inicio_guardado,
             self.fecha_fin_guardado,
@@ -124,6 +127,7 @@ class EstadisticasDTO:
             "fecha_solicitado": self.fecha_solicitado,
             "fecha_inicio_generacion": self.fecha_inicio_generacion,
             "fecha_fin_generacion": self.fecha_fin_generacion,
+            "segundos_total_generacion": self.segundos_total_generacion,
             "tiempo_total_generacion": self.tiempo_total_generacion,
             "fecha_inicio_guardado": self.fecha_inicio_guardado,
             "fecha_fin_guardado": self.fecha_fin_guardado,
@@ -151,6 +155,7 @@ class EstadisticasDTO:
         self.fecha_solicitado = datosJSON["fecha_solicitado"]
         self.fecha_inicio_generacion = datosJSON["fecha_inicio_generacion"]
         self.fecha_fin_generacion = datosJSON["fecha_fin_generacion"]
+        self.segundos_total_generacion = datosJSON["segundos_total_generacion"]
         self.tiempo_total_generacion = datosJSON["tiempo_total_generacion"]
         self.fecha_inicio_guardado = datosJSON["fecha_inicio_guardado"]
         self.fecha_fin_guardado = datosJSON["fecha_fin_guardado"]

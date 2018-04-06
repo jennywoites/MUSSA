@@ -34,6 +34,7 @@ def tarea_generar_plan_greedy(parametros_tarea, estadisticas_tarea):
     print("FIN generación plan Greedy con id {}".format(parametros_tarea["id_plan_estudios"]))
 
     estadisticas.fecha_fin_generacion = get_str_fecha_y_hora_actual()
+    estadisticas.segundos_total_generacion = float(time() - inicio)
     estadisticas.tiempo_total_generacion = convertir_tiempo(time() - inicio)
 
     print("Se invoca al guardado para el plan Greedy con id {}".format(parametros_tarea["id_plan_estudios"]))

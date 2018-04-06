@@ -36,6 +36,7 @@ def tarea_generar_plan_ple(parametros_tarea, estadisticas_tarea):
     generar_y_ejecutar_codigo_PULP(parametros)
 
     estadisticas.fecha_fin_generacion = get_str_fecha_y_hora_actual()
+    estadisticas.segundos_total_generacion = float(tiempo() - inicio)
     estadisticas.tiempo_total_generacion = convertir_tiempo(tiempo() - inicio)
 
     print("FIN generación plan PLE con id {}".format(parametros_tarea["id_plan_estudios"]))
