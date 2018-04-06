@@ -393,6 +393,7 @@ class Parametros:
         copia_parametros.max_cant_materias_por_cuatrimestre = self.max_cant_materias_por_cuatrimestre
 
         copia_parametros.materias_CBC_pendientes = self.materias_CBC_pendientes[:]
+
         copia_parametros.orientacion = self.orientacion
         copia_parametros.id_carrera = self.id_carrera
 
@@ -529,8 +530,6 @@ class Parametros:
             key=cmp_to_key(self.cmp_materias_electivas)
         )
 
-        # FIXME: Decidir la mejor manera de colocarlas (si concatenadas o seguidas)
-        # disponibles = self.concatenar_listas_por_horarios(disponibles, disponibles_electivas_prioritarias)
         for materia_electiva in disponibles_electivas_prioritarias:
             disponibles.append(materia_electiva)
 
@@ -595,31 +594,6 @@ class Parametros:
             disponibles_electivas_prioritarias.append((materia, curso))
         else:
             disponibles_electivas_secundarias.append((materia, curso))
-
-    def concatenar_listas_por_horarios(self, obligatorias, electivas):
-        """
-        Devuelve una nueva lista con la concatenación de las materias obligatorias
-        y electivas comparandolas por el horario de finalización.
-        """
-        disponibles = []
-
-        obligatoria = obligatorias.pop(0) if obligatorias else None
-        electiva = electivas.pop(0) if electivas else None
-        while (obligatoria and electiva):
-            materia_obligatoria, curso_obligatorio = obligatoria
-            materia_electiva, curso_electiva = electiva
-
-            if self.cmp_horario_finalizacion_curso(curso_obligatorio, curso_electiva) == self.CMP_SEGUNDO_ES_MENOR:
-                disponibles.append(electiva)
-                electiva = electivas.pop(0) if electivas else None
-            else:
-                disponibles.append(obligatoria)
-                obligatoria = obligatorias.pop(0) if obligatorias else None
-
-        self.concatenar_materias_restantes(obligatoria, obligatorias, disponibles)
-        self.concatenar_materias_restantes(electiva, electivas, disponibles)
-
-        return disponibles
 
     def concatenar_materias_restantes(self, materia_restante, materias, disponibles):
         if materia_restante:
