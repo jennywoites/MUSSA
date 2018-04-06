@@ -94,22 +94,6 @@ class Curso:
             "medias_horas_cursada": self.medias_horas_cursada
         }
 
-    def copia_profunda(self):
-        horarios = []
-        for horario in self.horarios:
-            horarios.append(horario.copia_profunda())
-
-        return Curso(
-            id_curso=self.id_curso,
-            cod_materia=self.cod,
-            nombre_curso=self.nombre,
-            horarios=horarios,
-            se_dicta_primer_cuatrimestre=self.se_dicta_primer_cuatrimestre,
-            se_dicta_segundo_cuatrimestre=self.se_dicta_segundo_cuatrimestre,
-            puntaje=self.puntaje,
-            medias_horas_cursada=self.medias_horas_cursada
-        )
-
     def obtener_franjas_curso(self):
         franjas_totales = {}
         for horario in self.horarios:

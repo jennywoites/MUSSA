@@ -34,13 +34,16 @@ def generar_plan_greedy(parametros):
 
     return PLAN_GENERADO_CORRECTAMENTE
 
+def calcular_combinaciones(parametros, materias_disponibles):
+    combinaciones = len(materias_disponibles)
+    for i in range(1, parametros.max_cant_materias_por_cuatrimestre):
+        combinaciones = combinaciones * (len(materias_disponibles) - i)
+    return combinaciones
 
 def generar_cuatrimestre_actual(parametros, creditos_totales, ultimo_cuatrimestre_generado):
     materias_disponibles = parametros.obtener_materias_disponibles(creditos_totales, ultimo_cuatrimestre_generado)
 
-    combinaciones = len(materias_disponibles)
-    for i in range(1, parametros.max_cant_materias_por_cuatrimestre):
-        combinaciones = combinaciones * (len(materias_disponibles) - i)
+    combinaciones = calcular_combinaciones(parametros, materias_disponibles)
 
     posibles_combinaciones = [generar_combinacion_base(parametros, creditos_totales)]
 

@@ -50,13 +50,6 @@ class Horario:
             "hora_fin": self.hora_fin
         }
 
-    def copia_profunda(self):
-        return Horario(
-            dia=self.dia,
-            hora_inicio=self.hora_inicio,
-            hora_fin=self.hora_fin
-        )
-
     def convertir_a_franja(self, hora):
         base = 1
         hora_origen = 7

@@ -379,31 +379,20 @@ class Parametros:
 
         copia_parametros.horarios = {}
         for id_materia in self.horarios:
-            l_cursos = []
-            for curso in self.horarios[id_materia]:
-                l_cursos.append(curso.copia_profunda())
-            copia_parametros.horarios[id_materia] = l_cursos
+            copia_parametros.horarios[id_materia] = self.horarios[id_materia][:]
 
-        copia_parametros.horarios_no_permitidos = []
-        for horario in self.horarios_no_permitidos:
-            copia_parametros.horarios_no_permitidos.append(horario)
-
+        copia_parametros.horarios_no_permitidos = self.horarios_no_permitidos[:]
         copia_parametros.creditos_minimos_electivas = self.creditos_minimos_electivas
-
         copia_parametros.nombre_archivo_pulp = self.nombre_archivo_pulp
         copia_parametros.nombre_archivo_resultados_pulp = self.nombre_archivo_resultados_pulp
         copia_parametros.nombre_archivo_pulp_optimizado = self.nombre_archivo_pulp_optimizado
-
         copia_parametros.franja_minima = self.franja_minima
         copia_parametros.franja_maxima = self.franja_maxima
         copia_parametros.dias = self.dias
         copia_parametros.max_cuatrimestres = self.max_cuatrimestres
         copia_parametros.max_cant_materias_por_cuatrimestre = self.max_cant_materias_por_cuatrimestre
 
-        copia_parametros.materias_CBC_pendientes = []
-        for materia in self.materias_CBC_pendientes:
-            copia_parametros.materias_CBC_pendientes.append(materia)
-
+        copia_parametros.materias_CBC_pendientes = self.materias_CBC_pendientes[:]
         copia_parametros.orientacion = self.orientacion
         copia_parametros.id_carrera = self.id_carrera
 
@@ -533,24 +522,24 @@ class Parametros:
                                                                     disponibles_electivas_prioritarias,
                                                                     disponibles_electivas_secundarias)
 
-        disponibles_obligatorias = sorted(disponibles_obligatorias, key=cmp_to_key(self.cmp_materias_obligatorias))
+        disponibles = sorted(disponibles_obligatorias, key=cmp_to_key(self.cmp_materias_obligatorias))
 
         disponibles_electivas_prioritarias = sorted(
             disponibles_electivas_prioritarias,
             key=cmp_to_key(self.cmp_materias_electivas)
         )
 
+        # FIXME: Decidir la mejor manera de colocarlas (si concatenadas o seguidas)
+        # disponibles = self.concatenar_listas_por_horarios(disponibles, disponibles_electivas_prioritarias)
+        for materia_electiva in disponibles_electivas_prioritarias:
+            disponibles.append(materia_electiva)
+
+        self.concatenar_materias_trabajo_final(disponibles, creditos_actuales)
+
         disponibles_electivas_secundarias = sorted(
             disponibles_electivas_secundarias,
             key=cmp_to_key(self.cmp_materias_electivas)
         )
-
-        # FIXME: Decidir la mejor manera de colocarlas (si concatenadas o seguidas)
-        # disponibles = self.concatenar_listas_por_horarios(disponibles_obligatorias,
-        #                                                   disponibles_electivas_prioritarias)
-        disponibles = disponibles_obligatorias + disponibles_electivas_prioritarias
-
-        self.concatenar_materias_trabajo_final(disponibles, creditos_actuales)
 
         # Concateno al final todas las electivas que no aportan creditos para las tematicas
         for materia_electiva in disponibles_electivas_secundarias:
