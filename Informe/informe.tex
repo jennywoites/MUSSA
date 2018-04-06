@@ -992,13 +992,68 @@ C\_TP\_FINAL_{i\_PARTE\_1} + 1 = C\_TP\_FINAL_{i\_PARTE\_2}
 
 Para este algoritmo se utiliza una combinación de Greedy y Fuerza Fruta. Para el Greedy, se ordenan las materias por un determinado criterio y se las selecciona en orden si éstas encajan con las anteriores. En el caso de que las combinaciones de cursos disponibles sean relativamente pocas, se busca la mejor combinación posible a través de la fuerza bruta con poda. De esta forma se elige la mejor combinación que además permita tener mayores opciones en el cuatrimestre siguiente.\newline
 
-La selección Greedy genera un cuatrimestre válido con las materias disponibles mientras que no se haya finalizado el plan o superado la cantidad máxima de cuatrimestres. Las materias disponibles son una combinación entre las materias obligatorias, las materias electivas primarias y las electivas secundarias.
+La selección Greedy genera un cuatrimestre válido con las materias disponibles mientras que no se haya finalizado el plan o superado la cantidad máxima de cuatrimestres. Las materias disponibles son una concatencación entre las materias obligatorias, las materias electivas primarias y las electivas secundarias.
 
-Las materias electivas primarias son aquellas que suman créditos para las temáticas solicitadas. Las materias electivas secundarias son aquellas que no suman créditos para las materias de las temáticas elegidas. Si no hay temáticas elegidas, o los créditos por temática han sido cumplidos, todas las materias electivas son primarias.
+Las materias electivas primarias son aquellas que suman créditos para las temáticas solicitadas. Las materias electivas secundarias son aquellas que no suman créditos para las materias de las temáticas elegidas. Si no hay temáticas elegidas, o los créditos por temática han sido cumplidos, todas las materias electivas son primarias.\newline
 
+Las materias obligatorias son ordenadas según:
 
+\begin{itemize}
+	\item Menor Horario de finalización
+    \item Mayor cantidad de materias que la tienen de correlativa: Cuántas materias libera porque la tienen de correlativa
+	\item Mayor cantidad de franjas ocupadas
+	\item Mayor puntaje
+	\item Mayor cantidad de créditos
+	\item Menor código de materia
+\end{itemize}
 
----------------------- HACER -------------------------
+El horario de finalización entre dos materias no es trivial ya que cada materia puede ser dictada en diferentes días y en más de un día, por lo que una materia puede tener menor horario que la otra para algun dia de la semana pero la otra tener más cantidad de horarios que terminen antes, o que se dicten en diferentes cantidades de días, etc. Se decidió que la comparación de horarios sería realizada de la siguiente forma:\newline
+
+La máxima franja de un curso en todos sus dias de cursada comparada con la máxima del otro. Por ejemplo si el curso A se cursa Lunes en las franjas 1 a 15 y Viernes en las franjas 3 a 17 su máxima franja será 17. Si el curso B de cursa los sabados en las franjas 13 a 18, su máxima franja será 18. En este caso el curso A es menor que el curso B, aunque A tenga curso varios dias.
+
+Si ambos tuviesen la misma franja máxima, entonces un curso será menor que otro si se cursa menos días. Por ejemplo, si A y B hubiesen tenido la misma franja máxima, B hubiese sido menor que A ya que se cursa un solo día.
+
+Si cursan la misma cantidad de dias, entonces será menor aquel que para la mayor cantidad de dias tenga menor horario de finalización.\newline
+
+Las materias electivas son ordenadas según:
+
+\begin{itemize}
+	\item Menor Horario de finalización
+	\item Mayor cantidad de créditos en temáticas (suma sus créditos tantas veces como a temáticas aporte)
+	\item Mayor cantidad de créditos
+	\item Menor cantidad de horas de cursada
+    \item Mayor cantidad de materias que la tienen de correlativa: Cuántas materias libera porque la tienen de correlativa
+	\item Mayor puntaje
+	\item Menor código de materia
+\end{itemize}
+
+Luego, de las materias disponibles se verifica si encaja en los horarios libres. Si encaja (y no es otro curso de una materia ya colocada, no es incompatible con otra ya elegida, etc), se agrega la materia al cuatrimestre actual y se ocupan las franjas horarias correspondientes. Cuando el cuatrimestre está completo porque ya se tienen el máximo de materias u horas establecidas, o ya no hay materias disponibles, se cierra el cuatrimestre y se lo agrega al plan. Para el cuatrimestre siguiente se vuelven a obtener las materias disponibles considerando a las materias agregadas en el último cuatrimestre como aprobadas.
+
+En caso de que se hayan cumplido los créditos requeridos en electivas, las materias de este tipo son eliminadas del conjunto total pendiente para reducir los tiempos de los recorridos en las materias, ya que éstas ya no serán requeridas.
+
+Cuando las combinaciones posibles de los cursos son pocas (en este momento se está utilizando un valor de 15 cursos con 5 materias máximo (15 * 14 * 13 * 12 * 11)), se realiza el algoritmo de Fuerza Bruta con poda.
+
+Éste algoritmo toma las materias disponibles y realiza las combinaciones considerando que se agrega la materia y considerando que no se agrega. Para cada materia disponible se toman las combinaciones anteriores y se hace lo propio.
+
+Cabe destacar que no todas las materias generarán una combinación, ya que no todas pueden ser añadidas por ser incompatibles con las materias agregadas a la combinación anteriormente, por lo que la cantidad de casos se reduce.
+
+De todas las combinaciones generadas se elige la mejor para el cuatrimestre y se la agrega al plan. La mejor combinación se decide en base a:
+
+\begin{itemize}
+	\item Mayor cantidad de materias
+	\item Mayor cantidad de materias obligatorias que libera
+	\item Mayor cantidad de créditos en temáticas cubiertos
+	\item Mayor cantidad de créditos en electivas
+	\item Mayor cantidad de créditos totales
+	\item Menor cantidad de horas de cursada
+	\item Menor cantidad de horas extra
+\end{itemize}
+
+Durante el desarrollo se realizó el profile del código del algoritmo de generación del plan Greedy, obteniendose un promedio de 150 segundos para el plan completo de licenciatura y un total de 76093034 llamadas a funciones ejecutadas. Las funciones que más tiempo estaban demorando eran las funciones que realizaban copias de los parámetros para la ejecución de la fuerza bruta con poda, éstos parámetros son modificados durante la ejecución del programa por lo que se requiere la copia.
+
+Revisando el código se observó que no solo se copiaban las clases que eran modifcadas (los parámetros y las materias con sus correlativas) sino que además se estaban copiando los cursos y sus horarios. Estos datos no requieren copia ya que no serán modificados, por lo que basta con hacer una copia de la lista de referencias y no del objeto en sí.
+
+Eliminando la copia de esos objetos innecesarios, se obtuvo un promedio de 35 segundos para la misma ejecución del plan de Licenciatura completo, con un total de 12922025 llamadas a funciones ejecutadas.
 
 
 \subsection{Pruebas}
