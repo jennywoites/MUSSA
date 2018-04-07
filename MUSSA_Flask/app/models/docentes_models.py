@@ -8,6 +8,7 @@ class Docente(db.Model):
 
     apellido = db.Column(db.String(35), nullable=False, server_default='')
     nombre = db.Column(db.String(40), nullable=True, server_default='')
+    eliminado = db.Column(db.Boolean(), nullable=False, server_default='0')
 
     def __str__(self):
         if not self.nombre:
@@ -29,3 +30,4 @@ class CursosDocente(db.Model):
 
     docente_id = db.Column(db.Integer, db.ForeignKey('docente.id'))
     curso_id = db.Column(db.Integer, db.ForeignKey('curso.id'))
+    eliminado = db.Column(db.Boolean(), nullable=False, server_default='0')

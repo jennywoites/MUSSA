@@ -78,7 +78,8 @@ class ResultadosEncuestaDocenteService(BaseService):
                 "carrera": carrera.get_descripcion_carrera(),
                 "curso": curso.codigo,
                 "id_curso": curso.id,
-                "comentarios": []
+                "comentarios": [],
+                "eliminado": "(No dicta más clases en este curso)" if c.eliminado else ""
             }
 
         for respuesta in respuestas_docentes:

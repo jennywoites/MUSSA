@@ -4,7 +4,7 @@ from app.models.carreras_models import Carrera, Materia
 from app.models.alumno_models import MateriasAlumno
 from app.models.horarios_models import Curso, Horario
 from app.models.palabras_clave_models import PalabraClave, TematicaMateria
-from app.models.docentes_models import Docente
+from app.models.docentes_models import Docente, CursosDocente
 from app.models.respuestas_encuesta_models import *
 
 
@@ -15,7 +15,7 @@ def generarJSON_encuesta_alumno(encuesta_alumno):
     materia = Materia.query.get(materiaAlumno.materia_id)
 
     fecha_aprobacion = '-' if (not encuesta_alumno.cuatrimestre_aprobacion_cursada or
-                              not encuesta_alumno.anio_aprobacion_cursada) else\
+                               not encuesta_alumno.anio_aprobacion_cursada) else \
         "{}C / {}".format(encuesta_alumno.cuatrimestre_aprobacion_cursada, encuesta_alumno.anio_aprobacion_cursada)
 
     return {
@@ -77,14 +77,26 @@ def generar_respuesta_horario(respuesta_encuesta):
 
 def generar_respuesta_docente(respuesta_encuesta):
     rtas = RespuestaEncuestaDocente.query.filter_by(rta_encuesta_alumno_id=respuesta_encuesta.id).all()
+
     comentarios_docentes = []
     for rta in rtas:
+        id_curso = MateriasAlumno.query.get(EncuestaAlumno.query.get(
+            RespuestaEncuestaAlumno.query.get(rta.rta_encuesta_alumno_id).encuesta_alumno_id
+        ).materia_alumno_id).curso_id
+
         docente = Docente.query.get(rta.docente_id)
+
+        curso_docente = CursosDocente.query.filter_by(curso_id=id_curso) \
+            .filter_by(docente_id=docente.id).first()
+
+        NO_DICTA_TEXTO = " (No dicta más clases en este curso)"
+        no_dicta = "" if not docente.eliminado and not curso_docente.eliminado else NO_DICTA_TEXTO
+
         comentarios_docentes.append({
             "id_docente": docente.id,
             "apellido": docente.apellido,
             "nombre": docente.nombre,
-            "nombre_completo": docente.obtener_nombre_completo(),
+            "nombre_completo": docente.obtener_nombre_completo() + no_dicta,
             "comentario": rta.comentario
         })
 

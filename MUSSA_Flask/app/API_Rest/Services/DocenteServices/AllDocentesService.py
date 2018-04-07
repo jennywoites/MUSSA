@@ -38,7 +38,7 @@ class AllDocentesService(BaseService):
 
         docentes_result = []
 
-        query = Docente.query
+        query = Docente.query.filter_by(eliminado=False)
 
         if nombre:
             query = query.filter(Docente.apellido.like("%" + nombre + "%"))
