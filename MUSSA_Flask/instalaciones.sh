@@ -1,4 +1,4 @@
-sudo apt-get install build-essential python3-venv libmysqlclient-dev python-dev python3-dev libmysqlclient-dev mysql-server-5.7
+sudo apt install build-essential python3-venv libmysqlclient-dev python-dev python3-dev libmysqlclient-dev mysql-server-5.7 redis-server
 
 # Crear la carpeta para el entorno virtual
 mkdir venv
