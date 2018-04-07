@@ -88,8 +88,8 @@
         var nombre_docente = docente.nombre + ' ' + docente.apellido;
         modal.find('.modal-title').text('Se va a eliminar el docente ' + nombre_docente);
         $('#confirm-delete-button').click(function() {
-                delete_docente(id_docente, modal);
-                });
+            delete_docente(id_docente, modal);
+        });
         modal.modal('show');
     }
 
@@ -105,8 +105,8 @@
             modal.modal('hide');
         }, function(status, response){
             div_error.hidden = false;
+            modal.modal('hide');
         });
-
     }
 
     function agrupar_seleccionados() {

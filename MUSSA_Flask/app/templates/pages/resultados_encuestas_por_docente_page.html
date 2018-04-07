@@ -34,6 +34,36 @@
         </table>
     </div>
 
+    {% if docente["materias_que_dictaba_con_encuestas"] | length > 0%}
+    <h4>Materias que dictó anteriormente (y hay encuestas asociadas):</h4>
+
+    <br>
+
+    <div class='table-responsive'>
+        <table class='table table-hover'>
+            <tr class="header_tabla">
+                <th>Código</th>
+                <th>Materia</th>
+                <th>Curso</th>
+                <th>Carrera</th>
+            </tr>
+            </thead>
+            <tbody>
+
+            {% for materia in docente["materias_que_dictaba_con_encuestas"] %}
+            <tr>
+                <td>{{materia["codigo"]}}</td>
+                <td>{{materia["nombre"]}}</td>
+                <td>{{materia["curso"]}}</td>
+                <td>{{materia["carrera"]}}</td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    {% endif %}
+
     <h4>Encuestas:</h4>
 
     {% if cuatrimestres_con_encuestas | length > 0 %}

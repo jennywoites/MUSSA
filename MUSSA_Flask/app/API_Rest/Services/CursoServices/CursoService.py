@@ -103,7 +103,8 @@ class CursoService(BaseService):
         db.session.commit()
 
     def eliminar_docentes_actuales(self, id_curso):
-        CursosDocente.query.filter_by(curso_id=id_curso).delete()
+        for curso in CursosDocente.query.filter_by(curso_id=id_curso).all():
+            curso.eliminado = True
         db.session.commit()
 
     def agregar_horarios(self, id_curso, horarios):
@@ -129,11 +130,12 @@ class CursoService(BaseService):
 
     def agregar_docentes(self, id_curso, ids_docentes):
         for id_docente in ids_docentes:
-            db.session.add(CursosDocente(
-                curso_id=id_curso,
-                docente_id=id_docente
-            ))
-        db.session.commit()
+            curso = CursosDocente.query.filter_by(curso_id=id_curso).filter_by(docente_id=id_docente).first()
+            if not curso:
+                curso = CursosDocente(curso_id=id_curso, docente_id=id_docente)
+                db.session.add(curso)
+            curso.eliminado = False
+            db.session.commit()
 
     def agregar_carreras(self, id_curso, carreras):
         for id_carrera in carreras:
