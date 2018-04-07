@@ -178,12 +178,14 @@ def actualizar_respuesta_docente(rta_encuesta, estructura_respuesta):
             continue
 
         docente = Docente.query.get(rta.docente_id)
+        no_dicta = "" if not docente.eliminado else " (No dicta más clases en este curso)"
+
         if not docente.id in estructura_respuesta["docentes"]:
             estructura_respuesta["docentes"][docente.id] = {
                 "id_docente": docente.id,
                 "apellido": docente.apellido,
                 "nombre": docente.nombre,
-                "nombre_completo": docente.obtener_nombre_completo(),
+                "nombre_completo": docente.obtener_nombre_completo() + no_dicta,
                 "comentarios": []
             }
 

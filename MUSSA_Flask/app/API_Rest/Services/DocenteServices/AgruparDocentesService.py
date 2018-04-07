@@ -3,6 +3,7 @@ from app.models.docentes_models import Docente, CursosDocente
 from app.API_Rest.Services.BaseService import BaseService
 from flask_user import roles_accepted
 from app import db
+from app.models.respuestas_encuesta_models import RespuestaEncuestaDocente
 
 
 class AgruparDocentesService(BaseService):
@@ -63,15 +64,25 @@ class AgruparDocentesService(BaseService):
             CursosDocente.query.filter_by(docente_id=id_docente).delete()
             db.session.commit()
 
-        self.eliminar_los_otros_docentes(ids_docentes)
+        id_docente_agrupado = ids_docentes[0]
 
-        self.actualizar_datos_unico_docente_agrupado(ids_docentes[0], datos)
+        self.actualizar_encuestas_para_que_referencien_al_docente_agrupado(ids_docentes, id_docente_agrupado)
+        self.eliminar_los_otros_docentes(ids_docentes)
+        self.actualizar_datos_unico_docente_agrupado(id_docente_agrupado, datos)
 
         result = SUCCESS_NO_CONTENT
         self.logg_resultado(result)
         return result
 
+    def actualizar_encuestas_para_que_referencien_al_docente_agrupado(self, ids_docentes, id_docente_agrupado):
+        encuestas_a_actualizar = RespuestaEncuestaDocente.query \
+            .filter(RespuestaEncuestaDocente.docente_id.in_(ids_docentes)).all()
+        for encuesta in encuestas_a_actualizar:
+            encuesta.docente_id = id_docente_agrupado
+            db.session.commit()
+
     def eliminar_los_otros_docentes(self, ids_docentes):
+        # No es borrado logico sino que se los quita de la bdd porque pasan a ser uno solo
         for i in range(1, len(ids_docentes)):
             Docente.query.filter_by(id=ids_docentes[i]).delete()
             db.session.commit()

@@ -15,19 +15,28 @@
     <br>
 
     {% for datos in respuestas %}
-        <label><span class="glyphicon glyphicon-chevron-right"></span> {{datos['codigo']}} - {{datos['nombre']}} | Curso
-            {{datos['curso']}} | {{datos['carrera']}}</label>
-        <br>
-
-        {% if datos['comentarios'] | length == 0 %}
-        <p style='font-style: italic; color: purple; font-size: small;'>No se han hecho comentarios al docente en este
-            curso.</p>
-        {% endif %}
-
-        {% for comentario in datos['comentarios'] %}
+        {% if datos['eliminado'] == "" or datos['comentarios'] | length > 0 %}
+            <label><span class="glyphicon glyphicon-chevron-right"></span> {{datos['codigo']}} - {{datos['nombre']}} | Curso
+                {{datos['curso']}} | {{datos['carrera']}}</label>
             <br>
-            <textarea class='form-control' rows='3' disabled>{{comentario}}</textarea>
-        {% endfor %}
+
+            {% if datos['eliminado'] != "" %}
+            <label>{{datos['eliminado']}}</label>
+            <br>
+            {% endif %}
+
+            {% if datos['comentarios'] | length == 0 %}
+            <p style='font-style: italic; color: purple; font-size: small;'>No se han hecho comentarios al docente en este
+                curso.</p>
+            {% endif %}
+
+            {% for comentario in datos['comentarios'] %}
+                <br>
+                <textarea class='form-control' rows='3' disabled>{{comentario}}</textarea>
+                <br>
+            {% endfor %}
+
+        {% endif %}
 
     {% endfor %}
 

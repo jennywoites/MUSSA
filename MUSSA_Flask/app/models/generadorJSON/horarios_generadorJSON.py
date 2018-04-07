@@ -60,7 +60,8 @@ def obtener_docentes_response(curso):
     docentes = ""
     docentes_response = []
 
-    docentes_del_curso = CursosDocente.query.filter_by(curso_id=curso.id).all()
+    docentes_del_curso = CursosDocente.query.filter_by(eliminado=False)\
+        .filter_by(curso_id=curso.id).all()
     for doc in docentes_del_curso:
         docente_db = Docente.query.get(doc.docente_id)
         docentes += docente_db.obtener_nombre_completo() + "-"
