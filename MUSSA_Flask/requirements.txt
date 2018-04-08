@@ -47,4 +47,5 @@ redis
 pymysql
 mysqlclient
 
-
+#PuLP
+pulp
