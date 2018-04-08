@@ -73,11 +73,8 @@ function do_request_y_abrir_PDF(method, page, CSRF_token, parametros, nombrePDF,
 
 //////////////////////////////////////////////////////////////////////
 
-HTTP = "http://"
-IP = "localhost:"
-PUERTO = "5000"
 BASE_API = "/api"
-BASE_URL = HTTP + IP + PUERTO + BASE_API
+BASE_URL = window.location.origin + BASE_API
 
 //*********************************************************//
 //                      Notificaciones                     //

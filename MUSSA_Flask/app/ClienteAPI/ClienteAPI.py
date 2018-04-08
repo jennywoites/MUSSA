@@ -610,13 +610,13 @@ class ClienteAPI:
             parametros["orientacion"] = datos_carrera["orientacion"]
             parametros["trabajo_final"] = datos_carrera["trabajo_final"]
 
-            for cantidad_materias in range(2, MAX_MATERIAS_POR_CUATRIMESTRE+1):
+            for cantidad_materias in range(2, MAX_MATERIAS_POR_CUATRIMESTRE + 1):
                 parametros["max_cant_materias"] = cantidad_materias
 
                 for horas in [28]:
                     parametros["max_horas_cursada"] = horas
                     parametros["max_horas_extras"] = horas
-                    parametros["numero_test"] = '0'*(4-len(str(numero_test))) + str(numero_test)
+                    parametros["numero_test"] = '0' * (4 - len(str(numero_test))) + str(numero_test)
                     response = self.invocar_put(url_servicio, cookie, csrf_token, parametros)
 
                     numero_test += 1
