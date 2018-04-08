@@ -66,8 +66,6 @@
 
 El siguiente documento presenta el Trabajo Profesional de Ingeniería en Informática de la estudiante Jennifer Andrea Woites, padrón 93274. Los docentes que estuvieron a cargo son: Lic. Rosa Graciela Wachenchauzer como tutora del trabajo profesional, y el Ing. Diego Essaya como cotutor. \newline
 
-El objetivo del proyecto es aplicar los conocimientos adquiridos en la carrera. \newline
-
 El tema del trabajo profesional es <<MUSSA\footnote{Materias Universitarias en un Sistema Simplificado Automático} - Generador de Planes de Carrera personalizados.>> \newline
 
 El objetivo general del presente trabajo, es la realización de una web responsive que permita a los alumnos la visualización de sus materias, la administración de las mismas, la utilización de encuestas y la generación de un plan de carrera en base a parámetros personalizados, siendo ésto último el ítem más importante del trabajo.
@@ -1639,7 +1637,25 @@ Algunas de las funcionalidades y mejoras a futuro son:
 \newpage
 \section{Conclusiones}
 
----------------------- HACER -------------------------
+Durante el desarrollo de este trabajo se utilizaron tecnologías, frameworks y herramientas con las que nunca se había trabajado como Flask, Celery, Redis y PuLP.
+
+El uso de Flask y PuLP si bien requirió tiempo de aprendizaje, no fue un reto en sí. En cambio, la utilización de Celery y Redis si lo fue, no tanto por la implementación en sí, sino en entender el concepto teórico y aplicarlo en el uso ya que no se habían trabajado con este tipo de arquitecturas anteriormente. El desconocimiento de las mismas requirió que se realizaran modificaciones luego para poder hacer que el software soporte mayor flujo de usuarios sin que eso derive en que se `caiga' el servidor.\newline
+
+El desarrollo de la página web fue extenso y se requirieron varias pantallas, y si bien esta parte era `sencilla' (por más que requiera tiempo), la modelización de los datos y las interrelaciones requirieron una gran cantidad de esfuerzo y atención. Se diseñó el modelo de entidades que se utilizaría inicialmente, pero cuando se agregaron las encuestas hubo necesidad de modificarlo ya que algunos datos dependían de los otros (en especial en las bajas) y se requería determinar cuándo se deseaba salvaguardar dichos datos (e indicar que la relación entre los mismos no existía) vs. cuándo se deseaba eliminarlos de las tablas definitivamente.\newline
+
+El uso de Flask-User como aplicación inicial facilitó mucho la curva de aprendizaje al tener código de referencia y una estructuración previa. Sin embargo, esto fue un problema cuando se decidió tener una API REST independiente ya que la autenticación no podía vincularse con Flask-User y requería quitarlo y generarlo en la API o solucionar el problema del Cross Domain. Por el momento, se mantiene Flask-User (con intenciones de quitarlo luego) y la API se separa `logicamente' pero no físicamente de la APP.\newline
+
+Respecto de las estimaciones se debe destacar que hubo una gran variación (alrededor de un 42\% extra) respecto de los valores inicialmente estimados. Algunos de los motivos por los cuales se produjo esta variación fueron: retrabajo (muchas cosas se desarrollaron con los conocimientos que se poseían de antemano y tiempo después, al conversar y comentar sobre estos desarrollos con colegas, hicieron notar que no eran correctos y hubo que corregirlos); tareas no incluídas en la estimación inicial (no se consideró el uso de redis/celery para los algoritmos, no se consideró la escritura de este informe, etc); y tareas estimadas por menos horas que las requeridas (un caso particular de ello, son las horas de testing que requirieron muchas más horas que las indicadas inicialmente).\newline
+
+Sobre los algoritmos desarrollados, el algoritmo Greedy presenta una velocidad mucho mayor que el de PLE, y si bien en muchos de los casos éste presenta resultados similares al de PLE, no siempre es óptimo pudiendo agregar 1 o 2 cuatrimestres (en tiempos de cursada dos cuatrimestres es mucho tiempo) respecto del óptimo.
+
+La utilización de programación lineal entera, tema principal de la materia de Modelos y Optimización I (71.14), fue una gran novedad ya que nunca había tenido la oportunidad de utilizar programaciones alternativas en un problema real. La generación del algoritmo completo desde cero presentó un gran reto.
+
+El algoritmo de PLE lo máximo que ha tardado es 15 minutos con una máquina con buenas carcaterísticas (o casi 50 minutos con una de características bastante pobres), por lo que se considera que es un tiempo más que aceptable. Igualmente, para todo algoritmo generado anteriormente, se mantendrá el hash de forma que este tiempo sea reducido al tiempo que toma replicar los valores en la base de datos.
+
+El algoritmo Greedy, si bien no es óptimo, para ser un Greedy se puede decir que da `buenos' resultados ya que en la mayoría de los casos coinciden con el valor óptimo, y cuando no, por lo general la distancia es de 1 cuatrimestre, aunque la distancia máxima presentada para algunos casos puntuales ha sido de 2 cuatrimestres.\newline
+
+El desarrollo de este trabajo, como experiencia en sí, fue muy enriquecedor ya que permitió pasar por todas las instancias de un proyecto (desde la concepción y las estimaciones iniciales, a la puesta en funcionamiento en un servidor web). En particular, se aprendieron muchas herramientas y detalles que se deben tener en cuenta a la hora de montar un proyecto de los cuales no tenía conocimiento. De todas formas, creo que hubiese sido mucho más productivo poder desarrollar este trabajo (con un alcance más amplio) en un equipo de al menos dos personas para poder realizar discusiones productivas y contrastar ideas antes de desarrollarlas.
 
 \newpage
 \section{Agradecimientos}
