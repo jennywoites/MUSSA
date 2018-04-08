@@ -2,7 +2,7 @@
 
 ## Configuración inicial
 
-Moverse a la carpeta
+Moverse a la carpeta MUSSA_Flask
 
     cd MUSSA_Flask
 
@@ -53,7 +53,7 @@ Apuntar el browser a http://localhost:5000/
 
 Se pueden utilizar los siguientes usuarios:
 
-    - email `user@example.com` - Contraseña: `Password1`.
+    - email `member@example.com` - Contraseña: `Password1`.
     - email `admin@example.com` - Contraseña: `Password1`.
 
 ## Inicializar los workers (para permitir la generación del plan de carrera)
