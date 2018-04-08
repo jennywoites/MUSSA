@@ -45,13 +45,14 @@ Ver: https://support.google.com/accounts/answer/6010255?hl=en
 
 ## Ejecutar la aplicación
 
-    # Inicializar el Web Server
+Inicializar el Web Server
 
     python3 manage.py runserver
 
-    Apuntar el browser a http://localhost:5000/
+Apuntar el browser a http://localhost:5000/
 
-    Se pueden utilizar los siguientes usuarios:
+Se pueden utilizar los siguientes usuarios:
+
     - email `user@example.com` - Contraseña: `Password1`.
     - email `admin@example.com` - Contraseña: `Password1`.
 
