@@ -1057,8 +1057,545 @@ Eliminando la copia de esos objetos innecesarios, se obtuvo un promedio de 35 se
 
 
 \subsection{Pruebas}
----------------------- HACER -------------------------
 
+Para las pruebas se aplicó tanto el algoritmo Greedy como el algoritmo de PLE sobre un set de pruebas realizado con el plan completo de Licenciatura en Análisis de Sistemas (Plan 1986) en el cual se iban dando por aprobadas las materias sugeridas por el plan de estudios oficial. Se excluyó la sección del CBC ya que ésta es tratada de forma independiente del algoritmo. Sobre cada cuatrimestre, se restringió a un máximo de 5, 4, 3 y 2 materias por cuatrimestre respectivamente. Las horas máximas de cursada y de horas extras, se las dejó fijas en 28hs para no afectar a la variable de máxima cantidad de materias por cuatrimestre.
+
+El set de pruebas, fue ejecutado en la misma máquina con la que se hizo el desarrollo de los algoritmos y del sistema, la cual posee las siguientes características. Esta máquina la rotularemos como M1.
+
+\begin{itemize}
+	\item CPU: Procesador Intel Core i3-2330M
+	\item RAM: 10 GB
+\end{itemize}
+
+En particular, para la configuración de la cantidad de threads para el algoritmo de PLE fue seteada en 2 ya que es la cantidad de CPUs que posee.
+
+Los resultados de la ejecución pueden verse en la siguientes tablas:
+
+\begin{longtable}{| c | c | c | c |}
+\hline
+Total   & Tiempo de & Cantidad de & Max. materias  \\
+cuatrimestres &  generación &  Materias disponibles & por cuatrimestre \\
+\hline \hline
+\endfirsthead
+\hline
+Total   & Tiempo de & Cantidad de & Max. materias  \\
+cuatrimestres &  generación &  Materias disponibles & por cuatrimestre \\
+\hline \hline
+\endhead
+\endfoot
+\endlastfoot
+2 & 0.69 seg & 21 & 2\\
+\hline
+4 & 1.99 seg & 25 & 2\\
+\hline
+7 & 5.41 seg & 30 & 2\\
+\hline
+10 & 13.91 seg & 35 & 2\\
+\hline
+12 & 18.91 seg & 39 & 2\\
+\hline
+13 & 21.59 seg & 42 & 2\\
+\hline
+15 & 32.49 seg & 45 & 2\\
+\hline
+2 & 2.07 seg & 21 & 3\\
+\hline
+3 & 4.79 seg & 25 & 3\\
+\hline
+5 & 15.16 seg & 30 & 3\\
+\hline
+7 & 47.31 seg & 35 & 3\\
+\hline
+8 & 56.28 seg & 39 & 3\\
+\hline
+9 & 58.43 seg & 42 & 3\\
+\hline
+10 & 41.74 seg & 45 & 3\\
+\hline
+2 & 0.04 seg & 21 & 4\\
+\hline
+3 & 0.38 seg & 25 & 4\\
+\hline
+5 & 0.89 seg & 30 & 4\\
+\hline
+5 & 0.56 seg & 35 & 4\\
+\hline
+7 & 1.87 seg & 39 & 4\\
+\hline
+8 & 1.80 seg & 42 & 4\\
+\hline
+9 & 1.26 seg & 45 & 4\\
+\hline
+1 & 0.01 seg & 21 & 5\\
+\hline
+3 & 0.02 seg & 25 & 5\\
+\hline
+4 & 0.03 seg & 30 & 5\\
+\hline
+5 & 0.03 seg & 35 & 5\\
+\hline
+8 & 0.17 seg & 39 & 5\\
+\hline
+9 & 0.11 seg & 42 & 5\\
+\hline
+10 & 0.14 seg & 45 & 5\\
+\hline
+\caption{Ejecucion algoritmo GREEDY (M1)}
+\end{longtable}
+
+\begin{longtable}{| c | c | c | c |}
+\hline
+Total   & Tiempo de & Cantidad de & Max. materias  \\
+cuatrimestres &  generación &  Materias disponibles & por cuatrimestre \\
+\hline \hline
+\endfirsthead
+\hline
+Total   & Tiempo de & Cantidad de & Max. materias  \\
+cuatrimestres &  generación &  Materias disponibles & por cuatrimestre \\
+\hline \hline
+\endhead
+\endfoot
+\endlastfoot
+2 & 13.93 seg & 21 & 2\\
+\hline
+4 & 21.56 seg & 25 & 2\\
+\hline
+7 & 28.50 seg & 30 & 2\\
+\hline
+9 & 1.0 min, 1.55 seg & 35 & 2\\
+\hline
+11 & 2.0 min, 15.63 seg & 39 & 2\\
+\hline
+13 & 2.0 min, 44.04 seg & 42 & 2\\
+\hline
+14 & 11.0 min, 6.16 seg & 45 & 2\\
+\hline
+2 & 16.22 seg & 21 & 3\\
+\hline
+3 & 20.57 seg & 25 & 3\\
+\hline
+5 & 38.09 seg & 30 & 3\\
+\hline
+6 & 46.32 seg & 35 & 3\\
+\hline
+8 & 1.0 min, 44.95 seg & 39 & 3\\
+\hline
+9 & 2.0 min, 45.50 seg & 42 & 3\\
+\hline
+10 & 9.0 min, 16.35 seg & 45 & 3\\
+\hline
+1 & 15.28 seg & 21 & 4\\
+\hline
+3 & 16.23 seg & 25 & 4\\
+\hline
+4 & 30.50 seg & 30 & 4\\
+\hline
+5 & 57.21 seg & 35 & 4\\
+\hline
+6 & 1.0 min, 6.32 seg & 39 & 4\\
+\hline
+7 & 49.0 min, 17.57 seg & 42 & 4\\
+\hline
+7 & 7.0 min, 31.78 seg & 45 & 4\\
+\hline
+1 & 19.96 seg & 21 & 5\\
+\hline
+2 & 17.25 seg & 25 & 5\\
+\hline
+3 & 35.20 seg & 30 & 5\\
+\hline
+4 & 1.0 min, 2.48 seg & 35 & 5\\
+\hline
+5 & 1.0 min, 7.96 seg & 39 & 5\\
+\hline
+6 & 4.0 min, 1.08 seg & 42 & 5\\
+\hline
+7 & 4.0 min, 53.44 seg & 45 & 5\\
+\hline
+\caption{Ejecucion algoritmo PLE (M1)}
+\end{longtable}
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.65]{Imagenes/m1_GREEDY_max_cantidad_materias_cuatrimestres.png}\par
+\caption{Comparación de tiempos respecto del máximo de materias por cuatrimestre - Algoritmo Greedy - Máquina M1}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.65]{Imagenes/m1_PLE_max_cantidad_materias_cuatrimestres.png}\par
+\caption{Comparación de tiempos respecto del máximo de materias por cuatrimestre - Algoritmo PLE - Máquina M1}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.65]{Imagenes/m1_PLE_vs_GREEDY_max_mat_5.png}\par
+\caption{Comparación de tiempos Algoritmo PLE vs. Greedy - Máx. cantidad de materias por cuatrimestre: 5 - Máquina M1}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.65]{Imagenes/m1_PLE_vs_GREEDY_max_mat_4.png}\par
+\caption{Comparación de tiempos Algoritmo PLE vs. Greedy - Máx. cantidad de materias por cuatrimestre: 4 - Máquina M1}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.65]{Imagenes/m1_PLE_vs_GREEDY_max_mat_3.png}\par
+\caption{Comparación de tiempos Algoritmo PLE vs. Greedy - Máx. cantidad de materias por cuatrimestre: 3 - Máquina M1}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.65]{Imagenes/m1_PLE_vs_GREEDY_max_mat_2.png}\par
+\caption{Comparación de tiempos Algoritmo PLE vs. Greedy - Máx. cantidad de materias por cuatrimestre: 2 - Máquina M1}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.65]{Imagenes/m1_PLE_vs_GREEDY_total_cuatrimestres_max_mat_5.png}\par
+\caption{Comparación de resultado de cantidad de cuatrimestres Algoritmo PLE vs. Greedy - Máx. cantidad de materias por cuatrimestre: 5 - Máquina M1}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.65]{Imagenes/m1_PLE_vs_GREEDY_total_cuatrimestres_max_mat_4.png}\par
+\caption{Comparación de resultado de cantidad de cuatrimestres Algoritmo PLE vs. Greedy - Máx. cantidad de materias por cuatrimestre: 4 - Máquina M1}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.65]{Imagenes/m1_PLE_vs_GREEDY_total_cuatrimestres_max_mat_3.png}\par
+\caption{Comparación de resultado de cantidad de cuatrimestres Algoritmo PLE vs. Greedy - Máx. cantidad de materias por cuatrimestre:3 - Máquina M1}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.65]{Imagenes/m1_PLE_vs_GREEDY_total_cuatrimestres_max_mat_2.png}\par
+\caption{Comparación de resultado de cantidad de cuatrimestres Algoritmo PLE vs. Greedy - Máx. cantidad de materias por cuatrimestre: 2 - Máquina M1}
+\end{figure}
+
+Como se puede observar en los gráficos anteriores, el algoritmo se comporta en término generales, tanto en el de PLE y en el algoritmo Greedy, demorando más cuanta mayor cantidad de materias por cuatrimestre hay disponibles. Se produce en ambos algoritmos una rareza cuando está el plan completo vs al plan con un cuatrimestre completo que no se logró determinar a que se debe. Sin embargo, se pudo establecer que no fue un ruido estadístico, sino que es algo que ducede de forma determinística para ese valor, ya que se realizaron varias corridas y siempre arrojó resultados similares.
+
+Luego, se ejecutaron los algoritmos en una máquina virtual con un servidor dedicado con las siguientes características. Esta máquina la rotularemos como M2.
+
+\begin{itemize}
+	\item ????????????????????????????????
+\end{itemize}
+
+Los resultados de la ejecución pueden verse en la siguientes tablas:
+
+\begin{longtable}{| c | c | c | c |}
+\hline
+Total   & Tiempo de & Cantidad de & Max. materias  \\
+cuatrimestres &  generación &  Materias disponibles & por cuatrimestre \\
+\hline \hline
+\endfirsthead
+\hline
+Total   & Tiempo de & Cantidad de & Max. materias  \\
+cuatrimestres &  generación &  Materias disponibles & por cuatrimestre \\
+\hline \hline
+\endhead
+\endfoot
+\endlastfoot
+2 & 0.46 seg & 21 & 2\\
+\hline
+4 & 1.29 seg & 25 & 2\\
+\hline
+7 & 3.88 seg & 30 & 2\\
+\hline
+10 & 10.10 seg & 35 & 2\\
+\hline
+12 & 13.39 seg & 39 & 2\\
+\hline
+13 & 15.42 seg & 42 & 2\\
+\hline
+15 & 23.19 seg & 45 & 2\\
+\hline
+2 & 1.29 seg & 21 & 3\\
+\hline
+3 & 3.43 seg & 25 & 3\\
+\hline
+5 & 10.65 seg & 30 & 3\\
+\hline
+7 & 33.85 seg & 35 & 3\\
+\hline
+8 & 41.13 seg & 39 & 3\\
+\hline
+9 & 42.37 seg & 42 & 3\\
+\hline
+10 & 29.84 seg & 45 & 3\\
+\hline
+2 & 0.03 seg & 21 & 4\\
+\hline
+3 & 0.32 seg & 25 & 4\\
+\hline
+5 & 0.66 seg & 30 & 4\\
+\hline
+5 & 0.37 seg & 35 & 4\\
+\hline
+7 & 1.62 seg & 39 & 4\\
+\hline
+8 & 1.30 seg & 42 & 4\\
+\hline
+9 & 0.86 seg & 45 & 4\\
+\hline
+1 & 0.00 seg & 21 & 5\\
+\hline
+3 & 0.01 seg & 25 & 5\\
+\hline
+4 & 0.01 seg & 30 & 5\\
+\hline
+5 & 0.01 seg & 35 & 5\\
+\hline
+8 & 0.11 seg & 39 & 5\\
+\hline
+9 & 0.06 seg & 42 & 5\\
+\hline
+10 & 0.06 seg & 45 & 5\\
+\hline
+\caption{Ejecucion algoritmo GREEDY (M2)}
+\end{longtable}
+
+\begin{longtable}{| c | c | c | c |}
+\hline
+Total   & Tiempo de & Cantidad de & Max. materias  \\
+cuatrimestres &  generación del plan &  Materias disponibles & por cuatrimestre \\
+\hline \hline
+\endfirsthead
+\hline
+Total   & Tiempo de & Cantidad de & Max. materias  \\
+cuatrimestres &  generación del plan &  Materias disponibles & por cuatrimestre \\
+\hline \hline
+\endhead
+\endfoot
+\endlastfoot
+2 & 9.12 seg & 21 & 2\\
+\hline
+2 & 9.58 seg & 21 & 2\\
+\hline
+4 & 11.63 seg & 25 & 2\\
+\hline
+4 & 11.62 seg & 25 & 2\\
+\hline
+7 & 18.11 seg & 30 & 2\\
+\hline
+9 & 32.60 seg & 35 & 2\\
+\hline
+9 & 33.11 seg & 35 & 2\\
+\hline
+11 & 1.0 min, 11.55 seg & 39 & 2\\
+\hline
+13 & 50.26 seg & 42 & 2\\
+\hline
+14 & 3.0 min, 10.80 seg & 45 & 2\\
+\hline
+2 & 9.39 seg & 21 & 3\\
+\hline
+3 & 11.76 seg & 25 & 3\\
+\hline
+5 & 18.74 seg & 30 & 3\\
+\hline
+6 & 31.46 seg & 35 & 3\\
+\hline
+8 & 53.88 seg & 39 & 3\\
+\hline
+9 & 1.0 min, 17.01 seg & 42 & 3\\
+\hline
+10 & 4.0 min, 11.13 seg & 45 & 3\\
+\hline
+1 & 9.43 seg & 21 & 4\\
+\hline
+3 & 10.27 seg & 25 & 4\\
+\hline
+4 & 17.97 seg & 30 & 4\\
+\hline
+5 & 32.43 seg & 35 & 4\\
+\hline
+6 & 34.83 seg & 39 & 4\\
+\hline
+7 & 12.0 min, 2.54 seg & 42 & 4\\
+\hline
+7 & 18.0 min, 36.93 seg & 42 & 4\\
+\hline
+7 & 2.0 min, 48.80 seg & 45 & 4\\
+\hline
+7 & 3.0 min, 34.30 seg & 45 & 4\\
+\hline
+1 & 9.88 seg & 21 & 5\\
+\hline
+2 & 9.98 seg & 25 & 5\\
+\hline
+3 & 17.82 seg & 30 & 5\\
+\hline
+4 & 33.74 seg & 35 & 5\\
+\hline
+5 & 35.61 seg & 39 & 5\\
+\hline
+6 & 1.0 min, 36.87 seg & 42 & 5\\
+\hline
+7 & 3.0 min, 14.85 seg & 45 & 5\\
+\hline
+7 & 3.0 min, 10.57 seg & 45 & 5\\
+\hline
+\caption{Ejecucion algoritmo PLE (M2)}
+\end{longtable}
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.65]{Imagenes/m2_GREEDY_max_cantidad_materias_cuatrimestres.png}\par
+\caption{Comparación de tiempos respecto del máximo de materias por cuatrimestre - Algoritmo Greedy - Máquina M2}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.65]{Imagenes/m2_PLE_max_cantidad_materias_cuatrimestres.png}\par
+\caption{Comparación de tiempos respecto del máximo de materias por cuatrimestre - Algoritmo PLE - Máquina M2}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.65]{Imagenes/m2_PLE_vs_GREEDY_max_mat_5.png}\par
+\caption{Comparación de tiempos Algoritmo PLE vs. Greedy - Máx. cantidad de materias por cuatrimestre: 5 - Máquina M2}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.65]{Imagenes/m2_PLE_vs_GREEDY_max_mat_4.png}\par
+\caption{Comparación de tiempos Algoritmo PLE vs. Greedy - Máx. cantidad de materias por cuatrimestre: 4 - Máquina M2}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.65]{Imagenes/m2_PLE_vs_GREEDY_max_mat_3.png}\par
+\caption{Comparación de tiempos Algoritmo PLE vs. Greedy - Máx. cantidad de materias por cuatrimestre: 3 - Máquina M2}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.65]{Imagenes/m2_PLE_vs_GREEDY_max_mat_2.png}\par
+\caption{Comparación de tiempos Algoritmo PLE vs. Greedy - Máx. cantidad de materias por cuatrimestre: 2 - Máquina M2}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.65]{Imagenes/m2_PLE_vs_GREEDY_total_cuatrimestres_max_mat_5.png}\par
+\caption{Comparación de resultado de cantidad de cuatrimestres Algoritmo PLE vs. Greedy - Máx. cantidad de materias por cuatrimestre: 5 - Máquina M2}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.65]{Imagenes/m2_PLE_vs_GREEDY_total_cuatrimestres_max_mat_4.png}\par
+\caption{Comparación de resultado de cantidad de cuatrimestres Algoritmo PLE vs. Greedy - Máx. cantidad de materias por cuatrimestre: 4 - Máquina M2}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.65]{Imagenes/m2_PLE_vs_GREEDY_total_cuatrimestres_max_mat_3.png}\par
+\caption{Comparación de resultado de cantidad de cuatrimestres Algoritmo PLE vs. Greedy - Máx. cantidad de materias por cuatrimestre:3 - Máquina M2}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.65]{Imagenes/m2_PLE_vs_GREEDY_total_cuatrimestres_max_mat_2.png}\par
+\caption{Comparación de resultado de cantidad de cuatrimestres Algoritmo PLE vs. Greedy - Máx. cantidad de materias por cuatrimestre: 2 - Máquina M2}
+\end{figure}
+
+Se pueden comparar también los gráficos de tiempos de la ejecución del algoritmo en ambas máquinas (no se realiza la comparación sobre la cantidad de cuatrimestres ya que en ambos casos dan los mismos valores). En ellos, se puede observar que la relación de las líneas del gráfico se mantienen pero que la máquina M2 siempre tiene mejores tiempos que la máquina M1.\newline
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.65]{Imagenes/m1_vs_m2_GREEDY_max_mat_5.png}\par
+\caption{Comparación de tiempos Algoritmo Greedy - Máx. cantidad de materias por cuatrimestre: 5 - Máquina M1 vs. Máquina M2}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.65]{Imagenes/m1_vs_m2_GREEDY_max_mat_4.png}\par
+\caption{Comparación de tiempos Algoritmo Greedy - Máx. cantidad de materias por cuatrimestre: 4 - Máquina M1 vs. Máquina M2}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.65]{Imagenes/m1_vs_m2_GREEDY_max_mat_3.png}\par
+\caption{Comparación de tiempos Algoritmo Greedy - Máx. cantidad de materias por cuatrimestre: 3 - Máquina M1 vs. Máquina M2}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.65]{Imagenes/m1_vs_m2_GREEDY_max_mat_2.png}\par
+\caption{Comparación de tiempos Algoritmo Greedy - Máx. cantidad de materias por cuatrimestre: 2 - Máquina M1 vs. Máquina M2}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.65]{Imagenes/m1_vs_m2_max_mat_5.png}\par
+\caption{Comparación de tiempos Algoritmo PLE - Máx. cantidad de materias por cuatrimestre: 5 - Máquina M1 vs. Máquina M2}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.65]{Imagenes/m1_vs_m2_max_mat_4.png}\par
+\caption{Comparación de tiempos Algoritmo PLE - Máx. cantidad de materias por cuatrimestre: 4 - Máquina M1 vs. Máquina M2}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.65]{Imagenes/m1_vs_m2_max_mat_3.png}\par
+\caption{Comparación de tiempos Algoritmo PLE - Máx. cantidad de materias por cuatrimestre: 3 - Máquina M1 vs. Máquina M2}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.65]{Imagenes/m1_vs_m2_max_mat_2.png}\par
+\caption{Comparación de tiempos Algoritmo PLE - Máx. cantidad de materias por cuatrimestre: 2 - Máquina M1 vs. Máquina M2}
+\end{figure}
+
+Para ambos algoritmos, se tuvieron los siguientes máximos en ambas máquinas. Las únicas diferencias fueron respecto de los tiempos que requirieron.\newline
+
+\textbf{Algoritmo Greedy}
+
+\begin{table}[htbp]
+\begin{center}
+\begin{tabular}{|c|c|}
+\hline
+Cantidad de materias Disponibles		 		& 	42\\
+\hline
+Max cantidad de materias por cuatrimestre 		& 	3\\
+\hline
+Duración del plan (total de cuatrimestres)		& 	9\\
+\hline
+Tiempo Máquina M1								& 	58.43 segundos\\
+\hline
+Tiempo Máquina M2 								& 	42.37 segundos\\
+\hline
+\end{tabular}
+\end{center}
+\end{table}
+
+\textbf{Algoritmo PLE}
+
+\begin{table}[htbp]
+\begin{center}
+\begin{tabular}{|c|c|}
+\hline
+Cantidad de materias Disponibles 				& 	42\\
+\hline
+Max cantidad de materias por cuatrimestre		& 	4\\
+\hline
+Duración del plan (total de cuatrimestres)		& 	7\\
+\hline
+Tiempo Máquina M1								& 	49 minutos, 17.57 segundos\\
+\hline
+Tiempo Máquina M2								& 	15 minutos, 19.74 segundos\\
+\hline
+\end{tabular}
+\end{center}
+\end{table}
+
+De lo observado anteriormente, se puede ver que el algoritmo Greedy demora menos tiempo que el algoritmo de Programación Lineal Entera. Sin embargo, a diferencia del Greedy, el de Programación Lineal Entera tiene siempre el valor óptimo.
+
+A pesar de que el algoritmo Greedy no tiene el valor óptimo el algoritmo es en términos generales (resultado vs. tiempo) muy bueno, ya que en muchos casos da el valor óptimo y en los que no suele tener un cuatrimestre de diferencia. La máxima diferencia de cuatrimestres que da el Greedy respecto del algoritmo de PLE, ha sido de dos cuatrimestres y se da en el caso de todo el plan a completar (o casi todo el plan) y muchas materias por cuatrimestre. Esto se explica porque el algoritmo Greedy no tiene en cuenta los cuatrimestres a futuro en esos casos ya que hay muchas combinaciones posibles de materias. En los casos donde el Greedy realiza fuerza bruta con poda, de todas formas la condición sobre el `futuro' es solo el cuatrimestre inmediato siguiente, y no todos los cuatrimestres futuros.
 
 \newpage
 \section{Mejoras y Nuevas Funcionalidades Futuras}

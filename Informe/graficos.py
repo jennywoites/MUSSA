@@ -26,7 +26,8 @@ class DatosAlgoritmo():
         datos_decimales = texto_numero.split('.')
         numero = int(datos_decimales[0])
         if len(datos_decimales) > 1:
-            numero += int(datos_decimales[1]) / 100
+            decimal = datos_decimales[1]
+            numero += int(decimal) / (10**len(decimal))
         return numero
 
     def guardar_datos(self, datos):
@@ -68,8 +69,8 @@ class DatosAlgoritmo():
         return nueva_lista
 
 
-def cargar_datos(PLE, Greedy):
-    with open('estadisticas_algoritmos.csv', 'r') as f:
+def cargar_datos(ruta, PLE, Greedy):
+    with open(ruta, 'r') as f:
         primera = True
         for linea in f:
             if primera:
@@ -136,18 +137,70 @@ def generar_grafico_algoritmos_combinados_total_cuatrimestres_para_cada_cantidad
             plt.plot(datos_x, datos_y, label='Algoritmo {}'.format(algoritmo.nombre))
         mostrar_grafico('Total de cuatrimestres')
 
-def generar_graficos_estadisticas():
-    PLE = DatosAlgoritmo('PLE')
-    Greedy = DatosAlgoritmo('Greedy')       
-    cargar_datos(PLE, Greedy)
+def convertir_tiempo(tiempo):
+    minutos = tiempo // 60
+    segundos = tiempo - minutos * 60
+    horas = minutos // 60
+    minutos = minutos - horas * 60
+
+    msj = ""
+    if horas > 0:
+        msj += "{} horas, ".format(horas)
+
+    if minutos > 0:
+        texto_minutos =  "minutos" if minutos > 1 else "minuto"
+        msj += "{} {}, ".format(minutos, texto_minutos)
+
+    msj += "{0:.2f} segundos".format(segundos)
+    return msj    
+
+def imprimir_resultados_tiempo_maximo_algoritmo(algoritmo):
+    tiempo_maximo = 0
+    datos_maximo = []
+
+    for cantidad_max_materias_por_cuatrimestre in algoritmo.datos:
+        for tupla in algoritmo.datos[cantidad_max_materias_por_cuatrimestre]:
+            if tupla[TUPLA_SEGUNDOS] == tiempo_maximo:
+                datos_a_guardar = tupla + (cantidad_max_materias_por_cuatrimestre,)
+                datos_maximo.append(tupla)
+            elif tupla[TUPLA_SEGUNDOS] > tiempo_maximo:
+                tiempo_maximo = tupla[TUPLA_SEGUNDOS]
+                datos_a_guardar = tupla + (cantidad_max_materias_por_cuatrimestre,)
+                datos_maximo = [datos_a_guardar]
+
+    print()
+    print("El tiempo maximo registrado para el algoritmo {} se dio para:".format(algoritmo.nombre))
+    for tupla in datos_maximo:
+        print("--------------------------")
+        print("Tiempo: {}".format(convertir_tiempo(tupla[TUPLA_SEGUNDOS])))
+        print("Cantidad de materias Disponibles: {}".format(tupla[TUPLA_MAT_DISPONIBLES]))
+        print("Max cantidad de materias por cuatrimestre: {}".format(tupla[-1]))
+        print("Total cuatrimestres: {}".format(tupla[TUPLA_TOTAL_CUATRIMESTRES]))
+
+def generar_graficos_por_maquina(archivo, texto_maquina):
+    PLE = DatosAlgoritmo('PLE ({})'.format(texto_maquina))
+    Greedy = DatosAlgoritmo('Greedy ({})'.format(texto_maquina))       
+    cargar_datos(archivo, PLE, Greedy)
 
     PLE.ordenar_y_generar_tuplas()
     Greedy.ordenar_y_generar_tuplas()
 
+    imprimir_resultados_tiempo_maximo_algoritmo(PLE)
+    imprimir_resultados_tiempo_maximo_algoritmo(Greedy)
+    
     graficar_mismo_algoritmo_con_cada_linea_cantidad_maxima_materias_diferente(Greedy)
     graficar_mismo_algoritmo_con_cada_linea_cantidad_maxima_materias_diferente(PLE)
 
     generar_grafico_algoritmos_combinados_segundos_para_cada_cantidad_maxima_de_materias_por_cuatrimestre([PLE, Greedy])
     generar_grafico_algoritmos_combinados_total_cuatrimestres_para_cada_cantidad_maxima_de_materias_por_cuatrimestre([PLE, Greedy])
+
+    return PLE, Greedy
+
+def generar_graficos_estadisticas():
+    PLE_maq1, Greedy_maq1 = generar_graficos_por_maquina('estadisticas_algoritmos_maq1.csv', 'M1')
+    PLE_maq2, Greedy_maq2 = generar_graficos_por_maquina('estadisticas_algoritmos_maq2.csv', 'M2')
+
+    generar_grafico_algoritmos_combinados_segundos_para_cada_cantidad_maxima_de_materias_por_cuatrimestre([PLE_maq1, PLE_maq2])
+    generar_grafico_algoritmos_combinados_segundos_para_cada_cantidad_maxima_de_materias_por_cuatrimestre([Greedy_maq1, Greedy_maq2])
 
 generar_graficos_estadisticas()
