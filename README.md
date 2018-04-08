@@ -2,20 +2,25 @@
 
 ## Configuración inicial
 
-    # Moverse a la carpeta
+Moverse a la carpeta
+
     cd MUSSA_Flask
 
-    # Ejecutar el script de instalacion (requiere permiso de ejecucion)
+Ejecutar el script de instalacion (requiere permiso de ejecucion)
+
     instalaciones.sh
 
-    # Instalar / Configurar base de datos MySQL
+
+Instalar / Configurar base de datos MySQL
+
     mysqladmin -uroot -p create mussa # Nos va a solicitar el password PASSWORD_DB
     mysql -uroot -p # Nos va a solicitar el password PASSWORD_DB
     mysql> use mussa;
     mysql> grant all on * to 'mussa'@'localhost' identified by PASSWORD_ADMIN; # Se crea la password para el admin
     Ctrl-D
     
-    # Cambiar en app/local_settings.py la SQLALCHEMY_DATABASE_URI
+Cambiar en app/local_settings.py la SQLALCHEMY_DATABASE_URI
+
     SQLALCHEMY_DATABASE_URI = "mysql://mussa:PASSWORD_ADMIN@localhost/mussa"
 
 
