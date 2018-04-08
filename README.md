@@ -62,6 +62,12 @@ Se pueden utilizar los siguientes usuarios:
     celery -A AsyncTasks.AsyncTaskPLE.broker_generador_plan_ple worker --loglevel=debug
     celery -A app.API_Rest.GeneradorPlanCarreras.broker_guardar_plan_generado worker --loglevel=debug
 
+## Si se desea purgar las tareas pendientes de los workers
+
+    celery -A AsyncTasks.AsyncTaskGreedy.broker_generador_greedy purge
+    celery -A AsyncTasks.AsyncTaskPLE.broker_generador_plan_ple purge
+    celery -A app.API_Rest.GeneradorPlanCarreras.broker_guardar_plan_generado purge
+
 ## Acknowledgements
 
 With thanks to the following Flask extensions:
