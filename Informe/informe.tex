@@ -72,7 +72,7 @@ El objetivo general del presente trabajo, es la realización de una web responsi
 
 \subsection{Motivación}
 
-Durante los años en que el alumno lleva adelante la carrera, muchas veces se ve obligado a no seguir con las materias tal como figuran en el plan por diversos motivos: cupos llenos en las cursos que prefiere, decisión para cursar con otros compañeros, necesidad de cursar menos materias por cuatrimestre, incompatibilidad laboral, razones personales, etc. Estos alumnos se ven forzados a tener que rediseñar el plan para poder acomodar las materias en un tiempo razonable de realización, que además sea compatible con las preferencias que él o ella tengan.
+Durante los años en que el alumno lleva adelante la carrera, muchas veces se ve obligado a no seguir con las materias tal como figuran en el plan por diversos motivos: cupos llenos en los cursos que prefiere, decisión para cursar con otros compañeros, necesidad de cursar menos materias por cuatrimestre, incompatibilidad laboral, razones personales, etc. Estos alumnos se ven forzados a tener que rediseñar el plan para poder acomodar las materias en un tiempo razonable de realización, que además sea compatible con las preferencias que él o ella tengan.
 
 A esto, se suman materias que solo se dictan en el primer o segundo cuatrimestre, las correlatividades, entre otras, que dificultan la decisión de qué materia realizar antes que otra.
 
@@ -126,15 +126,7 @@ Se eligió como lenguaje Python junto a Flask\cite{FLASK_OFICIAL} para el backen
 
 El frontend fue desarrollado con HTML5, JavaScript, CSS y Bootstrap\cite{BOOTSTRAP} para que sea responsive.\newline
 
-Para la base de datos se eligió MySQL\cite{MYSQL}. Además fue utilizado SQLAlchemy\cite{SQLALCHEMY_OFICIAL} como ORM\footnote{ORM: Object Relational Mapper. Un ORM simplifica el acceso a una base de datos por parte del programador convirtiendo toda sentencia sql a operaciones con objetos.}.\newline
-
-La máquina con la que fueron realizadas las pruebas tiene las siguientes características:
-\begin{itemize}
-	\item CPU: Intel(R) Core(TM) i3-2330M CPU @ 2.20GHz
-	\item RAM: 10 GB
-	\item 2 Core
-\end{itemize}
-por lo que los tiempos de los algoritmos de generación del plan podrían mejorar si se tuviese una máquina con mejores características.\newline
+Para la base de datos se eligió MySQL\cite{MYSQL}. Además fue utilizado SQLAlchemy \cite{SQLALCHEMY_OFICIAL} como ORM\footnote{ORM: Object Relational Mapper. Un ORM simplifica el acceso a una base de datos por parte del programador convirtiendo toda sentencia sql a operaciones con objetos.}.\newline
 
 Para el comienzo del proyecto se utilizó Flask-User\cite{FLASK_USER}. Este proyecto ofrece una estructura inicial con las acciones básicas de login/signin y manejo de contraseñas. Fue dicifil de configurar al principio ya que no se tenía experiencia con Flask en general, pero una vez configurado solo hizo falta realizar las customizaciones correspondientes. El problema principal que se tuvo al utilizar Flask-User en lugar de haber realizado los servicios manualmente es que cuando se quiso desarrollar la API no se la pudo independizar completamente del proyecto ya que sino, requería solucionar el cross domain o realizar una autenticación en ambos puntos. Como punto a favor es que simplificó mucho el desarrollo de esa sección y que proveyó de una estructura básica al proyecto en general.\newline
 
@@ -298,7 +290,7 @@ Los resultados de las encuestas por curso están divididos en 5 secciones: Gener
 
 Tal como se indicó en la sección de herramientas y tecnologías para el dearrollo de esta sección fue utilizado Flask-User y luego customizado el mismo.
 
-Para registrarse es necesario ingresar un e-mail, el nombre, apellido y una contraseña. Esto enviará un email a la diracción indicada para que confirme la registración. Una vez confirmada ya podrá ingresar normalmente al sistema utilizando solamente el e-mail y la contraseña. El padrón no es solicitado en la registración pero se podrá guardar desde los datos académicos, de esta forma los alumnos del CBC podrán hacer uso del sistema incluso antes de tener un padrón asignado.
+Para registrarse es necesario ingresar un e-mail, el nombre, apellido y una contraseña. Esto enviará un email a la dirección indicada para que confirme la registración. Una vez confirmada ya podrá ingresar normalmente al sistema utilizando solamente el e-mail y la contraseña. El padrón no es solicitado en la registración pero se podrá guardar desde los datos académicos, de esta forma los alumnos del CBC podrán hacer uso del sistema incluso antes de tener un padrón asignado.
 
 \begin{figure}[H]
 \centering
@@ -613,7 +605,9 @@ Se eliminan del listado de materias aquellas que el alumno ya aprobó y las que 
 
 Se separan las materias del CBC (que siempre serán agregadas en grupos de tres al principio del plan generado) y se configuran como materias obligatorias aquellas de la orientación elegida y como electivas aquellas de las otras orientaciones (si corresponde). Además, se copia el trabajo profesional para dividirlo en dos `submaterias' ya que debe realizarse en dos cuatrimestres consecutivos.
 
-Se elijen los cursos específicos definidos por el usuario. Si la materia era electiva se la transforma en obligatoria con ese único curso disponible y se actualizan los créditos requeridos en materias electivas. Se verifica que los horarios de los cursos que se van a agregar como disponibles cumplan con la restricción de los horarios en los que el alumno no puede cursar. Si no la cumplen, esos cursos son eliminados.
+Se elijen los cursos específicos definidos por el usuario. Si la materia era electiva se la transforma en obligatoria con ese único curso disponible y se actualizan los créditos requeridos en materias electivas.
+
+Se verifica que los horarios de los cursos que se van a agregar como disponibles cumplan con la restricción de los horarios en los que el alumno no puede cursar. Si no la cumplen, esos cursos son eliminados.
 
 Se verifica además el puntaje del curso antes de agregarlo. Si el curso es de una materia electiva y no cumple con el puntaje mínimo, es decartado. Si la materia es obligatoria y no hay ningún curso que cumpla con el puntaje mínimo, se agregarán aquellos cursos con mayor puntaje (de forma que sea el más alto poisble aunque no cumpla con la restricción).
 
@@ -658,7 +652,7 @@ El primer paso para la resolución de un problema de programación lineal consis
 
 En principio, puede parecer que los problemas lineales enteros son más fáciles de resolver que los continuos, dado que el número de soluciones factibles a analizar, cuando el conjunto de oportunidades está acotado, es finito, éste número suele ser lo suficientemente grande como para que resulte imposible su comparación.\newline
 
-La mayoría de los métodos de resolución comienzan su ejecución con la resolución del problema lineal asociado (PLA) consistente en eliminar las condiciones de integridad, obteniéndose en consecuencia un problema de programación lineal que puede ser resuelto mediante el algoritmo del simplex.
+La mayoría de los métodos de resolución comienzan su ejecución con la resolución del problema lineal asociado (PLA) consistente en eliminar las condiciones de integridad, obteniéndose en consecuencia un problema de programación lineal que puede ser resuelto mediante el algoritmo simplex.
 
 La resolución del PLA en primer lugar, tiene como ventaja que si la solución a dicho problema verifica las condiciones de integridad de las variables, ésa será la solución al problema entero.
 
@@ -1067,7 +1061,7 @@ El set de pruebas, fue ejecutado en la misma máquina con la que se hizo el desa
 	\item 2 Core
 \end{itemize}
 
-En particular, para la configuración de la cantidad de threads para el algoritmo de PLE fue seteada en 2 ya que es la cantidad de CPUs que posee.
+En particular, para la configuración de la cantidad de threads para el algoritmo de PLE fue seteada en 2 ya que es la cantidad de Cores que posee.
 
 Los resultados de la ejecución pueden verse en la siguientes tablas:
 
@@ -1275,15 +1269,17 @@ cuatrimestres &  generación &  Materias disponibles & por cuatrimestre \\
 \caption{Comparación de resultado de cantidad de cuatrimestres Algoritmo PLE vs. Greedy - Máx. cantidad de materias por cuatrimestre: 2 - Máquina M1}
 \end{figure}
 
-Como se puede observar en los gráficos anteriores, el algoritmo se comporta en término generales, tanto en el de PLE y en el algoritmo Greedy, demorando más cuanta mayor cantidad de materias por cuatrimestre hay disponibles. Se produce en ambos algoritmos una rareza cuando está el plan completo vs al plan con un cuatrimestre completo que no se logró determinar a que se debe. Sin embargo, se pudo establecer que no fue un ruido estadístico, sino que es algo que ducede de forma determinística para ese valor, ya que se realizaron varias corridas y siempre arrojó resultados similares.
+Como se puede observar en los gráficos anteriores, el algoritmo se comporta en término generales, tanto en el de PLE y en el algoritmo Greedy, demorando más cuanto mayor cantidad de materias por cuatrimestre hay disponibles. Se produce en ambos algoritmos una rareza cuando está el plan completo por completar vs el plan sólo con un cuatrimestre completo, que no se logró determinar a qué se debe. Sin embargo, se pudo establecer que no fue un ruido estadístico, sino que es algo que ducede de forma determinística para ese valor, ya que se realizaron varias ejecuciones de los algoritmos y siempre arrojó resultados similares.
 
 Luego, se ejecutaron los algoritmos en una máquina virtual con un servidor dedicado con las siguientes características. Esta máquina la rotularemos como M2.
 
 \begin{itemize}
-	\item CPU: Intel Xenon Processor (Skylake) @ 2.10GHz
+	\item CPU: Intel Xeon Processor (Skylake) @ 2.10GHz
 	\item RAM: 16 GB
 	\item 4 Core
 \end{itemize}
+
+En particular, para la configuración de la cantidad de threads para el algoritmo de PLE fue seteada en 4 ya que es la cantidad de Cores que posee.
 
 Los resultados de la ejecución pueden verse en la siguientes tablas:
 
