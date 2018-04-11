@@ -80,7 +80,7 @@ Luego, se debe tener en cuenta que en muchos de los planes de estudio, las mater
 
 Actualmente, la decisión de qué materia se cursa primero y cuál después, se toma "manualmente", es decir, se observa el punto en el que se está parado y se decide en base a lo mejor que se puede hacer en el corto plazo ya que es muy difícil observar el panorama completo cuanto más lejos de la meta se está.
 
-En el marco de re inserción de alumnos que han abandonado la carrera y que le restan pocas materias por recibirse, es útil poder contar con una herramienta que priorice las materias en base a los tiempos que esta persona tiene disponible y tratar de recomendarle los mejores cursos para que pueda recibirse con prontitud, de forma de poder incrementar el número de profesionales recibidos en Argentina.
+En el marco del programa de re inserción de alumnos que han abandonado la carrera y que le restan pocas materias por recibirse; es útil poder contar con una herramienta que priorice las materias en base a los tiempos que esta persona tiene disponible y tratar de recomendarle los mejores cursos para que pueda recibirse con prontitud, de forma de poder incrementar el número de profesionales recibidos en Argentina.
 
 Se busca entonces, poder facilitar estas tareas a través de una plataforma web que permita obtener la información requerida para clasificar las materias (por ejemplo, a través de las encuestas), que facilite la generación de las notas para trámites como pedidos de créditos o excepciones de correlatividades que han de presentarse en la facultad posteriormente, y que, a través de parámetros configurados por el usuario, pueda armar automáticamente un plan de carrera que se ajuste a sus necesidades, pudiendo ser mutado si las mismas cambian con el paso del tiempo.
 
@@ -89,14 +89,14 @@ Se busca entonces, poder facilitar estas tareas a través de una plataforma web 
 El alcance del trabajo es:
 
 \begin{enumerate}
-	\item Desarrollar una página web responsive que conste de los siguientes:
+	\item Desarrollar una página web responsive que permita:
 		\begin{itemize}
 			\item Login / Sign In / Cambio de Contraseña
 			\item Almacenamiento y edición de datos personales, carreras, materias aprobadas / desaprobadas / con final pendiente / en curso
-			\item Materias habilitadas para cursar
-			\item Formularios: Nota al decano y listado de materias
-			\item Encuestas de cursos / docentes
-			\item Busquedas de materias con filtros
+			\item Visualizar la lista de materias habilitadas para cursar
+			\item Descarga de formularios: Nota al decano y listado de materias
+			\item Completar y visualizar las encuestas de cursos / docentes
+			\item Búsquedas de materias con filtros
 			\item Visualizar y Generar Plan de Estudios
 		\end{itemize}
 
@@ -128,11 +128,11 @@ El frontend fue desarrollado con HTML5, JavaScript, CSS y Bootstrap\cite{BOOTSTR
 
 Para la base de datos se eligió MySQL\cite{MYSQL}. Además fue utilizado SQLAlchemy \cite{SQLALCHEMY_OFICIAL} como ORM\footnote{ORM: Object Relational Mapper. Un ORM simplifica el acceso a una base de datos por parte del programador convirtiendo toda sentencia sql a operaciones con objetos.}.\newline
 
-Para el comienzo del proyecto se utilizó Flask-User\cite{FLASK_USER}. Este proyecto ofrece una estructura inicial con las acciones básicas de login/signin y manejo de contraseñas. Fue dicifil de configurar al principio ya que no se tenía experiencia con Flask en general, pero una vez configurado solo hizo falta realizar las customizaciones correspondientes. El problema principal que se tuvo al utilizar Flask-User en lugar de haber realizado los servicios manualmente es que cuando se quiso desarrollar la API no se la pudo independizar completamente del proyecto ya que sino, requería solucionar el cross domain o realizar una autenticación en ambos puntos. Como punto a favor es que simplificó mucho el desarrollo de esa sección y que proveyó de una estructura básica al proyecto en general.\newline
+Para el comienzo del proyecto se utilizó Flask-User\cite{FLASK_USER}. Este proyecto ofrece una estructura inicial con las acciones básicas de login/signin y manejo de contraseñas. Fue dicifil de configurar al principio ya que no se tenía experiencia con Flask en general, pero una vez configurado solo hizo falta realizar las customizaciones correspondientes. El problema principal que se tuvo al utilizar Flask-User, en lugar de haber realizado los servicios manualmente, es que cuando se quiso desarrollar la API no se la pudo independizar completamente del proyecto ya que para ello, requería solucionar el cross domain o realizar una autenticación en ambos puntos. Como punto a favor es que Flask-User simplificó mucho el desarrollo de esa sección y proveyó de una estructura básica al proyecto en general.\newline
 
 Para poder realizar los planes de forma asincónica, se utilizó Celery\footnote{Celery es una cola de tareas asincónica open source basada en el pasaje de mensajes distribuido}\cite{CELERY} para la cola de tareas asincónica junto a Redis\footnote{Redis es un almacén de estructura de datos de valores de clave en memoria rápido y de código abierto}\cite{REDIS} como estructura para los datos de las tareas.\newline
 
-Para la generación del plan con el algoritmo de programación lineal entera, se utilizó PuLP\cite{PULP_PYTHON}. PuLP es una librería Open Source escrita en Python. Es usada para describir problemas de optimización como modelos matemáticos. PuLP puede llamar a numerosos solvers de programación lineal, tales como CBC, GLPK, CPLEX, Gurobi, etc, para resolver el modelo y luego utilizar comandos de Python para manipular y mostrar el resultado de la solución. Durante el desarrollo del algoritmo se probaron diferentes solvers, pero finalmente fue elegido CBC ya que fue el que mejor repsondía en tiempos para el algoritmo ejecutado además de ofrecer multi-threading para la resolución del problema.
+Para la generación del plan con el algoritmo de programación lineal entera, se utilizó PuLP\cite{PULP_PYTHON}. PuLP es una librería Open Source escrita en Python. Es usada para describir problemas de optimización como modelos matemáticos. PuLP puede llamar a numerosos solvers de programación lineal, tales como CBC, GLPK, CPLEX, Gurobi, etc, para resolver el modelo y luego utilizar comandos de Python para manipular y mostrar el resultado de la solución. Durante el desarrollo del algoritmo se probaron diferentes solvers, pero finalmente fue elegido CBC ya que fue el que mejor repsondía en tiempos para el algoritmo ejecutado, además de ofrecer multi-threading para la resolución del problema.
 
 \newpage
 \section{Página Web MUSSA: Acceso Público}
@@ -1594,6 +1594,36 @@ Tiempo Máquina M2								& 	15 minutos, 19.74 segundos\\
 De lo observado anteriormente, se puede ver que el algoritmo Greedy demora menos tiempo que el algoritmo de Programación Lineal Entera. Sin embargo, a diferencia del Greedy, el de Programación Lineal Entera tiene siempre el valor óptimo.
 
 A pesar de que el algoritmo Greedy no tiene el valor óptimo el algoritmo es en términos generales (resultado vs. tiempo) muy bueno, ya que en muchos casos da el valor óptimo y en los que no suele tener un cuatrimestre de diferencia. La máxima diferencia de cuatrimestres que da el Greedy respecto del algoritmo de PLE, ha sido de dos cuatrimestres y se da en el caso de todo el plan a completar (o casi todo el plan) y muchas materias por cuatrimestre. Esto se explica porque el algoritmo Greedy no tiene en cuenta los cuatrimestres a futuro en esos casos ya que hay muchas combinaciones posibles de materias. En los casos donde el Greedy realiza fuerza bruta con poda, de todas formas la condición sobre el `futuro' es solo el cuatrimestre inmediato siguiente, y no todos los cuatrimestres futuros.
+
+\newpage
+\section{¿Integrando con el SIU Guaraní?}
+
+Por un lado, la situación ideal es que ambas aplicaciones se fusionen en una, de forma tal que la resultante incluya las inscripciones, el manejo de formularios y solicitudes académicas, estado de carrera, etc. De esta forma, ni alumnos ni docentes requerirían tener espejados los datos en dos sistemas independientes.
+
+Un caso un poco menos ideal, pero que aún no ha sido posible, es el caso de que el SIU provea servicios al que MUSSA pueda acceder para realizar sincronizaciones de datos (al menos de lectura de datos).
+
+En el caso de que en algún futuro la integración de este sistema sea posible, se deberían realizar las siguientes:
+
+\begin{itemize}
+	\item Obtención de horarios definitivos: El PDF que publica la facultad contine los horarios para el cuatrimestre. Sin embargo, en las primeras semanas de publicado y antes de las inscripciones, suelen modificar esos horarios debido a errores y/o cambios de último momento. Estos cambios son reflejados en el SIU pero no en el PDF. Para evitar tener que hacer las modificaciones de los cursos manualmente, deberían poder obtenerse los horarios con un servicio y actualizarlos en MUSSA cada vez que se producen cambios.
+
+	\item Los docentes deberían estar completos para cada curso en el SIU. Además, sería muy útil que tengan un servicio para obtener el listado completo de docentes y que al enviar el horario, el docente del curso venga indicado por su ID. De esta forma se podría evitar el problema de docentes que dictan más de una materia y que desde el PDF es imposible saber si es el mismo docente o no.
+
+	\item Inscripción de Materias: Al inscribirse un alumno a las materias desde el SIU, se debería agregar un servicio que envíe los datos de la inscripción, indicando el curso, la materia y la carrera a la que se inscribió.
+	
+	\item Envío de calificaciones de exámenes finales / coloquios: Cuando el alumno rinde un examen final, la calificación es cargada en el SIU junto con el acta del examen. Se requiere un servicio que envíe este dato a MUSSA, de forma tal que el alumno no requiera actualizar la materia manualmente. Incluso, si el alumno hace la actualización manual, se le podría indicar usando estos mismos datos, cuáles difieren de la información oficial ya cargada.
+	
+	\item Encuestas: Actualmente las encuestas del SIU no están funcionando correctamente (una vez completada, al clickear para guardarla la misma no se guarda (o al menos no queda registro de ello) y se reinicia indicandote que aún tenés la misma encuesta por completar. Estas encuestas además, no son públicas. Si se decide usar MUSSA para las encuestas, se deberían agregar las preguntas que estén en la encuesta oficial y que sean importantes como para que las encuestas de MUSSA puedan ser consideradas como `oficiales' para ser usadas por los departamentos, curriculares, concursos y todo aquél que las requiera.
+
+\end{itemize}
+
+El SIU actualmente tiene botones para generación de documentación y/o pedidos (como por ejemplo el certificado de alumno regular) que devuelven una respuesta de que se ha iniciado el trámite, pero estos trámites no se generan realmente sino que deben hacerse personalmente a través del departamento de alumnos. Se debe cambiar esto, no solo porque es confuso para quienes no saben que realmente no funciona, sino porque no aporta las funcionalidades que dice tener y que son muy necesarias.\newline
+
+Si se permite el uso de servicios, hay dos posibilidades para la integración entre ambos sistemas.
+
+Por un lado, que el SIU al realizar modificaciones de datos, notifique a MUSSA a través del servicio. Esta manera, requiere modificaciones en ambos sitios, por lo que es poco probable que se realice. De todas maneras, es la solución en la que los datos estarían siempre sincronizados con el último valor y no requeriría más invocaciones que las mínimas necesarias.
+
+Por otro lado, una solución más sencilla (para quienes desarrollan el SIU) implica solo exponer servicios de consulta con los datos actuales. Allí, el sistema MUSSA deberá consultar periódicamente el dato actual y si se producen diferencias con los datos que éste tiene, actualizar los registros correspondientes. Que el dato que se observe en MUSSA esté actualizado o no dependerá de la frecuencia con la que se sincronicen los datos. Una opción, para que siempre el dato esté actualizado es realizar sincronizaciones completas de forma periódica con períodos de tiempo espaciados (por ejemplo, una vez por día en la noche), y por otro, realizar una sincronización de un dato específico (por ejemplo, el estado de un curso) on-demand; es decir cuando se está queriendo acceder a este dato. De esta forma, el dato observado siempre estará actualizado.
 
 \newpage
 \section{Mejoras y Nuevas Funcionalidades Futuras}
