@@ -137,13 +137,19 @@
         }
 
         function actualizar_creditos_mostrados() {
-            var id_carrera = get_valor_selector("carrera_mostrar_materias");
+
+            var total_carreras = {{mis_carreras | length }};
+            var id_carrera = (total_carreras == 1) ? {{mis_carreras | safe }}[0]["id_carrera"] : get_valor_selector("carrera_mostrar_materias");
+
             var orientacion = get_valor_selector("orientacion_elegida");
             var trabajo_elegido = get_valor_selector("trabajo_elegido");
 
             actualizar_progreso_completo(id_carrera, orientacion, trabajo_elegido);
 
-            actualizar_valor_selector("carrera_mostrar_materias", id_carrera);
+            if (total_carreras > 1) {
+                actualizar_valor_selector("carrera_mostrar_materias", id_carrera);
+            }
+
             actualizar_valor_selector("orientacion_elegida", orientacion);
             actualizar_valor_selector("trabajo_elegido", trabajo_elegido);
         }
