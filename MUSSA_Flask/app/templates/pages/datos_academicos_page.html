@@ -285,14 +285,15 @@
             var rows = document.getElementById("materias_alumno_table").rows;
 
             var titulos = rows[0];
-            var POS_CARRERA = 3;
-            titulos.cells[POS_CARRERA].hidden = (id_carrera != "todas_mis_carreras");
+            var POS_CARRERA_TITULOS = 2;
+            titulos.cells[POS_CARRERA_TITULOS].hidden = (id_carrera != "todas_mis_carreras");
 
+            var POS_CARRERA_CELDAS = 3;
             var no_hay_datos = true;
             for (var i = 1; i < rows.length; i++) {
                 var id_carrera_tabla = rows[i].cells[0].innerText;
 
-                rows[i].cells[POS_CARRERA].hidden = (id_carrera != "todas_mis_carreras");
+                rows[i].cells[POS_CARRERA_CELDAS].hidden = (id_carrera != "todas_mis_carreras");
                 if (id_carrera == "todas_mis_carreras") {
                     no_hay_datos = false;
                     rows[i].style.display = "";
@@ -447,7 +448,9 @@
                     <tr class="header_tabla">
                         <th>Código</th>
                         <th>Materia</th>
+                        {% if mis_carreras | length > 1 %}
                         <th>Carrera</th>
+                        {% endif %}
                         <th>Curso</th>
                         <th>Estado</th>
                         <th>Cuatrimestre / Año aprobación cursada</th>
@@ -464,7 +467,9 @@
                                 <td hidden=true"">{{materia["id_carrera"]}}</td>
                                 <td>{{materia["codigo"]}}</td>
                                 <td>{{materia["nombre"]}}</td>
+                                {% if mis_carreras | length > 1 %}
                                 <td>{{materia["carrera"]}}</td>
+                                {% endif %}
                                 <td>{{materia["curso"]}}</td>
                                 <td>{{materia["estado"]}}</td>
                                 <td>{{materia["aprobacion_cursada"]}}</td>
