@@ -15,7 +15,7 @@ from app.commands import InitDbCommand
 manager = Manager(create_app)
 manager.add_command('db', MigrateCommand)
 manager.add_command('init_db', InitDbCommand)
-manager.add_command('runserver', commands.Server(host=None, port=None, threaded=True))
+manager.add_command('runserver', commands.Server(host="0.0.0.0", port=None, threaded=True))
 
 
 
