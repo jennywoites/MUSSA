@@ -29,8 +29,6 @@ def member_page():
 @login_required
 def user_profile_page():
     form = UserProfileForm()
-    form.first_name.data = current_user.first_name
-    form.last_name.data = current_user.last_name
 
     # Process valid POST
     if request.method == 'POST' and form.validate():
@@ -44,5 +42,8 @@ def user_profile_page():
         return redirect(url_for('main.home_page'))
 
     # Process GET or invalid POST
+    form.first_name.data = current_user.first_name
+    form.last_name.data = current_user.last_name
+
     return render_template('pages/user_profile_page.html',
                            form=form)
