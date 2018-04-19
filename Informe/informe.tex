@@ -732,7 +732,7 @@ El algoritmo Branch \& Cut es un algoritmo de división y conquista que se aprox
 
 \subsubsection{Algoritmo Desarrollado}
 
-Para el desarrollo del algoritmo, se genera un archivo escrito en Python que hace uso de la librería PuLP para la resolución del problema; en este archivo se agregan las definiciones de las variables, de la función objetivo y de las restricciones que se deben cumplir.
+Para el desarrollo del algoritmo, se genera un archivo escrito en Python que hace uso de la librería PuLP para la resolución del problema; en este archivo se modela el problema, agregando las definiciones de las variables, de la función objetivo y de las restricciones que se deben cumplir.
 
 Luego, estos datos son verificados, se identifican las variables igualadas a 0 y se las reemplaza en las ecuaciones, de forma de eliminar todas aquellas variables para las cuales ya se conoce el valor. Luego, todas aquellas restricciones que sean de una variable mayor o igual a cero o una variable menor igual a infinito, son eliminadas ya que son restricciones que se cumplen por la misma naturaleza de la variable.
 
@@ -799,20 +799,25 @@ Las franjas de horarios van entre FRANJA\_MINIMA y FRANJA\_MAXIMA, que fueron mo
 
 Luego, se define la función objetivo a minimizar. Por el momento, sólo se busca minimizar el total de cuatrimestres, que se encuentra representado con la variable entera: TOTAL\_CUATRIMESTRES.
 
-La primer restricción que tenemos es que la materia se debe cursar en un único cuatrimestre. Además, si la materia es OBLIGATORIA, debe cursarse sí o sí. Por lo que se desprenden dos ecuaciones, una para los ids de materias obligatorias (\ref{eq:suma_obligatorias}) y otra para los ids de materias electivas (\ref{eq:suma_electivas}):
+La primer restricción que tenemos es que la materia se debe cursar en un único cuatrimestre. Además, si la materia es OBLIGATORIA, debe cursarse sí o sí. Por lo que se desprenden dos ecuaciones, una para los ids de materias obligatorias (\ref{eq:suma_obligatorias}) y otra para los ids de materias electivas (\ref{eq:suma_electivas}).
+
+La ecuación (\ref{eq:suma_obligatorias}) se debe realizar para toda materia i obligatoria.
 
 \begin{equation}\label{eq:suma_obligatorias}
-\sum_{i} \sum_{j} Y_{ij} = 1 ; \forall i \epsilon \{id\_materia\_obligatoria\}, \forall j \epsilon \{cuatrimestres\}
+\sum_{j} Y_{ij} = 1 ; \forall j \epsilon \{cuatrimestres\}
 \end{equation}
+
+La ecuación (\ref{eq:suma_electivas}) se debe realizar para toda materia i electiva.
 
 \begin{equation}\label{eq:suma_electivas}
-\sum_{i} \sum_{j} Y_{ij} \leq 1 ; \forall i \epsilon \{id\_materia\_electiva\}, \forall j \epsilon \{cuatrimestres\}
+\sum_{j} Y_{ij} \leq 1 ; \forall j \epsilon \{cuatrimestres\}
 \end{equation}
 
-Se debe establecer el número de cuatrimestre en que será cursada la materia, por lo que se requiere que para cada cuatrimestre j $\epsilon$ $[1, MAX_CUATRIMESTRES]$ (\ref{eq:numero_cuatrimestre_materias}):
+Se debe establecer el número de cuatrimestre en que será cursada la materia, esto es, se deben sumar las variables $Y_{ij}$ multiplicándolas por el cuatrimestre j, de forma tal que el número de cuatrimestre i sea igual a ese valor j cuando la variable Y de positiva (lo cual solo ocurrirá a lo sumo una vez). En el caso de que la materia no se curse, el cuatrimestre dará 0.
+Esta ecuación se debe realizar para toda materia i.
 
 \begin{equation}\label{eq:numero_cuatrimestre_materias}
-\sum_{i} j * Y_{ij} = C_{j} ; \forall i \epsilon \{id\_materia\}
+C_{i} = \sum_{j} j * Y_{ij} ; \forall j \epsilon [1, MAX\_CUATRIMESTRES]
 \end{equation}
 
 Cuando la materia se cursa, los cuatrimestres de las correlativas deben ser menores. Como no todas las materias se cursan, es necesario agregar un ajuste para cancelar la ecuación cuando la materia no será cursada.
@@ -835,7 +840,7 @@ ajuste\_electiva\_no\_cursada = INFINITO * (1 - \sum_{\forall j} Y_{mj})
 j \epsilon [1, MAX\_CUATRIMESTRES]
 \end{equation}
 
-\begin{equation}\label{eq:i_obligatoria_m_obligatoria}
+\begin{equation}\label{eq:i_obligatoria_m_electiva}
 C_m + ajuste\_electiva\_no\_cursada \geq C_i + 1
 \end{equation}
 
@@ -860,7 +865,7 @@ j \epsilon [1, MAX\_CUATRIMESTRES]
 
 Para calcular los créditos acumulados, se deben considerar los cŕeditos de las materias obligatorias, electivas y las del trabajo profesional (si corresponde).
 
-El valor de CRED0 será el valor de los créditos acumulados con las materias aprobadas antes de invocar al algoritmo.\newline
+El valor de $CRED_0$ será el valor de los créditos acumulados con las materias aprobadas antes de invocar al algoritmo.\newline
 
 Para cada cuatrimestre j $\epsilon$ [1, MAX\_CUATRIMESTRES], con i $\epsilon$ \{id de materia\} y k código de materia de trabajo profesional asociada a i (La sumatoria de las materias del trabajo final solo es agregada si existen materias de este tipo) (\ref{eq:creditos_acumulados}):
 
@@ -884,8 +889,12 @@ Se posee una restricción para la cantidad máxima de materias que se pueden rea
 
 Se restringe además, la máxima cantidad de horas de extra de cursada (\ref{eq:max_horas_extras_cursada}) de la misma manera:
 
+\begin{equation}
+horas\_extras\_tp\_final = \sum_{\forall (i,k)} Y\_TP\_FINAL_{ikj} * horas\_extras_{ik}
+\end{equation}
+
 \begin{equation}\label{eq:max_horas_extras_cursada}
-\sum_{\forall i} Y_{ij} * horas\_extras_i + \sum_{\forall (i,k)} Y\_TP\_FINAL_{ikj} * horas\_extras_{ik} \leq MAX\_HORAS\_EXTRA
+\sum_{\forall i} Y_{ij} * horas\_extras_i + horas\_extras\_tp\_final \leq MAX\_HORAS\_EXTRA
 \end{equation}
 
 Para restringir la máxima cantidad de horas de cursada (\ref{eq:max_horas_cursada}) se restringe en base a la variable H que muestra si se está cursando el curso o no. Para cada cuatrimestre j $\epsilon$ [1, MAX\_CUATRIMESTRES]. Con i $\epsilon$ \{id de materia\} y k id de los cursos asociados a la materia i:
@@ -934,7 +943,7 @@ H_{ikj} = 0
 
 Se deben cumplir una cantidad de créditos mínimos en materias electivas (\ref{eq:minimos_creditos_electivas}). Además, se restringirán las mismas para que no se hagan materias extras (\ref{eq:minimos_creditos_electivas_no_hacer_extras}). Para ello, se limitarán a un máximo de 6 créditos extras (una materia en términos generales) debido a que se pueden elegir algunas materias electivas de 8 créditos o combinaciones similares que sean mejores debido a sus horarios. Solo se agregarán materias si es requerido y no aumenta la cantidad de cuatrimestres, ya que el total de cuatrimestres es el valor que se está minimizando en la función objetivo. Con j cuatrimestre entre 1 y MAX\_CUATRIMESTRES; con i $\epsilon$ \{id materia\}:
 
-\begin{equation}\label{eq:no_toda_materia_se_dicta_siempre}
+\begin{equation}\label{eq:minimos_creditos_electivas}
 \sum_{\forall j} \sum_{\forall i} Y_{ij} * creditos_i \geq CREDITOS\_MINIMOS\_ELECTIVAS
 \end{equation}
 
@@ -1694,7 +1703,7 @@ A mi familia, que estuvo presente desde la distancia cuando comencé la carrera.
 
 A mi nueva familia adquirida, que me han acompañado durante este último tramo, en especial a Nico que nos hizo mil y un favores relacionados a la facultad desde que nos mudamos a Irlanda.
 
-A mis amigos y compañeros de facultad, con los que siempre compartí muy buenas experiencias y muchas veces tuvimos que dejar cosas de lado porque `había que estudiar'. En especial a Nicolás, Martín, Ezequiel, Flor y Javier con los que compartí la mayor parte de mi carrera y nos ayudamos mutuamente a avanzar, sé muy bien que sin ellos la carrera no hubiese sido igual.
+A mis amigos y compañeros de facultad, con los que siempre compartí muy buenas experiencias y muchas veces tuvimos que dejar cosas de lado porque `había que estudiar'. En especial a Nicolás, Martín, Ezequiel, Flor y Javier con los que compartí la mayor parte de mi carrera y nos ayudamos mutuamente a avanzar, sé muy bien que sin ellos la carrera no hubiese sido igual. Con mucho cariño también, a Mariano Lapenna, fuiste un gran amigo y compañero y luego de tantos años, aún se te extraña.
 
 A todos mis grupos de trabajo profesional antes de este, que se armaron y desarmaron por uno u otro motivo, pero que han sido pasos necesarios para poder finalmente llegar a este punto.
 
