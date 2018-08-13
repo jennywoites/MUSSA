@@ -35,18 +35,7 @@ class TestEstadisticasGeneracionPlanDeEstudios():
         parametros["user_id"] = self.ID_USUARIO
         estadisticas["tipo_solicitud"] = "Testing"
 
-        self.invocar_servicio_generacion_plan_greedy(parametros, estadisticas)
         self.invocar_servicio_generacion_plan_ple(parametros, estadisticas)
-
-    def invocar_servicio_generacion_plan_greedy(self, parametros, estadisticas):
-        parametros["id_plan_estudios"] = self.get_next_plan_id()
-
-        estadisticas["algoritmo"] = "GREEDY"
-        estadisticas["fecha_solicitado"] = get_str_fecha_y_hora_actual()
-
-        from AsyncTasks.AsyncTaskGreedy.broker_generador_greedy import tarea_generar_plan_greedy
-        tarea = tarea_generar_plan_greedy.delay(parametros, estadisticas)
-        assert (tarea is not None)
 
     def invocar_servicio_generacion_plan_ple(self, parametros, estadisticas):
         id_plan = self.get_next_plan_id()

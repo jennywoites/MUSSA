@@ -139,7 +139,6 @@ class PlanDeEstudiosService(BaseService):
         cursos_preseleccionados = self.obtener_lista('cursos_preseleccionados')
         trabajo_final = self.obtener_texto('trabajo_final')
         orientacion = self.obtener_texto('orientacion')
-        algoritmo = self.obtener_parametro('algoritmo')
 
         # parametros_son_validos, msj, codigo = self.validar_parametros(dict([
         #     ("idMateriaAlumno", {
@@ -160,7 +159,6 @@ class PlanDeEstudiosService(BaseService):
         max_horas_extras = int(max_horas_extras)
         puntaje_minimo_cursos = int(puntaje_minimo_cursos)
         cuatrimestre_inicio = int(cuatrimestre_inicio)
-        algoritmo = int(algoritmo)
 
         parametros = Parametros()
 
@@ -173,7 +171,6 @@ class PlanDeEstudiosService(BaseService):
         parametros.cuatrimestre_inicio = cuatrimestre_inicio
         parametros.anio_inicio = anio_inicio
         parametros.user_id = current_user.id
-        parametros.algoritmo = algoritmo
 
         self.configurar_plan_de_carrera_origen(carrera, parametros)
         self.actualizar_creditos(carrera, trabajo_final, parametros)
@@ -216,26 +213,14 @@ class PlanDeEstudiosService(BaseService):
 
         self.actualizar_horarios_con_franjas_minimas_y_maximas(parametros)
 
-        self.actualizar_datos_estadisticas(estadisticas, parametros, trabajo_final, algoritmo)
+        self.actualizar_datos_estadisticas(estadisticas, parametros, trabajo_final)
 
-        from AsyncTasks.AsyncTaskGreedy.broker_generador_greedy import tarea_generar_plan_greedy
         from AsyncTasks.AsyncTaskPLE.broker_generador_plan_ple import tarea_generar_plan_ple
-        ALGORITMOS_VALIDOS = {
-            ALGORITMO_GREEDY: tarea_generar_plan_greedy,
-            ALGORITMO_PROGRAMACION_LINEAL_ENTERA: tarea_generar_plan_ple
-        }
+        return self.finalizar_configuracion_y_generar_plan_de_estudios(tarea_generar_plan_ple, parametros, estadisticas)
 
-        if algoritmo in ALGORITMOS_VALIDOS:
-            return self.finalizar_configuracion_y_generar_plan_de_estudios(ALGORITMOS_VALIDOS[algoritmo], parametros,
-                                                                           estadisticas)
 
-        result = {"mensaje": "El algoritmo introducido no es valido"}, CLIENT_ERROR_BAD_REQUEST
-        self.logg_resultado(result)
-        return result
-
-    def actualizar_datos_estadisticas(self, estadisticas, parametros, trabajo_final, algoritmo):
-        estadisticas.cantidad_materias_disponibles_totales = len(parametros.materias) + len(
-            parametros.materia_trabajo_final)
+    def actualizar_datos_estadisticas(self, estadisticas, parametros, trabajo_final):
+        estadisticas.cantidad_materias_disponibles_totales = len(parametros.materias) + len(parametros.materia_trabajo_final)
         estadisticas.cantidad_materias_CBC = len(parametros.materias_CBC_pendientes)
 
         cantidad_cursos = 0
@@ -250,7 +235,6 @@ class PlanDeEstudiosService(BaseService):
         estadisticas.orientacion = parametros.orientacion
         estadisticas.carrera = Carrera.query.get(parametros.id_carrera).get_descripcion_carrera()
         estadisticas.trabajo_final = trabajo_final
-        estadisticas.algoritmo = DESCRIPCION_ALGORITMOS[algoritmo]
 
     def eliminar_todas_las_electivas_restantes(self, parametros):
         ids_materias = list(parametros.materias.keys())

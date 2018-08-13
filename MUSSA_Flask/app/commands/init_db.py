@@ -8,8 +8,6 @@ from app.DAO.EncuestasDAO import create_encuestas
 from app.DAO.PalabrasClaveDAO import create_tematicas
 from app.DAO.PlanDeCarreraDAO import create_estados_plan_de_estudios
 from app.DAO.CursosDAO import create_horarios_y_cursos_desde_PDF
-from app.DAO.ContenidoEjemploDAO import crear_datos_de_ejemplo
-
 
 class InitDbCommand(Command):
     """ Initialize the database."""
@@ -33,4 +31,5 @@ def init_db():
     create_horarios_y_cursos_desde_PDF()
 
     # ATENCION!! Solo habilitar para testing ya que crea muchos usuarios con datos
-    crear_datos_de_ejemplo()
+    #from app.DAO.ContenidoEjemploDAO import crear_datos_de_ejemplo
+    #crear_datos_de_ejemplo()
