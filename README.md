@@ -58,13 +58,11 @@ Se pueden utilizar los siguientes usuarios:
 
 ## Inicializar los workers (para permitir la generación del plan de carrera)
 
-    celery -A AsyncTasks.AsyncTaskGreedy.broker_generador_greedy worker --loglevel=debug
     celery -A AsyncTasks.AsyncTaskPLE.broker_generador_plan_ple worker --loglevel=debug
     celery -A app.API_Rest.GeneradorPlanCarreras.broker_guardar_plan_generado worker --loglevel=debug
 
 ## Si se desea purgar las tareas pendientes de los workers
 
-    celery -A AsyncTasks.AsyncTaskGreedy.broker_generador_greedy purge
     celery -A AsyncTasks.AsyncTaskPLE.broker_generador_plan_ple purge
     celery -A app.API_Rest.GeneradorPlanCarreras.broker_guardar_plan_generado purge
 
@@ -84,3 +82,7 @@ With thanks to the following Flask extensions:
 ## Autores
 
 - Jennifer Andrea Woites
+
+## Colaboradores (en el orden en el que se unieron al proyecto)
+
+- Ariel Wainer
