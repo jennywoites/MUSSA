@@ -28,7 +28,15 @@ USER_AFTER_LOGIN_ENDPOINT = 'main.member_page'
 USER_AFTER_LOGOUT_ENDPOINT = 'main.home_page'
 
 # Brokers Celery
-CELERY_BROKER_URL = 'redis://localhost'
+CELERY_BROKER_URL = 'redis://redis'
+
+
+db_user = os.environ.get('MUSSA_DB_USER')
+db_pass = os.environ.get('MUSSA_DB_PASS')
+db_host = os.environ.get('MUSSA_DB_HOST','db')
+db_name = os.environ.get('MUSSA_DB_NAME')
+SQLALCHEMY_DATABASE_URI = 'mysql://{}:{}@{}/{}'.format(db_user, db_pass, db_host, db_name)
+
 
 # available languages
 LANGUAGES = {
