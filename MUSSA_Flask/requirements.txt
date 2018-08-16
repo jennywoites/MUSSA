@@ -30,7 +30,6 @@ Flask-BabelEx
 #Instalar Flask Restful (API REST)
 flask-restful
 requests
-requests
 
 #Para trabajar con PDF
 PyPDF2
