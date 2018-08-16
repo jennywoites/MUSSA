@@ -7,6 +7,7 @@ RUTA_PLANES_CSV = "../../../PlanesdeEstudio/CSV/"
 RUTA_PLANES_INFO = "../../../PlanesdeEstudio/InfoCarrera/"
 
 CARRERAS = {
+    "03": ("Ingeniería Naval y Mecánica", "1986"),
     "06": ("Ingeniería Electricista", "1986"),
     "09": ("Licenciatura en análisis de sistemas", "1986"),
     "10": ("Ingeniería en Informática", "1986")
