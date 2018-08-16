@@ -1,4 +1,52 @@
-# MUSSA v1.0
+# MUSSA v1.1
+
+## CONFIGURACIÓN INICIAL
+
+## Instalar Docker
+
+Instalar Docker
+
+    https://docs.docker.com/install/linux/docker-ce/ubuntu/#install-using-the-convenience-script
+
+    sudo apt-get install docker.io
+
+Instalar Docker Compose
+
+    https://docs.docker.com/compose/install/#install-compose
+
+## Actualizar claves
+
+Crear un archivo en el directorio MUSSA llamdo .env
+Copiar el contenido de MUSSA/env_example. Actualizar los valores de las claves y distintas variables de entorno que se encuntran en MUSSA/.env
+
+Copiar y actualizar las configuraciones locales:
+
+    cp MUSSA/MUSSA_Flask/app/local_settings_example.py MUSSA/MUSSA_Flask/app/local_settings.py 
+
+## Realizar el Build
+
+Acceder a la carpeta MUSSA en la que se ecnuentra el archivo docker y ejecutar el build:
+
+    docker build .
+
+## Para ejecutar Docker (y la aplicación)
+
+(El build solo es necesario si se modificaron las dependencias)
+
+    docker -compose up [--build]
+
+## Si se desea parar los procesos de docker:
+
+    docker-compose stop
+
+## Para ver los procesos que se están ejecutando:
+
+    docker-compose ps
+
+
+
+
+
 
 ## Configuración inicial
 

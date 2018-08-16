@@ -1,0 +1,3 @@
+MUSSA_DB_USER=nombre_del_usuario_de_la_base_de_datos
+MUSSA_DB_PASS=password_de_la_base_de_datos
+MYSQL_ROOT_PASSWORD=password_del_usuario_root

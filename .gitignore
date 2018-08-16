@@ -125,4 +125,5 @@ MUSSA_Flask/estadisticas_algoritmos.csv
 
 #Base de datos
 app.sqlite
+mysql-data/
 
