@@ -305,7 +305,7 @@ function descargar_lista_de_materias_service(token, carreras, tipos_de_materias,
 
 function generar_plan_de_estudios_service(token, carrera, max_cant_cuatrimestres, max_cant_materias, max_horas_cursada,
     max_horas_extras, puntaje_minimo_cursos, cuatrimestre_inicio, anio_inicio, horarios_invalidos, tematicas,
-    aprobacion_finales, cursos_preseleccionados, trabajo_final, orientacion, algoritmo, onSuccess, onError) {
+    aprobacion_finales, cursos_preseleccionados, trabajo_final, orientacion, onSuccess, onError) {
     var url_servicio = BASE_URL + '/alumno/planDeEstudios';
 
     parametros = {}
@@ -324,7 +324,6 @@ function generar_plan_de_estudios_service(token, carrera, max_cant_cuatrimestres
     parametros["cursos_preseleccionados"] = JSON.stringify(cursos_preseleccionados);
     parametros["trabajo_final"] = trabajo_final;
     parametros["orientacion"] = orientacion;
-    parametros["algoritmo"] = algoritmo;
 
     do_request('PUT', url_servicio, token, parametros, onSuccess, onError);
 }

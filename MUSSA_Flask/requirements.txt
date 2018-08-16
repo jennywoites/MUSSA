@@ -29,7 +29,6 @@ Flask-BabelEx
 
 #Instalar Flask Restful (API REST)
 flask-restful
-request
 requests
 
 #Para trabajar con PDF

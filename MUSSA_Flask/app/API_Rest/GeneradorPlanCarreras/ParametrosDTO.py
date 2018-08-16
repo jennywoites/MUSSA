@@ -70,7 +70,6 @@ class Parametros:
         self.creditos_preacumulados = 0
 
         self.hash_precalculado = ""
-        self.algoritmo = -1
 
     def __str__(self):
         SALTO = "\n"
@@ -148,7 +147,6 @@ class Parametros:
 
         parametros += "creditos_preacumulados:" + str(self.creditos_preacumulados)
         parametros += "hash_precalculado:" + self.hash_precalculado
-        parametros += "algoritmo:" + str(self.algoritmo)
 
         return parametros
 
@@ -207,7 +205,6 @@ class Parametros:
         parametros += "]" + SEPARADOR
 
         parametros += "creditos_preacumulados:" + str(self.creditos_preacumulados)
-        parametros += "algoritmo:" + str(self.algoritmo)
 
         return hashlib.sha1(parametros.encode('utf-8'))
 
@@ -293,7 +290,6 @@ class Parametros:
 
         self.creditos_preacumulados = int(parametros_JSON["creditos_preacumulados"])
         self.hash_precalculado = parametros_JSON["hash_precalculado"]
-        self.algoritmo = int(parametros_JSON["algoritmo"])
 
     def generar_parametros_json(self):
         parametros_JSON = {}
@@ -360,7 +356,6 @@ class Parametros:
 
         parametros_JSON["creditos_preacumulados"] = self.creditos_preacumulados
         parametros_JSON["hash_precalculado"] = self.hash_precalculado
-        parametros_JSON["algoritmo"] = self.algoritmo
 
         return parametros_JSON
 
@@ -434,7 +429,6 @@ class Parametros:
 
         copia_parametros.creditos_preacumulados = self.creditos_preacumulados
         copia_parametros.hash_precalculado = self.hash_precalculado
-        copia_parametros.algoritmo = self.algoritmo
 
         return copia_parametros
 
@@ -872,4 +866,3 @@ class Parametros:
         self.user_id = parametros_actuales.user_id
         self.creditos_preacumulados = parametros_actuales.creditos_preacumulados
         self.hash_precalculado = parametros_actuales.hash_precalculado
-        self.algoritmo = parametros_actuales.algoritmo

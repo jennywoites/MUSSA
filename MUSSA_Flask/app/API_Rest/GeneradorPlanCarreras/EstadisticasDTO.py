@@ -30,7 +30,6 @@ class EstadisticasDTO:
         self.orientacion = ""
         self.carrera = ""
         self.trabajo_final = ""
-        self.algoritmo = -1
         self.tipo_solicitud = "Normal"
 
     def guardar_en_archivo(self):
@@ -84,7 +83,6 @@ class EstadisticasDTO:
             "Orientacion",
             "Carrera",
             "Trabajo Final",
-            "Algoritmo",
             "Tipo de Solicitud"
         ]
 
@@ -115,7 +113,6 @@ class EstadisticasDTO:
             self.orientacion,
             self.carrera,
             self.trabajo_final,
-            self.algoritmo,
             self.tipo_solicitud
         ]
 
@@ -143,7 +140,6 @@ class EstadisticasDTO:
             "orientacion": self.orientacion,
             "carrera": self.carrera,
             "trabajo_final": self.trabajo_final,
-            "algoritmo": self.algoritmo,
             "tipo_solicitud": self.tipo_solicitud
         }
 
@@ -173,5 +169,4 @@ class EstadisticasDTO:
         self.orientacion = datosJSON["orientacion"]
         self.carrera = datosJSON["carrera"]
         self.trabajo_final = datosJSON["trabajo_final"]
-        self.algoritmo = datosJSON["algoritmo"]
         self.tipo_solicitud = datosJSON["tipo_solicitud"]
