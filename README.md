@@ -33,7 +33,7 @@ Acceder a la carpeta MUSSA en la que se ecnuentra el archivo docker y ejecutar e
 
 (El build solo es necesario si se modificaron las dependencias)
 
-    docker -compose up [--build]
+    docker-compose up [--build]
 
 ## Si se desea parar los procesos de docker:
 
