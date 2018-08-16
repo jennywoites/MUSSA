@@ -28,12 +28,20 @@ Copiar y actualizar las configuraciones locales:
 Acceder a la carpeta MUSSA en la que se ecnuentra el archivo docker y ejecutar el build:
 
     docker build .
-    docker -compose up
+
+## Para ejecutar Docker (y la aplicación)
+
+(El build solo es necesario si se modificaron las dependencias)
+
+    docker -compose up [--build]
 
 ## Si se desea parar los procesos de docker:
 
     docker-compose stop
 
+## Para ver los procesos que se están ejecutando:
+
+    docker-compose ps
 
 
 
