@@ -7,6 +7,7 @@ RUTA_PLANES_CSV = "../../../PlanesdeEstudio/CSV/"
 RUTA_PLANES_INFO = "../../../PlanesdeEstudio/InfoCarrera/"
 
 CARRERAS = {
+    "06": ("Ingeniería Electricista", "1986"),
     "09": ("Licenciatura en análisis de sistemas", "1986"),
     "10": ("Ingeniería en Informática", "1986")
 }
@@ -29,6 +30,7 @@ CREDITOS_ELECTIVAS_CON_TESIS = "CREDITOS_ELECTIVAS_CON_TESIS"
 CREDITOS_ELECTIVAS_GENERAL = "CREDITOS_ELECTIVAS_GENERAL"
 REQUIERE_SUFICIENCIA_IDIOMA = "REQUIERE_SUFICIENCIA_IDIOMA"
 
+SEPARADOR_CSV = ","
 
 def create_carreras():
     # Create all tables
@@ -179,11 +181,30 @@ def cargar_datos_materias(nombre_arch, carrera):
 
     return materias
 
+def separar_linea_plan_de_estudios(linea):
+    pos_coma = linea.index(SEPARADOR_CSV)
+    codigo = linea[0:pos_coma]
+
+    linea = linea[pos_coma+2:] #Para saltear la primer comilla
+
+    nombre, resto = linea.split('"')
+
+    resto = resto[1:] #Elimina la coma sobrante de la separacion del nombre
+
+    creditos, tipo, cred_minimos, correlativas = resto.split(SEPARADOR_CSV)
+
+    return codigo, nombre, creditos, tipo, cred_minimos, correlativas
+
 
 def crear_materia(linea, dict_correlativas, carrera):
     linea = linea.rstrip()
 
-    codigo, nombre, creditos, tipo, cred_minimos, correlativas = linea.split(",")
+    if '"' in linea:
+        #El nombre de la materia contine comas
+        codigo, nombre, creditos, tipo, cred_minimos, correlativas = separar_linea_plan_de_estudios(linea)
+    else:
+        codigo, nombre, creditos, tipo, cred_minimos, correlativas = linea.split(SEPARADOR_CSV)
+
     creditos = int(creditos)
     cred_minimos = int(cred_minimos)
 
@@ -239,9 +260,11 @@ def guardar_correlativas(dic_correlativas, carrera):
             materia_correlativa = Materia.query.filter_by(codigo=correlativa).filter_by(carrera_id=carrera.id).first()
 
             if not materia_actual or not materia_correlativa:
-                print(materia_actual)
-                print(correlativa)
-                print(materia_correlativa)
+                if not materia_actual:
+                    print("No existe la materia actual {}".format(materia_actual))
+                else:
+                    print("No existe la materia de codigo {} que figura como"
+                          " correlativa de {}". format(correlativa, materia_actual))
                 input()
 
             find_or_create_correlativa(materia_actual.id, materia_correlativa.id)
