@@ -7,10 +7,11 @@ RUTA_PLANES_CSV = "../../../PlanesdeEstudio/CSV/"
 RUTA_PLANES_INFO = "../../../PlanesdeEstudio/InfoCarrera/"
 
 CARRERAS = {
-    "03": ("Ingeniería Naval y Mecánica", "1986"),
-    "06": ("Ingeniería Electricista", "1986"),
-    "09": ("Licenciatura en análisis de sistemas", "1986"),
-    "10": ("Ingeniería en Informática", "1986")
+    "02": ("Ingeniería Industrial", ["1986"]),
+    "03": ("Ingeniería Naval y Mecánica", ["1986"]),
+    "06": ("Ingeniería Electricista", ["1986"]),
+    "09": ("Licenciatura en análisis de sistemas", ["1986"]),
+    "10": ("Ingeniería en Informática", ["1986"])
 }
 
 TITULO = 0
@@ -39,7 +40,8 @@ def create_carreras():
 
     for codigo in CARRERAS:
         carrera = CARRERAS[codigo]
-        find_o_create_carrera(codigo, carrera[TITULO], carrera[PLAN])
+        for plan in carrera[PLAN]:
+            find_o_create_carrera(codigo, carrera[TITULO], plan)
 
     db.session.commit()
 
