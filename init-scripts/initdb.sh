@@ -22,7 +22,7 @@ db_exists=$(mysql  --user=root --password="$MYSQL_ROOT_PASSWORD"  --host="$MUSSA
 	echo "Inicializando base de datos"
 	mysql  --user=root --password="$MYSQL_ROOT_PASSWORD"  --host="$MUSSA_DB_HOST" -e "CREATE DATABASE $MUSSA_DB_NAME"
         mysql  --user=root --password="$MYSQL_ROOT_PASSWORD"  --host="$MUSSA_DB_HOST" -e "GRANT ALL PRIVILEGES ON $MUSSA_DB_NAME.* TO ${MUSSA_DB_USER}@'%' IDENTIFIED BY '${MUSSA_DB_PASS}'" mysql
-	mysql  --user=root --password="$MYSQL_ROOT_PASSWORD"  --host="$MUSSA_DB_HOST" $MUSSA_DB_NAME < /app/schema.sql
+	python /app/manage.py init_db
 else
 	echo "Base de datos ya inicializada"
 	exit 0

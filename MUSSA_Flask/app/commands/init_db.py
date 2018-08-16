@@ -33,4 +33,4 @@ def init_db():
     create_horarios_y_cursos_desde_PDF()
 
     # ATENCION!! Solo habilitar para testing ya que crea muchos usuarios con datos
-    crear_datos_de_ejemplo()
+    # crear_datos_de_ejemplo()

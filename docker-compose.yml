@@ -19,6 +19,8 @@ services:
       MUSSA_DB_HOST: "db"
     volumes:
       - ./init-scripts:/init-scripts
+      - ./MUSSA_Flask:/app
+      - ./PlanesdeEstudio:/PlanesdeEstudio
   
   db:
     image: mariadb

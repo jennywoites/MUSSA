@@ -12,7 +12,7 @@ Flask-Login==0.4.0
 Flask-Migrate
 Flask-Script==2.0.5
 Flask-SQLAlchemy==2.1
-Flask-User==0.6.12
+Flask-User<0.7
 Flask-WTF
 
 # Automated tests
