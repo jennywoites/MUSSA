@@ -19,6 +19,10 @@ Instalar Docker Compose
 Crear un archivo en el directorio MUSSA llamdo .env
 Copiar el contenido de MUSSA/env_example. Actualizar los valores de las claves y distintas variables de entorno que se encuntran en MUSSA/.env
 
+Copiar y actualizar las configuraciones locales:
+
+    cp MUSSA/MUSSA_Flask/app/local_settings_example.py MUSSA/MUSSA_Flask/app/local_settings.py 
+
 ## Realizar el Build
 
 Acceder a la carpeta MUSSA en la que se ecnuentra el archivo docker y ejecutar el build:
