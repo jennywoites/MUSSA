@@ -6,14 +6,29 @@
 
 Instalar Docker
 
-    sudo apt-get install docker
-    sudo apt-get install docker-compose
+    https://docs.docker.com/install/linux/docker-ce/ubuntu/#install-using-the-convenience-script
+
+    sudo apt-get install docker.io
+
+Instalar Docker Compose
+
+    https://docs.docker.com/compose/install/#install-compose
 
 ## Actualizar claves
 
 Crear un archivo en el directorio MUSSA llamdo .env
 Copiar el contenido de MUSSA/env_example. Actualizar los valores de las claves y distintas variables de entorno que se encuntran en MUSSA/.env
 
+## Realizar el Build
+
+Acceder a la carpeta MUSSA en la que se ecnuentra el archivo docker y ejecutar el build:
+
+    docker build .
+    docker -compose up
+
+## Si se desea parar los procesos de docker:
+
+    docker-compose stop
 
 
 
