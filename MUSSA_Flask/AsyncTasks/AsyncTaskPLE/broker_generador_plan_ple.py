@@ -68,19 +68,8 @@ def generar_y_ejecutar_codigo_PULP(parametros):
 
 
 def generar_ruta_archivo_pulp(parametros):
-    os.chdir(os.path.join(os.getcwd(), 'app'))
-
-    if not os.path.isdir('tmp'):
-        os.mkdir('tmp')
-    os.chdir(os.path.join(os.getcwd(), 'tmp'))
-
-    if not os.path.isdir(str(parametros.user_id)):
-        os.mkdir(str(parametros.user_id))
-
-    os.chdir(os.path.join(os.getcwd(), '..', '..'))
-
     # Actualizo la ruta de los archivos a la nueva ruta creada
-    ruta_archivos = os.path.join('app', 'tmp', str(parametros.user_id))
+    ruta_archivos = '/tmp'
     parametros.nombre_archivo_pulp = os.path.join(ruta_archivos, parametros.nombre_archivo_pulp)
     parametros.nombre_archivo_pulp_optimizado = os.path.join(ruta_archivos, parametros.nombre_archivo_pulp_optimizado)
     parametros.nombre_archivo_resultados_pulp = os.path.join(ruta_archivos, parametros.nombre_archivo_resultados_pulp)

@@ -10,7 +10,7 @@ from app.API_Rest.GeneradorPlanCarreras.EstadisticasDTO import EstadisticasDTO
 from app.API_Rest.GeneradorPlanCarreras.my_utils import convertir_tiempo
 from app.API_Rest.GeneradorPlanCarreras.my_utils import get_str_fecha_y_hora_actual
 
-broker_guadar_plan_de_estudios = Celery('broker3', broker='redis://localhost/5')
+broker_guadar_plan_de_estudios = Celery('broker3', broker='redis://redis/5')
 broker_guadar_plan_de_estudios.conf.update({
     'task_reject_on_worker_lost': True,
     'task_acks_late': True,

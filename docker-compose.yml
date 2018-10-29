@@ -44,7 +44,10 @@ services:
       - ./logs:/logs
 
   mussa_ple_worker:
-    build: .
+    build:
+      context: .
+      dockerfile: Dockerfile-workers
+    image: mussa_celery_worker
     networks:
      - redis_network
     depends_on:
@@ -58,6 +61,25 @@ services:
       - ./logs:/logs
     user: nobody
   
+  mussa_guardado_worker:
+    image: mussa_celery_worker
+    environment:
+      MUSSA_DB_USER:
+      MUSSA_DB_PASS:
+      MYSQL_ROOT_PASSWORD:
+      MUSSA_DB_NAME: "mussa"
+      MUSSA_DB_HOST: "db"
+    networks:
+     - db_network
+     - redis_network
+    depends_on:
+      - mussa_ple_worker
+    volumes:
+      - ./init-scripts:/init-scripts
+      - ./MUSSA_Flask:/app
+      - ./logs:/logs
+    command: celery -A app.API_Rest.GeneradorPlanCarreras.broker_guardar_plan_generado worker --loglevel=debug
+
   db:
     image: mariadb
     networks:
@@ -70,10 +92,14 @@ services:
      test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost", "-u", "root", "-p", "$${MYSQL_ROOT_PASSWORD}"]
      timeout: 20s
      retries: 10
+ 
   redis:
     image: redis
     networks:
      - redis_network
+    volumes:
+      - ./redis-data:/data
+    entrypoint: redis-server --appendonly yes
 
 
 networks:

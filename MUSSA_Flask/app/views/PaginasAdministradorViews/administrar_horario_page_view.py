@@ -31,7 +31,7 @@ def administrar_horarios_upload_file():
     f = request.files['file']
     cuatrimestre = request.form['numero_cuatrimestre']
     anio = request.form['anio']
-    ruta = 'app/tmp/' + secure_filename('Horarios_' + anio + "_" + cuatrimestre + "C.pdf")
+    ruta = 'app/' + secure_filename('Horarios_' + anio + "_" + cuatrimestre + "C.pdf")
     f.save(ruta)
 
     csrf_token = request.form['csrf_token']

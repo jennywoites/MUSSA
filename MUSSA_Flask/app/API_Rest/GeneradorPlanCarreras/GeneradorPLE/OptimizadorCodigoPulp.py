@@ -140,7 +140,7 @@ def limpiar_archivo(parametros, variables_a_eliminar, arch, arch_optimizado):
 
 
 def guardar_archivo_optimizado(parametros, variables_a_eliminar):
-    with open(parametros.nombre_archivo_pulp, 'r') as arch:    
+    with open(parametros.nombre_archivo_pulp, 'r') as arch:
         with open(parametros.nombre_archivo_pulp_optimizado, 'w') as arch_optimizado:
             limpiar_archivo(parametros, variables_a_eliminar, arch, arch_optimizado)
 

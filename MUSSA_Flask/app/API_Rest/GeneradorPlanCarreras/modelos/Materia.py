@@ -79,18 +79,5 @@ class Materia:
             "medias_horas_extras_cursada": self.medias_horas_extras_cursada,
         }
 
-    def copia_profunda(self):
-        return Materia(
-            id_materia=self.id_materia,
-            codigo=self.codigo,
-            nombre=self.nombre,
-            creditos=self.creditos,
-            tipo=self.tipo,
-            cred_min=self.creditos_minimos_aprobados,
-            correlativas=self.correlativas[:],
-            tematicas_principales=self.tematicas_principales[:],
-            medias_horas_extras_cursada=self.medias_horas_extras_cursada
-        )
-
     def get_str_tipo(self):
         return TIPOS_MATERIAS[self.tipo]
