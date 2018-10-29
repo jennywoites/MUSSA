@@ -18,7 +18,7 @@ migrate = Migrate()
 
 import logging
 
-logging.basicConfig(filename='MUSSA.log', level=logging.DEBUG)
+logging.basicConfig(filename='/logs/MUSSA.log', level=logging.DEBUG)
 
 
 def create_app(extra_config_settings={}):
