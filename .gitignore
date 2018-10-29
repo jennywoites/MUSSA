@@ -127,3 +127,5 @@ MUSSA_Flask/estadisticas_algoritmos.csv
 app.sqlite
 mysql-data/
 
+# IDE
+.idea

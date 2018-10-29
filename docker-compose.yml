@@ -1,13 +1,33 @@
 version: "3"
 
 services:
-  mussa_frontend:
+  mussa_initdb:
     build: .
+    image: mussa_app
+    command: "/bin/bash /init-scripts/initdb.sh"
+    depends_on:
+     - db
+    environment:
+      MUSSA_DB_USER:
+      MUSSA_DB_PASS:
+      MYSQL_ROOT_PASSWORD:
+      MUSSA_DB_NAME: "mussa"
+      MUSSA_DB_HOST: "db"
+    volumes:
+      - ./init-scripts:/init-scripts
+      - ./logs:/logs
+    networks:
+     - db_network
+
+  mussa_frontend:
+    image: mussa_app
+    command: "python manage.py runserver"
     ports:
      - "5000:5000"
     depends_on:
      - db
      - redis
+     - mussa_initdb
     networks:
      - db_network
      - redis_network
@@ -21,6 +41,22 @@ services:
       - ./init-scripts:/init-scripts
       - ./MUSSA_Flask:/app
       - ./PlanesdeEstudio:/PlanesdeEstudio
+      - ./logs:/logs
+
+  mussa_ple_worker:
+    build: .
+    networks:
+     - redis_network
+    depends_on:
+     - redis
+    command: celery -A AsyncTasks.AsyncTaskPLE.broker_generador_plan_ple worker --loglevel=debug
+    environment:
+      PYTHONPATH: /app
+    volumes:
+      - ./init-scripts:/init-scripts
+      - ./MUSSA_Flask:/app
+      - ./logs:/logs
+    user: nobody
   
   db:
     image: mariadb
